@@ -45,7 +45,7 @@ public class GitHubCodegen extends RustServerCodegen {
     public GitHubCodegen() {
         super();
 
-        supportingFiles.add(new SupportingFile("api_impl.rs", "src", "api_impl.rs"));
+        // supportingFiles.add(new SupportingFile("api_impl.rs", "src", "api_impl.rs"));
     }
 
     private static HashMap<String, Object> patchOperationBodyNames = new HashMap();

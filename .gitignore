@@ -1,0 +1,12 @@
+.fingerprint
+/.metals
+/.settings
+.swagger-codegen*
+/.cargo-backup
+/.bloop
+target/
+/.classpath
+/.factorypath
+/api.github.com*
+/.project
+/generated-sources

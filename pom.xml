@@ -1,0 +1,63 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>github-stubs</groupId>
+    <artifactId>github-stubs-codegen</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <name>github-stubs</name>
+
+    <!-- build with: mvn clean compiler:compile generate-resources -->
+
+    <build>
+      <sourceDirectory>${project.basedir}/java</sourceDirectory>
+      <plugins>
+        <plugin>
+          <groupId>io.swagger.codegen.v3</groupId>
+          <artifactId>swagger-codegen-maven-plugin</artifactId>
+          <version>3.0.23</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>generate</goal>
+              </goals>
+              <configuration>
+                <inputSpec>https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.json</inputSpec>
+                <language>github.GitHubCodegen</language>
+                <output>${project.basedir}</output>
+                <generateApis>true</generateApis>
+                <templateDirectory>${project.basedir}/templates</templateDirectory>
+                <configOptions>
+                  <packageName>github-stubs-stubs</packageName>
+                  <packageVersion>0</packageVersion>
+                </configOptions>
+              </configuration>
+            </execution>
+          </executions>
+          <dependencies>
+              <dependency>
+                  <groupId>github-stubs</groupId>
+                  <artifactId>github-stubs-codegen</artifactId>
+                  <version>0.1.0-SNAPSHOT</version>
+              </dependency>
+          </dependencies>
+        </plugin>
+      </plugins>
+    </build>
+
+    <properties>
+      <maven.compiler.source>8</maven.compiler.source>
+      <maven.compiler.target>8</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.swagger.codegen.v3</groupId>
+            <artifactId>swagger-codegen</artifactId>
+            <version>3.0.23</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.codegen.v3</groupId>
+            <artifactId>swagger-codegen-generators</artifactId>
+            <version>1.0.23</version>
+        </dependency>
+    </dependencies>
+</project>
