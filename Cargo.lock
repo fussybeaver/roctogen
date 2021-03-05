@@ -208,21 +208,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "caf5c69029bda2e743fddd0582d1083951d65cc9539aebf8812f36c3491342d6"
 
 [[package]]
-name = "github-stubs"
-version = "1.1.4"
-dependencies = [
- "base64",
- "chrono",
- "env_logger",
- "http",
- "isahc",
- "log 0.3.9",
- "serde",
- "serde_derive",
- "serde_json",
-]
-
-[[package]]
 name = "hermit-abi"
 version = "0.1.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -522,6 +507,21 @@ name = "regex-syntax"
 version = "0.6.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b5eb417147ba9860a96cfe72a0b93bf88fee1744b5636ec99ab20c1aa9376581"
+
+[[package]]
+name = "roctogen"
+version = "0.1.0"
+dependencies = [
+ "base64",
+ "chrono",
+ "env_logger",
+ "http",
+ "isahc",
+ "log 0.3.9",
+ "serde",
+ "serde_derive",
+ "serde_json",
+]
 
 [[package]]
 name = "ryu"

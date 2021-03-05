@@ -1,168 +1,104 @@
 {{>partial_header}}
-use std::rc::Rc;
-use std::borrow::Borrow;
-use std::borrow::Cow;
+
+use http::header::{ACCEPT, CONTENT_TYPE};
+use http::request::Request;
+use http::response::Response;
+
 use std::collections::HashMap;
 
-use hyper;
-use serde_json;
-use futures;
-use futures::{Future, Stream};
+use crate::auth::Auth;
+use crate::models::*;
+use crate::adapters::{Json, RequestAdapter, RequestBuilderExt, StatusExt};
 
-use hyper::header::UserAgent;
+use serde_json::value::Value;
 
-use super::{Error, configuration};
-
-pub struct {{{classname}}}Client<C: hyper::client::Connect> {
-    configuration: Rc<configuration::Configuration<C>>,
+pub struct {{classname}}<'api> {
+    auth: &'api Auth
 }
 
-impl<C: hyper::client::Connect> {{{classname}}}Client<C> {
-    pub fn new(configuration: Rc<configuration::Configuration<C>>) -> {{{classname}}}Client<C> {
-        {{{classname}}}Client {
-            configuration: configuration,
-        }
-    }
+pub fn new(auth: &Auth) -> {{classname}} {
+    {{classname}} { auth }
 }
 
-pub trait {{classname}} {
-{{#operations}}
-{{#operation}}
-    fn {{{operationId}}}(&self, {{#allParams}}{{paramName}}: {{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{^isPrimitiveType}}{{^isContainer}}::models::{{/isContainer}}{{/isPrimitiveType}}{{{dataType}}}{{/isUuid}}{{/isString}}{{#hasMore}}, {{/hasMore}}{{/allParams}}) -> Box<Future<Item = {{^returnType}}(){{/returnType}}{{#returnType}}{{{returnType}}}{{/returnType}}, Error = Error<serde_json::Value>>>;
-{{/operation}}
-{{/operations}}
+{{#operations}}{{#operation}}{{#contents}}
+#[derive(Debug, Deserialize)]
+pub enum {{classname}}{{operationIdCamelCase}}Error {
+{{#responses}}{{#vendorExtensions}}{{^x-is-default}}
+    Status{{code}}{{#dataType}}({{{.}}}){{/dataType}},
+{{/x-is-default}}{{/vendorExtensions}}{{/responses}}
+    Generic { code: u16 },
 }
 
-
-impl<C: hyper::client::Connect>{{classname}} for {{classname}}Client<C> {
-{{#operations}}
-{{#operation}}
-    fn {{{operationId}}}(&self, {{#allParams}}{{paramName}}: {{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{^isPrimitiveType}}{{^isContainer}}::models::{{/isContainer}}{{/isPrimitiveType}}{{{dataType}}}{{/isUuid}}{{/isString}}{{#hasMore}}, {{/hasMore}}{{/allParams}}) -> Box<Future<Item = {{^returnType}}(){{/returnType}}{{#returnType}}{{{.}}}{{/returnType}}, Error = Error<serde_json::Value>>> {
-        let configuration: &configuration::Configuration<C> = self.configuration.borrow();
-
-{{#hasAuthMethods}}
-        let mut auth_headers = HashMap::<String, String>::new();
-        let mut auth_query = HashMap::<String, String>::new();
-{{#authMethods}}
-{{#isApiKey}}
-        if let Some(ref apikey) = configuration.api_key {
-            let key = apikey.key.clone();
-            let val = match apikey.prefix {
-                Some(ref prefix) => format!("{} {}", prefix, key),
-                None => key,
-            };
-        {{#isKeyInHeader}}
-            auth_headers.insert("{{keyParamName}}".to_owned(), val);
-        {{/isKeyInHeader}}
-        {{#isKeyInQuery}}
-            auth_query.insert("{{keyParamName}}".to_owned(), val);
-        {{/isKeyInQuery}}
-        };
-{{/isApiKey}}
-{{#isBasic}}
-        if let Some(ref auth_conf) = configuration.basic_auth {
-            let auth = hyper::header::Authorization(
-                hyper::header::Basic {
-                    username: auth_conf.0.to_owned(),
-                    password: auth_conf.1.to_owned(),
-                }
-            );
-            auth_headers.insert("Authorization".to_owned(), auth.to_string());
-        };
-{{/isBasic}}
-{{#isOAuth}}
-        if let Some(ref token) = configuration.oauth_access_token {
-            let auth = hyper::header::Authorization(
-                hyper::header::Bearer {
-                    token: token.to_owned(),
-                }
-            );
-            auth_headers.insert("Authorization".to_owned(), auth.to_string());
-        };
-{{/isOAuth}}
-{{/authMethods}}
-{{/hasAuthMethods}}
-        let method = hyper::Method::{{httpMethod}};
-
-        let query_string = {
-            let mut query = ::url::form_urlencoded::Serializer::new(String::new());
-{{#queryParams}}
-            query.append_pair("{{baseName}}", &{{paramName}}{{#isListContainer}}.join(","){{/isListContainer}}.to_string());
-{{/queryParams}}
-{{#hasAuthMethods}}
-            for (key, val) in &auth_query {
-                query.append_pair(key, val);
+impl<T> StatusExt<T> for {{classname}}{{operationIdCamelCase}}Error
+    where T: std::io::Read
+{
+    fn resolve(
+        status: http::StatusCode,
+        res: &mut Response<T>,
+    ) -> Result<Self, serde_json::Error> {
+        match status.as_u16() {
+{{#responses}}{{#vendorExtensions}}{{^x-is-default}}
+            {{code}} => {
+                {{#dataType}}
+                let e: {{{.}}} = res.to_json()?;
+                Ok({{classname}}{{operationIdCamelCase}}Error::Status{{code}}(e))
+                {{/dataType}}
+                {{^dataType}}
+                Ok({{classname}}{{operationIdCamelCase}}Error::Status{{code}})
+                {{/dataType}}
             }
-{{/hasAuthMethods}} 
-            query.finish()
-        };
-        let uri_str = format!("{}{{{path}}}?{}", configuration.base_path, query_string{{#pathParams}}, {{baseName}}={{paramName}}{{#isListContainer}}.join(",").as_ref(){{/isListContainer}}{{/pathParams}});
-
-        // TODO(farcaller): handle error
-        // if let Err(e) = uri {
-        //     return Box::new(futures::future::err(e));
-        // }
-        let mut uri: hyper::Uri = uri_str.parse().unwrap();
-
-        let mut req = hyper::Request::new(method, uri);
-
-        if let Some(ref user_agent) = configuration.user_agent {
-            req.headers_mut().set(UserAgent::new(Cow::Owned(user_agent.clone())));
+{{/x-is-default}}{{/vendorExtensions}}{{/responses}}
+            code => Ok({{classname}}{{operationIdCamelCase}}Error::Generic { code }),
         }
+    }
+}
 
-        {{#hasHeaderParams}}
-        {
-            let mut headers = req.headers_mut();
-            {{#headerParams}}
-            headers.set_raw("{{baseName}}", {{paramName}}{{#isListContainer}}.join(",").as_ref(){{/isListContainer}});
-            {{/headerParams}}
+impl std::error::Error for {{classname}}{{operationIdCamelCase}}Error {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        None
+    }
+}
+
+impl std::fmt::Display for {{classname}}{{operationIdCamelCase}}Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+{{#responses}}{{#vendorExtensions}}{{^x-is-default}}
+            {{classname}}{{operationIdCamelCase}}Error::Status{{code}}{{#dataType}}(_){{/dataType}} => write!(f, "{{message}}"),
+{{/x-is-default}}{{/vendorExtensions}}{{/responses}}
+            {{classname}}{{operationIdCamelCase}}Error::Generic{ code } => write!(f, "Status code: {}", code),
         }
-        {{/hasHeaderParams}}
+    }
+}
 
-        {{#hasAuthMethods}}
-        for (key, val) in auth_headers {
-            req.headers_mut().set_raw(key, val);
-        }
-        {{/hasAuthMethods}}
+{{/contents}}{{/operation}}
 
-        {{#hasBodyParam}}
-        {{#bodyParams}}
-        let serialized = serde_json::to_string(&{{paramName}}).unwrap();
-        req.headers_mut().set(hyper::header::ContentType::json());
-        req.headers_mut().set(hyper::header::ContentLength(serialized.len() as u64));
-        req.set_body(serialized);
-        {{/bodyParams}}
-        {{/hasBodyParam}}
+{{#operation}}{{#contents}}{{#hasQueryParams}}
+pub struct {{classname}}{{operationIdCamelCase}}Params {
+    {{#queryParams}}
+    pub {{paramName}}: {{^required}}Option<{{#isString}}String{{/isString}}{{#isUuid}}String{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/required}}{{#required}}{{#isString}}String{{/isString}}{{#isUuid}}String{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/required}}{{#hasMore}}, {{/hasMore}}
+    {{/queryParams}}
+}
+{{/hasQueryParams}}
+{{/contents}}{{/operation}}
 
-        // send request
-        Box::new(
-        configuration.client.request(req)
-            .map_err(|e| Error::from(e))
-            .and_then(|resp| {
-                let status = resp.status();
-                resp.body().concat2()
-                    .and_then(move |body| Ok((status, body)))
-                    .map_err(|e| Error::from(e))
-            })
-            .and_then(|(status, body)| {
-                if status.is_success() {
-                    Ok(body)
-                } else {
-                    Err(Error::from((status, &*body)))
-                }
-            })
-            {{^returnType}}
-            .and_then(|_| futures::future::ok(()))
-            {{/returnType}}
-            {{#returnType}}
-            .and_then(|body| {
-                let parsed: Result<{{{returnType}}}, _> = serde_json::from_slice(&body);
-                parsed.map_err(|e| Error::from(e))
-            })
-            {{/returnType}}
-        )
+impl {{classname}}<'_> {
+{{#operation}}{{#contents}}
+    pub fn {{operationId}}(&self, {{#pathParams}}{{paramName}}: {{#nullable}}Option<{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/nullable}}{{^nullable}}{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/nullable}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}query_params: {{classname}}{{operationIdCamelCase}}Params{{#hasBodyParam}}, {{/hasBodyParam}}{{/hasQueryParams}}{{#hasBodyParam}}{{^hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}{{/hasQueryParams}}body: {{#bodyParam}}{{{dataType}}}{{/bodyParam}}{{/hasBodyParam}}) -> Result<impl RequestAdapter<{{#responses}}{{#vendorExtensions}}{{#x-is-default}}{{{dataType}}}{{/x-is-default}}{{/vendorExtensions}}{{/responses}}{{#vendorExtensions}}{{#x-codegen-response-empty-default}}(){{/x-codegen-response-empty-default}}{{/vendorExtensions}}, {{classname}}{{operationIdCamelCase}}Error>, http::Error> {
+       env_logger::init();
+
+       let mut builder = Request::builder();
+       let request_uri = format!("{}{{path}}", super::GITHUB_BASE_API_URL{{#hasPathParams}}, {{/hasPathParams}}{{#pathParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}});
+       debug!("build request uri ({:?})", &request_uri);
+
+       builder = builder
+           .uri(request_uri)
+           .header(ACCEPT, "application/vnd.github.v3+json")
+           .header(CONTENT_TYPE, "application/json");
+
+       builder = builder.authenticate(&self.auth);
+
+       Ok(builder.body(())?)
     }
 
-{{/operation}}
-{{/operations}}
+{{/contents}}{{/operation}}{{/operations}}
 }

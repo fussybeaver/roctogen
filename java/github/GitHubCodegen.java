@@ -1,79 +1,46 @@
 package github;
 
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.parameters.SerializableParameter;
-import io.swagger.models.parameters.BodyParameter;
-import io.swagger.util.Json;
+import static io.swagger.codegen.v3.generators.handlebars.ExtensionHelper.getBooleanValue;
 
-import io.swagger.codegen.v3.CliOption;
-import io.swagger.codegen.v3.CodegenArgument;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.swagger.codegen.v3.CodegenConstants;
 import io.swagger.codegen.v3.CodegenModel;
 import io.swagger.codegen.v3.CodegenOperation;
 import io.swagger.codegen.v3.CodegenParameter;
 import io.swagger.codegen.v3.CodegenProperty;
 import io.swagger.codegen.v3.CodegenResponse;
-import io.swagger.codegen.v3.SupportingFile;
-import io.swagger.codegen.v3.generators.DefaultCodegenConfig;
-import io.swagger.codegen.v3.generators.handlebars.java.JavaHelper;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.media.ArraySchema;
-import io.swagger.v3.oas.models.media.IntegerSchema;
-import io.swagger.v3.oas.models.media.MapSchema;
-import io.swagger.v3.oas.models.media.NumberSchema;
-import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.media.StringSchema;
-import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.parameters.RequestBody;
-import io.swagger.v3.parser.util.SchemaTypeUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.*;
-import java.util.Map.Entry;
-import static io.swagger.codegen.v3.generators.handlebars.ExtensionHelper.getBooleanValue;
+import io.swagger.v3.oas.models.responses.ApiResponse;
 
 public class GitHubCodegen extends RustServerCodegen {
     private static final Logger LOGGER = LoggerFactory.getLogger(GitHubCodegen.class);
 
+    protected Map<String, CodegenTag> tagList = new HashMap<String, CodegenTag>();
+
     public GitHubCodegen() {
         super();
 
+        additionalProperties.put("tags", tagList.values());
         // supportingFiles.add(new SupportingFile("api_impl.rs", "src", "api_impl.rs"));
     }
 
     private static HashMap<String, Object> patchOperationBodyNames = new HashMap();
     private static HashMap<String, Object> patchOperationResponseNames = new HashMap();
-    // Declare custom additions to inline enums that are behaving differently
-    // than the official spec
-    // private static HashMap<String, List<Map<String, String>>> patchEnumValues;
-    // static {
-    // patchEnumValues = new HashMap<String, List<Map<String, String>>>();
-    // Map<String, String> additionalEnumValues = new HashMap<String, String>();
-    // List<Map<String, String>> enumValues = new ArrayList <Map<String, String>>();
-
-    // additionalEnumValues.put("name", "ROLLBACK_UPDATING");
-    // additionalEnumValues.put("value", "\"rollback_updating\"");
-    // enumValues.add(additionalEnumValues);
-
-    // additionalEnumValues = new HashMap<String, String>();
-    // additionalEnumValues.put("name", "ROLLBACK_PAUSED");
-    // additionalEnumValues.put("value", "\"rollback_paused\"");
-    // enumValues.add(additionalEnumValues);
-
-    // additionalEnumValues = new HashMap<String, String>();
-    // additionalEnumValues.put("name", "ROLLBACK_COMPLETED");
-    // additionalEnumValues.put("value", "\"rollback_completed\"");
-    // enumValues.add(additionalEnumValues);
-
-    // patchEnumValues.put("ServiceUpdateStatusStateEnum", enumValues);
-    // }
 
     @Override
     public void preprocessOpenAPI(OpenAPI openAPI) {
@@ -135,6 +102,36 @@ public class GitHubCodegen extends RustServerCodegen {
             CodegenModel model = entry.getValue();
             if (model.getDataType() != null && model.getDataType().equals("boolean")) {
                 model.vendorExtensions.put("x-rustgen-is-bool", true);
+                model.vendorExtensions.put("has-vars", true);
+            }
+            if (model.getDataType() != null && model.getDataType().equals("integer")) {
+                model.vendorExtensions.put("x-rustgen-is-integer", true);
+                model.vendorExtensions.put("has-vars", true);
+            }
+            if (model.getDataType() != null && model.getDataType().equals("string")) {
+                model.vendorExtensions.put("x-rustgen-is-string", true);
+                model.vendorExtensions.put("has-vars", true);
+            }
+            if (model.getDataType() != null && model.getDataType().equals("DateTime")) {
+                model.vendorExtensions.put("x-rustgen-is-datetime", true);
+                model.vendorExtensions.put("has-vars", true);
+            }
+            if (model.getClassname().equals("WorkflowId")) {
+                model.vendorExtensions.put("x-rustgen-is-untagged-enum", true);
+                model.vendorExtensions.put("is-enum", true);
+                model.allowableValues = new HashMap<String, Object>();
+
+                List<Map<String, String>> enumVars = new ArrayList<>();
+                Map<String, String> intEnumVar = new HashMap<String, String>();
+                intEnumVar.put("name", "Int");
+                intEnumVar.put("value", "i32");
+                enumVars.add(intEnumVar);
+                Map<String, String> strEnumVar = new HashMap<String, String>();
+                strEnumVar.put("name", "Str");
+                strEnumVar.put("value", "String");
+                enumVars.add(strEnumVar);
+                model.allowableValues.put("enumVars", enumVars);
+
             }
             if (model.getIsEnum()) {
                 model.vendorExtensions.put("is-enum", true);
@@ -170,31 +167,52 @@ public class GitHubCodegen extends RustServerCodegen {
     }
 
     @Override
+    public void addOperationToGroup(String tag, String resourcePath, Operation operation, CodegenOperation co,
+            Map<String, List<CodegenOperation>> operations) {
+
+        super.addOperationToGroup(tag, resourcePath, operation, co, operations);
+        CodegenTag codegenTag;
+        if (tagList.containsKey(tag)) {
+            codegenTag = tagList.get(tag);
+        } else {
+            codegenTag = new CodegenTag();
+            codegenTag.baseName = underscore(tag);
+            codegenTag.operations = new ArrayList<CodegenOperation>();
+            tagList.put(tag, codegenTag);
+        }
+
+        List<CodegenOperation> codegenOperations = codegenTag.getOperations();
+        codegenOperations.add(co);
+        codegenTag.setContents(co.getContents());
+    }
+
+    @Override
     public Map<String, Object> postProcessOperationsWithModels(Map<String, Object> objs, List<Object> allModels) {
         // Index all CodegenModels by model name.
         HashMap<String, CodegenModel> allTheModels = new HashMap<String, CodegenModel>();
-        for (Entry<String, Object> entry : objs.entrySet()) {
-            String modelName = toModelName(entry.getKey());
-            if (entry.getValue() instanceof String) {
-                String inner = (String) entry.getValue();
-            } else if (entry.getValue() instanceof ArrayList) {
-                List<Map<String, Object>> inner = (List<Map<String, Object>>) entry.getValue();
-                for (Map<String, Object> mo : inner) {
-                    // allTheModels.put(modelName, cm);
-                    String className = (String) mo.get("import");
-                    if (patchOperationBodyNames.get(className) != null) {
-                        mo.put("import", patchOperationBodyNames.get(className));
-                    }
-                    if (patchOperationResponseNames.get(className) != null) {
-                        mo.put("import", patchOperationResponseNames.get(className));
-                    }
-                }
-            } else if (entry.getValue() instanceof Boolean) {
-                Boolean inner = (Boolean) entry.getValue();
-            } else {
-                Map<String, Object> inner = (Map<String, Object>) entry.getValue();
-            }
-        }
+        // for (Entry<String, Object> entry : objs.entrySet()) {
+        // String modelName = toModelName(entry.getKey());
+        // if (entry.getValue() instanceof String) {
+        // String inner = (String) entry.getValue();
+        // } else if (entry.getValue() instanceof ArrayList) {
+        // List<Map<String, Object>> inner = (List<Map<String, Object>>)
+        // entry.getValue();
+        // for (Map<String, Object> mo : inner) {
+        // // allTheModels.put(modelName, cm);
+        // String className = (String) mo.get("import");
+        // if (patchOperationBodyNames.get(className) != null) {
+        // mo.put("import", patchOperationBodyNames.get(className));
+        // }
+        // if (patchOperationResponseNames.get(className) != null) {
+        // mo.put("import", patchOperationResponseNames.get(className));
+        // }
+        // }
+        // } else if (entry.getValue() instanceof Boolean) {
+        // Boolean inner = (Boolean) entry.getValue();
+        // } else {
+        // Map<String, Object> inner = (Map<String, Object>) entry.getValue();
+        // }
+        // }
 
         for (Object obj : (List<Object>) allModels) {
             Map<String, Object> map = (Map<String, Object>) obj;
@@ -212,6 +230,41 @@ public class GitHubCodegen extends RustServerCodegen {
             }
         }
 
+        return objs;
+    }
+
+    @Override
+    public Map<String, Object> postProcessOperations(Map<String, Object> objs) {
+        objs = super.postProcessOperations(objs);
+        Map<String, Object> operations = (Map<String, Object>) objs.get("operations");
+        if (operations != null) {
+            List<CodegenOperation> ops = (List<CodegenOperation>) operations.get("operation");
+            for (final CodegenOperation operation : ops) {
+                CodegenParameter body = operation.bodyParam;
+                if (body != null) {
+                    String opName = (String) patchOperationBodyNames.get(camelize(body.getDataType()));
+                    if (opName != null) {
+                        body.dataType = toModelName(opName);
+                    }
+                }
+                List<CodegenResponse> responses = operation.getResponses();
+                Boolean hasDefaultResponse = false;
+                for (final CodegenResponse res : responses) {
+                    if (res.getDataType() != null) {
+                        if (getBooleanValue(res, CodegenConstants.IS_DEFAULT_EXT_NAME)) {
+                            hasDefaultResponse = true;
+                        }
+                        String resName = (String) patchOperationResponseNames.get(camelize(res.getDataType()));
+                        if (resName != null) {
+                            res.dataType = toModelName(resName);
+                        }
+                    }
+                }
+                if (!hasDefaultResponse) {
+                    operation.getVendorExtensions().put("x-codegen-response-empty-default", "true");
+                }
+            }
+        }
         return objs;
     }
 
@@ -257,13 +310,14 @@ public class GitHubCodegen extends RustServerCodegen {
         if (response.getExtensions() != null) {
             Object operationName = response.getExtensions().get("x-codegen-operation-name");
             if (operationName != null && !operationName.toString().isEmpty() && res.getDataType() != null
-                    && res.getDataType().startsWith("inline_response")) {
+                    && res.getDataType().startsWith("InlineResponse")) {
                 patchOperationResponseNames.put(camelize(res.getDataType()),
                         operationName + "Response" + res.getCode());
-                // LOGGER.info(" +++ res " + res + " datatype " + camelize(res.getDataType()) +
-                // " patch " + operationName
-                // + "Response" + res.getCode());
             }
+        }
+        
+        if (res.getDataType() != null && res.getDataType().equals("SelectedActions")) {
+            res.dataType = "PutActionsSetAllowedActionsRepository";
         }
 
         return res;
@@ -277,5 +331,12 @@ public class GitHubCodegen extends RustServerCodegen {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public String toOperationId(String operationId) {
+        operationId = operationId.replaceFirst("[a-zA-Z0-9]+\\/", "");
+
+        return super.toOperationId(operationId);
     }
 }

@@ -7,6 +7,7 @@ use serde_json::value::Value;
 use std::cmp::Eq;
 use std::collections::HashMap;
 use std::default::Default;
+use std::fmt::{self, Formatter, Display};
 use std::hash::Hash;
 
 use chrono::DateTime;
@@ -19,22 +20,36 @@ use chrono::Utc;
 /// which helps with FFI.
 #[allow(non_camel_case_types)]
 #[repr(C)]
-#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Serialize, Deserialize, Eq, Ord)]{{#xmlName}}
-#[serde(rename = "{{xmlName}}")]{{/xmlName}}
+{{#vendorExtensions.x-rustgen-is-untagged-enum}}
+#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize, Deserialize, Eq, Ord)]
+#[serde(untagged)]
+pub enum {{classname}} { {{#allowableValues}}{{#enumVars}}
+    {{name}}({{value}}),{{/enumVars}}{{/allowableValues}}
+}
+
+impl Display for {{classname}} {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        match self { {{#allowableValues}}{{#enumVars}}
+            {{classname}}::{{name}}(value) => write!(f, "{}", value),{{/enumVars}}{{/allowableValues}}
+        }
+    }
+}
+{{/vendorExtensions.x-rustgen-is-untagged-enum}}{{^vendorExtensions.x-rustgen-is-untagged-enum}}
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Serialize, Deserialize, Eq, Ord)]
 pub enum {{classname}} { {{#allowableValues}}{{#enumVars}}
     #[serde(rename = {{{value}}})]
     {{name}},{{/enumVars}}{{/allowableValues}}
 }
 
-impl ::std::fmt::Display for {{classname}} {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+impl Display for {{classname}} {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match *self { {{#allowableValues}}{{#enumVars}}
             {{classname}}::{{name}} => write!(f, "{}", {{{value}}}),{{/enumVars}}{{/allowableValues}}
         }
     }
 }
 
-impl ::std::str::FromStr for {{classname}} {
+impl std::str::FromStr for {{classname}} {
     type Err = ();
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -43,12 +58,15 @@ impl ::std::str::FromStr for {{classname}} {
         }
     }
 }
-{{/vendorExtensions.is-enum}}{{^vendorExtensions.is-enum}}{{#vendorExtensions.is-array-model}}{{! vec}}
-pub type {{classname}} = ???{{{vendorExtensions.is-array-model}}};
-{{/vendorExtensions.is-array-model}}{{^vendorExtensions.is-array-model}}{{#vendorExtensions.x-rustgen-is-bool}}
+{{/vendorExtensions.x-rustgen-is-untagged-enum}}{{/vendorExtensions.is-enum}}{{^vendorExtensions.is-enum}}{{#vendorExtensions.x-rustgen-is-bool}}
 pub type {{classname}} = bool;
-
-{{/vendorExtensions.x-rustgen-is-bool}}{{^vendorExtensions.x-rustgen-is-bool}}{{^vendorExtensions.has-vars}}{{! general struct}}#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]{{#xmlName}}
+{{/vendorExtensions.x-rustgen-is-bool}}{{#vendorExtensions.x-rustgen-is-integer}}
+pub type {{classname}} = i32;
+{{/vendorExtensions.x-rustgen-is-integer}}{{#vendorExtensions.x-rustgen-is-string}}
+pub type {{classname}} = String;
+{{/vendorExtensions.x-rustgen-is-string}}{{#vendorExtensions.x-rustgen-is-datetime}}
+pub type {{classname}} = DateTime<Utc>;
+{{/vendorExtensions.x-rustgen-is-datetime}}{{^vendorExtensions.has-vars}}{{! general struct}}#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]{{#xmlName}}
 #[serde(rename = "{{xmlName}}")]{{/xmlName}}
 pub struct {{classname}} {
 {{#vars}}{{#description}}    /// {{{description}}}
@@ -109,4 +127,4 @@ impl ::std::convert::AsRef<str> for {{classname}}{{enumName}} {
         }
     }
 }
-{{/vendorExtensions.is-enum}}{{/vars}}{{/vendorExtensions.has-vars}}{{/vendorExtensions.x-rustgen-is-bool}}{{/vendorExtensions.is-array-model}}{{/vendorExtensions.is-enum}}{{/model}}{{/models}}
+{{/vendorExtensions.is-enum}}{{/vars}}{{/vendorExtensions.has-vars}}{{/vendorExtensions.is-enum}}{{/model}}{{/models}}

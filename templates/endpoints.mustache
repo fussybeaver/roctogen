@@ -1,0 +1,7 @@
+{{>partial_header}}
+
+pub const GITHUB_BASE_API_URL: &str = "https://api.github.com";
+
+{{#tags}}
+pub mod {{baseName}};
+{{/tags}}

@@ -7,6 +7,7 @@ use serde_json::value::Value;
 use std::cmp::Eq;
 use std::collections::HashMap;
 use std::default::Default;
+use std::fmt::{self, Formatter, Display};
 use std::hash::Hash;
 
 use chrono::DateTime;
@@ -36,7 +37,6 @@ pub struct ActionsBillingUsage {
 }
 /// Whether GitHub Actions is enabled on the repository.
 pub type ActionsEnabled = bool;
-
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ActionsEnterprisePermissions {
     #[serde(rename = "enabled_organizations")]
@@ -186,21 +186,15 @@ pub struct Actor {
 
 }
 /// The time that the alert was created in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct AlertCreatedAt {
-}
+pub type AlertCreatedAt = DateTime<Utc>;
 /// The GitHub URL of the alert resource.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct AlertHtmlUrl {
-}
+pub type AlertHtmlUrl = String;
+/// The REST API URL for fetching the list of instances for an alert.
+pub type AlertInstancesUrl = String;
 /// The security alert number.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct AlertNumber {
-}
+pub type AlertNumber = i32;
 /// The REST API URL of the alert resource.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct AlertUrl {
-}
+pub type AlertUrl = String;
 /// The permissions policy that controls the actions that are allowed to run. Can be one of: `all`, `local_only`, or `selected`.
 /// Enumeration of values.
 /// Since this enum's variants do not hold data, we can easily define them them as `#[repr(C)]`
@@ -217,8 +211,8 @@ pub enum AllowedActions {
     SELECTED,
 }
 
-impl ::std::fmt::Display for AllowedActions {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+impl Display for AllowedActions {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match *self { 
             AllowedActions::ALL => write!(f, "{}", "all"),
             AllowedActions::LOCAL_ONLY => write!(f, "{}", "local_only"),
@@ -227,7 +221,7 @@ impl ::std::fmt::Display for AllowedActions {
     }
 }
 
-impl ::std::str::FromStr for AllowedActions {
+impl std::str::FromStr for AllowedActions {
     type Err = ();
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -749,8 +743,8 @@ pub enum AuthorAssociation {
     OWNER,
 }
 
-impl ::std::fmt::Display for AuthorAssociation {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+impl Display for AuthorAssociation {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match *self { 
             AuthorAssociation::COLLABORATOR => write!(f, "{}", "COLLABORATOR"),
             AuthorAssociation::CONTRIBUTOR => write!(f, "{}", "CONTRIBUTOR"),
@@ -764,7 +758,7 @@ impl ::std::fmt::Display for AuthorAssociation {
     }
 }
 
-impl ::std::str::FromStr for AuthorAssociation {
+impl std::str::FromStr for AuthorAssociation {
     type Err = ();
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -1085,6 +1079,50 @@ pub struct PatchOauthAuthorizationsUpdateAuthorization {
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PostGitCreateBlob {
+    /// The new blob's content.
+    #[serde(rename = "content")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub content: Option<String>,
+
+    /// The encoding used for `content`. Currently, `\"utf-8\"` and `\"base64\"` are supported.
+    #[serde(rename = "encoding")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub encoding: Option<String>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PostGitCreateCommit {
+    /// The commit message
+    #[serde(rename = "message")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub message: Option<String>,
+
+    /// The SHA of the tree object this commit points to
+    #[serde(rename = "tree")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tree: Option<String>,
+
+    /// The SHAs of the commits that were the parents of this commit. If omitted or empty, the commit will be written as a root commit. For a single parent, an array of one SHA should be provided; for a merge commit, an array of more than one should be provided.
+    #[serde(rename = "parents")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub parents: Option<Vec<String>>,
+
+    #[serde(rename = "author")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author: Option<ReposownerrepogitcommitsAuthor>,
+
+    #[serde(rename = "committer")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub committer: Option<ReposownerrepogitcommitsCommitter>,
+
+    /// The [PGP signature](https://en.wikipedia.org/wiki/Pretty_Good_Privacy) of the commit. GitHub adds the signature to the `gpgsig` header of the created commit. For a commit signature to be verifiable by Git or GitHub, it must be an ASCII-armored detached PGP signature over the string commit as it would be written to the object database. To pass a `signature` parameter, you need to first manually create a valid PGP signature, which can be complicated. You may find it easier to [use the command line](https://git-scm.com/book/id/v2/Git-Tools-Signing-Your-Work) to create signed commits.
+    #[serde(rename = "signature")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub signature: Option<String>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostGitCreateRef {
     /// The name of the fully qualified reference (ie: `refs/heads/master`). If it doesn't start with 'refs' and have at least two slashes, it will be rejected.
     #[serde(rename = "ref")]
@@ -1251,6 +1289,19 @@ pub struct PutMigrationsStartImport {
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PostAppsCreateContentAttachment {
+    /// The title of the attachment
+    #[serde(rename = "title")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub title: Option<String>,
+
+    /// The body of the attachment
+    #[serde(rename = "body")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchMigrationsUpdateImport {
     /// The username to provide to the originating repository.
     #[serde(rename = "vcs_username")]
@@ -1286,19 +1337,6 @@ pub struct PatchMigrationsMapCommitAuthor {
     #[serde(rename = "remote_id")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub remote_id: Option<String>,
-
-}
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct PostAppsCreateContentAttachment {
-    /// The title of the attachment
-    #[serde(rename = "title")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub title: Option<String>,
-
-    /// The body of the attachment
-    #[serde(rename = "body")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub body: Option<String>,
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1419,6 +1457,17 @@ pub struct DeleteIssuesRemoveAssignees {
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PutEnterpriseAdminSetGithubActionsPermissionsEnterprise {
+    #[serde(rename = "enabled_organizations")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub enabled_organizations: Option<EnabledOrganizations>,
+
+    #[serde(rename = "allowed_actions")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub allowed_actions: Option<AllowedActions>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostIssuesCreateComment {
     /// The contents of the comment.
     #[serde(rename = "body")]
@@ -1432,17 +1481,6 @@ pub struct PutIssuesSetLabels {
     #[serde(rename = "labels")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub labels: Option<Vec<String>>,
-
-}
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct PutEnterpriseAdminSetGithubActionsPermissionsEnterprise {
-    #[serde(rename = "enabled_organizations")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub enabled_organizations: Option<EnabledOrganizations>,
-
-    #[serde(rename = "allowed_actions")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub allowed_actions: Option<AllowedActions>,
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1565,6 +1603,14 @@ pub struct PostIssuesCreateMilestone {
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PutEnterpriseAdminSetSelectedOrganizationsEnabledGithubActionsEnterprise {
+    /// List of organization IDs to enable for GitHub Actions.
+    #[serde(rename = "selected_organization_ids")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub selected_organization_ids: Option<Vec<i32>>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchIssuesUpdateMilestone {
     /// The title of the milestone.
     #[serde(rename = "title")]
@@ -1593,14 +1639,6 @@ pub struct PutActivityMarkRepoNotificationsAsRead {
     #[serde(rename = "last_read_at")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub last_read_at: Option<String>,
-
-}
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct PutEnterpriseAdminSetSelectedOrganizationsEnabledGithubActionsEnterprise {
-    /// List of organization IDs to enable for GitHub Actions.
-    #[serde(rename = "selected_organization_ids")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub selected_organization_ids: Option<Vec<i32>>,
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1770,6 +1808,29 @@ pub struct PostPullsCreateReviewComment {
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PostEnterpriseAdminCreateSelfHostedRunnerGroupForEnterprise {
+    /// Name of the runner group.
+    #[serde(rename = "name")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+
+    /// Visibility of a runner group. You can select all organizations or select individual organization. Can be one of: `all` or `selected`
+    #[serde(rename = "visibility")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub visibility: Option<String>,
+
+    /// List of organization IDs that can access the runner group.
+    #[serde(rename = "selected_organization_ids")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub selected_organization_ids: Option<Vec<i32>>,
+
+    /// List of runner IDs to add to the runner group.
+    #[serde(rename = "runners")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub runners: Option<Vec<i32>>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostPullsCreateReplyForReviewComment {
     /// The text of the review comment.
     #[serde(rename = "body")]
@@ -1798,29 +1859,6 @@ pub struct PutPullsMerge {
     #[serde(rename = "merge_method")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub merge_method: Option<String>,
-
-}
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct PostEnterpriseAdminCreateSelfHostedRunnerGroupForEnterprise {
-    /// Name of the runner group.
-    #[serde(rename = "name")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub name: Option<String>,
-
-    /// Visibility of a runner group. You can select all organizations or select individual organization. Can be one of: `all` or `selected`
-    #[serde(rename = "visibility")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub visibility: Option<String>,
-
-    /// List of organization IDs that can access the runner group.
-    #[serde(rename = "selected_organization_ids")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub selected_organization_ids: Option<Vec<i32>>,
-
-    /// List of runner IDs to add to the runner group.
-    #[serde(rename = "runners")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub runners: Option<Vec<i32>>,
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1947,6 +1985,19 @@ pub struct PostReposCreateRelease {
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PatchEnterpriseAdminUpdateSelfHostedRunnerGroupForEnterprise {
+    /// Name of the runner group.
+    #[serde(rename = "name")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+
+    /// Visibility of a runner group. You can select all organizations or select individual organizations. Can be one of: `all` or `selected`
+    #[serde(rename = "visibility")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub visibility: Option<String>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchReposUpdateReleaseAsset {
     /// The file name of the asset.
     #[serde(rename = "name")]
@@ -1994,19 +2045,6 @@ pub struct PatchReposUpdateRelease {
     #[serde(rename = "prerelease")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub prerelease: Option<bool>,
-
-}
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct PatchEnterpriseAdminUpdateSelfHostedRunnerGroupForEnterprise {
-    /// Name of the runner group.
-    #[serde(rename = "name")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub name: Option<String>,
-
-    /// Visibility of a runner group. You can select all organizations or select individual organizations. Can be one of: `all` or `selected`
-    #[serde(rename = "visibility")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub visibility: Option<String>,
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -2106,6 +2144,19 @@ pub struct PostReposCreateUsingTemplate {
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PutActionsCreateOrUpdateEnvironmentSecret {
+    /// Value for your secret, encrypted with [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages) using the public key retrieved from the [Get an environment public key](https://docs.github.com/rest/reference/actions#get-an-environment-public-key) endpoint.
+    #[serde(rename = "encrypted_value")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub encrypted_value: Option<String>,
+
+    /// ID of the key you used to encrypt the secret.
+    #[serde(rename = "key_id")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub key_id: Option<String>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostEnterpriseAdminProvisionAndInviteEnterpriseGroup {
     /// The SCIM schema URIs.
     #[serde(rename = "schemas")]
@@ -2120,6 +2171,14 @@ pub struct PostEnterpriseAdminProvisionAndInviteEnterpriseGroup {
     #[serde(rename = "members")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub members: Option<Vec<Scimv2enterprisesenterpriseGroupsMembers>>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PutEnterpriseAdminSetOrgAccessToSelfHostedRunnerGroupInEnterprise {
+    /// List of organization IDs that can access the runner group.
+    #[serde(rename = "selected_organization_ids")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub selected_organization_ids: Option<Vec<i32>>,
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -2177,14 +2236,6 @@ pub struct PostEnterpriseAdminProvisionAndInviteEnterpriseUser {
     #[serde(rename = "groups")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub groups: Option<Vec<Scimv2enterprisesenterpriseUsersGroups>>,
-
-}
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct PutEnterpriseAdminSetOrgAccessToSelfHostedRunnerGroupInEnterprise {
-    /// List of organization IDs that can access the runner group.
-    #[serde(rename = "selected_organization_ids")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub selected_organization_ids: Option<Vec<i32>>,
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -2362,6 +2413,14 @@ pub struct PostTeamsCreateDiscussionLegacy {
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PutEnterpriseAdminSetSelfHostedRunnersInGroupForEnterprise {
+    /// List of runner IDs to add to the runner group.
+    #[serde(rename = "runners")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub runners: Option<Vec<i32>>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchTeamsUpdateDiscussionLegacy {
     /// The discussion post's title.
     #[serde(rename = "title")]
@@ -2388,14 +2447,6 @@ pub struct PatchTeamsUpdateDiscussionCommentLegacy {
     #[serde(rename = "body")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
-
-}
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct PutEnterpriseAdminSetSelfHostedRunnersInGroupForEnterprise {
-    /// List of runner IDs to add to the runner group.
-    #[serde(rename = "runners")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub runners: Option<Vec<i32>>,
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -2494,6 +2545,23 @@ pub struct PatchUsersUpdateAuthenticated {
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PostGistsCreate {
+    /// Description of the gist
+    #[serde(rename = "description")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+
+    /// Names and content for the files that make up the gist
+    #[serde(rename = "files")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub files: Option<HashMap<String, GistsFiles>>,
+
+    #[serde(rename = "public")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub public: Option<Value>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchUsersSetPrimaryEmailVisibilityForAuthenticated {
     /// An email address associated with the GitHub user account to manage.
     #[serde(rename = "email")]
@@ -2511,23 +2579,6 @@ pub struct PostUsersAddEmailForAuthenticated {
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeleteUsersDeleteEmailForAuthenticated {
-}
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct PostGistsCreate {
-    /// Description of the gist
-    #[serde(rename = "description")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub description: Option<String>,
-
-    /// Names and content for the files that make up the gist
-    #[serde(rename = "files")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub files: Option<HashMap<String, GistsFiles>>,
-
-    #[serde(rename = "public")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub public: Option<Value>,
-
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostUsersCreateGpgKeyForAuthenticated {
@@ -3568,6 +3619,24 @@ pub struct PutActionsSetGithubActionsPermissionsRepository {
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PostActionsReviewPendingDeploymentsForRun {
+    /// The list of environment ids to approve or reject
+    #[serde(rename = "environment_ids")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub environment_ids: Option<Vec<i32>>,
+
+    /// Whether to approve or reject deployment to the specified environments. Must be one of: `approved` or `rejected`
+    #[serde(rename = "state")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
+
+    /// A comment to accompany the deployment review
+    #[serde(rename = "comment")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comment: Option<String>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutActionsCreateOrUpdateRepoSecret {
     /// Value for your secret, encrypted with [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages) using the public key retrieved from the [Get a repository public key](https://docs.github.com/rest/reference/actions#get-a-repository-public-key) endpoint.
     #[serde(rename = "encrypted_value")]
@@ -3664,14 +3733,6 @@ pub struct PatchReposUpdateStatusCheckProtection {
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct PutReposSetStatusCheckContexts {
-    /// contexts parameter
-    #[serde(rename = "contexts")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub contexts: Option<Vec<String>>,
-
-}
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostOauthAuthorizationsCreateAuthorization {
     /// A list of scopes that this authorization is in.
     #[serde(rename = "scopes")]
@@ -3702,6 +3763,14 @@ pub struct PostOauthAuthorizationsCreateAuthorization {
     #[serde(rename = "fingerprint")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub fingerprint: Option<String>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PutReposSetStatusCheckContexts {
+    /// contexts parameter
+    #[serde(rename = "contexts")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contexts: Option<Vec<String>>,
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -3777,14 +3846,6 @@ pub struct PutReposSetUserAccessRestrictions {
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct PostReposAddUserAccessRestrictions {
-    /// users parameter
-    #[serde(rename = "users")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub users: Option<Vec<String>>,
-
-}
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutOauthAuthorizationsGetOrCreateAuthorizationForApp {
     /// The OAuth app client secret for which to create the token.
     #[serde(rename = "client_secret")]
@@ -3810,6 +3871,14 @@ pub struct PutOauthAuthorizationsGetOrCreateAuthorizationForApp {
     #[serde(rename = "fingerprint")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub fingerprint: Option<String>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PostReposAddUserAccessRestrictions {
+    /// users parameter
+    #[serde(rename = "users")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub users: Option<Vec<String>>,
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -3860,7 +3929,7 @@ pub struct PostChecksCreate {
     #[serde(skip_serializing_if="Option::is_none")]
     pub started_at: Option<String>,
 
-    /// **Required if you provide `completed_at` or a `status` of `completed`**. The final conclusion of the check. Can be one of `success`, `failure`, `neutral`, `cancelled`, `skipped`, `timed_out`, or `action_required`. When the conclusion is `action_required`, additional details should be provided on the site specified by `details_url`.   **Note:** Providing `conclusion` will automatically set the `status` parameter to `completed`. Only GitHub can change a check run conclusion to `stale`.
+    /// **Required if you provide `completed_at` or a `status` of `completed`**. The final conclusion of the check. Can be one of `action_required`, `cancelled`, `failure`, `neutral`, `success`, `skipped`, `stale`, or `timed_out`. When the conclusion is `action_required`, additional details should be provided on the site specified by `details_url`.   **Note:** Providing `conclusion` will automatically set the `status` parameter to `completed`. You cannot change a check run conclusion to `stale`, only GitHub can set this.
     #[serde(rename = "conclusion")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub conclusion: Option<String>,
@@ -3907,7 +3976,7 @@ pub struct PatchChecksUpdate {
     #[serde(skip_serializing_if="Option::is_none")]
     pub status: Option<String>,
 
-    /// **Required if you provide `completed_at` or a `status` of `completed`**. The final conclusion of the check. Can be one of `success`, `failure`, `neutral`, `cancelled`, `skipped`, `timed_out`, or `action_required`.   **Note:** Providing `conclusion` will automatically set the `status` parameter to `completed`. Only GitHub can change a check run conclusion to `stale`.
+    /// **Required if you provide `completed_at` or a `status` of `completed`**. The final conclusion of the check. Can be one of `action_required`, `cancelled`, `failure`, `neutral`, `success`, `skipped`, `stale`, or `timed_out`.   **Note:** Providing `conclusion` will automatically set the `status` parameter to `completed`. You cannot change a check run conclusion to `stale`, only GitHub can set this.
     #[serde(rename = "conclusion")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub conclusion: Option<String>,
@@ -3962,7 +4031,7 @@ pub struct PostCodeScanningUploadSarif {
 
     #[serde(rename = "ref")]
     #[serde(skip_serializing_if="Option::is_none")]
-    pub _ref: Option<CodeScanningAnalysisRef>,
+    pub _ref: Option<CodeScanningRef>,
 
     #[serde(rename = "sarif")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3978,9 +4047,10 @@ pub struct PostCodeScanningUploadSarif {
     #[serde(skip_serializing_if="Option::is_none")]
     pub started_at: Option<chrono::DateTime<chrono::Utc>>,
 
+    /// The name of the tool used to generate the code scanning analysis. If this parameter is not used, the tool name defaults to \"API\". If the uploaded SARIF contains a tool GUID, this will be available for filtering using the `tool_guid` parameter of operations such as `GET /repos/{owner}/{repo}/code-scanning/alerts`.
     #[serde(rename = "tool_name")]
     #[serde(skip_serializing_if="Option::is_none")]
-    pub tool_name: Option<CodeScanningAnalysisToolName>,
+    pub tool_name: Option<String>,
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -3993,14 +4063,6 @@ pub struct PutReposAddCollaborator {
     #[serde(rename = "permissions")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub permissions: Option<String>,
-
-}
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct PatchReposUpdateCommitComment {
-    /// The contents of the comment
-    #[serde(rename = "body")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub body: Option<String>,
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -4024,6 +4086,14 @@ pub struct PutOauthAuthorizationsGetOrCreateAuthorizationForAppAndFingerprint {
     #[serde(rename = "note_url")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub note_url: Option<String>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PatchReposUpdateCommitComment {
+    /// The contents of the comment
+    #[serde(rename = "body")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -4217,55 +4287,27 @@ pub struct PostReposCreateDispatchEvent {
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PutReposCreateOrUpdateEnvironment {
+    #[serde(rename = "wait_timer")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub wait_timer: Option<WaitTimer>,
+
+    /// The people or teams that may review jobs that reference the environment. You can list up to six users or teams as reviewers. The reviewers must have at least read access to the repository. Only one of the required reviewers needs to approve the job for it to proceed.
+    #[serde(rename = "reviewers")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub reviewers: Option<Vec<ReposownerrepoenvironmentsenvironmentNameReviewers>>,
+
+    #[serde(rename = "deployment_branch_policy")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub deployment_branch_policy: Option<DeploymentBranchPolicy>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateFork {
     /// Optional parameter to specify the organization name if forking into an organization.
     #[serde(rename = "organization")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub organization: Option<String>,
-
-}
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct PostGitCreateBlob {
-    /// The new blob's content.
-    #[serde(rename = "content")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub content: Option<String>,
-
-    /// The encoding used for `content`. Currently, `\"utf-8\"` and `\"base64\"` are supported.
-    #[serde(rename = "encoding")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub encoding: Option<String>,
-
-}
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct PostGitCreateCommit {
-    /// The commit message
-    #[serde(rename = "message")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub message: Option<String>,
-
-    /// The SHA of the tree object this commit points to
-    #[serde(rename = "tree")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub tree: Option<String>,
-
-    /// The SHAs of the commits that were the parents of this commit. If omitted or empty, the commit will be written as a root commit. For a single parent, an array of one SHA should be provided; for a merge commit, an array of more than one should be provided.
-    #[serde(rename = "parents")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub parents: Option<Vec<String>>,
-
-    #[serde(rename = "author")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub author: Option<ReposownerrepogitcommitsAuthor>,
-
-    #[serde(rename = "committer")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub committer: Option<ReposownerrepogitcommitsCommitter>,
-
-    /// The [PGP signature](https://en.wikipedia.org/wiki/Pretty_Good_Privacy) of the commit. GitHub adds the signature to the `gpgsig` header of the created commit. For a commit signature to be verifiable by Git or GitHub, it must be an ASCII-armored detached PGP signature over the string commit as it would be written to the object database. To pass a `signature` parameter, you need to first manually create a valid PGP signature, which can be complicated. You may find it easier to [use the command line](https://git-scm.com/book/id/v2/Git-Tools-Signing-Your-Work) to create signed commits.
-    #[serde(rename = "signature")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub signature: Option<String>,
 
 }
 /// Branch Protection
@@ -4775,6 +4817,10 @@ pub struct CheckRun {
     #[serde(skip_serializing_if="Option::is_none")]
     pub pull_requests: Option<Vec<PullRequestMinimal>>,
 
+    #[serde(rename = "deployment")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub deployment: Option<DeploymentSimple>,
+
 }
 /// A suite of checks performed on the code of a given code change
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -4974,7 +5020,7 @@ pub struct CodeOfConductSimple {
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CodeScanningAlertCodeScanningAlert {
+pub struct CodeScanningAlert {
     #[serde(rename = "number")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub number: Option<AlertNumber>,
@@ -4991,9 +5037,9 @@ pub struct CodeScanningAlertCodeScanningAlert {
     #[serde(skip_serializing_if="Option::is_none")]
     pub html_url: Option<AlertHtmlUrl>,
 
-    #[serde(rename = "instances")]
+    #[serde(rename = "instances_url")]
     #[serde(skip_serializing_if="Option::is_none")]
-    pub instances: Option<CodeScanningAlertInstances>,
+    pub instances_url: Option<AlertInstancesUrl>,
 
     #[serde(rename = "state")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -5018,69 +5064,175 @@ pub struct CodeScanningAlertCodeScanningAlert {
     #[serde(rename = "tool")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub tool: Option<CodeScanningAnalysisTool>,
+
+    #[serde(rename = "most_recent_instance")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub most_recent_instance: Option<CodeScanningAlertInstance>,
 
 }
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CodeScanningAlertCodeScanningAlertItems {
-    #[serde(rename = "number")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub number: Option<AlertNumber>,
+/// A classification of the file. For example to identify it as generated.
+/// Enumeration of values.
+/// Since this enum's variants do not hold data, we can easily define them them as `#[repr(C)]`
+/// which helps with FFI.
+#[allow(non_camel_case_types)]
+#[repr(C)]
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Serialize, Deserialize, Eq, Ord)]
+pub enum CodeScanningAlertClassification { 
+    #[serde(rename = "source")]
+    SOURCE,
+    #[serde(rename = "generated")]
+    GENERATED,
+    #[serde(rename = "test")]
+    TEST,
+    #[serde(rename = "library")]
+    LIBRARY,
+}
 
-    #[serde(rename = "created_at")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub created_at: Option<AlertCreatedAt>,
+impl Display for CodeScanningAlertClassification {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        match *self { 
+            CodeScanningAlertClassification::SOURCE => write!(f, "{}", "source"),
+            CodeScanningAlertClassification::GENERATED => write!(f, "{}", "generated"),
+            CodeScanningAlertClassification::TEST => write!(f, "{}", "test"),
+            CodeScanningAlertClassification::LIBRARY => write!(f, "{}", "library"),
+        }
+    }
+}
 
-    #[serde(rename = "url")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub url: Option<AlertUrl>,
-
-    #[serde(rename = "html_url")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub html_url: Option<AlertHtmlUrl>,
-
-    #[serde(rename = "state")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub state: Option<CodeScanningAlertState>,
-
-    #[serde(rename = "dismissed_by")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub dismissed_by: Option<SimpleUser>,
-
-    #[serde(rename = "dismissed_at")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub dismissed_at: Option<CodeScanningAlertDismissedAt>,
-
-    #[serde(rename = "dismissed_reason")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub dismissed_reason: Option<CodeScanningAlertDismissedReason>,
-
-    #[serde(rename = "rule")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub rule: Option<CodeScanningAlertRule>,
-
-    #[serde(rename = "tool")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub tool: Option<CodeScanningAnalysisTool>,
-
+impl std::str::FromStr for CodeScanningAlertClassification {
+    type Err = ();
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "source" => Ok(CodeScanningAlertClassification::SOURCE),
+            "generated" => Ok(CodeScanningAlertClassification::GENERATED),
+            "test" => Ok(CodeScanningAlertClassification::TEST),
+            "library" => Ok(CodeScanningAlertClassification::LIBRARY),
+            _ => Err(()),
+        }
+    }
 }
 /// The time that the alert was dismissed in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CodeScanningAlertDismissedAt {
-}
+pub type CodeScanningAlertDismissedAt = DateTime<Utc>;
 /// **Required when the state is dismissed.** The reason for dismissing or closing the alert. Can be one of: `false positive`, `won't fix`, and `used in tests`.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAlertDismissedReason {
 }
 /// Identifies the variable values associated with the environment in which the analysis that generated this alert instance was performed, such as the language that was analyzed.
+pub type CodeScanningAlertEnvironment = String;
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CodeScanningAlertEnvironment {
+pub struct CodeScanningAlertInstance {
+    #[serde(rename = "ref")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _ref: Option<CodeScanningRef>,
+
+    #[serde(rename = "analysis_key")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub analysis_key: Option<CodeScanningAnalysisAnalysisKey>,
+
+    #[serde(rename = "environment")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub environment: Option<CodeScanningAlertEnvironment>,
+
+    #[serde(rename = "state")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<CodeScanningAlertState>,
+
+    #[serde(rename = "commit_sha")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_sha: Option<String>,
+
+    #[serde(rename = "message")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub message: Option<CodescanningalertinstanceMessage>,
+
+    #[serde(rename = "location")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub location: Option<CodeScanningAlertLocation>,
+
+    #[serde(rename = "html_url")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+
+    /// Classifications that have been applied to the file that triggered the alert. For example identifying it as documentation, or a generated file.
+    #[serde(rename = "classifications")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub classifications: Option<Vec<CodeScanningAlertClassification>>,
+
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CodeScanningAlertInstances {
+pub struct CodeScanningAlertItems {
+    #[serde(rename = "number")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub number: Option<AlertNumber>,
+
+    #[serde(rename = "created_at")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<AlertCreatedAt>,
+
+    #[serde(rename = "url")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<AlertUrl>,
+
+    #[serde(rename = "html_url")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<AlertHtmlUrl>,
+
+    #[serde(rename = "instances_url")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub instances_url: Option<AlertInstancesUrl>,
+
+    #[serde(rename = "state")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<CodeScanningAlertState>,
+
+    #[serde(rename = "dismissed_by")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub dismissed_by: Option<SimpleUser>,
+
+    #[serde(rename = "dismissed_at")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub dismissed_at: Option<CodeScanningAlertDismissedAt>,
+
+    #[serde(rename = "dismissed_reason")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub dismissed_reason: Option<CodeScanningAlertDismissedReason>,
+
+    #[serde(rename = "rule")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub rule: Option<CodeScanningAlertRuleSummary>,
+
+    #[serde(rename = "tool")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tool: Option<CodeScanningAnalysisTool>,
+
+    #[serde(rename = "most_recent_instance")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub most_recent_instance: Option<CodeScanningAlertInstance>,
+
 }
-/// The full Git reference, formatted as `refs/heads/<branch name>`.
+/// Describe a region within a file for the alert.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CodeScanningAlertRef {
+pub struct CodeScanningAlertLocation {
+    #[serde(rename = "path")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub path: Option<String>,
+
+    #[serde(rename = "start_line")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub start_line: Option<i64>,
+
+    #[serde(rename = "end_line")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub end_line: Option<i64>,
+
+    #[serde(rename = "start_column")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub start_column: Option<i64>,
+
+    #[serde(rename = "end_column")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub end_column: Option<i64>,
+
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAlertRule {
@@ -5088,6 +5240,49 @@ pub struct CodeScanningAlertRule {
     #[serde(rename = "id")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<String>,
+
+    /// The name of the rule used to detect the alert.
+    #[serde(rename = "name")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+
+    /// The severity of the alert.
+    #[serde(rename = "severity")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub severity: Option<String>,
+
+    /// A short description of the rule used to detect the alert.
+    #[serde(rename = "description")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+
+    /// description of the rule used to detect the alert.
+    #[serde(rename = "full_description")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub full_description: Option<String>,
+
+    /// A set of tags applicable for the rule.
+    #[serde(rename = "tags")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tags: Option<Vec<String>>,
+
+    /// Detailed documentation for the rule as GitHub Flavored Markdown.
+    #[serde(rename = "help")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub help: Option<String>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CodeScanningAlertRuleSummary {
+    /// A unique identifier for the rule used to detect the alert.
+    #[serde(rename = "id")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<String>,
+
+    /// The name of the rule used to detect the alert.
+    #[serde(rename = "name")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
 
     /// The severity of the alert.
     #[serde(rename = "severity")]
@@ -5114,8 +5309,8 @@ pub enum CodeScanningAlertSetState {
     DISMISSED,
 }
 
-impl ::std::fmt::Display for CodeScanningAlertSetState {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+impl Display for CodeScanningAlertSetState {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match *self { 
             CodeScanningAlertSetState::OPEN => write!(f, "{}", "open"),
             CodeScanningAlertSetState::DISMISSED => write!(f, "{}", "dismissed"),
@@ -5123,7 +5318,7 @@ impl ::std::fmt::Display for CodeScanningAlertSetState {
     }
 }
 
-impl ::std::str::FromStr for CodeScanningAlertSetState {
+impl std::str::FromStr for CodeScanningAlertSetState {
     type Err = ();
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -5149,8 +5344,8 @@ pub enum CodeScanningAlertState {
     FIXED,
 }
 
-impl ::std::fmt::Display for CodeScanningAlertState {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+impl Display for CodeScanningAlertState {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match *self { 
             CodeScanningAlertState::OPEN => write!(f, "{}", "open"),
             CodeScanningAlertState::DISMISSED => write!(f, "{}", "dismissed"),
@@ -5159,7 +5354,7 @@ impl ::std::fmt::Display for CodeScanningAlertState {
     }
 }
 
-impl ::std::str::FromStr for CodeScanningAlertState {
+impl std::str::FromStr for CodeScanningAlertState {
     type Err = ();
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -5170,76 +5365,139 @@ impl ::std::str::FromStr for CodeScanningAlertState {
         }
     }
 }
-/// Identifies the configuration under which the analysis was executed. For example, in GitHub Actions this includes the workflow filename and job name.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CodeScanningAnalysisAnalysisKey {
-}
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CodeScanningAnalysisCodeScanningAnalysis {
+pub struct CodeScanningAnalysis {
+    #[serde(rename = "ref")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _ref: Option<CodeScanningRef>,
+
     #[serde(rename = "commit_sha")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub commit_sha: Option<CodeScanningAnalysisCommitSha>,
-
-    #[serde(rename = "ref")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub _ref: Option<CodeScanningAnalysisRef>,
 
     #[serde(rename = "analysis_key")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub analysis_key: Option<CodeScanningAnalysisAnalysisKey>,
 
-    #[serde(rename = "created_at")]
+    #[serde(rename = "environment")]
     #[serde(skip_serializing_if="Option::is_none")]
-    pub created_at: Option<CodeScanningAnalysisCreatedAt>,
-
-    #[serde(rename = "tool_name")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub tool_name: Option<CodeScanningAnalysisToolName>,
+    pub environment: Option<CodeScanningAnalysisEnvironment>,
 
     #[serde(rename = "error")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub error: Option<String>,
 
-    #[serde(rename = "environment")]
+    #[serde(rename = "created_at")]
     #[serde(skip_serializing_if="Option::is_none")]
-    pub environment: Option<CodeScanningAnalysisEnvironment>,
+    pub created_at: Option<CodeScanningAnalysisCreatedAt>,
+
+    /// The total number of results in the analysis.
+    #[serde(rename = "results_count")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub results_count: Option<i64>,
+
+    /// The total number of rules used in the analysis.
+    #[serde(rename = "rules_count")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub rules_count: Option<i64>,
+
+    /// Unique identifier for this analysis.
+    #[serde(rename = "id")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+
+    #[serde(rename = "url")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<CodeScanningAnalysisUrl>,
+
+    #[serde(rename = "sarif_id")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sarif_id: Option<CodeScanningAnalysisSarifId>,
+
+    #[serde(rename = "tool")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tool: Option<CodeScanningAnalysisTool>,
+
+    #[serde(rename = "deletable")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub deletable: Option<bool>,
 
 }
-/// The commit SHA of the code scanning analysis file.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CodeScanningAnalysisCommitSha {
-}
+/// Identifies the configuration under which the analysis was executed. For example, in GitHub Actions this includes the workflow filename and job name.
+pub type CodeScanningAnalysisAnalysisKey = String;
+/// The SHA of the commit to which the analysis you are uploading relates.
+pub type CodeScanningAnalysisCommitSha = String;
 /// The time that the analysis was created in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
+pub type CodeScanningAnalysisCreatedAt = DateTime<Utc>;
+/// Successful deletion of a code scanning analysis
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CodeScanningAnalysisCreatedAt {
+pub struct CodeScanningAnalysisDeletion {
+    /// Next deletable analysis in chain, without last analysis deletion confirmation
+    #[serde(rename = "next_analysis_url")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub next_analysis_url: Option<String>,
+
+    /// Next deletable analysis in chain, with last analysis deletion confirmation
+    #[serde(rename = "confirm_delete_url")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub confirm_delete_url: Option<String>,
+
 }
 /// Identifies the variable values associated with the environment in which this analysis was performed.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CodeScanningAnalysisEnvironment {
-}
-/// The full Git reference of the code scanning analysis file, formatted as `refs/heads/<branch name>`.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CodeScanningAnalysisRef {
-}
-/// A Base64 string representing the SARIF file to upload. You must first compress your SARIF file using [`gzip`](http://www.gnu.org/software/gzip/manual/gzip.html) and then translate the contents of the file into a Base64 encoding string.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CodeScanningAnalysisSarifFile {
-}
+pub type CodeScanningAnalysisEnvironment = String;
+/// A Base64 string representing the SARIF file to upload. You must first compress your SARIF file using [`gzip`](http://www.gnu.org/software/gzip/manual/gzip.html) and then translate the contents of the file into a Base64 encoding string. For more information, see \"[SARIF support for code scanning](https://docs.github.com/github/finding-security-vulnerabilities-and-errors-in-your-code/sarif-support-for-code-scanning).\"
+pub type CodeScanningAnalysisSarifFile = String;
+/// An identifier for the upload.
+pub type CodeScanningAnalysisSarifId = String;
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAnalysisTool {
     #[serde(rename = "name")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<CodeScanningAnalysisToolName>,
 
-    /// The version of the tool used to detect the alert.
     #[serde(rename = "version")]
     #[serde(skip_serializing_if="Option::is_none")]
-    pub version: Option<String>,
+    pub version: Option<CodeScanningAnalysisToolVersion>,
+
+    #[serde(rename = "guid")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub guid: Option<CodeScanningAnalysisToolGuid>,
 
 }
-/// The name of the tool used to generate the code scanning analysis alert.
+/// The GUID of the tool used to generate the code scanning analysis, if provided in the uploaded SARIF data.
+pub type CodeScanningAnalysisToolGuid = String;
+/// The name of the tool used to generate the code scanning analysis.
+pub type CodeScanningAnalysisToolName = String;
+/// The version of the tool used to generate the code scanning analysis.
+pub type CodeScanningAnalysisToolVersion = String;
+/// The REST API URL of the analysis resource.
+pub type CodeScanningAnalysisUrl = String;
+/// The full Git reference, formatted as `refs/heads/<branch name>`.
+pub type CodeScanningRef = String;
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CodeScanningAnalysisToolName {
+pub struct CodeScanningSarifsReceipt {
+    #[serde(rename = "id")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<CodeScanningAnalysisSarifId>,
+
+    /// The REST API URL for checking the status of the upload.
+    #[serde(rename = "url")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CodeScanningSarifsStatus {
+    /// `pending` files have not yet been processed, while `complete` means all results in the SARIF have been stored.
+    #[serde(rename = "processing_status")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub processing_status: Option<String>,
+
+    /// The REST API URL for getting the analyses associated with the upload.
+    #[serde(rename = "analyses_url")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub analyses_url: Option<String>,
+
 }
 /// Code Search Result Item
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -5298,26 +5556,10 @@ pub struct CodeSearchResultItem {
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CodescanningalertinstancesInner {
-    #[serde(rename = "ref")]
+pub struct CodescanningalertinstanceMessage {
+    #[serde(rename = "text")]
     #[serde(skip_serializing_if="Option::is_none")]
-    pub _ref: Option<CodeScanningAlertRef>,
-
-    #[serde(rename = "analysis_key")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub analysis_key: Option<CodeScanningAnalysisAnalysisKey>,
-
-    #[serde(rename = "environment")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub environment: Option<CodeScanningAlertEnvironment>,
-
-    #[serde(rename = "matrix_vars")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub matrix_vars: Option<String>,
-
-    #[serde(rename = "state")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub state: Option<CodeScanningAlertState>,
+    pub text: Option<String>,
 
 }
 /// Collaborator
@@ -5926,6 +6168,13 @@ pub struct CommunityprofileFiles {
     #[serde(rename = "pull_request_template")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub pull_request_template: Option<CommunityHealthFile>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ContainerMetadata {
+    #[serde(rename = "tags")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tags: Option<Vec<Value>>,
 
 }
 /// A list of directory items
@@ -6584,6 +6833,118 @@ pub struct Deployment {
     pub performed_via_github_app: Option<Integration>,
 
 }
+/// The type of deployment branch policy for this environment. To allow all branches to deploy, set to `null`.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct DeploymentBranchPolicy {
+    /// Whether only branches with branch protection rules can deploy to this environment. If `protected_branches` is `true`, `custom_branch_policies` must be `false`; if `protected_branches` is `false`, `custom_branch_policies` must be `true`.
+    #[serde(rename = "protected_branches")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub protected_branches: Option<bool>,
+
+    /// Whether only branches that match the specified name patterns can deploy to this environment.  If `custom_branch_policies` is `true`, `protected_branches` must be `false`; if `custom_branch_policies` is `false`, `protected_branches` must be `true`.
+    #[serde(rename = "custom_branch_policies")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub custom_branch_policies: Option<bool>,
+
+}
+/// The type of reviewer. Must be one of: `User` or `Team`
+/// Enumeration of values.
+/// Since this enum's variants do not hold data, we can easily define them them as `#[repr(C)]`
+/// which helps with FFI.
+#[allow(non_camel_case_types)]
+#[repr(C)]
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Serialize, Deserialize, Eq, Ord)]
+pub enum DeploymentReviewerType { 
+    #[serde(rename = "User")]
+    USER,
+    #[serde(rename = "Team")]
+    TEAM,
+}
+
+impl Display for DeploymentReviewerType {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        match *self { 
+            DeploymentReviewerType::USER => write!(f, "{}", "User"),
+            DeploymentReviewerType::TEAM => write!(f, "{}", "Team"),
+        }
+    }
+}
+
+impl std::str::FromStr for DeploymentReviewerType {
+    type Err = ();
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "User" => Ok(DeploymentReviewerType::USER),
+            "Team" => Ok(DeploymentReviewerType::TEAM),
+            _ => Err(()),
+        }
+    }
+}
+/// A deployment created as the result of an Actions check run from a workflow that references an environment
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct DeploymentSimple {
+    #[serde(rename = "url")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+
+    /// Unique identifier of the deployment
+    #[serde(rename = "id")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+
+    #[serde(rename = "node_id")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+
+    /// Parameter to specify a task to execute
+    #[serde(rename = "task")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub task: Option<String>,
+
+    #[serde(rename = "original_environment")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub original_environment: Option<String>,
+
+    /// Name for the target deployment environment.
+    #[serde(rename = "environment")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub environment: Option<String>,
+
+    #[serde(rename = "description")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+
+    #[serde(rename = "created_at")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+
+    #[serde(rename = "updated_at")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+
+    #[serde(rename = "statuses_url")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub statuses_url: Option<String>,
+
+    #[serde(rename = "repository_url")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repository_url: Option<String>,
+
+    /// Specifies if the given environment is will no longer exist at some point in the future. Default: false.
+    #[serde(rename = "transient_environment")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub transient_environment: Option<bool>,
+
+    /// Specifies if the given environment is one that end-users directly interact with. Default: false.
+    #[serde(rename = "production_environment")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub production_environment: Option<bool>,
+
+    #[serde(rename = "performed_via_github_app")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub performed_via_github_app: Option<Integration>,
+
+}
 /// The status of a deployment.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeploymentStatus {
@@ -6702,6 +7063,13 @@ pub struct DiffEntry {
     pub previous_filename: Option<String>,
 
 }
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct DockerMetadata {
+    #[serde(rename = "tag")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tag: Option<Vec<Value>>,
+
+}
 /// Email
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Email {
@@ -6738,8 +7106,8 @@ pub enum EnabledOrganizations {
     SELECTED,
 }
 
-impl ::std::fmt::Display for EnabledOrganizations {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+impl Display for EnabledOrganizations {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match *self { 
             EnabledOrganizations::ALL => write!(f, "{}", "all"),
             EnabledOrganizations::NONE => write!(f, "{}", "none"),
@@ -6748,7 +7116,7 @@ impl ::std::fmt::Display for EnabledOrganizations {
     }
 }
 
-impl ::std::str::FromStr for EnabledOrganizations {
+impl std::str::FromStr for EnabledOrganizations {
     type Err = ();
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -6775,8 +7143,8 @@ pub enum EnabledRepositories {
     SELECTED,
 }
 
-impl ::std::fmt::Display for EnabledRepositories {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+impl Display for EnabledRepositories {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match *self { 
             EnabledRepositories::ALL => write!(f, "{}", "all"),
             EnabledRepositories::NONE => write!(f, "{}", "none"),
@@ -6785,7 +7153,7 @@ impl ::std::fmt::Display for EnabledRepositories {
     }
 }
 
-impl ::std::str::FromStr for EnabledRepositories {
+impl std::str::FromStr for EnabledRepositories {
     type Err = ();
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -6843,6 +7211,108 @@ pub struct Enterprise {
     #[serde(rename = "avatar_url")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub avatar_url: Option<String>,
+
+}
+/// Details of a deployment environment
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Environment {
+    /// The id of the environment.
+    #[serde(rename = "id")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+
+    #[serde(rename = "node_id")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+
+    /// The name of the environment.
+    #[serde(rename = "name")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+
+    #[serde(rename = "url")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+
+    #[serde(rename = "html_url")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+
+    /// The time that the environment was created, in ISO 8601 format.
+    #[serde(rename = "created_at")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+
+    /// The time that the environment was last updated, in ISO 8601 format.
+    #[serde(rename = "updated_at")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+
+    #[serde(rename = "protection_rules")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub protection_rules: Option<Vec<Value>>,
+
+    #[serde(rename = "deployment_branch_policy")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub deployment_branch_policy: Option<DeploymentBranchPolicy>,
+
+}
+/// An entry in the reviews log for environment deployments
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct EnvironmentApprovals {
+    /// The list of environments that were approved or rejected
+    #[serde(rename = "environments")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub environments: Option<Vec<EnvironmentapprovalsEnvironments>>,
+
+    /// Whether deployment to the environment(s) was approved or rejected
+    #[serde(rename = "state")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
+
+    #[serde(rename = "user")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<SimpleUser>,
+
+    /// The comment submitted with the deployment review
+    #[serde(rename = "comment")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comment: Option<String>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct EnvironmentapprovalsEnvironments {
+    /// The id of the environment.
+    #[serde(rename = "id")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+
+    #[serde(rename = "node_id")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+
+    /// The name of the environment.
+    #[serde(rename = "name")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+
+    #[serde(rename = "url")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+
+    #[serde(rename = "html_url")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+
+    /// The time that the environment was created, in ISO 8601 format.
+    #[serde(rename = "created_at")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+
+    /// The time that the environment was last updated, in ISO 8601 format.
+    #[serde(rename = "updated_at")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 
 }
 /// Event
@@ -7556,6 +8026,10 @@ pub struct FullRepository {
     #[serde(skip_serializing_if="Option::is_none")]
     pub anonymous_access_enabled: Option<bool>,
 
+    #[serde(rename = "code_of_conduct")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub code_of_conduct: Option<CodeOfConductSimple>,
+
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FullrepositoryPermissions {
@@ -8199,6 +8673,9 @@ pub struct GroupMapping {
     #[serde(skip_serializing_if="Option::is_none")]
     pub groups: Option<Vec<GroupmappingGroups>>,
 
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct GroupmappingGroups {
     /// The ID of the group
     #[serde(rename = "group_id")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -8223,24 +8700,6 @@ pub struct GroupMapping {
     #[serde(rename = "synced_at")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub synced_at: Option<String>,
-
-}
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct GroupmappingGroups {
-    /// The ID of the group
-    #[serde(rename = "group_id")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub group_id: Option<String>,
-
-    /// The name of the group
-    #[serde(rename = "group_name")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub group_name: Option<String>,
-
-    /// a description of the group
-    #[serde(rename = "group_description")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub group_description: Option<String>,
 
 }
 /// Webhooks for repositories.
@@ -8750,7 +9209,7 @@ pub struct GetActionsListJobsForWorkflowRunResponse200 {
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct GetActionsListRepoSecretsResponse200 {
+pub struct GetActionsListEnvironmentSecretsResponse200 {
     #[serde(rename = "total_count")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<i64>,
@@ -8806,6 +9265,18 @@ pub struct GetEnterpriseAdminListOrgAccessToSelfHostedRunnerGroupInEnterpriseRes
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct InlineResponse20020 {
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct GetReposGetAllEnvironmentsResponse200 {
+    /// The number of environments in this repository
+    #[serde(rename = "total_count")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<i64>,
+
+    #[serde(rename = "environments")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub environments: Option<Vec<Environment>>,
+
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetSearchCodeResponse200 {
@@ -8916,6 +9387,17 @@ pub struct GetSearchUsersResponse200 {
 pub struct GetUsersGetByUsernameResponse200 {
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct GetEnterpriseAdminListSelfHostedRunnerGroupsForEnterpriseResponse200 {
+    #[serde(rename = "total_count")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<f64>,
+
+    #[serde(rename = "runner_groups")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub runner_groups: Option<Vec<RunnerGroupsEnterprise>>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetAppsListInstallationReposForAuthenticatedUserResponse200 {
     #[serde(rename = "total_count")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -8928,17 +9410,6 @@ pub struct GetAppsListInstallationReposForAuthenticatedUserResponse200 {
     #[serde(rename = "repositories")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub repositories: Option<Vec<Repository>>,
-
-}
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct GetEnterpriseAdminListSelfHostedRunnerGroupsForEnterpriseResponse200 {
-    #[serde(rename = "total_count")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub total_count: Option<f64>,
-
-    #[serde(rename = "runner_groups")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub runner_groups: Option<Vec<RunnerGroupsEnterprise>>,
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -9557,8 +10028,8 @@ pub enum InteractionExpiry {
     SIX_MONTHS,
 }
 
-impl ::std::fmt::Display for InteractionExpiry {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+impl Display for InteractionExpiry {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match *self { 
             InteractionExpiry::ONE_DAY => write!(f, "{}", "one_day"),
             InteractionExpiry::THREE_DAYS => write!(f, "{}", "three_days"),
@@ -9569,7 +10040,7 @@ impl ::std::fmt::Display for InteractionExpiry {
     }
 }
 
-impl ::std::str::FromStr for InteractionExpiry {
+impl std::str::FromStr for InteractionExpiry {
     type Err = ();
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -9598,8 +10069,8 @@ pub enum InteractionGroup {
     COLLABORATORS_ONLY,
 }
 
-impl ::std::fmt::Display for InteractionGroup {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+impl Display for InteractionGroup {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match *self { 
             InteractionGroup::EXISTING_USERS => write!(f, "{}", "existing_users"),
             InteractionGroup::CONTRIBUTORS_ONLY => write!(f, "{}", "contributors_only"),
@@ -9608,7 +10079,7 @@ impl ::std::fmt::Display for InteractionGroup {
     }
 }
 
-impl ::std::str::FromStr for InteractionGroup {
+impl std::str::FromStr for InteractionGroup {
     type Err = ();
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -11965,6 +12436,122 @@ pub struct OrgsorgteamsteamSlugteamsyncgroupmappingsGroups {
     pub group_description: Option<String>,
 
 }
+/// A software package
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Package {
+    /// Unique identifier of the package.
+    #[serde(rename = "id")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+
+    /// The name of the package.
+    #[serde(rename = "name")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+
+    #[serde(rename = "package_type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub package_type: Option<String>,
+
+    #[serde(rename = "url")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+
+    #[serde(rename = "html_url")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+
+    /// The number of versions of the package.
+    #[serde(rename = "version_count")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub version_count: Option<i64>,
+
+    #[serde(rename = "visibility")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub visibility: Option<String>,
+
+    #[serde(rename = "owner")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub owner: Option<SimpleUser>,
+
+    #[serde(rename = "repository")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repository: Option<MinimalRepository>,
+
+    #[serde(rename = "created_at")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+
+    #[serde(rename = "updated_at")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+
+}
+/// A version of a software package
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PackageVersion {
+    /// Unique identifier of the package version.
+    #[serde(rename = "id")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+
+    /// The name of the package version.
+    #[serde(rename = "name")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+
+    #[serde(rename = "url")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+
+    #[serde(rename = "package_html_url")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub package_html_url: Option<String>,
+
+    #[serde(rename = "html_url")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+
+    #[serde(rename = "license")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub license: Option<String>,
+
+    #[serde(rename = "description")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+
+    #[serde(rename = "created_at")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+
+    #[serde(rename = "updated_at")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+
+    #[serde(rename = "deleted_at")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub deleted_at: Option<chrono::DateTime<chrono::Utc>>,
+
+    #[serde(rename = "metadata")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub metadata: Option<PackageVersionMetadata>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PackageVersionMetadata {
+    #[serde(rename = "package_type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub package_type: Option<String>,
+
+    #[serde(rename = "container")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub container: Option<ContainerMetadata>,
+
+    #[serde(rename = "docker")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub docker: Option<DockerMetadata>,
+
+}
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PackagesBillingUsage {
     /// Sum of the free and paid storage space (GB) for GitHuub Packages.
@@ -12096,6 +12683,70 @@ pub struct ParticipationStats {
     #[serde(rename = "owner")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub owner: Option<Vec<i32>>,
+
+}
+/// Details of a deployment that is waiting for protection rules to pass
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PendingDeployment {
+    #[serde(rename = "environment")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub environment: Option<PendingdeploymentEnvironment>,
+
+    /// The set duration of the wait timer
+    #[serde(rename = "wait_timer")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub wait_timer: Option<i64>,
+
+    /// The time that the wait timer began.
+    #[serde(rename = "wait_timer_started_at")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub wait_timer_started_at: Option<chrono::DateTime<chrono::Utc>>,
+
+    /// Whether the currently authenticated user can approve the deployment
+    #[serde(rename = "current_user_can_approve")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub current_user_can_approve: Option<bool>,
+
+    /// The people or teams that may approve jobs that reference the environment. You can list up to six users or teams as reviewers. The reviewers must have at least read access to the repository. Only one of the required reviewers needs to approve the job for it to proceed.
+    #[serde(rename = "reviewers")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub reviewers: Option<Vec<PendingdeploymentReviewers>>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PendingdeploymentEnvironment {
+    /// The id of the environment.
+    #[serde(rename = "id")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+
+    #[serde(rename = "node_id")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+
+    /// The name of the environment.
+    #[serde(rename = "name")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+
+    #[serde(rename = "url")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+
+    #[serde(rename = "html_url")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PendingdeploymentReviewers {
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<DeploymentReviewerType>,
+
+    #[serde(rename = "reviewer")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub reviewer: Option<Value>,
 
 }
 /// Porter Author
@@ -16228,6 +16879,18 @@ pub struct ReposownerrepocontentspathCommitter1 {
     pub email: Option<String>,
 
 }
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ReposownerrepoenvironmentsenvironmentNameReviewers {
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<DeploymentReviewerType>,
+
+    /// The id of the user or team who can review the deployment
+    #[serde(rename = "id")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+
+}
 /// Information about the author of the commit. By default, the `author` will be the authenticated user and the current date. See the `author` and `committer` object below for details.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepogitcommitsAuthor {
@@ -17358,8 +18021,8 @@ pub enum SecretScanningAlertState {
     RESOLVED,
 }
 
-impl ::std::fmt::Display for SecretScanningAlertState {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+impl Display for SecretScanningAlertState {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match *self { 
             SecretScanningAlertState::OPEN => write!(f, "{}", "open"),
             SecretScanningAlertState::RESOLVED => write!(f, "{}", "resolved"),
@@ -17367,7 +18030,7 @@ impl ::std::fmt::Display for SecretScanningAlertState {
     }
 }
 
-impl ::std::str::FromStr for SecretScanningAlertState {
+impl std::str::FromStr for SecretScanningAlertState {
     type Err = ();
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -17396,9 +18059,7 @@ pub struct PutActionsSetAllowedActionsRepository {
 
 }
 /// The API URL to use to get or set the actions that are allowed to run, when `allowed_actions` is set to `selected`.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct SelectedActionsUrl {
-}
+pub type SelectedActionsUrl = String;
 /// Short Blob
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ShortBlob {
@@ -19036,6 +19697,8 @@ pub struct ViewTraffic {
     pub views: Option<Vec<Traffic>>,
 
 }
+/// The amount of time to delay a job after the job is initially triggered. The time (in minutes) must be an integer between 0 and 43,200 (30 days).
+pub type WaitTimer = i32;
 /// Configuration object of the webhook
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WebhookConfig {
@@ -19057,21 +19720,13 @@ pub struct WebhookConfig {
 
 }
 /// The media type used to serialize the payloads. Supported values include `json` and `form`. The default is `form`.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct WebhookConfigContentType {
-}
+pub type WebhookConfigContentType = String;
 /// Determines whether the SSL certificate of the host for `url` will be verified when delivering payloads. Supported values include `0` (verification is performed) and `1` (verification is not performed). The default is `0`. **We strongly recommend not setting this to `1` as you are subject to man-in-the-middle and other attacks.**
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct WebhookConfigInsecureSsl {
-}
+pub type WebhookConfigInsecureSsl = String;
 /// If provided, the `secret` will be used as the `key` to generate the HMAC hex digest value for [delivery signature headers](https://docs.github.com/webhooks/event-payloads/#delivery-headers).
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct WebhookConfigSecret {
-}
+pub type WebhookConfigSecret = String;
 /// The URL to which the payloads will be delivered.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct WebhookConfigUrl {
-}
+pub type WebhookConfigUrl = String;
 /// A GitHub Actions workflow
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Workflow {
@@ -19120,8 +19775,25 @@ pub struct Workflow {
     pub deleted_at: Option<chrono::DateTime<chrono::Utc>>,
 
 }
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct WorkflowId {
+/// Enumeration of values.
+/// Since this enum's variants do not hold data, we can easily define them them as `#[repr(C)]`
+/// which helps with FFI.
+#[allow(non_camel_case_types)]
+#[repr(C)]
+#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize, Deserialize, Eq, Ord)]
+#[serde(untagged)]
+pub enum WorkflowId { 
+    Int(i32),
+    Str(String),
+}
+
+impl Display for WorkflowId {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        match self { 
+            WorkflowId::Int(value) => write!(f, "{}", value),
+            WorkflowId::Str(value) => write!(f, "{}", value),
+        }
+    }
 }
 /// An invocation of a workflow
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

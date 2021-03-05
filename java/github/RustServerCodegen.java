@@ -1,7 +1,21 @@
 package github;
 
+import static io.swagger.codegen.v3.generators.handlebars.ExtensionHelper.getBooleanValue;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.swagger.codegen.v3.CliOption;
-import io.swagger.codegen.v3.CodegenArgument;
 import io.swagger.codegen.v3.CodegenConstants;
 import io.swagger.codegen.v3.CodegenModel;
 import io.swagger.codegen.v3.CodegenOperation;
@@ -9,59 +23,35 @@ import io.swagger.codegen.v3.CodegenParameter;
 import io.swagger.codegen.v3.CodegenProperty;
 import io.swagger.codegen.v3.CodegenResponse;
 import io.swagger.codegen.v3.CodegenType;
-import io.swagger.codegen.v3.generators.DefaultCodegenConfig;
 import io.swagger.codegen.v3.SupportingFile;
-import io.swagger.codegen.v3.utils.URLPathUtil;
+import io.swagger.codegen.v3.generators.DefaultCodegenConfig;
 import io.swagger.codegen.v3.generators.util.OpenAPIUtil;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.BinarySchema;
 import io.swagger.v3.oas.models.media.BooleanSchema;
 import io.swagger.v3.oas.models.media.ComposedSchema;
-import io.swagger.v3.oas.models.media.IntegerSchema;
 import io.swagger.v3.oas.models.media.FileSchema;
+import io.swagger.v3.oas.models.media.IntegerSchema;
 import io.swagger.v3.oas.models.media.MapSchema;
 import io.swagger.v3.oas.models.media.NumberSchema;
-import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
-import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
+import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.parser.util.SchemaTypeUtil;
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
-import java.net.URL;
-
-import static io.swagger.codegen.v3.generators.handlebars.ExtensionHelper.getBooleanValue;
 
 public class RustServerCodegen extends DefaultCodegenConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(RustServerCodegen.class);
-
-    private HashMap<String, String> modelXmlNames = new HashMap<String, String>();
 
     private static final String NO_FORMAT = "%%NO_FORMAT";
 
     protected String apiVersion = "1.0.0";
     protected String projectName = "swagger-client";
-    protected String apiPath = "rust-client";
+    protected String apiPath = "src/endpoints";
     protected String packageName;
     protected String packageVersion;
     protected String externCrateName;
@@ -84,14 +74,14 @@ public class RustServerCodegen extends DefaultCodegenConfig {
          * for model, just put another entry in the `modelTemplateFiles` with a
          * different extension
          */
-        modelTemplateFiles.clear();
+        //modelTemplateFiles.put("models.mustache", ".rs");
 
         /*
          * Api classes. You can write classes for each Api file with the
          * apiTemplateFiles map. as with models, add multiple entries with different
          * extensions for multiple files per class
          */
-        apiTemplateFiles.clear();
+        apiTemplateFiles.put("api.mustache", ".rs");
 
         /*
          * Template Location. This is the location which templates will be read from.
@@ -161,9 +151,11 @@ public class RustServerCodegen extends DefaultCodegenConfig {
          * entire object tree available. If the input file has a suffix of `.mustache it
          * will be processed by the template engine. Otherwise, it will be copied
          */
+        //supportingFiles.clear();
         // supportingFiles.add(new SupportingFile("lib.mustache", "src", "lib.rs"));
         supportingFiles.add(new SupportingFile("models.mustache", "src", "models.rs"));
-        // supportingFiles.add(new SupportingFile("api.mustache", "src", "api.rs"));
+        supportingFiles.add(new SupportingFile("endpoints.mustache", "src/endpoints", "mod.rs"));
+        //supportingFiles.add(new SupportingFile("api.mustache", "src", "api.rs"));
         // supportingFiles.add(new SupportingFile("client.mustache", "src",
         // "client.rs"));
 
@@ -227,7 +219,7 @@ public class RustServerCodegen extends DefaultCodegenConfig {
         if (name.length() == 0) {
             return "default";
         }
-        return underscore(name);
+        return camelize(name);
     }
 
     /**
@@ -295,7 +287,7 @@ public class RustServerCodegen extends DefaultCodegenConfig {
         if (isReservedWord(sanitizedName) || sanitizedName.matches("^\\d.*")) {
             sanitizedName = escapeReservedWord(sanitizedName);
         }
-
+        
         return underscore(sanitizedName);
     }
 
@@ -308,7 +300,7 @@ public class RustServerCodegen extends DefaultCodegenConfig {
             operationId = "call_" + operationId;
         }
 
-        return camelize(operationId);
+        return underscore(camelize(operationId));
     }
 
     @Override
@@ -526,12 +518,6 @@ public class RustServerCodegen extends DefaultCodegenConfig {
                 // use consumes defined in the operation
                 consumes = super.getConsumesInfo(operation);
             }
-            // } else if (openapi != null && openapi.getConsumes() != null &&
-            // openapi.getConsumes().size() > 0) {
-            // // use consumes defined globally
-            // consumes = openapi.getConsumes();
-            // LOGGER.debug("No consumes defined in operation. Using global consumes (" +
-            // openapi.getConsumes() + ") for " + op.operationId);
         }
 
         boolean consumesPlainText = false;
@@ -564,12 +550,6 @@ public class RustServerCodegen extends DefaultCodegenConfig {
                 // use produces defined in the operation
                 produces = super.getProducesInfo(operation);
             }
-            // } else if (openapi != null && openapi.getProduces() != null &&
-            // openapi.getProduces().size() > 0) {
-            // // use produces defined globally
-            // produces = openapi.getProduces();
-            // LOGGER.debug("No produces defined in operation. Using global produces (" +
-            // openapi.getProduces() + ") for " + op.operationId);
         }
 
         boolean producesXml = false;
@@ -594,9 +574,6 @@ public class RustServerCodegen extends DefaultCodegenConfig {
         }
 
         if (op.bodyParam != null) {
-            if (paramHasXmlNamespace(op.bodyParam, definitions)) {
-                op.bodyParam.vendorExtensions.put("has_namespace", "true");
-            }
             for (String key : definitions.keySet()) {
                 op.bodyParam.vendorExtensions.put("model_key", key);
             }
@@ -614,10 +591,6 @@ public class RustServerCodegen extends DefaultCodegenConfig {
         }
         for (CodegenParameter param : op.bodyParams) {
             processParam(param, op);
-
-            if (paramHasXmlNamespace(param, definitions)) {
-                param.vendorExtensions.put("has_namespace", "true");
-            }
 
             param.vendorExtensions.put("uppercase_operation_id", underscore(op.operationId).toUpperCase());
 
@@ -643,6 +616,13 @@ public class RustServerCodegen extends DefaultCodegenConfig {
         }
         for (CodegenParameter param : op.formParams) {
             processParam(param, op);
+        }
+        for (CodegenParameter param : op.queryParams) {
+            processParam(param, op);
+            if (param.getDataType() != null && param.getDataType().equals("Bool")) {
+                param.dataType = "bool";
+                param.vendorExtensions.put(CodegenConstants.IS_BOOLEAN_EXT_NAME, "true");
+            }
         }
         for (CodegenResponse rsp : op.responses) {
             if (rsp.getMessage() != null) {
@@ -670,26 +650,6 @@ public class RustServerCodegen extends DefaultCodegenConfig {
                 } else {
                     rsp.vendorExtensions.put("producesJson", true);
                 }
-
-                // Check whether we're returning an object with a defined XML namespace.
-                // Schema property = rsp.schema;
-                // if ((property != null) && (property instanceof ComposedSchema)){
-
-                // ComposedSchema refProperty = (ComposedSchema) property;
-                // String refName = refProperty.get$ref();
-                // if (refName.indexOf("#/definitions/") == 0) {
-                // refName = refName.substring("#/definitions/".length());
-                // }
-
-                // Model model = definitions.get(refName);
-
-                // if ((model != null) && (model instanceof ModelImpl)) {
-                // Xml xml = ((ModelImpl) model).getXml();
-                // if ((xml != null) && (xml.getNamespace() != null)){
-                // rsp.vendorExtensions.put("has_namespace", "true");
-                // }
-                // }
-                // }
             }
             for (CodegenProperty header : rsp.headers) {
                 if (header.datatype.equals("uuid::Uuid")) {
@@ -712,25 +672,6 @@ public class RustServerCodegen extends DefaultCodegenConfig {
         return httpMethod + camelize(operationId);
     }
 
-    // @Override
-    // public CodegenParameter fromRequestBody(RequestBody body, String name, Schema
-    // schema, Map<String, Schema> schemas,
-    // Set<String> imports) {
-    // CodegenParameter param = super.fromRequestBody(body, name, schema, schemas,
-    // imports);
-
-    // if (body.getExtensions() != null) {
-    // Object operationName = body.getExtensions().get("x-codegen-operation-name");
-    // if (operationName != null && !operationName.toString().isEmpty() && name !=
-    // null) {
-    // Map<String, Object> extensions = param.getVendorExtensions();
-    // extensions.put("x-codegen-operation-name", operationName);
-    // }
-    // }
-
-    // return param;
-    // }
-
     @Override
     public boolean isDataTypeFile(final String dataType) {
         return dataType != null && dataType.equals(typeMapping.get("File").toString());
@@ -743,9 +684,6 @@ public class RustServerCodegen extends DefaultCodegenConfig {
             Schema inner = ap.getItems();
             String innerType = getTypeDeclaration(inner);
             StringBuilder typeDeclaration = new StringBuilder(typeMapping.get("array")).append("<");
-            if (inner instanceof ComposedSchema) {
-                // typeDeclaration.append("models::");
-            }
             typeDeclaration.append(innerType).append(">");
             return typeDeclaration.toString();
         } else if (p instanceof MapSchema) {
@@ -761,9 +699,6 @@ public class RustServerCodegen extends DefaultCodegenConfig {
                 }
                 StringBuilder typeDeclaration = new StringBuilder(typeMapping.get("map")).append("<")
                         .append(typeMapping.get("string")).append(", ");
-                if (inner instanceof ComposedSchema) {
-                    // typeDeclaration.append("models::");
-                }
                 typeDeclaration.append(innerType).append(">");
                 return typeDeclaration.toString();
             }
@@ -774,13 +709,13 @@ public class RustServerCodegen extends DefaultCodegenConfig {
                 datatype = r.get$ref();
                 if (r.getAllOf() != null && r.getAllOf().size() == 1) {
                     datatype = getTypeDeclaration(r.getAllOf().get(0));
-                    // datatype = toModelName(r.getAllOf().get(0));
                 } else if (r.getAllOf() != null) {
                     LOGGER.warn("Found more than one type in composed schema: " + p + ".");
                 }
             } catch (Exception e) {
                 LOGGER.warn("Error obtaining the datatype from RefProperty:" + p + ". Datatype default to Object");
-                datatype = "Object";
+                //datatype = "Object";
+                datatype = super.getTypeDeclaration(p);
                 LOGGER.error(e.getMessage(), e);
             }
             return datatype;
@@ -788,34 +723,6 @@ public class RustServerCodegen extends DefaultCodegenConfig {
             return typeMapping.get("File").toString();
         }
         return super.getTypeDeclaration(p);
-    }
-
-    @Override
-    public CodegenParameter fromParameter(Parameter param, Set<String> imports) {
-        CodegenParameter parameter = super.fromParameter(param, imports);
-        // BodyParameter bp = (BodyParameter) param;
-        // Model model = bp.getSchema();
-        // if (model instanceof RefModel) {
-        // String name = ((RefModel) model).getSimpleRef();
-        // name = toModelName(name);
-        //// We need to be able to look up the model in the model definitions later.
-        // parameter.vendorExtensions.put("uppercase_data_type", name.toUpperCase());
-
-        //// name = "models::" + getTypeDeclaration(name);
-        //// parameter.baseType = name;
-        //// parameter.dataType = name;
-
-        // String refName = ((RefModel) model).get$ref();
-        // if (refName.indexOf("#/definitions/") == 0) {
-        // refName = refName.substring("#/definitions/".length());
-        // }
-        // parameter.vendorExtensions.put("refName", refName);
-
-        // } else if (model instanceof ModelImpl) {
-        // parameter.vendorExtensions.put("refName", ((ModelImpl) model).getName());
-        // }
-        // }
-        return parameter;
     }
 
     @Override
@@ -903,76 +810,6 @@ public class RustServerCodegen extends DefaultCodegenConfig {
     public CodegenModel fromModel(String name, Schema schema, Map<String, Schema> allDefinitions) {
         CodegenModel mdl = super.fromModel(name, schema, allDefinitions);
         mdl.vendorExtensions.put("upperCaseName", name.toUpperCase());
-        // if (model instanceof ModelImpl) {
-        // ModelImpl modelImpl = (ModelImpl) model;
-        // mdl.dataType = typeMapping.get(modelImpl.getType());
-        // }
-        // if (model instanceof ArraySchema) {
-        // ArraySchema am = (ArraySchema) model;
-        // if ((am.getItems() != null) && (am.getItems().getXml() != null)) {
-
-        // // If this model's items require wrapping in xml, squirrel
-        // // away the xml name so we can insert it into the relevant model fields.
-        // // String xmlName = am.getItems().getXml().getName();
-        // // if (xmlName != null) {
-        // // mdl.vendorExtensions.put("itemXmlName", xmlName);
-        // // modelXmlNames.put("models::" + mdl.classname, xmlName);
-        // // }
-        // }
-        // mdl.arrayModelType = toModelName(mdl.arrayModelType);
-        // }
-
-        // if (mdl.xmlNamespace != null) {
-        // additionalProperties.put("usesXmlNamespaces", true);
-        // }
-
-        // if (schema instanceof ComposedSchema) {
-        // final ComposedSchema composed = (ComposedSchema) schema;
-        // Map<String, Schema> allProperties;
-        // List<String> allRequired;
-        // allProperties = null;
-        // allRequired = null;
-        // final String parentName = getParentName(composed);
-        // final Schema parent = StringUtils.isBlank(parentName) ? null :
-        // allDefinitions.get(parentName);
-        // final List<Schema> allOf = composed.getAllOf();
-        // // interfaces (intermediate models)
-        // LOGGER.info(" ::: " + name);
-        // if (allOf != null && !allOf.isEmpty()) {
-
-        // LOGGER.info(" ::: size " + allOf.size());
-        // for (int i = 0; i < allOf.size(); i++) {
-        // if (i == 0 && !copyFistAllOfProperties) {
-        // continue;
-        // }
-        // Schema interfaceSchema = allOf.get(i);
-        // LOGGER.info(" ::: interfaceSchema " + interfaceSchema.get$ref());
-        // if (StringUtils.isBlank(interfaceSchema.get$ref())) {
-        // continue;
-        // }
-        // Schema refSchema = null;
-        // String ref = OpenAPIUtil.getSimpleRef(interfaceSchema.get$ref());
-        // if (allDefinitions != null) {
-        // refSchema = allDefinitions.get(ref);
-        // }
-        // final String modelName = toModelName(ref);
-        // LOGGER.info(" ::: ref " + ref);
-        // // addImport(codegenModel, modelName);
-        // LOGGER.info(" ::: addImport " + modelName);
-        // LOGGER.info(" ::: allDefinitions " + (allDefinitions != null));
-        // LOGGER.info(" ::: refSchema " + (refSchema != null));
-        // if (allDefinitions != null && refSchema != null) {
-        // if (!supportsMixins) {
-        // LOGGER.info(" ::: addProperties ");
-        // // addProperties(properties, required, refSchema, allDefinitions);
-        // }
-        // if (supportsInheritance) {
-        // // addProperties(allProperties, allRequired, refSchema, allDefinitions);
-        // }
-        // }
-        // }
-        // }
-        // }
 
         return mdl;
     }
@@ -993,57 +830,7 @@ public class RustServerCodegen extends DefaultCodegenConfig {
             }
         }
 
-        // for (Map.Entry<String, CodegenModel> entry : allModels.entrySet()) {
-        // String modelName = entry.getKey();
-        // CodegenModel model = entry.getValue();
-
-        // for (CodegenProperty prop : model.vars) {
-        // String xmlName = modelXmlNames.get(prop.datatype);
-        // if (xmlName != null) {
-        // prop.vendorExtensions.put("itemXmlName", xmlName);
-        // }
-        // }
-        // }
-
         return newObjs;
-    }
-
-    @Override
-    public Map<String, Object> postProcessSupportingFileData(Map<String, Object> objs) {
-        // Swagger swagger = (Swagger)objs.get("swagger");
-        // if(swagger != null) {
-        // try {
-        // objs.put("swagger-yaml", Yaml.mapper().writeValueAsString(swagger));
-        // } catch (JsonProcessingException e) {
-        // LOGGER.error(e.getMessage(), e);
-        // }
-        // }
-
-        // We previously built a mapping from path to path ID and regular
-        // expression - see fromOperation for details. Sort it and add an
-        // index, and then add it to the objects that we're about to pass to
-        // the templates to process.
-        // List<Map.Entry<String, Map<String, String>>> pathSetEntryList = new
-        // ArrayList(pathSetMap.entrySet());
-        // Collections.sort(pathSetEntryList, new Comparator<Map.Entry<String,
-        // Map<String, String>>>() {
-        // public int compare(Map.Entry<String, Map<String, String>> a,
-        // Map.Entry<String, Map<String, String>> b) {
-        // return a.getValue().get("path").compareTo(b.getValue().get("path"));
-        // }
-        // });
-        // List pathSet = new ArrayList<Map<String, String>>();
-        // int index = 0;
-        // for (Map.Entry<String, Map<String, String>> pathSetEntry : pathSetEntryList)
-        // {
-        // Map<String, String> pathSetEntryValue = pathSetEntry.getValue();
-        // pathSetEntryValue.put("index", Integer.toString(index));
-        // index++;
-        // pathSet.add(pathSetEntryValue);
-        // }
-        // objs.put("pathSet", pathSet);
-
-        return super.postProcessSupportingFileData(objs);
     }
 
     @Override
@@ -1132,28 +919,6 @@ public class RustServerCodegen extends DefaultCodegenConfig {
                     // property.dataFormat);
                     property.datatype = matchingIntType(unsigned, inclusiveMinimum, inclusiveMaximum);
                 }
-                // switch (property.dataFormat == null ? NO_FORMAT : property.dataFormat) {
-                // // standard swagger formats
-                // case "int32":
-                // property.datatype = unsigned ? "u32" : "i32";
-                // break;
-
-                // case "int64":
-                // property.datatype = unsigned ? "u64" : "i64";
-                // break;
-
-                // case NO_FORMAT:
-                // property.datatype = matchingIntType(unsigned, inclusiveMinimum,
-                // inclusiveMaximum);
-                // break;
-
-                // default:
-                // // unknown format
-                // LOGGER.warn("The integer format '{}' is not recognized and will be ignored.",
-                // property.dataFormat);
-                // property.datatype = matchingIntType(unsigned, inclusiveMinimum,
-                // inclusiveMaximum);
-                // }
             }
         }
 
@@ -1210,25 +975,6 @@ public class RustServerCodegen extends DefaultCodegenConfig {
         return super.postProcessModelsEnum(objs);
 
     }
-
-    private boolean paramHasXmlNamespace(CodegenParameter param, Map<String, Schema> definitions) {
-        return false;
-        // Object refName = param.vendorExtensions.get("refName");
-
-        // if ((refName != null) && (refName instanceof String)) {
-        // String name = (String) refName;
-        // Model model = definitions.get(name);
-
-        // if ((model != null) && (model instanceof ModelImpl)) {
-        // Xml xml = ((ModelImpl) model).getXml();
-        // if ((xml != null) && (xml.getNamespace() != null)) {
-        // return true;
-        // }
-        // }
-        // }
-        // return false;
-    }
-
     private void processParam(CodegenParameter param, CodegenOperation op) {
         String example = null;
 
@@ -1301,5 +1047,89 @@ public class RustServerCodegen extends DefaultCodegenConfig {
     @Override
     public String getDefaultTemplateDir() {
         return "rust";
+    }
+
+    //@Override
+    public CodegenResponse fromResponse(String responseCode, ApiResponse response) {
+        CodegenResponse res = super.fromResponse(responseCode, response);
+        String dataType = res.getDataType();
+        if (dataType != null) {
+            Schema p = (Schema) res.getSchema();
+            if (p instanceof ArraySchema) {
+                ArraySchema ap = (ArraySchema) p;
+                Schema inner = ap.getItems();
+                if (inner instanceof Schema) {
+                    String schemaType = getSchemaType((Schema) inner);
+                    String innerType;
+                    if (!typeMapping.containsKey(schemaType)) {
+                        innerType = toModelName(getTypeDeclaration((Schema) inner));
+                    } else {
+                        innerType = getTypeDeclaration((Schema) inner);
+                    }
+                    StringBuilder typeDeclaration = new StringBuilder(typeMapping.get("array")).append("<");
+                    typeDeclaration.append(innerType).append(">");
+                    res.dataType = typeDeclaration.toString();
+                }
+                //String innerType = getTypeDeclaration(inner);
+                //StringBuilder typeDeclaration = new StringBuilder(typeMapping.get("array")).append("<");
+                //typeDeclaration.append(innerType).append(">");
+                //res.dataType = typeDeclaration.toString();
+            } else if (p instanceof MapSchema) {
+                MapSchema mp = (MapSchema) p;
+                Object inner = mp.getAdditionalProperties();
+                if (inner instanceof Schema) {
+                    String schemaType = getSchemaType((Schema) inner);
+                    String innerType;
+                    if (!typeMapping.containsKey(schemaType)) {
+                        innerType = toModelName(getTypeDeclaration((Schema) inner));
+                    } else {
+                        innerType = getTypeDeclaration((Schema) inner);
+                    }
+                    StringBuilder typeDeclaration = new StringBuilder(typeMapping.get("map")).append("<")
+                            .append(typeMapping.get("string")).append(", ");
+                    typeDeclaration.append(innerType).append(">");
+                    res.dataType = typeDeclaration.toString();
+                }
+            } else {
+                res.dataType = camelize(dataType);
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public Map<String, Object> postProcessOperations(Map<String, Object> objs) {
+        objs = super.postProcessOperations(objs);
+        Map<String, Object> operations = (Map<String, Object>) objs.get("operations");
+        if (operations != null) {
+            List<CodegenOperation> ops = (List<CodegenOperation>) operations.get("operation");
+            for (final CodegenOperation operation : ops) {
+                String path = operation.getPath();
+                if (path != null) {
+                    operation.path = path.replaceAll("\\{[^\\}]*\\}", "{}");
+                }
+            }
+        }
+        return objs;
+    }
+    
+    @Override
+    public CodegenParameter fromParameter(Parameter parameter, Set<String> imports) {
+        CodegenParameter codegenParameter = super.fromParameter(parameter, imports);
+        Schema parameterSchema = parameter.getSchema();
+        if (parameterSchema == null) {
+            parameterSchema = getSchemaFromParameter(parameter);
+        }
+        if (parameterSchema != null) {
+            String collectionFormat = null;
+            if (parameterSchema instanceof ArraySchema) { // for array parameter
+            } else if (parameterSchema instanceof MapSchema) { // for map
+            } else if (parameterSchema instanceof FileSchema || parameterSchema instanceof BinarySchema) {
+            } else if (parameterSchema instanceof IntegerSchema) {
+            } else {
+                codegenParameter.dataType = camelize(codegenParameter.dataType);
+            }
+        }
+        return codegenParameter;
     }
 }
