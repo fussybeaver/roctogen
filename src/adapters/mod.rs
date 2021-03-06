@@ -1,7 +1,3 @@
-use http::header::AUTHORIZATION;
-use http::request::Request;
-use http::response::Response;
-
 use serde::de::DeserializeOwned;
 use serde::Deserialize;
 
@@ -10,59 +6,43 @@ use crate::auth::Auth;
 #[cfg(feature = "isahc")]
 pub mod isahc;
 
-type Error = Box<dyn std::error::Error + 'static>;
+#[cfg(feature = "isahc")]
+pub use self::isahc::AdapterError;
 
-#[cfg(not(feature = "isahc"))]
-impl<T, A, E> RequestAdapter<T, E> for Request<A>
-where
-    T: for<'de> Deserialize<'de>,
-    E: for<'de> Deserialize<'de> + std::error::Error,
-{
-    fn retrieve(self) -> Result<T, Error> {
-        unimplemented!();
-    }
-}
+#[cfg(feature = "isahc")]
+pub(crate) use self::isahc::fetch;
 
-pub trait RequestAdapter<T, E>
-where
-    T: for<'de> Deserialize<'de>,
-    E: for<'de> Deserialize<'de> + std::error::Error,
-{
-    fn retrieve(self) -> Result<T, Error>;
-}
+#[cfg(target_arch = "wasm32")]
+pub mod wasm;
 
-pub trait StatusExt<T>
-where Self: Sized, 
-        T: std::io::Read,
-{
-        fn resolve(status: http::StatusCode, res: &mut Response<T>) -> Result<Self, serde_json::Error>;
-    //type Error;
-    //fn resolve(self, res: &mut Response<T>) -> Result<Self::Error, serde_json::Error>;
-}
+#[cfg(target_arch = "wasm32")]
+pub(crate) use wasm::fetch_async;
 
-pub trait Json<A>
+#[cfg(target_arch = "wasm32")]
+pub use wasm::AdapterError;
+
+pub(crate) trait Json<A>
 where
     A: for<'de> Deserialize<'de>,
 {
-    fn to_json(&mut self) -> Result<A, serde_json::Error>;
+    fn to_json(self) -> Result<A, serde_json::Error>;
 }
 
-pub trait RequestBuilderExt {
-    fn authenticate(self, auth: &Auth) -> Self;
+pub(crate) struct GitHubRequest {
+    pub uri: String,
+    pub method: &'static str,
+    pub body: (),
 }
 
-impl RequestBuilderExt for http::request::Builder {
-    fn authenticate(self, auth: &Auth) -> Self {
-        match auth {
-            Auth::Basic { user, pass } => {
-                let creds = format!("{}:{}", user, pass);
-                self.header(
-                    AUTHORIZATION,
-                    format!("Basic {}", base64::encode(creds.as_bytes())),
-                )
-            }
-            Auth::OAuth { token } => self.header(AUTHORIZATION, format!("token {}", token)),
-            Auth::None => self,
-        }
-    }
+pub(crate) trait GitHubRequestBuilder
+where
+    Self: Sized,
+{
+    fn build(req: GitHubRequest, auth: &Auth) -> Result<Self, AdapterError>;
 }
+
+pub(crate) trait GitHubResponseExt {
+    fn is_success(&self) -> bool;
+    fn status_code(&self) -> u16;
+}
+
