@@ -3,7 +3,7 @@ use {
     wasm_bindgen_test::*,
 };
 
-use roctogen::api::repos;
+use roctogen::api::{self, repos};
 use roctogen::auth::Auth;
 
 #[cfg(target_arch = "wasm32")]
@@ -22,24 +22,13 @@ macro_rules! log {
 async fn simple_fail() {
 
     let auth = Auth::None;
-    /*
+
     let per_page = api::PerPage::new(10);
     
-    let params: repos::ReposListForUserParamsBuilder = per_page.into();
-    params.sort("created").direction("asc");
-    */
-
-    let params = repos::ReposListForUserParams{
-        _type: None,
-        sort: None,
-        direction: None,
-        per_page: None,
-        page: None
-    };
-    let req = repos::new(&auth).list_for_user("this-user-does-not-exist", params).await;
+    let req = repos::new(&auth).list_commits_async("this-user-does-not-exist", "bollard", Some(&per_page)).await;
     match &req {
         Ok(_) => {},
-        Err(repos::ReposListForOrgsError::Status404(e)) => {
+        Err(repos::ReposListCommitsError::Status404(e)) => {
             log!("{}", e.message.as_ref().unwrap());
         }
         Err(_) => {
@@ -55,24 +44,13 @@ async fn simple_fail() {
 fn simple_fail() {
 
     let auth = Auth::None;
-    /*
-    let per_page = api::PerPage::new(10);
-    
-    let params: repos::ReposListForUserParamsBuilder = per_page.into();
-    params.sort("created").direction("asc");
-    */
 
-    let params = repos::ReposListForUserParams{
-        _type: None,
-        sort: None,
-        direction: None,
-        per_page: None,
-        page: None
-    };
-    let req = repos::new(&auth).list_for_user("this-user-does-not-exist", params);
+    let per_page = api::PerPage::new(10);
+
+    let req = repos::new(&auth).list_commits("this-user-does-not-exist", "bollard", Some(&per_page));
     match &req {
         Ok(_) => {},
-        Err(repos::ReposListForOrgsError::Status404(e)) => {
+        Err(repos::ReposListCommitsError::Status404(e)) => {
             println!("{}", e.message.as_ref().unwrap());
         }
         Err(_) => {
@@ -88,21 +66,12 @@ fn simple_fail() {
 async fn simple_ok() {
 
     let auth = Auth::None;
-    /*
     let per_page = api::PerPage::new(10);
     
-    let params: repos::ReposListForUserParamsBuilder = per_page.into();
-    params.sort("created").direction("asc");
-    */
+    let mut params: repos::ReposListCommitsParams = per_page.as_ref().into();
+    params.author("fussybeaver").page(2);
 
-    let params = repos::ReposListForUserParams{
-        _type: None,
-        sort: None,
-        direction: None,
-        per_page: None,
-        page: None
-    };
-    let req = repos::new(&auth).list_for_user("fussybeaver", params).await;
+    let req = repos::new(&auth).list_commits_async("fussybeaver", "bollard", Some(params)).await;
     match req {
         Ok(ref repos) => {
             assert!(!&repos.is_empty());
@@ -118,21 +87,12 @@ async fn simple_ok() {
 fn simple_ok() {
 
     let auth = Auth::None;
-    /*
     let per_page = api::PerPage::new(10);
     
-    let params: repos::ReposListForUserParamsBuilder = per_page.into();
-    params.sort("created").direction("asc");
-    */
+    let mut params: repos::ReposListCommitsParams = per_page.as_ref().into();
+    params.author("fussybeaver").page(2);
 
-    let params = repos::ReposListForUserParams{
-        _type: None,
-        sort: None,
-        direction: None,
-        per_page: None,
-        page: None
-    };
-    let req = repos::new(&auth).list_for_user("fussybeaver", params);
+    let req = repos::new(&auth).list_commits("fussybeaver", "bollard", Some(params));
     match req {
         Ok(ref repos) => {
             assert!(!&repos.is_empty());

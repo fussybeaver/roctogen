@@ -10,7 +10,10 @@ pub mod isahc;
 pub use self::isahc::AdapterError;
 
 #[cfg(feature = "isahc")]
-pub(crate) use self::isahc::fetch;
+pub(crate) use {
+    self::isahc::fetch,
+    self::isahc::fetch_async
+};
 
 #[cfg(target_arch = "wasm32")]
 pub mod wasm;

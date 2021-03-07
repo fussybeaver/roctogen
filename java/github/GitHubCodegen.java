@@ -263,6 +263,29 @@ public class GitHubCodegen extends RustServerCodegen {
                 if (!hasDefaultResponse) {
                     operation.getVendorExtensions().put("x-codegen-response-empty-default", "true");
                 }
+                List<CodegenParameter> queryParams = operation.queryParams;
+                Boolean hasPerPage = false;
+                Boolean hasPage = false;
+                Boolean hasOptionalQueryParams = true;
+                for (final CodegenParameter param : queryParams) {
+                    if (param.getParamName().equals("per_page")) {
+                        hasPerPage = true;
+                        param.dataType = "u16";
+                    }
+                    if (param.getParamName().equals("page")) {
+                        hasPage = true;
+                        param.dataType = "u16";
+                    }
+                    if (param.getRequired()) {
+                        hasOptionalQueryParams = false;
+                    }
+                }
+                if (hasPerPage && hasPage) {
+                    operation.getVendorExtensions().put("x-codegen-impl-per-page", "true");
+                }
+                if (hasOptionalQueryParams) {
+                    operation.getVendorExtensions().put("x-codegen-has-optional-query-params", "true");
+                }
             }
         }
         return objs;

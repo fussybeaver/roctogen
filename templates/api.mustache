@@ -1,15 +1,14 @@
 {{>partial_header}}
 
-use http::header::{ACCEPT, CONTENT_TYPE};
-use http::request::Request;
-use http::response::Response;
+use serde::Deserialize;
 
-use std::collections::HashMap;
-
+use crate::adapters::{AdapterError, Json, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
 use crate::models::*;
-use crate::adapters::{Json, RequestAdapter, RequestBuilderExt, StatusExt};
 
+use super::PerPage;
+
+use std::collections::HashMap;
 use serde_json::value::Value;
 
 pub struct {{classname}}<'api> {
@@ -21,83 +20,153 @@ pub fn new(auth: &Auth) -> {{classname}} {
 }
 
 {{#operations}}{{#operation}}{{#contents}}
-#[derive(Debug, Deserialize)]
+#[derive(Debug, thiserror::Error)]
 pub enum {{classname}}{{operationIdCamelCase}}Error {
-{{#responses}}{{#vendorExtensions}}{{^x-is-default}}
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+{{#responses}}{{^vendorExtensions.x-is-default}}
+    #[error("{{message}}")]
     Status{{code}}{{#dataType}}({{{.}}}){{/dataType}},
-{{/x-is-default}}{{/vendorExtensions}}{{/responses}}
+{{/vendorExtensions.x-is-default}}{{/responses}}
+    #[error("Status code: {}", code)]
     Generic { code: u16 },
-}
-
-impl<T> StatusExt<T> for {{classname}}{{operationIdCamelCase}}Error
-    where T: std::io::Read
-{
-    fn resolve(
-        status: http::StatusCode,
-        res: &mut Response<T>,
-    ) -> Result<Self, serde_json::Error> {
-        match status.as_u16() {
-{{#responses}}{{#vendorExtensions}}{{^x-is-default}}
-            {{code}} => {
-                {{#dataType}}
-                let e: {{{.}}} = res.to_json()?;
-                Ok({{classname}}{{operationIdCamelCase}}Error::Status{{code}}(e))
-                {{/dataType}}
-                {{^dataType}}
-                Ok({{classname}}{{operationIdCamelCase}}Error::Status{{code}})
-                {{/dataType}}
-            }
-{{/x-is-default}}{{/vendorExtensions}}{{/responses}}
-            code => Ok({{classname}}{{operationIdCamelCase}}Error::Generic { code }),
-        }
-    }
-}
-
-impl std::error::Error for {{classname}}{{operationIdCamelCase}}Error {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        None
-    }
-}
-
-impl std::fmt::Display for {{classname}}{{operationIdCamelCase}}Error {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-{{#responses}}{{#vendorExtensions}}{{^x-is-default}}
-            {{classname}}{{operationIdCamelCase}}Error::Status{{code}}{{#dataType}}(_){{/dataType}} => write!(f, "{{message}}"),
-{{/x-is-default}}{{/vendorExtensions}}{{/responses}}
-            {{classname}}{{operationIdCamelCase}}Error::Generic{ code } => write!(f, "Status code: {}", code),
-        }
-    }
 }
 
 {{/contents}}{{/operation}}
 
 {{#operation}}{{#contents}}{{#hasQueryParams}}
+#[derive(Default, Serialize)]
 pub struct {{classname}}{{operationIdCamelCase}}Params {
     {{#queryParams}}
     pub {{paramName}}: {{^required}}Option<{{#isString}}String{{/isString}}{{#isUuid}}String{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/required}}{{#required}}{{#isString}}String{{/isString}}{{#isUuid}}String{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/required}}{{#hasMore}}, {{/hasMore}}
     {{/queryParams}}
 }
+
+impl {{classname}}{{operationIdCamelCase}}Params {
+    pub fn new() -> Self {
+        Self::default()
+    }
+    {{#queryParams}}
+
+    pub fn {{paramName}}(&mut self, {{paramName}}: {{#isString}}impl Into<String>{{/isString}}{{#isUuid}}impl Into<String>{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}) -> &mut Self {
+        self.{{paramName}} = {{^required}}Some({{/required}}{{paramName}}{{#isString}}.into(){{/isString}}{{#isUuid}}.into(){{/isUuid}}{{^required}}){{/required}};
+        self
+    }
+    {{/queryParams}}
+}
+
+{{#vendorExtensions.x-codegen-impl-per-page}}
+impl<'enc> From<&'enc PerPage> for {{classname}}{{operationIdCamelCase}}Params {
+    fn from(per_page: &'enc PerPage) -> Self {
+        let mut this = Self::new();
+        this.per_page(per_page.per_page);
+        this.page(per_page.page);
+        this
+    }
+}
+{{/vendorExtensions.x-codegen-impl-per-page}}
 {{/hasQueryParams}}
 {{/contents}}{{/operation}}
 
 impl {{classname}}<'_> {
 {{#operation}}{{#contents}}
-    pub fn {{operationId}}(&self, {{#pathParams}}{{paramName}}: {{#nullable}}Option<{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/nullable}}{{^nullable}}{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/nullable}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}query_params: {{classname}}{{operationIdCamelCase}}Params{{#hasBodyParam}}, {{/hasBodyParam}}{{/hasQueryParams}}{{#hasBodyParam}}{{^hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}{{/hasQueryParams}}body: {{#bodyParam}}{{{dataType}}}{{/bodyParam}}{{/hasBodyParam}}) -> Result<impl RequestAdapter<{{#responses}}{{#vendorExtensions}}{{#x-is-default}}{{{dataType}}}{{/x-is-default}}{{/vendorExtensions}}{{/responses}}{{#vendorExtensions}}{{#x-codegen-response-empty-default}}(){{/x-codegen-response-empty-default}}{{/vendorExtensions}}, {{classname}}{{operationIdCamelCase}}Error>, http::Error> {
-       env_logger::init();
+    pub async fn {{operationId}}_async(&self, {{#pathParams}}{{paramName}}: {{#nullable}}Option<{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/nullable}}{{^nullable}}{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/nullable}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}query_params: {{#vendorExtensions.x-codegen-has-optional-query-params}}Option<{{/vendorExtensions.x-codegen-has-optional-query-params}}impl Into<{{classname}}{{operationIdCamelCase}}Params>{{#vendorExtensions.x-codegen-has-optional-query-params}}>{{/vendorExtensions.x-codegen-has-optional-query-params}}{{#hasBodyParam}}, {{/hasBodyParam}}{{/hasQueryParams}}{{#hasBodyParam}}{{^hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}{{/hasQueryParams}}body: {{#bodyParam}}{{{dataType}}}{{/bodyParam}}{{/hasBodyParam}}) -> Result<{{#responses}}{{#vendorExtensions.x-is-default}}{{{dataType}}}{{/vendorExtensions.x-is-default}}{{/responses}}{{#vendorExtensions.x-codegen-response-empty-default}}(){{/vendorExtensions.x-codegen-response-empty-default}}, {{classname}}{{operationIdCamelCase}}Error> {
 
-       let mut builder = Request::builder();
-       let request_uri = format!("{}{{path}}", super::GITHUB_BASE_API_URL{{#hasPathParams}}, {{/hasPathParams}}{{#pathParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}});
-       debug!("build request uri ({:?})", &request_uri);
+        let {{#hasQueryParams}}mut {{/hasQueryParams}}request_uri = format!("{}{{path}}", super::GITHUB_BASE_API_URL{{#hasPathParams}}, {{/hasPathParams}}{{#pathParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}});
 
-       builder = builder
-           .uri(request_uri)
-           .header(ACCEPT, "application/vnd.github.v3+json")
-           .header(CONTENT_TYPE, "application/json");
+        {{#hasQueryParams}}
+        {{#vendorExtensions.x-codegen-has-optional-query-params}}
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: {{classname}}{{operationIdCamelCase}}Params = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+        {{/vendorExtensions.x-codegen-has-optional-query-params}}
+        {{^vendorExtensions.x-codegen-has-optional-query-params}}
+        request_uri.push_str("?");
+        let qp: {{classname}}{{operationIdCamelCase}}Params = query_params.into();
+        request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        {{/vendorExtensions.x-codegen-has-optional-query-params}}
+        {{/hasQueryParams}}
 
-       builder = builder.authenticate(&self.auth);
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: (),
+            method: "{{httpMethod}}"
+        };
 
-       Ok(builder.body(())?)
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+{{#responses}}{{#vendorExtensions}}{{^x-is-default}}
+                {{code}} => {{#dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}(github_response.to_json()?)){{/dataType}}{{^dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}){{/dataType}},
+{{/x-is-default}}{{/vendorExtensions}}{{/responses}}
+                code => Err({{classname}}{{operationIdCamelCase}}Error::Generic { code }),
+            }
+        }
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn {{operationId}}(&self, {{#pathParams}}{{paramName}}: {{#nullable}}Option<{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/nullable}}{{^nullable}}{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/nullable}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}query_params: {{#vendorExtensions.x-codegen-has-optional-query-params}}Option<{{/vendorExtensions.x-codegen-has-optional-query-params}}impl Into<{{classname}}{{operationIdCamelCase}}Params>{{#vendorExtensions.x-codegen-has-optional-query-params}}>{{/vendorExtensions.x-codegen-has-optional-query-params}}{{#hasBodyParam}}, {{/hasBodyParam}}{{/hasQueryParams}}{{#hasBodyParam}}{{^hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}{{/hasQueryParams}}body: {{#bodyParam}}{{{dataType}}}{{/bodyParam}}{{/hasBodyParam}}) -> Result<{{#responses}}{{#vendorExtensions.x-is-default}}{{{dataType}}}{{/vendorExtensions.x-is-default}}{{/responses}}{{#vendorExtensions.x-codegen-response-empty-default}}(){{/vendorExtensions.x-codegen-response-empty-default}}, {{classname}}{{operationIdCamelCase}}Error> {
+
+        let {{#hasQueryParams}}mut {{/hasQueryParams}}request_uri = format!("{}{{path}}", super::GITHUB_BASE_API_URL{{#hasPathParams}}, {{/hasPathParams}}{{#pathParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}});
+
+        {{#hasQueryParams}}
+        {{#vendorExtensions.x-codegen-has-optional-query-params}}
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: {{classname}}{{operationIdCamelCase}}Params = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+        {{/vendorExtensions.x-codegen-has-optional-query-params}}
+        {{^vendorExtensions.x-codegen-has-optional-query-params}}
+        request_uri.push_str("?");
+        let qp: {{classname}}{{operationIdCamelCase}}Params = query_params.into();
+        request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        {{/vendorExtensions.x-codegen-has-optional-query-params}}
+        {{/hasQueryParams}}
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: (),
+            method: "{{httpMethod}}"
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+{{#responses}}{{#vendorExtensions}}{{^x-is-default}}
+                {{code}} => {{#dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}(github_response.to_json()?)){{/dataType}}{{^dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}){{/dataType}},
+{{/x-is-default}}{{/vendorExtensions}}{{/responses}}
+                code => Err({{classname}}{{operationIdCamelCase}}Error::Generic { code }),
+            }
+        }
     }
 
 {{/contents}}{{/operation}}{{/operations}}

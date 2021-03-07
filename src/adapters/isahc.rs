@@ -8,7 +8,6 @@ use isahc::Body;
 use isahc::RequestExt;
 
 use crate::auth::Auth;
-//use super::{Json, GitHubRequest, GitHubRequestBuilder, RequestAdapter, RequestBuilderExt, StatusExt};
 use super::{Json, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 
 use serde::Deserialize;
@@ -23,6 +22,10 @@ pub enum AdapterError {
 
 pub(crate) fn fetch(request: Request<()>) -> Result<Response<Body>, AdapterError> {
     Ok(request.send()?)
+}
+
+pub(crate) async fn fetch_async(request: Request<()>) -> Result<Response<Body>, AdapterError> {
+    unimplemented!()
 }
 
 impl<T: std::io::Read> GitHubResponseExt for Response<T> {
@@ -49,8 +52,6 @@ impl GitHubRequestBuilder for Request<()>
 {
     fn build(req: GitHubRequest, auth: &Auth) -> Result<Self, AdapterError> {
         let mut builder = http::Request::builder();
-
-        debug!("build request uri ({:?})", &req.uri);
 
         builder = builder
             .uri(req.uri)

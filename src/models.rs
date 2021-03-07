@@ -2208,7 +2208,7 @@ pub struct PatchEnterpriseAdminUpdateAttributeForEnterpriseGroup {
     /// Array of [SCIM operations](https://tools.ietf.org/html/rfc7644#section-3.5.2).
     #[serde(rename = "Operations")]
     #[serde(skip_serializing_if="Option::is_none")]
-    pub operations: Option<Vec<Value>>,
+    pub operations: Option<Vec<Scimv2enterprisesenterpriseGroupsscimGroupIdOperations>>,
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -2661,7 +2661,7 @@ pub struct PostReposCreateForAuthenticatedUser {
     #[serde(skip_serializing_if="Option::is_none")]
     pub homepage: Option<String>,
 
-    /// Whether the repository is private or public.
+    /// Whether the repository is private.
     #[serde(rename = "private")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub private: Option<bool>,
@@ -3168,12 +3168,12 @@ pub struct PostReposCreateInOrg {
     #[serde(skip_serializing_if="Option::is_none")]
     pub homepage: Option<String>,
 
-    /// Either `true` to create a private repository or `false` to create a public one.
+    /// Whether the repository is private.
     #[serde(rename = "private")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub private: Option<bool>,
 
-    /// Can be `public` or `private`. If your organization is associated with an enterprise account using GitHub Enterprise Cloud or GitHub Enterprise Server 2.20+, `visibility` can also be `internal`. For more information, see \"[Creating an internal repository](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/about-repository-visibility#about-internal-repositories)\" in the GitHub Help documentation.   The `visibility` parameter overrides the `private` parameter when you use both parameters with the `nebula-preview` preview header.
+    /// Can be `public` or `private`. If your organization is associated with an enterprise account using GitHub Enterprise Cloud or GitHub Enterprise Server 2.20+, `visibility` can also be `internal`. Note: For GitHub Enterprise Server and GitHub AE, this endpoint will only list repositories available to all users on the enterprise. For more information, see \"[Creating an internal repository](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/about-repository-visibility#about-internal-repositories)\" in the GitHub Help documentation.   The `visibility` parameter overrides the `private` parameter when you use both parameters with the `nebula-preview` preview header.
     #[serde(rename = "visibility")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub visibility: Option<String>,
@@ -3498,12 +3498,12 @@ pub struct PostAppsScopeToken {
     #[serde(skip_serializing_if="Option::is_none")]
     pub target_id: Option<i64>,
 
-    /// The list of repository IDs to scope the user-to-server access token to. `repositories` may not be specified if `repository_ids` is specified.
+    /// The list of repository names to scope the user-to-server access token to. `repositories` may not be specified if `repository_ids` is specified.
     #[serde(rename = "repositories")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub repositories: Option<Vec<String>>,
 
-    /// The list of repository names to scope the user-to-server access token to. `repository_ids` may not be specified if `repositories` is specified.
+    /// The list of repository IDs to scope the user-to-server access token to. `repository_ids` may not be specified if `repositories` is specified.
     #[serde(rename = "repository_ids")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub repository_ids: Option<Vec<i32>>,
@@ -17799,6 +17799,21 @@ pub struct Scimv2enterprisesenterpriseGroupsMembers {
     #[serde(rename = "value")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub value: Option<String>,
+
+}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Scimv2enterprisesenterpriseGroupsscimGroupIdOperations {
+    #[serde(rename = "op")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub op: Option<String>,
+
+    #[serde(rename = "path")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub path: Option<String>,
+
+    #[serde(rename = "value")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub value: Option<Value>,
 
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
