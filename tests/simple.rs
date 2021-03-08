@@ -5,6 +5,7 @@ use {
 
 use roctogen::api::{self, repos};
 use roctogen::auth::Auth;
+use roctogen::models;
 
 #[cfg(target_arch = "wasm32")]
 wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
@@ -19,7 +20,7 @@ macro_rules! log {
 
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen_test]
-async fn simple_fail() {
+async fn get_wasm_fail() {
 
     let auth = Auth::None;
 
@@ -41,7 +42,7 @@ async fn simple_fail() {
 
 #[cfg(target_arch = "x86_64")]
 #[test]
-fn simple_fail() {
+fn get_sync_fail() {
 
     let auth = Auth::None;
 
@@ -63,7 +64,7 @@ fn simple_fail() {
 
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen_test]
-async fn simple_ok() {
+async fn get_wasm_ok() {
 
     let auth = Auth::None;
     let per_page = api::PerPage::new(10);
@@ -84,7 +85,7 @@ async fn simple_ok() {
 
 #[cfg(target_arch = "x86_64")]
 #[test]
-fn simple_ok() {
+fn get_sync_ok() {
 
     let auth = Auth::None;
     let per_page = api::PerPage::new(10);
@@ -101,4 +102,51 @@ fn simple_ok() {
     };
 
     assert!(req.is_ok());
+}
+
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen_test]
+async fn post_wasm_fail() {
+
+    let auth = Auth::None;
+
+    let body = models::PostReposAddUserAccessRestrictions {
+        users: Some(vec!["fussybeaver".to_string()])
+    };
+
+    let req = repos::new(&auth).add_user_access_restrictions_async("fussybeaver", "bollard", "master", body).await;
+    match &req {
+        Ok(_) => {},
+        Err(repos::ReposAddUserAccessRestrictionsError::Generic { code }) => {
+            assert_eq!(404, *code);
+        }
+        Err(_) => {
+            assert!(false);
+        }
+    };
+
+    assert!(req.is_err());
+}
+
+#[cfg(target_arch = "x86_64")]
+#[test]
+fn post_sync_fail() {
+    let auth = Auth::None;
+
+    let body = models::PostReposAddUserAccessRestrictions {
+        users: Some(vec!["fussybeaver".to_string()])
+    };
+
+    let req = repos::new(&auth).add_user_access_restrictions("fussybeaver", "bollard", "master", body);
+    match &req {
+        Ok(_) => {},
+        Err(repos::ReposAddUserAccessRestrictionsError::Generic { code }) => {
+            assert_eq!(404, *code);
+        }
+        Err(_) => {
+            assert!(false);
+        }
+    };
+
+    assert!(req.is_err());
 }

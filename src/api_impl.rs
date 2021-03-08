@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, Json};
+use crate::adapters::{AdapterError, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, Json, FromJson};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -117,6 +117,22 @@ pub mod repos {
         }
     }
 
+    #[derive(Debug, thiserror::Error)]
+    pub enum ReposAddUserAccessRestrictionsError {
+        #[error(transparent)]
+        AdapterError(#[from] AdapterError),
+        #[error(transparent)]
+        SerdeJson(#[from] serde_json::Error),
+        #[error(transparent)]
+        SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+        // -- endpoint errors
+        #[error("Validation Failed")]
+        Status422(ValidationError),
+        #[error("Status code: {}", code)]
+        Generic { code: u16 },
+    }
+
     impl<'api> Repos<'api> {
         pub async fn list_commits_async(
             &self,
@@ -138,7 +154,7 @@ pub mod repos {
 
             let req = GitHubRequest {
                 uri: request_uri,
-                body: (),
+                body: None,
                 method: "GET",
             };
 
@@ -184,7 +200,7 @@ pub mod repos {
 
             let req = GitHubRequest {
                 uri: request_uri,
-                body: (),
+                body: None,
                 method: "GET",
             };
 
@@ -205,6 +221,89 @@ pub mod repos {
                     404 => Err(ReposListCommitsError::Status404(github_response.to_json()?)),
                     409 => Err(ReposListCommitsError::Status409(github_response.to_json()?)),
                     code => Err(ReposListCommitsError::Generic { code }),
+                }
+            }
+        }
+
+        pub async fn add_user_access_restrictions_async(
+            &self,
+            owner: &str,
+            repo: &str,
+            branch: &str,
+            body: PostReposAddUserAccessRestrictions,
+        ) -> Result<Vec<SimpleUser>, ReposAddUserAccessRestrictionsError> {
+            let request_uri = format!(
+                "{}/repos/{}/{}/branches/{}/protection/restrictions/users",
+                super::GITHUB_BASE_API_URL,
+                owner,
+                repo,
+                branch
+            );
+
+            let req = GitHubRequest {
+                uri: request_uri,
+                body: Some(PostReposAddUserAccessRestrictions::from_json(body)?),
+                method: "POST",
+            };
+
+            let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+            // --
+
+            let github_response = crate::adapters::fetch_async(request).await?;
+
+            // --
+
+            if github_response.is_success() {
+                Ok(github_response.to_json()?)
+            } else {
+                match github_response.status_code() {
+                    422 => Err(ReposAddUserAccessRestrictionsError::Status422(
+                        github_response.to_json()?,
+                    )),
+                    code => Err(ReposAddUserAccessRestrictionsError::Generic { code }),
+                }
+            }
+        }
+
+        #[cfg(not(target_arch = "wasm32"))]
+        pub fn add_user_access_restrictions(
+            &self,
+            owner: &str,
+            repo: &str,
+            branch: &str,
+            body: PostReposAddUserAccessRestrictions,
+        ) -> Result<Vec<SimpleUser>, ReposAddUserAccessRestrictionsError> {
+            let request_uri = format!(
+                "{}/repos/{}/{}/branches/{}/protection/restrictions/users",
+                super::GITHUB_BASE_API_URL,
+                owner,
+                repo,
+                branch
+            );
+
+            let req = GitHubRequest {
+                uri: request_uri,
+                body: Some(PostReposAddUserAccessRestrictions::from_json(body)?),
+                method: "POST",
+            };
+
+            let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+            // --
+
+            let github_response = crate::adapters::fetch(request)?;
+
+            // --
+
+            if github_response.is_success() {
+                Ok(github_response.to_json()?)
+            } else {
+                match github_response.status_code() {
+                    422 => Err(ReposAddUserAccessRestrictionsError::Status422(
+                        github_response.to_json()?,
+                    )),
+                    code => Err(ReposAddUserAccessRestrictionsError::Generic { code }),
                 }
             }
         }

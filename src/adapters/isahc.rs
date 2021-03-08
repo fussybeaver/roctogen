@@ -1,16 +1,16 @@
 use http::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE};
 
-pub use http::response::Response;
-pub use http::request::Request;
+use http::response::Response;
+use http::request::Request;
 
 use isahc::prelude::*;
 use isahc::Body;
 use isahc::RequestExt;
 
 use crate::auth::Auth;
-use super::{Json, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use super::{Json, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 
-use serde::Deserialize;
+use serde::{ser, Deserialize};
 
 #[derive(thiserror::Error, Debug)]
 pub enum AdapterError {
@@ -20,11 +20,11 @@ pub enum AdapterError {
     Isahc(#[from] isahc::Error),
 }
 
-pub(crate) fn fetch(request: Request<()>) -> Result<Response<Body>, AdapterError> {
+pub(crate) fn fetch(request: Request<Body>) -> Result<Response<Body>, AdapterError> {
     Ok(request.send()?)
 }
 
-pub(crate) async fn fetch_async(request: Request<()>) -> Result<Response<Body>, AdapterError> {
+pub(crate) async fn fetch_async(request: Request<Body>) -> Result<Response<Body>, AdapterError> {
     unimplemented!()
 }
 
@@ -48,7 +48,18 @@ where
     }
 }
 
-impl GitHubRequestBuilder for Request<()> 
+pub(crate) type FromJsonType = Body;
+
+impl<E> FromJson<E> for E
+where
+    E: ser::Serialize,
+{
+    fn from_json(model: E) -> Result<FromJsonType, serde_json::Error> {
+        Ok(serde_json::to_vec(&model)?.into())
+    }
+}
+
+impl GitHubRequestBuilder for Request<Body> 
 {
     fn build(req: GitHubRequest, auth: &Auth) -> Result<Self, AdapterError> {
         let mut builder = http::Request::builder();
@@ -70,6 +81,10 @@ impl GitHubRequestBuilder for Request<()>
             Auth::None => builder,
         };
 
-        Ok(builder.body(req.body)?)
+        if let Some(body) = req.body {
+            Ok(builder.body(body)?)
+        } else {
+            Ok(builder.body(().into())?)
+        }
     }
 }

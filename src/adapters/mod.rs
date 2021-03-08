@@ -1,5 +1,5 @@
 use serde::de::DeserializeOwned;
-use serde::Deserialize;
+use serde::{Deserialize, ser};
 
 use crate::auth::Auth;
 
@@ -12,14 +12,18 @@ pub use self::isahc::AdapterError;
 #[cfg(feature = "isahc")]
 pub(crate) use {
     self::isahc::fetch,
-    self::isahc::fetch_async
+    self::isahc::fetch_async,
+    self::isahc::FromJsonType,
 };
 
 #[cfg(target_arch = "wasm32")]
 pub mod wasm;
 
 #[cfg(target_arch = "wasm32")]
-pub(crate) use wasm::fetch_async;
+pub(crate) use {
+    wasm::fetch_async,
+    wasm::FromJsonType,
+};
 
 #[cfg(target_arch = "wasm32")]
 pub use wasm::AdapterError;
@@ -31,10 +35,17 @@ where
     fn to_json(self) -> Result<A, serde_json::Error>;
 }
 
+pub(crate) trait FromJson<A>
+where
+    A: ser::Serialize
+{
+    fn from_json(model: A) -> Result<FromJsonType, serde_json::Error>;
+}
+
 pub(crate) struct GitHubRequest {
     pub uri: String,
     pub method: &'static str,
-    pub body: (),
+    pub body: Option<FromJsonType>,
 }
 
 pub(crate) trait GitHubRequestBuilder
