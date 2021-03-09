@@ -2,7 +2,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, Json, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use crate::adapters::{AdapterError, Json, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -20,6 +20,7 @@ pub fn new(auth: &Auth) -> {{classname}} {
 }
 
 {{#operations}}{{#operation}}{{#contents}}
+/// Errors for the [{{summary}}]({{classname}}::{{operationId}}_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum {{classname}}{{operationIdCamelCase}}Error {
     #[error(transparent)]
@@ -43,9 +44,11 @@ pub enum {{classname}}{{operationIdCamelCase}}Error {
 {{/contents}}{{/operation}}
 
 {{#operation}}{{#contents}}{{#hasQueryParams}}
+/// Query parameters for the [{{summary}}]({{classname}}::{{operationId}}_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct {{classname}}{{operationIdCamelCase}}Params {
     {{#queryParams}}
+    {{#description}}/// {{{.}}}{{/description}}
     pub {{paramName}}: {{^required}}Option<{{#isString}}String{{/isString}}{{#isUuid}}String{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/required}}{{#required}}{{#isString}}String{{/isString}}{{#isUuid}}String{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/required}}{{#hasMore}}, {{/hasMore}}
     {{/queryParams}}
 }
@@ -56,6 +59,7 @@ impl {{classname}}{{operationIdCamelCase}}Params {
     }
     {{#queryParams}}
 
+    {{#description}}/// {{{.}}}{{/description}}
     pub fn {{paramName}}(&mut self, {{paramName}}: {{#isString}}impl Into<String>{{/isString}}{{#isUuid}}impl Into<String>{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}) -> &mut Self {
         self.{{paramName}} = {{^required}}Some({{/required}}{{paramName}}{{#isString}}.into(){{/isString}}{{#isUuid}}.into(){{/isUuid}}{{^required}}){{/required}};
         self
@@ -78,6 +82,15 @@ impl<'enc> From<&'enc PerPage> for {{classname}}{{operationIdCamelCase}}Params {
 
 impl {{classname}}<'_> {
 {{#operation}}{{#contents}}
+    /// ---
+    ///
+    {{#summary}}
+    /// # {{.}}
+    {{/summary}}{{#unescapedNotes}}///
+    /// {{{.}}}
+    {{/unescapedNotes}}{{#externalDocs.url}}
+    /// 
+    /// [GitHub API docs for {{operationId}}]({{.}}){{/externalDocs.url}}
     pub async fn {{operationId}}_async(&self, {{#pathParams}}{{paramName}}: {{#nullable}}Option<{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/nullable}}{{^nullable}}{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/nullable}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}query_params: {{#vendorExtensions.x-codegen-has-optional-query-params}}Option<{{/vendorExtensions.x-codegen-has-optional-query-params}}impl Into<{{classname}}{{operationIdCamelCase}}Params>{{#vendorExtensions.x-codegen-has-optional-query-params}}>{{/vendorExtensions.x-codegen-has-optional-query-params}}{{#hasBodyParam}}, {{/hasBodyParam}}{{/hasQueryParams}}{{#hasBodyParam}}{{^hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}{{/hasQueryParams}}body: {{#bodyParam}}{{{dataType}}}{{/bodyParam}}{{/hasBodyParam}}) -> Result<{{#responses}}{{#vendorExtensions.x-is-default}}{{{dataType}}}{{/vendorExtensions.x-is-default}}{{/responses}}{{#vendorExtensions.x-codegen-response-empty-default}}(){{/vendorExtensions.x-codegen-response-empty-default}}, {{classname}}{{operationIdCamelCase}}Error> {
 
         let {{#hasQueryParams}}mut {{/hasQueryParams}}request_uri = format!("{}{{path}}", super::GITHUB_BASE_API_URL{{#hasPathParams}}, {{/hasPathParams}}{{#pathParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}});
@@ -99,7 +112,7 @@ impl {{classname}}<'_> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: (),
+            body: {{#hasBodyParam}}Some({{#bodyParam}}{{{dataType}}}{{/bodyParam}}::from_json(body)?){{/hasBodyParam}}{{^hasBodyParam}}None{{/hasBodyParam}},
             method: "{{httpMethod}}"
         };
 
@@ -123,6 +136,10 @@ impl {{classname}}<'_> {
         }
     }
 
+    {{#summary}}
+    /// {{.}}{{/summary}}{{#externalDocs.url}}{{#summary}}
+    /// {{/summary}}
+    /// API docs: {{.}}{{/externalDocs.url}}
     #[cfg(not(target_arch = "wasm32"))]
     pub fn {{operationId}}(&self, {{#pathParams}}{{paramName}}: {{#nullable}}Option<{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/nullable}}{{^nullable}}{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/nullable}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}query_params: {{#vendorExtensions.x-codegen-has-optional-query-params}}Option<{{/vendorExtensions.x-codegen-has-optional-query-params}}impl Into<{{classname}}{{operationIdCamelCase}}Params>{{#vendorExtensions.x-codegen-has-optional-query-params}}>{{/vendorExtensions.x-codegen-has-optional-query-params}}{{#hasBodyParam}}, {{/hasBodyParam}}{{/hasQueryParams}}{{#hasBodyParam}}{{^hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}{{/hasQueryParams}}body: {{#bodyParam}}{{{dataType}}}{{/bodyParam}}{{/hasBodyParam}}) -> Result<{{#responses}}{{#vendorExtensions.x-is-default}}{{{dataType}}}{{/vendorExtensions.x-is-default}}{{/responses}}{{#vendorExtensions.x-codegen-response-empty-default}}(){{/vendorExtensions.x-codegen-response-empty-default}}, {{classname}}{{operationIdCamelCase}}Error> {
 
@@ -145,7 +162,7 @@ impl {{classname}}<'_> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: (),
+            body: {{#hasBodyParam}}Some({{#bodyParam}}{{{dataType}}}{{/bodyParam}}::from_json(body)?){{/hasBodyParam}}{{^hasBodyParam}}None{{/hasBodyParam}},
             method: "{{httpMethod}}"
         };
 

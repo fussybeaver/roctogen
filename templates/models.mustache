@@ -1,4 +1,5 @@
 #![allow(unused_imports, unused_qualifications, unused_extern_crates)]
+{{>partial_header}}
 
 use serde::ser::Serializer;
 use serde::de::{DeserializeOwned, Deserializer};
@@ -12,8 +13,8 @@ use std::hash::Hash;
 
 use chrono::DateTime;
 use chrono::Utc;
-
 {{#models}}{{#model}}
+
 {{#description}}/// {{{description}}}
 {{/description}}{{#vendorExtensions.is-enum}}/// Enumeration of values.
 /// Since this enum's variants do not hold data, we can easily define them them as `#[repr(C)]`
@@ -69,17 +70,11 @@ pub type {{classname}} = DateTime<Utc>;
 {{/vendorExtensions.x-rustgen-is-datetime}}{{^vendorExtensions.has-vars}}{{! general struct}}#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]{{#xmlName}}
 #[serde(rename = "{{xmlName}}")]{{/xmlName}}
 pub struct {{classname}} {
-{{#vars}}{{#description}}    /// {{{description}}}
-{{/description}}    #[serde(rename = "{{baseName}}")]{{#vendorExtensions.has-required}}{{#vendorExtensions.is-enum}}
+{{#vars}}{{#description}}    /// {{{.}}}
+{{/description}}{{^vendorExtensions.x-rustgen-serde-no-rename}}    #[serde(rename = "{{baseName}}")]
+{{/vendorExtensions.x-rustgen-serde-no-rename}}{{^required}}    
     #[serde(skip_serializing_if="Option::is_none")]
-    #[serde(with = "serde_with::rust::string_empty_as_none")]{{/vendorExtensions.is-enum}}
-    pub {{name}}: {{#vendorExtensions.is-enum}}Option<{{classname}}{{enumName}}>{{/vendorExtensions.is-enum}}{{^vendorExtensions.is-enum}}{{#vendorExtensions.x-is-list-container}}Vec<{{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-list-container}}{{#vendorExtensions.x-is-map-container}}HashMap<String, {{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-map-container}}{{^vendorExtensions.x-is-container}}{{{datatype}}}{{/vendorExtensions.x-is-container}}{{/vendorExtensions.is-enum}},
-{{/vendorExtensions.has-required}}{{^vendorExtensions.has-required}}
-
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub {{name}}: Option<{{#vendorExtensions.is-enum}}{{classname}}{{enumName}}{{/vendorExtensions.is-enum}}{{^vendorExtensions.is-enum}}{{#vendorExtensions.x-is-list-container}}Vec<{{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-list-container}}{{#vendorExtensions.x-is-map-container}}HashMap<String, {{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-map-container}}{{^vendorExtensions.x-is-container}}{{{datatype}}}{{/vendorExtensions.x-is-container}}{{/vendorExtensions.is-enum}}>,
-{{/vendorExtensions.has-required}}
-
+{{/required}}    pub {{name}}: {{^required}}Option<{{/required}}{{#vendorExtensions.is-enum}}{{classname}}{{enumName}}{{/vendorExtensions.is-enum}}{{^vendorExtensions.is-enum}}{{#vendorExtensions.x-is-list-container}}Vec<{{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-list-container}}{{#vendorExtensions.x-is-map-container}}HashMap<String, {{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-map-container}}{{^vendorExtensions.x-is-container}}{{{datatype}}}{{/vendorExtensions.x-is-container}}{{/vendorExtensions.is-enum}}{{^required}}>{{/required}},
 {{/vars}}
 }
 {{#vars}}{{#vendorExtensions.is-enum}}

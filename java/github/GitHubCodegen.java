@@ -160,6 +160,10 @@ public class GitHubCodegen extends RustServerCodegen {
                     // patchEnumValues.get(model.classname + prop.enumName));
                     // }
                 }
+                
+                if (prop.baseName.equals(prop.name)) {
+                    prop.vendorExtensions.put("x-rustgen-serde-no-rename", true);
+                }
             }
         }
 
@@ -240,6 +244,10 @@ public class GitHubCodegen extends RustServerCodegen {
         if (operations != null) {
             List<CodegenOperation> ops = (List<CodegenOperation>) operations.get("operation");
             for (final CodegenOperation operation : ops) {
+                if (operation.notes != null) {
+                    operation.unescapedNotes = operation.unescapedNotes.replaceAll("\\n", "\n    /// ");
+                }
+
                 CodegenParameter body = operation.bodyParam;
                 if (body != null) {
                     String opName = (String) patchOperationBodyNames.get(camelize(body.getDataType()));
