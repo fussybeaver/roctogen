@@ -49,7 +49,7 @@ pub enum {{classname}}{{operationIdCamelCase}}Error {
 pub struct {{classname}}{{operationIdCamelCase}}Params {
     {{#queryParams}}
     {{#description}}/// {{{.}}}{{/description}}
-    pub {{paramName}}: {{^required}}Option<{{#isString}}String{{/isString}}{{#isUuid}}String{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/required}}{{#required}}{{#isString}}String{{/isString}}{{#isUuid}}String{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/required}}{{#hasMore}}, {{/hasMore}}
+    {{paramName}}: {{^required}}Option<{{#isString}}String{{/isString}}{{#isUuid}}String{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/required}}{{#required}}{{#isString}}String{{/isString}}{{#isUuid}}String{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/required}}{{#hasMore}}, {{/hasMore}}
     {{/queryParams}}
 }
 
@@ -60,9 +60,11 @@ impl {{classname}}{{operationIdCamelCase}}Params {
     {{#queryParams}}
 
     {{#description}}/// {{{.}}}{{/description}}
-    pub fn {{paramName}}(&mut self, {{paramName}}: {{#isString}}impl Into<String>{{/isString}}{{#isUuid}}impl Into<String>{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}) -> &mut Self {
-        self.{{paramName}} = {{^required}}Some({{/required}}{{paramName}}{{#isString}}.into(){{/isString}}{{#isUuid}}.into(){{/isUuid}}{{^required}}){{/required}};
-        self
+    pub fn {{paramName}}(self, {{paramName}}: {{#isString}}impl Into<String>{{/isString}}{{#isUuid}}impl Into<String>{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}) -> Self {
+        Self { 
+{{#queryParams}}            {{#equals paramName ../paramName}}{{paramName}}: {{^required}}Some({{/required}}{{paramName}}{{#isString}}.into(){{/isString}}{{#isUuid}}.into(){{/isUuid}}{{^required}}){{/required}},{{else}}{{paramName}}: self.{{paramName}}, {{/equals}}
+            {{/queryParams}}
+        }
     }
     {{/queryParams}}
 }
@@ -70,10 +72,11 @@ impl {{classname}}{{operationIdCamelCase}}Params {
 {{#vendorExtensions.x-codegen-impl-per-page}}
 impl<'enc> From<&'enc PerPage> for {{classname}}{{operationIdCamelCase}}Params {
     fn from(per_page: &'enc PerPage) -> Self {
-        let mut this = Self::new();
-        this.per_page(per_page.per_page);
-        this.page(per_page.page);
-        this
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
     }
 }
 {{/vendorExtensions.x-codegen-impl-per-page}}

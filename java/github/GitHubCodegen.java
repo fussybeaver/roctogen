@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.github.jknack.handlebars.Handlebars;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +22,7 @@ import io.swagger.codegen.v3.CodegenOperation;
 import io.swagger.codegen.v3.CodegenParameter;
 import io.swagger.codegen.v3.CodegenProperty;
 import io.swagger.codegen.v3.CodegenResponse;
+import io.swagger.codegen.v3.generators.handlebars.java.JavaHelper;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.info.Info;
@@ -108,7 +111,7 @@ public class GitHubCodegen extends RustServerCodegen {
                 model.vendorExtensions.put("x-rustgen-is-integer", true);
                 model.vendorExtensions.put("has-vars", true);
             }
-            if (model.getDataType() != null && model.getDataType().equals("string")) {
+            if (model.getDataType() != null && model.getDataType().equals("String")) {
                 model.vendorExtensions.put("x-rustgen-is-string", true);
                 model.vendorExtensions.put("has-vars", true);
             }
@@ -164,7 +167,13 @@ public class GitHubCodegen extends RustServerCodegen {
                 if (prop.baseName.equals(prop.name)) {
                     prop.vendorExtensions.put("x-rustgen-serde-no-rename", true);
                 }
+                if (prop.datatype != null && prop.datatype.equals("String")) {
+                    prop.vendorExtensions.put("x-rustgen-is-string", true);
+                }
             }
+            //if (model.readWriteVars != null) {
+            //    LOGGER.info("::: readOnlyVars " + model.readWriteVars);
+            //}
         }
 
         return newObjs;
@@ -369,5 +378,11 @@ public class GitHubCodegen extends RustServerCodegen {
         operationId = operationId.replaceFirst("[a-zA-Z0-9]+\\/", "");
 
         return super.toOperationId(operationId);
+    }
+    
+    @Override
+    public void addHandlebarHelpers(Handlebars handlebars) {
+        super.addHandlebarHelpers(handlebars);
+        handlebars.registerHelpers(new IfCondHelper());
     }
 }

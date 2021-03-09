@@ -111,7 +111,7 @@ async fn post_wasm_fail() {
     let auth = Auth::None;
 
     let body = models::PostReposAddUserAccessRestrictions {
-        users: Some(vec!["fussybeaver".to_string()])
+        users: vec!["fussybeaver".to_string()]
     };
 
     let req = repos::new(&auth).add_user_access_restrictions_async("fussybeaver", "bollard", "master", body).await;

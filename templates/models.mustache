@@ -3,6 +3,7 @@
 
 use serde::ser::Serializer;
 use serde::de::{DeserializeOwned, Deserializer};
+use serde::Deserialize;
 use serde_json::value::Value;
 
 use std::cmp::Eq;
@@ -13,6 +14,13 @@ use std::hash::Hash;
 
 use chrono::DateTime;
 use chrono::Utc;
+
+fn deser_string<'de, D>(d: D) -> Result<String, D::Error> where D: Deserializer<'de> {
+    Deserialize::deserialize(d)
+        .map(|x: Option<_>| {
+            x.unwrap_or("".to_string())
+        })
+}
 {{#models}}{{#model}}
 
 {{#description}}/// {{{description}}}
@@ -70,12 +78,16 @@ pub type {{classname}} = DateTime<Utc>;
 {{/vendorExtensions.x-rustgen-is-datetime}}{{^vendorExtensions.has-vars}}{{! general struct}}#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]{{#xmlName}}
 #[serde(rename = "{{xmlName}}")]{{/xmlName}}
 pub struct {{classname}} {
-{{#vars}}{{#description}}    /// {{{.}}}
+{{#requiredVars}}{{#description}}    /// {{{.}}}
+{{/description}}    #[serde(rename = "{{baseName}}"{{#vendorExtensions.x-rustgen-is-string}}, deserialize_with="deser_string"{{/vendorExtensions.x-rustgen-is-string}})]
+    pub {{name}}: {{#vendorExtensions.is-enum}}{{classname}}{{enumName}}{{/vendorExtensions.is-enum}}{{^vendorExtensions.is-enum}}{{#vendorExtensions.x-is-list-container}}Vec<{{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-list-container}}{{#vendorExtensions.x-is-map-container}}HashMap<String, {{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-map-container}}{{^vendorExtensions.x-is-container}}{{{datatype}}}{{/vendorExtensions.x-is-container}}{{/vendorExtensions.is-enum}},
+{{/requiredVars}}
+{{#optionalVars}}{{#description}}    /// {{{.}}}
 {{/description}}{{^vendorExtensions.x-rustgen-serde-no-rename}}    #[serde(rename = "{{baseName}}")]
-{{/vendorExtensions.x-rustgen-serde-no-rename}}{{^required}}    
+{{/vendorExtensions.x-rustgen-serde-no-rename}}
     #[serde(skip_serializing_if="Option::is_none")]
-{{/required}}    pub {{name}}: {{^required}}Option<{{/required}}{{#vendorExtensions.is-enum}}{{classname}}{{enumName}}{{/vendorExtensions.is-enum}}{{^vendorExtensions.is-enum}}{{#vendorExtensions.x-is-list-container}}Vec<{{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-list-container}}{{#vendorExtensions.x-is-map-container}}HashMap<String, {{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-map-container}}{{^vendorExtensions.x-is-container}}{{{datatype}}}{{/vendorExtensions.x-is-container}}{{/vendorExtensions.is-enum}}{{^required}}>{{/required}},
-{{/vars}}
+    pub {{name}}: Option<{{#vendorExtensions.is-enum}}{{classname}}{{enumName}}{{/vendorExtensions.is-enum}}{{^vendorExtensions.is-enum}}{{#vendorExtensions.x-is-list-container}}Vec<{{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-list-container}}{{#vendorExtensions.x-is-map-container}}HashMap<String, {{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-map-container}}{{^vendorExtensions.x-is-container}}{{{datatype}}}{{/vendorExtensions.x-is-container}}{{/vendorExtensions.is-enum}}>,
+{{/optionalVars}}
 }
 {{#vars}}{{#vendorExtensions.is-enum}}
 #[allow(non_camel_case_types)]
