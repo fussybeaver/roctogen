@@ -1,3 +1,13 @@
+//! # Rust GitHub v3 API client 
+//!
+//! This client API is generated from the upstream OpenAPI specification. The library currently supports
+//! webassembly and synchronous requests with the Isahc HTTP client.
+//!
+//! # Install
+//!
+//! # Getting started
+//!
+//! ## webassembly
 #![allow(
     missing_docs,
     trivial_casts,

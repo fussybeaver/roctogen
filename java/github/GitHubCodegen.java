@@ -170,6 +170,10 @@ public class GitHubCodegen extends RustServerCodegen {
                 if (prop.datatype != null && prop.datatype.equals("String")) {
                     prop.vendorExtensions.put("x-rustgen-is-string", true);
                 }
+                
+                if (prop.baseName.equals("score") && prop.datatype.equals("i64")) {
+                    prop.datatype = "f32";
+                }
             }
             //if (model.readWriteVars != null) {
             //    LOGGER.info("::: readOnlyVars " + model.readWriteVars);
@@ -254,7 +258,10 @@ public class GitHubCodegen extends RustServerCodegen {
             List<CodegenOperation> ops = (List<CodegenOperation>) operations.get("operation");
             for (final CodegenOperation operation : ops) {
                 if (operation.notes != null) {
+                    operation.unescapedNotes = operation.unescapedNotes.replaceAll("```(.+)\\n(.+)\\n", "```$1,ignore\n$2\n");
+                    operation.unescapedNotes = operation.unescapedNotes.replaceAll("```\\n(.+)\\n", "```ignore\n$1\n");
                     operation.unescapedNotes = operation.unescapedNotes.replaceAll("\\n", "\n    /// ");
+
                 }
 
                 CodegenParameter body = operation.bodyParam;
@@ -284,6 +291,7 @@ public class GitHubCodegen extends RustServerCodegen {
                 Boolean hasPerPage = false;
                 Boolean hasPage = false;
                 Boolean hasOptionalQueryParams = true;
+                Boolean hasStringParams = false;
                 for (final CodegenParameter param : queryParams) {
                     if (param.getParamName().equals("per_page")) {
                         hasPerPage = true;
@@ -296,12 +304,18 @@ public class GitHubCodegen extends RustServerCodegen {
                     if (param.getRequired()) {
                         hasOptionalQueryParams = false;
                     }
+                    if (getBooleanValue(param, CodegenConstants.IS_STRING_EXT_NAME) || getBooleanValue(param, CodegenConstants.IS_UUID_EXT_NAME)) {
+                        hasStringParams = true;
+                    }
                 }
                 if (hasPerPage && hasPage) {
                     operation.getVendorExtensions().put("x-codegen-impl-per-page", "true");
                 }
                 if (hasOptionalQueryParams) {
                     operation.getVendorExtensions().put("x-codegen-has-optional-query-params", "true");
+                }
+                if (hasStringParams) {
+                    operation.getVendorExtensions().put("x-codegen-has-string-params", "true");
                 }
             }
         }
@@ -356,6 +370,7 @@ public class GitHubCodegen extends RustServerCodegen {
             }
         }
         
+        // Special case
         if (res.getDataType() != null && res.getDataType().equals("SelectedActions")) {
             res.dataType = "PutActionsSetAllowedActionsRepository";
         }
@@ -385,4 +400,14 @@ public class GitHubCodegen extends RustServerCodegen {
         super.addHandlebarHelpers(handlebars);
         handlebars.registerHelpers(new IfCondHelper());
     }
+
+    @Override
+    public String toVarName(String name) {
+        if (name.equals("ref")) {
+            return "git_ref";
+        }
+        
+        return super.toVarName(name);
+    }
+
 }

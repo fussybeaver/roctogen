@@ -23,26 +23,19 @@ use std::hash::Hash;
 use chrono::DateTime;
 use chrono::Utc;
 
-fn deser_string<'de, D>(d: D) -> Result<String, D::Error> where D: Deserializer<'de> {
-    Deserialize::deserialize(d)
-        .map(|x: Option<_>| {
-            x.unwrap_or("".to_string())
-        })
-}
-
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ActionsBillingUsage {
     /// The sum of the free and paid GitHub Actions minutes used.
-    #[serde(rename = "total_minutes_used")]
-    pub total_minutes_used: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_minutes_used: Option<i64>,
     /// The total paid GitHub Actions minutes used.
-    #[serde(rename = "total_paid_minutes_used")]
-    pub total_paid_minutes_used: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_paid_minutes_used: Option<i64>,
     /// The amount of free GitHub Actions minutes available.
-    #[serde(rename = "included_minutes")]
-    pub included_minutes: i64,
-    #[serde(rename = "minutes_used_breakdown")]
-    pub minutes_used_breakdown: ActionsbillingusageMinutesUsedBreakdown,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub included_minutes: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub minutes_used_breakdown: Option<ActionsbillingusageMinutesUsedBreakdown>,
 }
 
 /// Whether GitHub Actions is enabled on the repository.
@@ -50,26 +43,26 @@ pub type ActionsEnabled = bool;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ActionsEnterprisePermissions {
-    #[serde(rename = "enabled_organizations")]
-    pub enabled_organizations: EnabledOrganizations,
-    #[serde(rename = "allowed_actions")]
-    pub allowed_actions: AllowedActions,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub enabled_organizations: Option<EnabledOrganizations>,
     /// The API URL to use to get or set the selected organizations that are allowed to run GitHub Actions, when `enabled_organizations` is set to `selected`.
     #[serde(skip_serializing_if="Option::is_none")]
     pub selected_organizations_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub allowed_actions: Option<AllowedActions>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub selected_actions_url: Option<SelectedActionsUrl>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ActionsOrganizationPermissions {
-    #[serde(rename = "enabled_repositories")]
-    pub enabled_repositories: EnabledRepositories,
-    #[serde(rename = "allowed_actions")]
-    pub allowed_actions: AllowedActions,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub enabled_repositories: Option<EnabledRepositories>,
     /// The API URL to use to get or set the selected repositories that are allowed to run GitHub Actions, when `enabled_repositories` is set to `selected`.
     #[serde(skip_serializing_if="Option::is_none")]
     pub selected_repositories_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub allowed_actions: Option<AllowedActions>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub selected_actions_url: Option<SelectedActionsUrl>,
 }
@@ -78,11 +71,11 @@ pub struct ActionsOrganizationPermissions {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ActionsPublicKey {
     /// The identifier for the key.
-    #[serde(rename = "key_id", deserialize_with="deser_string")]
-    pub key_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub key_id: Option<String>,
     /// The Base64 encoded public key.
-    #[serde(rename = "key", deserialize_with="deser_string")]
-    pub key: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub key: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -95,10 +88,10 @@ pub struct ActionsPublicKey {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ActionsRepositoryPermissions {
-    #[serde(rename = "enabled")]
-    pub enabled: ActionsEnabled,
-    #[serde(rename = "allowed_actions")]
-    pub allowed_actions: AllowedActions,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub enabled: Option<ActionsEnabled>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub allowed_actions: Option<AllowedActions>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub selected_actions_url: Option<SelectedActionsUrl>,
 }
@@ -107,12 +100,12 @@ pub struct ActionsRepositoryPermissions {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ActionsSecret {
     /// The name of the secret.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -134,18 +127,18 @@ pub struct ActionsbillingusageMinutesUsedBreakdown {
 /// Actor
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Actor {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "login", deserialize_with="deser_string")]
-    pub login: String,
-    #[serde(rename = "gravatar_id", deserialize_with="deser_string")]
-    pub gravatar_id: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "avatar_url", deserialize_with="deser_string")]
-    pub avatar_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub display_login: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub gravatar_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub avatar_url: Option<String>,
 }
 
 /// The time that the alert was created in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
@@ -210,8 +203,8 @@ impl std::str::FromStr for AllowedActions {
 /// Api Overview
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ApiOverview {
-    #[serde(rename = "verifiable_password_authentication")]
-    pub verifiable_password_authentication: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub verifiable_password_authentication: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub ssh_key_fingerprints: Option<ApioverviewSshKeyFingerprints>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -338,58 +331,58 @@ pub struct AppPermissions {
 /// The authorization associated with an OAuth Access.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ApplicationGrant {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "app")]
-    pub app: ApplicationgrantApp,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "scopes")]
-    pub scopes: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub app: Option<ApplicationgrantApp>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub scopes: Option<Vec<String>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub user: Option<SimpleUser>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ApplicationgrantApp {
-    #[serde(rename = "client_id", deserialize_with="deser_string")]
-    pub client_id: String,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub client_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
 }
 
 /// An artifact
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Artifact {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     /// The name of the artifact.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
     /// The size in bytes of the artifact.
-    #[serde(rename = "size_in_bytes")]
-    pub size_in_bytes: i64,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "archive_download_url", deserialize_with="deser_string")]
-    pub archive_download_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub size_in_bytes: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub archive_download_url: Option<String>,
     /// Whether or not the artifact has expired.
-    #[serde(rename = "expired")]
-    pub expired: bool,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "expires_at")]
-    pub expires_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub expired: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub expires_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -482,11 +475,11 @@ pub struct AuditLogEvent {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AuthenticationToken {
     /// The token used for authentication
-    #[serde(rename = "token", deserialize_with="deser_string")]
-    pub token: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub token: Option<String>,
     /// The time this token expires
-    #[serde(rename = "expires_at")]
-    pub expires_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub expires_at: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub permissions: Option<HashMap<(), ()>>,
     /// The repositories this token has access to
@@ -560,31 +553,31 @@ impl std::str::FromStr for AuthorAssociation {
 /// The authorization for an OAuth app, GitHub App, or a Personal Access Token.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Authorization {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
     /// A list of scopes that this authorization is in.
-    #[serde(rename = "scopes")]
-    pub scopes: Vec<String>,
-    #[serde(rename = "token", deserialize_with="deser_string")]
-    pub token: String,
-    #[serde(rename = "token_last_eight", deserialize_with="deser_string")]
-    pub token_last_eight: String,
-    #[serde(rename = "hashed_token", deserialize_with="deser_string")]
-    pub hashed_token: String,
-    #[serde(rename = "app")]
-    pub app: ApplicationgrantApp,
-    #[serde(rename = "note", deserialize_with="deser_string")]
-    pub note: String,
-    #[serde(rename = "note_url", deserialize_with="deser_string")]
-    pub note_url: String,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "fingerprint", deserialize_with="deser_string")]
-    pub fingerprint: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub scopes: Option<Vec<String>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub token: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub token_last_eight: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub hashed_token: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub app: Option<ApplicationgrantApp>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub note: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub note_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub fingerprint: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub user: Option<SimpleUser>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -594,54 +587,54 @@ pub struct Authorization {
 /// The status of auto merging a pull request.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AutoMerge {
-    #[serde(rename = "enabled_by")]
-    pub enabled_by: SimpleUser,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub enabled_by: Option<SimpleUser>,
     /// The merge method to use.
-    #[serde(rename = "merge_method", deserialize_with="deser_string")]
-    pub merge_method: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub merge_method: Option<String>,
     /// Title for the merge commit message.
-    #[serde(rename = "commit_title", deserialize_with="deser_string")]
-    pub commit_title: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_title: Option<String>,
     /// Commit message for the merge commit.
-    #[serde(rename = "commit_message", deserialize_with="deser_string")]
-    pub commit_message: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_message: Option<String>,
 }
 
 /// Base Gist
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BaseGist {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "forks_url", deserialize_with="deser_string")]
-    pub forks_url: String,
-    #[serde(rename = "commits_url", deserialize_with="deser_string")]
-    pub commits_url: String,
-    #[serde(rename = "id", deserialize_with="deser_string")]
-    pub id: String,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "git_pull_url", deserialize_with="deser_string")]
-    pub git_pull_url: String,
-    #[serde(rename = "git_push_url", deserialize_with="deser_string")]
-    pub git_push_url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "files")]
-    pub files: HashMap<String, BasegistFiles>,
-    #[serde(rename = "public")]
-    pub public: bool,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
-    #[serde(rename = "comments")]
-    pub comments: i64,
-    #[serde(rename = "user")]
-    pub user: SimpleUser,
-    #[serde(rename = "comments_url", deserialize_with="deser_string")]
-    pub comments_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub forks_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commits_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_pull_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_push_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub files: Option<HashMap<String, BasegistFiles>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub public: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub owner: Option<SimpleUser>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -679,18 +672,18 @@ pub struct BasicError {
 /// Blob
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Blob {
-    #[serde(rename = "content", deserialize_with="deser_string")]
-    pub content: String,
-    #[serde(rename = "encoding", deserialize_with="deser_string")]
-    pub encoding: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "size")]
-    pub size: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub content: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub encoding: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub size: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub highlighted_content: Option<String>,
 }
@@ -744,8 +737,8 @@ pub struct PatchOauthAuthorizationsUpdateAuthorization {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostGitCreateBlob {
     /// The new blob's content.
-    #[serde(rename = "content", deserialize_with="deser_string")]
-    pub content: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub content: Option<String>,
     /// The encoding used for `content`. Currently, `\"utf-8\"` and `\"base64\"` are supported.
     #[serde(skip_serializing_if="Option::is_none")]
     pub encoding: Option<String>,
@@ -754,11 +747,11 @@ pub struct PostGitCreateBlob {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostGitCreateCommit {
     /// The commit message
-    #[serde(rename = "message", deserialize_with="deser_string")]
-    pub message: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub message: Option<String>,
     /// The SHA of the tree object this commit points to
-    #[serde(rename = "tree", deserialize_with="deser_string")]
-    pub tree: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tree: Option<String>,
     /// The SHAs of the commits that were the parents of this commit. If omitted or empty, the commit will be written as a root commit. For a single parent, an array of one SHA should be provided; for a merge commit, an array of more than one should be provided.
     #[serde(skip_serializing_if="Option::is_none")]
     pub parents: Option<Vec<String>>,
@@ -774,11 +767,12 @@ pub struct PostGitCreateCommit {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostGitCreateRef {
     /// The name of the fully qualified reference (ie: `refs/heads/master`). If it doesn't start with 'refs' and have at least two slashes, it will be rejected.
-    #[serde(rename = "ref", deserialize_with="deser_string")]
-    pub _ref: String,
+    #[serde(rename = "ref")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_ref: Option<String>,
     /// The SHA1 value for this reference.
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub key: Option<String>,
 }
@@ -786,8 +780,8 @@ pub struct PostGitCreateRef {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchGitUpdateRef {
     /// The SHA1 value to set this reference to
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
     /// Indicates whether to force the update or to make sure the update is a fast-forward update. Leaving this out or setting it to `false` will make sure you're not overwriting work.
     #[serde(skip_serializing_if="Option::is_none")]
     pub force: Option<bool>,
@@ -796,17 +790,18 @@ pub struct PatchGitUpdateRef {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostGitCreateTag {
     /// The tag's name. This is typically a version (e.g., \"v0.0.1\").
-    #[serde(rename = "tag", deserialize_with="deser_string")]
-    pub tag: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tag: Option<String>,
     /// The tag message.
-    #[serde(rename = "message", deserialize_with="deser_string")]
-    pub message: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub message: Option<String>,
     /// The SHA of the git object this is tagging.
-    #[serde(rename = "object", deserialize_with="deser_string")]
-    pub object: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub object: Option<String>,
     /// The type of the object we're tagging. Normally this is a `commit` but it can also be a `tree` or a `blob`.
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub tagger: Option<ReposownerrepogittagsTagger>,
 }
@@ -814,8 +809,8 @@ pub struct PostGitCreateTag {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostGitCreateTree {
     /// Objects (of `path`, `mode`, `type`, and `sha`) specifying a tree structure.
-    #[serde(rename = "tree")]
-    pub tree: Vec<ReposownerrepogittreesTree>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tree: Option<Vec<ReposownerrepogittreesTree>>,
     /// The SHA1 of an existing Git tree object which will be used as the base for the new tree. If provided, a new Git tree object will be created from entries in the Git tree object pointed to by `base_tree` and entries defined in the `tree` parameter. Entries defined in the `tree` parameter will overwrite items from `base_tree` with the same `path`. If you're creating new changes on a branch, then normally you'd set `base_tree` to the SHA1 of the Git tree object of the current latest commit on the branch you're working on. If not provided, GitHub will create a new Git tree object from only the entries defined in the `tree` parameter. If you create a new commit pointing to such a tree, then all files which were a part of the parent commit's tree and were not defined in the `tree` parameter will be listed as deleted by the new commit. 
     #[serde(skip_serializing_if="Option::is_none")]
     pub base_tree: Option<String>,
@@ -823,11 +818,11 @@ pub struct PostGitCreateTree {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateWebhook {
-    #[serde(rename = "config")]
-    pub config: ReposownerrepohooksConfig,
     /// Use `web` to create a webhook. Default: `web`. This parameter only accepts the value `web`.
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub config: Option<ReposownerrepohooksConfig>,
     /// Determines what [events](https://docs.github.com/webhooks/event-payloads) the hook is triggered for.
     #[serde(skip_serializing_if="Option::is_none")]
     pub events: Option<Vec<String>>,
@@ -869,8 +864,8 @@ pub struct PatchReposUpdateWebhookConfigForRepo {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutMigrationsStartImport {
     /// The URL of the originating repository.
-    #[serde(rename = "vcs_url", deserialize_with="deser_string")]
-    pub vcs_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub vcs_url: Option<String>,
     /// The originating VCS type. Can be one of `subversion`, `git`, `mercurial`, or `tfvc`. Please be aware that without this parameter, the import job will take additional time to detect the VCS type before beginning the import. This detection step will be reflected in the response.
     #[serde(skip_serializing_if="Option::is_none")]
     pub vcs: Option<String>,
@@ -888,11 +883,11 @@ pub struct PutMigrationsStartImport {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostAppsCreateContentAttachment {
     /// The title of the attachment
-    #[serde(rename = "title", deserialize_with="deser_string")]
-    pub title: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub title: Option<String>,
     /// The body of the attachment
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -924,8 +919,8 @@ pub struct PatchMigrationsMapCommitAuthor {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchMigrationsSetLfsPreference {
     /// Can be one of `opt_in` (large files will be stored using Git LFS) or `opt_out` (large files will be removed during the import).
-    #[serde(rename = "use_lfs", deserialize_with="deser_string")]
-    pub use_lfs: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub use_lfs: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -938,8 +933,8 @@ pub struct PatchReposUpdateInvitation {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostIssuesCreate {
     /// The title of the issue.
-    #[serde(rename = "title")]
-    pub title: Value,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub title: Option<Value>,
     /// The contents of the issue.
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
@@ -959,15 +954,15 @@ pub struct PostIssuesCreate {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchIssuesUpdateComment {
     /// The contents of the comment.
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReactionsCreateForIssueComment {
     /// The [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types) to add to the issue comment.
-    #[serde(rename = "content", deserialize_with="deser_string")]
-    pub content: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub content: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1010,8 +1005,8 @@ pub struct DeleteIssuesRemoveAssignees {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutEnterpriseAdminSetGithubActionsPermissionsEnterprise {
-    #[serde(rename = "enabled_organizations")]
-    pub enabled_organizations: EnabledOrganizations,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub enabled_organizations: Option<EnabledOrganizations>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub allowed_actions: Option<AllowedActions>,
 }
@@ -1019,8 +1014,8 @@ pub struct PutEnterpriseAdminSetGithubActionsPermissionsEnterprise {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostIssuesCreateComment {
     /// The contents of the comment.
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1033,8 +1028,8 @@ pub struct PutIssuesSetLabels {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostIssuesAddLabels {
     /// The name of the label to add to the issue. Must contain at least one label. **Note:** Alternatively, you can pass a single label as a `string` or an `array` of labels directly, but GitHub recommends passing an object with the `labels` key.
-    #[serde(rename = "labels")]
-    pub labels: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub labels: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1047,18 +1042,18 @@ pub struct PutIssuesLock {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReactionsCreateForIssue {
     /// The [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types) to add to the issue.
-    #[serde(rename = "content", deserialize_with="deser_string")]
-    pub content: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub content: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateDeployKey {
-    /// The contents of the key.
-    #[serde(rename = "key", deserialize_with="deser_string")]
-    pub key: String,
     /// A name for the key.
     #[serde(skip_serializing_if="Option::is_none")]
     pub title: Option<String>,
+    /// The contents of the key.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub key: Option<String>,
     /// If `true`, the key will only be able to read repository contents. Otherwise, the key will be able to read and write.      Deploy keys with write access can perform the same actions as an organization member with admin access, or a collaborator on a personal repository. For more information, see \"[Repository permission levels for an organization](https://help.github.com/articles/repository-permission-levels-for-an-organization/)\" and \"[Permission levels for a user account repository](https://help.github.com/articles/permission-levels-for-a-user-account-repository/).\"
     #[serde(skip_serializing_if="Option::is_none")]
     pub read_only: Option<bool>,
@@ -1067,8 +1062,8 @@ pub struct PostReposCreateDeployKey {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostIssuesCreateLabel {
     /// The name of the label. Emoji can be added to label names, using either native emoji or colon-style markup. For example, typing `:strawberry:` will render the emoji ![:strawberry:](https://github.githubassets.com/images/icons/emoji/unicode/1f353.png \":strawberry:\"). For a full list of available emoji and codes, see [emoji-cheat-sheet.com](http://emoji-cheat-sheet.com/).
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
     /// The [hexadecimal color code](http://www.color-hex.com/) for the label, without the leading `#`.
     #[serde(skip_serializing_if="Option::is_none")]
     pub color: Option<String>,
@@ -1093,11 +1088,11 @@ pub struct PatchIssuesUpdateLabel {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposMerge {
     /// The name of the base branch that the head will be merged into.
-    #[serde(rename = "base", deserialize_with="deser_string")]
-    pub base: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub base: Option<String>,
     /// The head to merge. This can be a branch name or a commit SHA1.
-    #[serde(rename = "head", deserialize_with="deser_string")]
-    pub head: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub head: Option<String>,
     /// Commit message to use for the merge commit. If omitted, a default message will be used.
     #[serde(skip_serializing_if="Option::is_none")]
     pub commit_message: Option<String>,
@@ -1106,8 +1101,8 @@ pub struct PostReposMerge {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostIssuesCreateMilestone {
     /// The title of the milestone.
-    #[serde(rename = "title", deserialize_with="deser_string")]
-    pub title: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub title: Option<String>,
     /// The state of the milestone. Either `open` or `closed`.
     #[serde(skip_serializing_if="Option::is_none")]
     pub state: Option<String>,
@@ -1122,8 +1117,8 @@ pub struct PostIssuesCreateMilestone {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutEnterpriseAdminSetSelectedOrganizationsEnabledGithubActionsEnterprise {
     /// List of organization IDs to enable for GitHub Actions.
-    #[serde(rename = "selected_organization_ids")]
-    pub selected_organization_ids: Vec<i32>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub selected_organization_ids: Option<Vec<i32>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1151,28 +1146,28 @@ pub struct PutActivityMarkRepoNotificationsAsRead {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutReposUpdateInformationAboutPagesSite {
-    #[serde(rename = "source")]
-    pub source: Value,
     /// Specify a custom domain for the repository. Sending a `null` value will remove the custom domain. For more about custom domains, see \"[Using a custom domain with GitHub Pages](https://help.github.com/articles/using-a-custom-domain-with-github-pages/).\"
     #[serde(skip_serializing_if="Option::is_none")]
     pub cname: Option<String>,
     /// Configures access controls for the GitHub Pages site. If public is set to `true`, the site is accessible to anyone on the internet. If set to `false`, the site will only be accessible to users who have at least `read` access to the repository that published the site. This includes anyone in your Enterprise if the repository is set to `internal` visibility. This feature is only available to repositories in an organization on an Enterprise plan.
     #[serde(skip_serializing_if="Option::is_none")]
     pub public: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub source: Option<Value>,
 }
 
 /// The source branch and directory used to publish your Pages site.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreatePagesSite {
-    #[serde(rename = "source")]
-    pub source: ReposownerrepopagesSource,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub source: Option<ReposownerrepopagesSource>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostProjectsCreateForRepo {
     /// The name of the project.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
     /// The description of the project.
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
@@ -1180,15 +1175,15 @@ pub struct PostProjectsCreateForRepo {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostPullsCreate {
-    /// The name of the branch where your changes are implemented. For cross-repository pull requests in the same network, namespace `head` with a user like this: `username:branch`.
-    #[serde(rename = "head", deserialize_with="deser_string")]
-    pub head: String,
-    /// The name of the branch you want the changes pulled into. This should be an existing branch on the current repository. You cannot submit a pull request to one repository that requests a merge to a base of another repository.
-    #[serde(rename = "base", deserialize_with="deser_string")]
-    pub base: String,
     /// The title of the new pull request.
     #[serde(skip_serializing_if="Option::is_none")]
     pub title: Option<String>,
+    /// The name of the branch where your changes are implemented. For cross-repository pull requests in the same network, namespace `head` with a user like this: `username:branch`.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub head: Option<String>,
+    /// The name of the branch you want the changes pulled into. This should be an existing branch on the current repository. You cannot submit a pull request to one repository that requests a merge to a base of another repository.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub base: Option<String>,
     /// The contents of the pull request.
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
@@ -1205,15 +1200,15 @@ pub struct PostPullsCreate {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchPullsUpdateReviewComment {
     /// The text of the reply to the review comment.
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReactionsCreateForPullRequestReviewComment {
     /// The [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types) to add to the pull request review comment.
-    #[serde(rename = "content", deserialize_with="deser_string")]
-    pub content: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub content: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1238,8 +1233,8 @@ pub struct PatchPullsUpdate {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostPullsCreateReviewComment {
     /// The text of the review comment.
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
     /// The SHA of the commit needing a comment. Not using the latest commit SHA may render your comment outdated if a subsequent commit modifies the line you specify as the `position`.
     #[serde(skip_serializing_if="Option::is_none")]
     pub commit_id: Option<String>,
@@ -1268,8 +1263,8 @@ pub struct PostPullsCreateReviewComment {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostEnterpriseAdminCreateSelfHostedRunnerGroupForEnterprise {
     /// Name of the runner group.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
     /// Visibility of a runner group. You can select all organizations or select individual organization. Can be one of: `all` or `selected`
     #[serde(skip_serializing_if="Option::is_none")]
     pub visibility: Option<String>,
@@ -1284,8 +1279,8 @@ pub struct PostEnterpriseAdminCreateSelfHostedRunnerGroupForEnterprise {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostPullsCreateReplyForReviewComment {
     /// The text of the review comment.
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1317,8 +1312,8 @@ pub struct PostPullsRequestReviewers {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeletePullsRemoveRequestedReviewers {
     /// An array of user `login`s that will be removed.
-    #[serde(rename = "reviewers")]
-    pub reviewers: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub reviewers: Option<Vec<String>>,
     /// An array of team `slug`s that will be removed.
     #[serde(skip_serializing_if="Option::is_none")]
     pub team_reviewers: Option<Vec<String>>,
@@ -1343,27 +1338,27 @@ pub struct PostPullsCreateReview {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutPullsUpdateReview {
     /// The body text of the pull request review.
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutPullsDismissReview {
     /// The message for the pull request review dismissal
-    #[serde(rename = "message", deserialize_with="deser_string")]
-    pub message: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub message: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub event: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostPullsSubmitReview {
-    /// The review action you want to perform. The review actions include: `APPROVE`, `REQUEST_CHANGES`, or `COMMENT`. When you leave this blank, the API returns _HTTP 422 (Unrecognizable entity)_ and sets the review action state to `PENDING`, which means you will need to re-submit the pull request review using a review action.
-    #[serde(rename = "event", deserialize_with="deser_string")]
-    pub event: String,
     /// The body text of the pull request review
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
+    /// The review action you want to perform. The review actions include: `APPROVE`, `REQUEST_CHANGES`, or `COMMENT`. When you leave this blank, the API returns _HTTP 422 (Unrecognizable entity)_ and sets the review action state to `PENDING`, which means you will need to re-submit the pull request review using a review action.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1376,8 +1371,8 @@ pub struct PutPullsUpdateBranch {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateRelease {
     /// The name of the tag.
-    #[serde(rename = "tag_name", deserialize_with="deser_string")]
-    pub tag_name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tag_name: Option<String>,
     /// Specifies the commitish value that determines where the Git tag is created from. Can be any branch or commit SHA. Unused if the Git tag already exists. Default: the repository's default branch (usually `master`).
     #[serde(skip_serializing_if="Option::is_none")]
     pub target_commitish: Option<String>,
@@ -1441,8 +1436,8 @@ pub struct PatchReposUpdateRelease {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchSecretScanningUpdateAlert {
-    #[serde(rename = "state")]
-    pub state: SecretScanningAlertState,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<SecretScanningAlertState>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub resolution: Option<SecretScanningAlertResolution>,
 }
@@ -1450,8 +1445,8 @@ pub struct PatchSecretScanningUpdateAlert {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateCommitStatus {
     /// The state of the status. Can be one of `error`, `failure`, `pending`, or `success`.
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
     /// The target URL to associate with this status. This URL will be linked from the GitHub UI to allow users to easily see the source of the status.   For example, if your continuous integration system is posting build status, you would want to provide the deep link for the build output for this specific SHA:   `http://ci.example.com/user/repo/build/sha`
     #[serde(skip_serializing_if="Option::is_none")]
     pub target_url: Option<String>,
@@ -1476,15 +1471,15 @@ pub struct PutActivitySetRepoSubscription {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutReposReplaceAllTopics {
     /// An array of topics to add to the repository. Pass one or more topics to _replace_ the set of existing topics. Send an empty array (`[]`) to clear all topics from the repository. **Note:** Topic `names` cannot contain uppercase letters.
-    #[serde(rename = "names")]
-    pub names: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub names: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposTransfer {
     /// The username or organization name the repository will be transferred to.
-    #[serde(rename = "new_owner", deserialize_with="deser_string")]
-    pub new_owner: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub new_owner: Option<String>,
     /// ID of the team or teams to add to the repository. Teams can only be added to organization-owned repositories.
     #[serde(skip_serializing_if="Option::is_none")]
     pub team_ids: Option<Vec<i32>>,
@@ -1492,12 +1487,12 @@ pub struct PostReposTransfer {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateUsingTemplate {
-    /// The name of the new repository.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
     /// The organization or person who will own the new repository. To create a new repository in an organization, the authenticated user must be a member of the specified organization.
     #[serde(skip_serializing_if="Option::is_none")]
     pub owner: Option<String>,
+    /// The name of the new repository.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
     /// A short description of the new repository.
     #[serde(skip_serializing_if="Option::is_none")]
     pub description: Option<String>,
@@ -1522,11 +1517,12 @@ pub struct PutActionsCreateOrUpdateEnvironmentSecret {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostEnterpriseAdminProvisionAndInviteEnterpriseGroup {
     /// The SCIM schema URIs.
-    #[serde(rename = "schemas")]
-    pub schemas: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub schemas: Option<Vec<String>>,
     /// The name of the SCIM group. This must match the GitHub organization that the group maps to.
-    #[serde(rename = "displayName", deserialize_with="deser_string")]
-    pub display_name: String,
+    #[serde(rename = "displayName")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub display_name: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub members: Option<Vec<Scimv2enterprisesenterpriseGroupsMembers>>,
 }
@@ -1534,18 +1530,19 @@ pub struct PostEnterpriseAdminProvisionAndInviteEnterpriseGroup {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutEnterpriseAdminSetOrgAccessToSelfHostedRunnerGroupInEnterprise {
     /// List of organization IDs that can access the runner group.
-    #[serde(rename = "selected_organization_ids")]
-    pub selected_organization_ids: Vec<i32>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub selected_organization_ids: Option<Vec<i32>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutEnterpriseAdminSetInformationForProvisionedEnterpriseGroup {
     /// The SCIM schema URIs.
-    #[serde(rename = "schemas")]
-    pub schemas: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub schemas: Option<Vec<String>>,
     /// The name of the SCIM group. This must match the GitHub organization that the group maps to.
-    #[serde(rename = "displayName", deserialize_with="deser_string")]
-    pub display_name: String,
+    #[serde(rename = "displayName")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub display_name: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub members: Option<Vec<Scimv2enterprisesenterpriseGroupsMembers>>,
 }
@@ -1553,26 +1550,28 @@ pub struct PutEnterpriseAdminSetInformationForProvisionedEnterpriseGroup {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchEnterpriseAdminUpdateAttributeForEnterpriseGroup {
     /// The SCIM schema URIs.
-    #[serde(rename = "schemas")]
-    pub schemas: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub schemas: Option<Vec<String>>,
     /// Array of [SCIM operations](https://tools.ietf.org/html/rfc7644#section-3.5.2).
     #[serde(rename = "Operations")]
-    pub operations: Vec<Scimv2enterprisesenterpriseGroupsscimGroupIdOperations>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub operations: Option<Vec<Scimv2enterprisesenterpriseGroupsscimGroupIdOperations>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostEnterpriseAdminProvisionAndInviteEnterpriseUser {
     /// The SCIM schema URIs.
-    #[serde(rename = "schemas")]
-    pub schemas: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub schemas: Option<Vec<String>>,
     /// The username for the user.
-    #[serde(rename = "userName", deserialize_with="deser_string")]
-    pub user_name: String,
-    #[serde(rename = "name")]
-    pub name: Scimv2enterprisesenterpriseUsersName,
+    #[serde(rename = "userName")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user_name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<Scimv2enterprisesenterpriseUsersName>,
     /// List of user emails.
-    #[serde(rename = "emails")]
-    pub emails: Vec<Scimv2enterprisesenterpriseUsersEmails>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub emails: Option<Vec<Scimv2enterprisesenterpriseUsersEmails>>,
     /// List of SCIM group IDs the user is a member of.
     #[serde(skip_serializing_if="Option::is_none")]
     pub groups: Option<Vec<Scimv2enterprisesenterpriseUsersGroups>>,
@@ -1581,16 +1580,17 @@ pub struct PostEnterpriseAdminProvisionAndInviteEnterpriseUser {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutEnterpriseAdminSetInformationForProvisionedEnterpriseUser {
     /// The SCIM schema URIs.
-    #[serde(rename = "schemas")]
-    pub schemas: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub schemas: Option<Vec<String>>,
     /// The username for the user.
-    #[serde(rename = "userName", deserialize_with="deser_string")]
-    pub user_name: String,
-    #[serde(rename = "name")]
-    pub name: Scimv2enterprisesenterpriseUsersName,
+    #[serde(rename = "userName")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user_name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<Scimv2enterprisesenterpriseUsersName>,
     /// List of user emails.
-    #[serde(rename = "emails")]
-    pub emails: Vec<Scimv2enterprisesenterpriseUsersEmails>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub emails: Option<Vec<Scimv2enterprisesenterpriseUsersEmails>>,
     /// List of SCIM group IDs the user is a member of.
     #[serde(skip_serializing_if="Option::is_none")]
     pub groups: Option<Vec<Scimv2enterprisesenterpriseUsersGroups>>,
@@ -1599,27 +1599,29 @@ pub struct PutEnterpriseAdminSetInformationForProvisionedEnterpriseUser {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchEnterpriseAdminUpdateAttributeForEnterpriseUser {
     /// The SCIM schema URIs.
-    #[serde(rename = "schemas")]
-    pub schemas: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub schemas: Option<Vec<String>>,
     /// Array of [SCIM operations](https://tools.ietf.org/html/rfc7644#section-3.5.2).
     #[serde(rename = "Operations")]
-    pub operations: Vec<Value>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub operations: Option<Vec<Value>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostScimProvisionAndInviteUser {
     /// Configured by the admin. Could be an email, login, or username
-    #[serde(rename = "userName", deserialize_with="deser_string")]
-    pub user_name: String,
-    #[serde(rename = "name")]
-    pub name: Scimv2organizationsorgUsersName,
-    /// user emails
-    #[serde(rename = "emails")]
-    pub emails: Vec<Scimv2organizationsorgUsersEmails>,
+    #[serde(rename = "userName")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user_name: Option<String>,
     /// The name of the user, suitable for display to end-users
     #[serde(rename = "displayName")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub display_name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<Scimv2organizationsorgUsersName>,
+    /// user emails
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub emails: Option<Vec<Scimv2organizationsorgUsersEmails>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub schemas: Option<Vec<String>>,
     #[serde(rename = "externalId")]
@@ -1633,14 +1635,6 @@ pub struct PostScimProvisionAndInviteUser {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutScimSetInformationForProvisionedUser {
-    /// Configured by the admin. Could be an email, login, or username
-    #[serde(rename = "userName", deserialize_with="deser_string")]
-    pub user_name: String,
-    #[serde(rename = "name")]
-    pub name: Scimv2organizationsorgUsersName,
-    /// user emails
-    #[serde(rename = "emails")]
-    pub emails: Vec<Scimv2organizationsorgUsersscimUserIdEmails>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub schemas: Option<Vec<String>>,
     /// The name of the user, suitable for display to end-users
@@ -1654,22 +1648,32 @@ pub struct PutScimSetInformationForProvisionedUser {
     pub groups: Option<Vec<String>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub active: Option<bool>,
+    /// Configured by the admin. Could be an email, login, or username
+    #[serde(rename = "userName")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user_name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<Scimv2organizationsorgUsersName>,
+    /// user emails
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub emails: Option<Vec<Scimv2organizationsorgUsersscimUserIdEmails>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchScimUpdateAttributeForUser {
-    /// Set of operations to be performed
-    #[serde(rename = "Operations")]
-    pub operations: Vec<Scimv2organizationsorgUsersscimUserIdOperations>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub schemas: Option<Vec<String>>,
+    /// Set of operations to be performed
+    #[serde(rename = "Operations")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub operations: Option<Vec<Scimv2organizationsorgUsersscimUserIdOperations>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchTeamsUpdateLegacy {
     /// The name of the team.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
     /// The description of the team.
     #[serde(skip_serializing_if="Option::is_none")]
     pub description: Option<String>,
@@ -1687,11 +1691,11 @@ pub struct PatchTeamsUpdateLegacy {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostTeamsCreateDiscussionLegacy {
     /// The discussion post's title.
-    #[serde(rename = "title", deserialize_with="deser_string")]
-    pub title: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub title: Option<String>,
     /// The discussion post's body text.
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
     /// Private posts are only visible to team members, organization owners, and team maintainers. Public posts are visible to all members of the organization. Set to `true` to create a private post.
     #[serde(skip_serializing_if="Option::is_none")]
     pub private: Option<bool>,
@@ -1700,8 +1704,8 @@ pub struct PostTeamsCreateDiscussionLegacy {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutEnterpriseAdminSetSelfHostedRunnersInGroupForEnterprise {
     /// List of runner IDs to add to the runner group.
-    #[serde(rename = "runners")]
-    pub runners: Vec<i32>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub runners: Option<Vec<i32>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1717,29 +1721,29 @@ pub struct PatchTeamsUpdateDiscussionLegacy {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostTeamsCreateDiscussionCommentLegacy {
     /// The discussion comment's body text.
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchTeamsUpdateDiscussionCommentLegacy {
     /// The discussion comment's body text.
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReactionsCreateForTeamDiscussionCommentLegacy {
     /// The [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types) to add to the team discussion comment.
-    #[serde(rename = "content", deserialize_with="deser_string")]
-    pub content: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub content: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReactionsCreateForTeamDiscussionLegacy {
     /// The [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types) to add to the team discussion.
-    #[serde(rename = "content", deserialize_with="deser_string")]
-    pub content: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub content: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1766,8 +1770,8 @@ pub struct PutTeamsAddOrUpdateRepoPermissionsLegacy {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchTeamsCreateOrUpdateIdpGroupConnectionsLegacy {
     /// The IdP groups you want to connect to a GitHub team. When updating, the new `groups` object will replace the original one. You must include any existing groups that you don't want to remove.
-    #[serde(rename = "groups")]
-    pub groups: Vec<TeamsteamIdteamsyncgroupmappingsGroups>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub groups: Option<Vec<TeamsteamIdteamsyncgroupmappingsGroups>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub synced_at: Option<String>,
 }
@@ -1802,12 +1806,12 @@ pub struct PatchUsersUpdateAuthenticated {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostGistsCreate {
-    /// Names and content for the files that make up the gist
-    #[serde(rename = "files")]
-    pub files: HashMap<String, GistsFiles>,
     /// Description of the gist
     #[serde(skip_serializing_if="Option::is_none")]
     pub description: Option<String>,
+    /// Names and content for the files that make up the gist
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub files: Option<HashMap<String, GistsFiles>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub public: Option<Value>,
 }
@@ -1815,11 +1819,11 @@ pub struct PostGistsCreate {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchUsersSetPrimaryEmailVisibilityForAuthenticated {
     /// An email address associated with the GitHub user account to manage.
-    #[serde(rename = "email", deserialize_with="deser_string")]
-    pub email: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     /// Denotes whether an email is publically visible.
-    #[serde(rename = "visibility", deserialize_with="deser_string")]
-    pub visibility: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub visibility: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1833,31 +1837,29 @@ pub struct DeleteUsersDeleteEmailForAuthenticated {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostUsersCreateGpgKeyForAuthenticated {
     /// A GPG key in ASCII-armored format.
-    #[serde(rename = "armored_public_key", deserialize_with="deser_string")]
-    pub armored_public_key: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub armored_public_key: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostUsersCreatePublicSshKeyForAuthenticated {
-    /// The public SSH key to add to your GitHub account.
-    #[serde(rename = "key", deserialize_with="deser_string")]
-    pub key: String,
     /// A descriptive name for the new key.
     #[serde(skip_serializing_if="Option::is_none")]
     pub title: Option<String>,
+    /// The public SSH key to add to your GitHub account.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub key: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchOrgsUpdateMembershipForAuthenticatedUser {
     /// The state that the membership should be in. Only `\"active\"` will be accepted.
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostMigrationsStartForAuthenticatedUser {
-    #[serde(rename = "repositories")]
-    pub repositories: Vec<String>,
     /// Lock the repositories being migrated at the start of the migration
     #[serde(skip_serializing_if="Option::is_none")]
     pub lock_repositories: Option<bool>,
@@ -1867,13 +1869,15 @@ pub struct PostMigrationsStartForAuthenticatedUser {
     /// Exclude attributes from the API response to improve performance
     #[serde(skip_serializing_if="Option::is_none")]
     pub exclude: Option<Vec<String>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repositories: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostProjectsCreateForAuthenticatedUser {
     /// Name of the project
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
     /// Body of the project
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
@@ -1882,8 +1886,8 @@ pub struct PostProjectsCreateForAuthenticatedUser {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateForAuthenticatedUser {
     /// The name of the repository.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
     /// A short description of the repository.
     #[serde(skip_serializing_if="Option::is_none")]
     pub description: Option<String>,
@@ -1954,22 +1958,22 @@ pub struct DeleteAppsDeleteAuthorization {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostGistsCreateComment {
     /// The comment text.
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchGistsUpdateComment {
     /// The comment text.
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostMarkdownRender {
     /// The Markdown text to render in HTML.
-    #[serde(rename = "text", deserialize_with="deser_string")]
-    pub text: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub text: Option<String>,
     /// The rendering mode.
     #[serde(skip_serializing_if="Option::is_none")]
     pub mode: Option<String>,
@@ -2057,8 +2061,8 @@ pub struct PatchOrgsUpdate {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutActionsSetGithubActionsPermissionsOrganization {
-    #[serde(rename = "enabled_repositories")]
-    pub enabled_repositories: EnabledRepositories,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub enabled_repositories: Option<EnabledRepositories>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub allowed_actions: Option<AllowedActions>,
 }
@@ -2066,15 +2070,15 @@ pub struct PutActionsSetGithubActionsPermissionsOrganization {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutActionsSetSelectedRepositoriesEnabledGithubActionsOrganization {
     /// List of repository IDs to enable for GitHub Actions.
-    #[serde(rename = "selected_repository_ids")]
-    pub selected_repository_ids: Vec<i32>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub selected_repository_ids: Option<Vec<i32>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostActionsCreateSelfHostedRunnerGroupForOrg {
     /// Name of the runner group.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
     /// Visibility of a runner group. You can select all repositories, select individual repositories, or limit access to private repositories. Can be one of: `all`, `selected`, or `private`.
     #[serde(skip_serializing_if="Option::is_none")]
     pub visibility: Option<String>,
@@ -2099,22 +2103,22 @@ pub struct PatchActionsUpdateSelfHostedRunnerGroupForOrg {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostAppsCheckToken {
     /// The access_token of the OAuth application.
-    #[serde(rename = "access_token", deserialize_with="deser_string")]
-    pub access_token: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub access_token: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutActionsSetRepoAccessToSelfHostedRunnerGroupInOrg {
     /// List of repository IDs that can access the runner group.
-    #[serde(rename = "selected_repository_ids")]
-    pub selected_repository_ids: Vec<i32>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub selected_repository_ids: Option<Vec<i32>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutActionsSetSelfHostedRunnersInGroupForOrg {
     /// List of runner IDs to add to the runner group.
-    #[serde(rename = "runners")]
-    pub runners: Vec<i32>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub runners: Option<Vec<i32>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -2143,10 +2147,10 @@ pub struct PutActionsSetSelectedReposForOrgSecret {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostOrgsCreateWebhook {
     /// Must be passed as \"web\".
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "config")]
-    pub config: OrgsorghooksConfig,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub config: Option<OrgsorghooksConfig>,
     /// Determines what [events](https://docs.github.com/webhooks/event-payloads) the hook is triggered for.
     #[serde(skip_serializing_if="Option::is_none")]
     pub events: Option<Vec<String>>,
@@ -2207,8 +2211,8 @@ pub struct PutOrgsSetMembershipForUser {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostMigrationsStartForOrg {
     /// A list of arrays indicating which repositories should be migrated.
-    #[serde(rename = "repositories")]
-    pub repositories: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repositories: Option<Vec<String>>,
     /// Indicates whether repositories should be locked (to prevent manipulation) while migrating data.
     #[serde(skip_serializing_if="Option::is_none")]
     pub lock_repositories: Option<bool>,
@@ -2222,15 +2226,15 @@ pub struct PostMigrationsStartForOrg {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeleteAppsDeleteToken {
     /// The OAuth access token used to authenticate to the GitHub API.
-    #[serde(rename = "access_token", deserialize_with="deser_string")]
-    pub access_token: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub access_token: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostProjectsCreateForOrg {
     /// The name of the project.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
     /// The description of the project.
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
@@ -2239,8 +2243,8 @@ pub struct PostProjectsCreateForOrg {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateInOrg {
     /// The name of the repository.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
     /// A short description of the repository.
     #[serde(skip_serializing_if="Option::is_none")]
     pub description: Option<String>,
@@ -2294,8 +2298,8 @@ pub struct PostReposCreateInOrg {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostTeamsCreate {
     /// The name of the team.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
     /// The description of the team.
     #[serde(skip_serializing_if="Option::is_none")]
     pub description: Option<String>,
@@ -2338,11 +2342,11 @@ pub struct PatchTeamsUpdateInOrg {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostTeamsCreateDiscussionInOrg {
     /// The discussion post's title.
-    #[serde(rename = "title", deserialize_with="deser_string")]
-    pub title: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub title: Option<String>,
     /// The discussion post's body text.
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
     /// Private posts are only visible to team members, organization owners, and team maintainers. Public posts are visible to all members of the organization. Set to `true` to create a private post.
     #[serde(skip_serializing_if="Option::is_none")]
     pub private: Option<bool>,
@@ -2361,36 +2365,36 @@ pub struct PatchTeamsUpdateDiscussionInOrg {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostTeamsCreateDiscussionCommentInOrg {
     /// The discussion comment's body text.
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchTeamsUpdateDiscussionCommentInOrg {
     /// The discussion comment's body text.
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReactionsCreateForTeamDiscussionCommentInOrg {
     /// The [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types) to add to the team discussion comment.
-    #[serde(rename = "content", deserialize_with="deser_string")]
-    pub content: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub content: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReactionsCreateForTeamDiscussionInOrg {
     /// The [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types) to add to the team discussion.
-    #[serde(rename = "content", deserialize_with="deser_string")]
-    pub content: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub content: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchAppsResetToken {
     /// The access_token of the OAuth application.
-    #[serde(rename = "access_token", deserialize_with="deser_string")]
-    pub access_token: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub access_token: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -2417,8 +2421,8 @@ pub struct PutTeamsAddOrUpdateRepoPermissionsInOrg {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchTeamsCreateOrUpdateIdpGroupConnectionsInOrg {
     /// The IdP groups you want to connect to a GitHub team. When updating, the new `groups` object will replace the original one. You must include any existing groups that you don't want to remove.
-    #[serde(rename = "groups")]
-    pub groups: Vec<OrgsorgteamsteamSlugteamsyncgroupmappingsGroups>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub groups: Option<Vec<OrgsorgteamsteamSlugteamsyncgroupmappingsGroups>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -2434,8 +2438,8 @@ pub struct PatchProjectsUpdateCard {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostProjectsMoveCard {
     /// The position of the card in a column
-    #[serde(rename = "position", deserialize_with="deser_string")]
-    pub position: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub position: Option<String>,
     /// The unique identifier of the column the card should be moved to
     #[serde(skip_serializing_if="Option::is_none")]
     pub column_id: Option<i64>,
@@ -2444,8 +2448,8 @@ pub struct PostProjectsMoveCard {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchProjectsUpdateColumn {
     /// Name of the project column
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -2455,8 +2459,8 @@ pub struct PostProjectsCreateCard {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostProjectsMoveColumn {
     /// The position of the column in a project
-    #[serde(rename = "position", deserialize_with="deser_string")]
-    pub position: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub position: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -2481,8 +2485,8 @@ pub struct PatchProjectsUpdate {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostAppsScopeToken {
     /// **Required.** The OAuth access token used to authenticate to the GitHub API.
-    #[serde(rename = "access_token", deserialize_with="deser_string")]
-    pub access_token: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub access_token: Option<String>,
     /// The name of the user or organization to scope the user-to-server access token to. **Required** unless `target_id` is specified.
     #[serde(skip_serializing_if="Option::is_none")]
     pub target: Option<String>,
@@ -2509,8 +2513,8 @@ pub struct PutProjectsAddCollaborator {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostProjectsCreateColumn {
     /// Name of the project column
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -2564,8 +2568,8 @@ pub struct PatchReposUpdate {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutActionsSetGithubActionsPermissionsRepository {
-    #[serde(rename = "enabled")]
-    pub enabled: ActionsEnabled,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub enabled: Option<ActionsEnabled>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub allowed_actions: Option<AllowedActions>,
 }
@@ -2573,14 +2577,14 @@ pub struct PutActionsSetGithubActionsPermissionsRepository {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostActionsReviewPendingDeploymentsForRun {
     /// The list of environment ids to approve or reject
-    #[serde(rename = "environment_ids")]
-    pub environment_ids: Vec<i32>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub environment_ids: Option<Vec<i32>>,
     /// Whether to approve or reject deployment to the specified environments. Must be one of: `approved` or `rejected`
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
     /// A comment to accompany the deployment review
-    #[serde(rename = "comment", deserialize_with="deser_string")]
-    pub comment: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comment: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -2596,8 +2600,9 @@ pub struct PutActionsCreateOrUpdateRepoSecret {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostActionsCreateWorkflowDispatch {
     /// The git reference for the workflow. The reference can be a branch or tag name.
-    #[serde(rename = "ref", deserialize_with="deser_string")]
-    pub _ref: String,
+    #[serde(rename = "ref")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_ref: Option<String>,
     /// Input keys and values configured in the workflow file. The maximum number of properties is 10. Any default properties configured in the workflow file will be used when `inputs` are omitted.
     #[serde(skip_serializing_if="Option::is_none")]
     pub inputs: Option<HashMap<String, String>>,
@@ -2605,15 +2610,15 @@ pub struct PostActionsCreateWorkflowDispatch {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutReposUpdateBranchProtection {
-    #[serde(rename = "required_status_checks")]
-    pub required_status_checks: ReposownerrepobranchesbranchprotectionRequiredStatusChecks,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub required_status_checks: Option<ReposownerrepobranchesbranchprotectionRequiredStatusChecks>,
     /// Enforce all configured restrictions for administrators. Set to `true` to enforce required status checks for repository administrators. Set to `null` to disable.
-    #[serde(rename = "enforce_admins")]
-    pub enforce_admins: bool,
-    #[serde(rename = "required_pull_request_reviews")]
-    pub required_pull_request_reviews: ReposownerrepobranchesbranchprotectionRequiredPullRequestReviews,
-    #[serde(rename = "restrictions")]
-    pub restrictions: ReposownerrepobranchesbranchprotectionRestrictions,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub enforce_admins: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub required_pull_request_reviews: Option<ReposownerrepobranchesbranchprotectionRequiredPullRequestReviews>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub restrictions: Option<ReposownerrepobranchesbranchprotectionRestrictions>,
     /// Enforces a linear commit Git history, which prevents anyone from pushing merge commits to a branch. Set to `true` to enforce a linear commit history. Set to `false` to disable a linear commit Git history. Your repository must allow squash merging or rebase merging before you can enable a linear commit history. Default: `false`. For more information, see \"[Requiring a linear commit history](https://help.github.com/github/administering-a-repository/requiring-a-linear-commit-history)\" in the GitHub Help documentation.
     #[serde(skip_serializing_if="Option::is_none")]
     pub required_linear_history: Option<bool>,
@@ -2675,78 +2680,78 @@ pub struct PostOauthAuthorizationsCreateAuthorization {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutReposSetStatusCheckContexts {
     /// contexts parameter
-    #[serde(rename = "contexts")]
-    pub contexts: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contexts: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposAddStatusCheckContexts {
     /// contexts parameter
-    #[serde(rename = "contexts")]
-    pub contexts: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contexts: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeleteReposRemoveStatusCheckContexts {
     /// contexts parameter
-    #[serde(rename = "contexts")]
-    pub contexts: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contexts: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutReposSetAppAccessRestrictions {
     /// apps parameter
-    #[serde(rename = "apps")]
-    pub apps: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub apps: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposAddAppAccessRestrictions {
     /// apps parameter
-    #[serde(rename = "apps")]
-    pub apps: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub apps: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeleteReposRemoveAppAccessRestrictions {
     /// apps parameter
-    #[serde(rename = "apps")]
-    pub apps: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub apps: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutReposSetTeamAccessRestrictions {
     /// teams parameter
-    #[serde(rename = "teams")]
-    pub teams: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub teams: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposAddTeamAccessRestrictions {
     /// teams parameter
-    #[serde(rename = "teams")]
-    pub teams: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub teams: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeleteReposRemoveTeamAccessRestrictions {
     /// teams parameter
-    #[serde(rename = "teams")]
-    pub teams: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub teams: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutReposSetUserAccessRestrictions {
     /// users parameter
-    #[serde(rename = "users")]
-    pub users: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub users: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutOauthAuthorizationsGetOrCreateAuthorizationForApp {
     /// The OAuth app client secret for which to create the token.
-    #[serde(rename = "client_secret", deserialize_with="deser_string")]
-    pub client_secret: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub client_secret: Option<String>,
     /// A list of scopes that this authorization is in.
     #[serde(skip_serializing_if="Option::is_none")]
     pub scopes: Option<Vec<String>>,
@@ -2764,32 +2769,32 @@ pub struct PutOauthAuthorizationsGetOrCreateAuthorizationForApp {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposAddUserAccessRestrictions {
     /// users parameter
-    #[serde(rename = "users")]
-    pub users: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub users: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeleteReposRemoveUserAccessRestrictions {
     /// users parameter
-    #[serde(rename = "users")]
-    pub users: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub users: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposRenameBranch {
     /// The new name of the branch.
-    #[serde(rename = "new_name", deserialize_with="deser_string")]
-    pub new_name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub new_name: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostChecksCreate {
     /// The name of the check. For example, \"code-coverage\".
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
     /// The SHA of the commit.
-    #[serde(rename = "head_sha", deserialize_with="deser_string")]
-    pub head_sha: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub head_sha: Option<String>,
     /// The URL of the integrator's site that has the full details of the check. If the integrator does not provide this, then the homepage of the GitHub app is used.
     #[serde(skip_serializing_if="Option::is_none")]
     pub details_url: Option<String>,
@@ -2848,8 +2853,8 @@ pub struct PatchChecksUpdate {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostChecksCreateSuite {
     /// The sha of the head commit.
-    #[serde(rename = "head_sha", deserialize_with="deser_string")]
-    pub head_sha: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub head_sha: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -2861,20 +2866,21 @@ pub struct PatchChecksSetSuitesPreferences {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchCodeScanningUpdateAlert {
-    #[serde(rename = "state")]
-    pub state: CodeScanningAlertSetState,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<CodeScanningAlertSetState>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub dismissed_reason: Option<CodeScanningAlertDismissedReason>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostCodeScanningUploadSarif {
-    #[serde(rename = "commit_sha")]
-    pub commit_sha: CodeScanningAnalysisCommitSha,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_sha: Option<CodeScanningAnalysisCommitSha>,
     #[serde(rename = "ref")]
-    pub _ref: CodeScanningRef,
-    #[serde(rename = "sarif")]
-    pub sarif: CodeScanningAnalysisSarifFile,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_ref: Option<CodeScanningRef>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sarif: Option<CodeScanningAnalysisSarifFile>,
     /// The base directory used in the analysis, as it appears in the SARIF file. This property is used to convert file paths from absolute to relative, so that alerts can be mapped to their correct location in the repository.
     #[serde(skip_serializing_if="Option::is_none")]
     pub checkout_uri: Option<String>,
@@ -2898,8 +2904,8 @@ pub struct PutReposAddCollaborator {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutOauthAuthorizationsGetOrCreateAuthorizationForAppAndFingerprint {
     /// The OAuth app client secret for which to create the token.
-    #[serde(rename = "client_secret", deserialize_with="deser_string")]
-    pub client_secret: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub client_secret: Option<String>,
     /// A list of scopes that this authorization is in.
     #[serde(skip_serializing_if="Option::is_none")]
     pub scopes: Option<Vec<String>>,
@@ -2914,22 +2920,22 @@ pub struct PutOauthAuthorizationsGetOrCreateAuthorizationForAppAndFingerprint {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchReposUpdateCommitComment {
     /// The contents of the comment
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReactionsCreateForCommitComment {
     /// The [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types) to add to the commit comment.
-    #[serde(rename = "content", deserialize_with="deser_string")]
-    pub content: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub content: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateCommitComment {
     /// The contents of the comment.
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
     /// Relative path of the file to comment on.
     #[serde(skip_serializing_if="Option::is_none")]
     pub path: Option<String>,
@@ -2944,11 +2950,11 @@ pub struct PostReposCreateCommitComment {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutReposCreateOrUpdateFileContents {
     /// The commit message.
-    #[serde(rename = "message", deserialize_with="deser_string")]
-    pub message: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub message: Option<String>,
     /// The new file content, using Base64 encoding.
-    #[serde(rename = "content", deserialize_with="deser_string")]
-    pub content: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub content: Option<String>,
     /// **Required if you are updating a file**. The blob SHA of the file being replaced.
     #[serde(skip_serializing_if="Option::is_none")]
     pub sha: Option<String>,
@@ -2964,11 +2970,11 @@ pub struct PutReposCreateOrUpdateFileContents {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeleteReposDeleteFile {
     /// The commit message.
-    #[serde(rename = "message", deserialize_with="deser_string")]
-    pub message: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub message: Option<String>,
     /// The blob SHA of the file being replaced.
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
     /// The branch name. Default: the repository’s default branch (usually `master`)
     #[serde(skip_serializing_if="Option::is_none")]
     pub branch: Option<String>,
@@ -2981,8 +2987,9 @@ pub struct DeleteReposDeleteFile {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateDeployment {
     /// The ref to deploy. This can be a branch, tag, or SHA.
-    #[serde(rename = "ref", deserialize_with="deser_string")]
-    pub _ref: String,
+    #[serde(rename = "ref")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_ref: Option<String>,
     /// Specifies a task to execute (e.g., `deploy` or `deploy:migrations`).
     #[serde(skip_serializing_if="Option::is_none")]
     pub task: Option<String>,
@@ -3013,8 +3020,8 @@ pub struct PostReposCreateDeployment {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateDeploymentStatus {
     /// The state of the status. Can be one of `error`, `failure`, `inactive`, `in_progress`, `queued` `pending`, or `success`. **Note:** To use the `inactive` state, you must provide the [`application/vnd.github.ant-man-preview+json`](https://docs.github.com/rest/overview/api-previews#enhanced-deployments) custom media type. To use the `in_progress` and `queued` states, you must provide the [`application/vnd.github.flash-preview+json`](https://docs.github.com/rest/overview/api-previews#deployment-statuses) custom media type. When you set a transient deployment to `inactive`, the deployment will be shown as `destroyed` in GitHub.
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
     /// The target URL to associate with this status. This URL should contain output to keep the user updated while the task is running or serve as historical information for what happened in the deployment. **Note:** It's recommended to use the `log_url` parameter, which replaces `target_url`.
     #[serde(skip_serializing_if="Option::is_none")]
     pub target_url: Option<String>,
@@ -3038,8 +3045,8 @@ pub struct PostReposCreateDeploymentStatus {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateDispatchEvent {
     /// A custom webhook event name.
-    #[serde(rename = "event_type", deserialize_with="deser_string")]
-    pub event_type: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event_type: Option<String>,
     /// JSON payload with extra information about the webhook event that your action or worklow may use.
     #[serde(skip_serializing_if="Option::is_none")]
     pub client_payload: Option<HashMap<String, HashMap<(), ()>>>,
@@ -3066,12 +3073,10 @@ pub struct PostReposCreateFork {
 /// Branch Protection
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BranchProtection {
-    #[serde(rename = "required_status_checks")]
-    pub required_status_checks: BranchprotectionRequiredStatusChecks,
-    #[serde(rename = "enabled")]
-    pub enabled: bool,
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub required_status_checks: Option<BranchprotectionRequiredStatusChecks>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub enforce_admins: Option<ProtectedBranchAdminEnforced>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3085,6 +3090,8 @@ pub struct BranchProtection {
     #[serde(skip_serializing_if="Option::is_none")]
     pub allow_deletions: Option<BranchprotectionRequiredLinearHistory>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub enabled: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub protection_url: Option<String>,
@@ -3093,48 +3100,48 @@ pub struct BranchProtection {
 /// Branch Restriction Policy
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BranchRestrictionPolicy {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "users_url", deserialize_with="deser_string")]
-    pub users_url: String,
-    #[serde(rename = "teams_url", deserialize_with="deser_string")]
-    pub teams_url: String,
-    #[serde(rename = "apps_url", deserialize_with="deser_string")]
-    pub apps_url: String,
-    #[serde(rename = "users")]
-    pub users: Vec<RepositoryTemplateRepositoryOwner>,
-    #[serde(rename = "teams")]
-    pub teams: Vec<BranchrestrictionpolicyTeams>,
-    #[serde(rename = "apps")]
-    pub apps: Vec<BranchrestrictionpolicyApps>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub users_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub teams_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub apps_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub users: Option<Vec<RepositoryTemplateRepositoryOwner>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub teams: Option<Vec<BranchrestrictionpolicyTeams>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub apps: Option<Vec<BranchrestrictionpolicyApps>>,
 }
 
 /// Branch Short
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BranchShort {
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "commit")]
-    pub commit: BranchshortCommit,
-    #[serde(rename = "protected")]
-    pub protected: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit: Option<BranchshortCommit>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub protected: Option<bool>,
 }
 
 /// Branch With Protection
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BranchWithProtection {
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "commit")]
-    pub commit: Commit,
-    #[serde(rename = "_links")]
-    pub _links: BranchwithprotectionLinks,
-    #[serde(rename = "protected")]
-    pub protected: bool,
-    #[serde(rename = "protection")]
-    pub protection: BranchProtection,
-    #[serde(rename = "protection_url", deserialize_with="deser_string")]
-    pub protection_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit: Option<Commit>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _links: Option<BranchwithprotectionLinks>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub protected: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub protection: Option<BranchProtection>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub protection_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub pattern: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3149,12 +3156,12 @@ pub struct BranchprotectionRequiredLinearHistory {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BranchprotectionRequiredStatusChecks {
-    #[serde(rename = "enforcement_level", deserialize_with="deser_string")]
-    pub enforcement_level: String,
-    #[serde(rename = "contexts")]
-    pub contexts: Vec<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub enforcement_level: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contexts: Option<Vec<String>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub contexts_url: Option<String>,
 }
@@ -3278,84 +3285,85 @@ pub struct BranchrestrictionpolicyTeams {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BranchshortCommit {
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BranchwithprotectionLinks {
-    #[serde(rename = "html", deserialize_with="deser_string")]
-    pub html: String,
-    #[serde(rename = "self", deserialize_with="deser_string")]
-    pub _self: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html: Option<String>,
+    #[serde(rename = "self")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _self: Option<String>,
 }
 
 /// Check Annotation
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CheckAnnotation {
-    #[serde(rename = "path", deserialize_with="deser_string")]
-    pub path: String,
-    #[serde(rename = "start_line")]
-    pub start_line: i64,
-    #[serde(rename = "end_line")]
-    pub end_line: i64,
-    #[serde(rename = "start_column")]
-    pub start_column: i64,
-    #[serde(rename = "end_column")]
-    pub end_column: i64,
-    #[serde(rename = "annotation_level", deserialize_with="deser_string")]
-    pub annotation_level: String,
-    #[serde(rename = "title", deserialize_with="deser_string")]
-    pub title: String,
-    #[serde(rename = "message", deserialize_with="deser_string")]
-    pub message: String,
-    #[serde(rename = "raw_details", deserialize_with="deser_string")]
-    pub raw_details: String,
-    #[serde(rename = "blob_href", deserialize_with="deser_string")]
-    pub blob_href: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub path: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub start_line: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub end_line: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub start_column: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub end_column: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub annotation_level: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub title: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub message: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub raw_details: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub blob_href: Option<String>,
 }
 
 /// A check performed on the code of a given code change
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CheckRun {
     /// The id of the check.
-    #[serde(rename = "id")]
-    pub id: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
     /// The SHA of the commit that is being checked.
-    #[serde(rename = "head_sha", deserialize_with="deser_string")]
-    pub head_sha: String,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "external_id", deserialize_with="deser_string")]
-    pub external_id: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "details_url", deserialize_with="deser_string")]
-    pub details_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub head_sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub external_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub details_url: Option<String>,
     /// The phase of the lifecycle that the check is currently in.
-    #[serde(rename = "status", deserialize_with="deser_string")]
-    pub status: String,
-    #[serde(rename = "conclusion", deserialize_with="deser_string")]
-    pub conclusion: String,
-    #[serde(rename = "started_at")]
-    pub started_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "completed_at")]
-    pub completed_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "output")]
-    pub output: CheckrunOutput,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub status: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub conclusion: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub started_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub completed_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub output: Option<CheckrunOutput>,
     /// The name of the check.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "check_suite")]
-    pub check_suite: CheckrunCheckSuite,
-    #[serde(rename = "app")]
-    pub app: Integration,
-    #[serde(rename = "pull_requests")]
-    pub pull_requests: Vec<PullRequestMinimal>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub check_suite: Option<CheckrunCheckSuite>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub app: Option<Integration>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pull_requests: Option<Vec<PullRequestMinimal>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub deployment: Option<DeploymentSimple>,
 }
@@ -3363,70 +3371,70 @@ pub struct CheckRun {
 /// A suite of checks performed on the code of a given code change
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CheckSuite {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "head_branch", deserialize_with="deser_string")]
-    pub head_branch: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub head_branch: Option<String>,
     /// The SHA of the head commit that is being checked.
-    #[serde(rename = "head_sha", deserialize_with="deser_string")]
-    pub head_sha: String,
-    #[serde(rename = "status", deserialize_with="deser_string")]
-    pub status: String,
-    #[serde(rename = "conclusion", deserialize_with="deser_string")]
-    pub conclusion: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "before", deserialize_with="deser_string")]
-    pub before: String,
-    #[serde(rename = "after", deserialize_with="deser_string")]
-    pub after: String,
-    #[serde(rename = "pull_requests")]
-    pub pull_requests: Vec<PullRequestMinimal>,
-    #[serde(rename = "app")]
-    pub app: Integration,
-    #[serde(rename = "repository")]
-    pub repository: MinimalRepository,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "head_commit")]
-    pub head_commit: SimpleCommit,
-    #[serde(rename = "latest_check_runs_count")]
-    pub latest_check_runs_count: i64,
-    #[serde(rename = "check_runs_url", deserialize_with="deser_string")]
-    pub check_runs_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub head_sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub status: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub conclusion: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub before: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub after: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pull_requests: Option<Vec<PullRequestMinimal>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub app: Option<Integration>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repository: Option<MinimalRepository>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub head_commit: Option<SimpleCommit>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub latest_check_runs_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub check_runs_url: Option<String>,
 }
 
 /// Check suite configuration preferences for a repository.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CheckSuitePreference {
-    #[serde(rename = "preferences")]
-    pub preferences: ChecksuitepreferencePreferences,
-    #[serde(rename = "repository")]
-    pub repository: Repository,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub preferences: Option<ChecksuitepreferencePreferences>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repository: Option<Repository>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CheckrunCheckSuite {
-    #[serde(rename = "id")]
-    pub id: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CheckrunOutput {
-    #[serde(rename = "title", deserialize_with="deser_string")]
-    pub title: String,
-    #[serde(rename = "summary", deserialize_with="deser_string")]
-    pub summary: String,
-    #[serde(rename = "text", deserialize_with="deser_string")]
-    pub text: String,
-    #[serde(rename = "annotations_count")]
-    pub annotations_count: i64,
-    #[serde(rename = "annotations_url", deserialize_with="deser_string")]
-    pub annotations_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub title: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub summary: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub text: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub annotations_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub annotations_url: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -3437,21 +3445,21 @@ pub struct ChecksuitepreferencePreferences {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ChecksuitepreferencePreferencesAutoTriggerChecks {
-    #[serde(rename = "app_id")]
-    pub app_id: i64,
-    #[serde(rename = "setting")]
-    pub setting: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub app_id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub setting: Option<bool>,
 }
 
 /// Clone Traffic
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CloneTraffic {
-    #[serde(rename = "count")]
-    pub count: i64,
-    #[serde(rename = "uniques")]
-    pub uniques: i64,
-    #[serde(rename = "clones")]
-    pub clones: Vec<Traffic>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub uniques: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub clones: Option<Vec<Traffic>>,
 }
 
 /// Code Frequency Stat
@@ -3462,57 +3470,57 @@ pub struct CodeFrequencyStat {
 /// Code Of Conduct
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeOfConduct {
-    #[serde(rename = "key", deserialize_with="deser_string")]
-    pub key: String,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub key: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
 }
 
 /// Code of Conduct Simple
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeOfConductSimple {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "key", deserialize_with="deser_string")]
-    pub key: String,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub key: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAlert {
-    #[serde(rename = "number")]
-    pub number: AlertNumber,
-    #[serde(rename = "created_at")]
-    pub created_at: AlertCreatedAt,
-    #[serde(rename = "url")]
-    pub url: AlertUrl,
-    #[serde(rename = "html_url")]
-    pub html_url: AlertHtmlUrl,
-    #[serde(rename = "instances_url")]
-    pub instances_url: AlertInstancesUrl,
-    #[serde(rename = "state")]
-    pub state: CodeScanningAlertState,
-    #[serde(rename = "dismissed_by")]
-    pub dismissed_by: SimpleUser,
-    #[serde(rename = "dismissed_at")]
-    pub dismissed_at: CodeScanningAlertDismissedAt,
-    #[serde(rename = "dismissed_reason")]
-    pub dismissed_reason: CodeScanningAlertDismissedReason,
-    #[serde(rename = "rule")]
-    pub rule: CodeScanningAlertRule,
-    #[serde(rename = "tool")]
-    pub tool: CodeScanningAnalysisTool,
-    #[serde(rename = "most_recent_instance")]
-    pub most_recent_instance: CodeScanningAlertInstance,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub number: Option<AlertNumber>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<AlertCreatedAt>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<AlertUrl>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<AlertHtmlUrl>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub instances_url: Option<AlertInstancesUrl>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<CodeScanningAlertState>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub dismissed_by: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub dismissed_at: Option<CodeScanningAlertDismissedAt>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub dismissed_reason: Option<CodeScanningAlertDismissedReason>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub rule: Option<CodeScanningAlertRule>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tool: Option<CodeScanningAnalysisTool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub most_recent_instance: Option<CodeScanningAlertInstance>,
 }
 
 /// A classification of the file. For example to identify it as generated.
@@ -3574,7 +3582,7 @@ pub struct CodeScanningAlertEnvironment {
 pub struct CodeScanningAlertInstance {
     #[serde(rename = "ref")]
     #[serde(skip_serializing_if="Option::is_none")]
-    pub _ref: Option<CodeScanningRef>,
+    pub git_ref: Option<CodeScanningRef>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub analysis_key: Option<CodeScanningAnalysisAnalysisKey>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3596,30 +3604,30 @@ pub struct CodeScanningAlertInstance {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAlertItems {
-    #[serde(rename = "number")]
-    pub number: AlertNumber,
-    #[serde(rename = "created_at")]
-    pub created_at: AlertCreatedAt,
-    #[serde(rename = "url")]
-    pub url: AlertUrl,
-    #[serde(rename = "html_url")]
-    pub html_url: AlertHtmlUrl,
-    #[serde(rename = "instances_url")]
-    pub instances_url: AlertInstancesUrl,
-    #[serde(rename = "state")]
-    pub state: CodeScanningAlertState,
-    #[serde(rename = "dismissed_by")]
-    pub dismissed_by: SimpleUser,
-    #[serde(rename = "dismissed_at")]
-    pub dismissed_at: CodeScanningAlertDismissedAt,
-    #[serde(rename = "dismissed_reason")]
-    pub dismissed_reason: CodeScanningAlertDismissedReason,
-    #[serde(rename = "rule")]
-    pub rule: CodeScanningAlertRuleSummary,
-    #[serde(rename = "tool")]
-    pub tool: CodeScanningAnalysisTool,
-    #[serde(rename = "most_recent_instance")]
-    pub most_recent_instance: CodeScanningAlertInstance,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub number: Option<AlertNumber>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<AlertCreatedAt>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<AlertUrl>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<AlertHtmlUrl>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub instances_url: Option<AlertInstancesUrl>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<CodeScanningAlertState>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub dismissed_by: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub dismissed_at: Option<CodeScanningAlertDismissedAt>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub dismissed_reason: Option<CodeScanningAlertDismissedReason>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub rule: Option<CodeScanningAlertRuleSummary>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tool: Option<CodeScanningAnalysisTool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub most_recent_instance: Option<CodeScanningAlertInstance>,
 }
 
 /// Describe a region within a file for the alert.
@@ -3753,34 +3761,35 @@ impl std::str::FromStr for CodeScanningAlertState {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAnalysis {
     #[serde(rename = "ref")]
-    pub _ref: CodeScanningRef,
-    #[serde(rename = "commit_sha")]
-    pub commit_sha: CodeScanningAnalysisCommitSha,
-    #[serde(rename = "analysis_key")]
-    pub analysis_key: CodeScanningAnalysisAnalysisKey,
-    #[serde(rename = "environment")]
-    pub environment: CodeScanningAnalysisEnvironment,
-    #[serde(rename = "error", deserialize_with="deser_string")]
-    pub error: String,
-    #[serde(rename = "created_at")]
-    pub created_at: CodeScanningAnalysisCreatedAt,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_ref: Option<CodeScanningRef>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_sha: Option<CodeScanningAnalysisCommitSha>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub analysis_key: Option<CodeScanningAnalysisAnalysisKey>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub environment: Option<CodeScanningAnalysisEnvironment>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub error: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<CodeScanningAnalysisCreatedAt>,
     /// The total number of results in the analysis.
-    #[serde(rename = "results_count")]
-    pub results_count: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub results_count: Option<i64>,
     /// The total number of rules used in the analysis.
-    #[serde(rename = "rules_count")]
-    pub rules_count: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub rules_count: Option<i64>,
     /// Unique identifier for this analysis.
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "url")]
-    pub url: CodeScanningAnalysisUrl,
-    #[serde(rename = "sarif_id")]
-    pub sarif_id: CodeScanningAnalysisSarifId,
-    #[serde(rename = "tool")]
-    pub tool: CodeScanningAnalysisTool,
-    #[serde(rename = "deletable")]
-    pub deletable: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<CodeScanningAnalysisUrl>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sarif_id: Option<CodeScanningAnalysisSarifId>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tool: Option<CodeScanningAnalysisTool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub deletable: Option<bool>,
 }
 
 /// Identifies the configuration under which the analysis was executed. For example, in GitHub Actions this includes the workflow filename and job name.
@@ -3800,11 +3809,11 @@ pub type CodeScanningAnalysisCreatedAt = DateTime<Utc>;
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAnalysisDeletion {
     /// Next deletable analysis in chain, without last analysis deletion confirmation
-    #[serde(rename = "next_analysis_url", deserialize_with="deser_string")]
-    pub next_analysis_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub next_analysis_url: Option<String>,
     /// Next deletable analysis in chain, with last analysis deletion confirmation
-    #[serde(rename = "confirm_delete_url", deserialize_with="deser_string")]
-    pub confirm_delete_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub confirm_delete_url: Option<String>,
 }
 
 /// Identifies the variable values associated with the environment in which this analysis was performed.
@@ -3879,22 +3888,22 @@ pub struct CodeScanningSarifsStatus {
 /// Code Search Result Item
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeSearchResultItem {
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "path", deserialize_with="deser_string")]
-    pub path: String,
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "git_url", deserialize_with="deser_string")]
-    pub git_url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "repository")]
-    pub repository: MinimalRepository,
-    #[serde(rename = "score")]
-    pub score: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub path: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repository: Option<MinimalRepository>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub score: Option<f32>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub file_size: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3916,584 +3925,6 @@ pub struct CodescanningalertinstanceMessage {
 /// Collaborator
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Collaborator {
-    #[serde(rename = "login", deserialize_with="deser_string")]
-    pub login: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "avatar_url", deserialize_with="deser_string")]
-    pub avatar_url: String,
-    #[serde(rename = "gravatar_id", deserialize_with="deser_string")]
-    pub gravatar_id: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "followers_url", deserialize_with="deser_string")]
-    pub followers_url: String,
-    #[serde(rename = "following_url", deserialize_with="deser_string")]
-    pub following_url: String,
-    #[serde(rename = "gists_url", deserialize_with="deser_string")]
-    pub gists_url: String,
-    #[serde(rename = "starred_url", deserialize_with="deser_string")]
-    pub starred_url: String,
-    #[serde(rename = "subscriptions_url", deserialize_with="deser_string")]
-    pub subscriptions_url: String,
-    #[serde(rename = "organizations_url", deserialize_with="deser_string")]
-    pub organizations_url: String,
-    #[serde(rename = "repos_url", deserialize_with="deser_string")]
-    pub repos_url: String,
-    #[serde(rename = "events_url", deserialize_with="deser_string")]
-    pub events_url: String,
-    #[serde(rename = "received_events_url", deserialize_with="deser_string")]
-    pub received_events_url: String,
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
-    #[serde(rename = "site_admin")]
-    pub site_admin: bool,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub permissions: Option<CollaboratorPermissions>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CollaboratorPermissions {
-    #[serde(rename = "pull")]
-    pub pull: bool,
-    #[serde(rename = "push")]
-    pub push: bool,
-    #[serde(rename = "admin")]
-    pub admin: bool,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CombinedBillingUsage {
-    /// Numbers of days left in billing cycle.
-    #[serde(rename = "days_left_in_billing_cycle")]
-    pub days_left_in_billing_cycle: i64,
-    /// Estimated storage space (GB) used in billing cycle.
-    #[serde(rename = "estimated_paid_storage_for_month")]
-    pub estimated_paid_storage_for_month: i64,
-    /// Estimated sum of free and paid storage space (GB) used in billing cycle.
-    #[serde(rename = "estimated_storage_for_month")]
-    pub estimated_storage_for_month: i64,
-}
-
-/// Combined Commit Status
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CombinedCommitStatus {
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
-    #[serde(rename = "statuses")]
-    pub statuses: Vec<SimpleCommitStatus>,
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "total_count")]
-    pub total_count: i64,
-    #[serde(rename = "repository")]
-    pub repository: MinimalRepository,
-    #[serde(rename = "commit_url", deserialize_with="deser_string")]
-    pub commit_url: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-}
-
-/// Commit
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct Commit {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "comments_url", deserialize_with="deser_string")]
-    pub comments_url: String,
-    #[serde(rename = "commit")]
-    pub commit: CommitCommit,
-    #[serde(rename = "author")]
-    pub author: SimpleUser,
-    #[serde(rename = "committer")]
-    pub committer: SimpleUser,
-    #[serde(rename = "parents")]
-    pub parents: Vec<CommitParents>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub stats: Option<CommitStats>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub files: Option<Vec<CommitFiles>>,
-}
-
-/// Commit Activity
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommitActivity {
-    #[serde(rename = "days")]
-    pub days: Vec<i32>,
-    #[serde(rename = "total")]
-    pub total: i64,
-    #[serde(rename = "week")]
-    pub week: i64,
-}
-
-/// Commit Comment
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommitComment {
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
-    #[serde(rename = "path", deserialize_with="deser_string")]
-    pub path: String,
-    #[serde(rename = "position")]
-    pub position: i64,
-    #[serde(rename = "line")]
-    pub line: i64,
-    #[serde(rename = "commit_id", deserialize_with="deser_string")]
-    pub commit_id: String,
-    #[serde(rename = "user")]
-    pub user: SimpleUser,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "author_association")]
-    pub author_association: AuthorAssociation,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub reactions: Option<ReactionRollup>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommitCommit {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "author")]
-    pub author: GitUser,
-    #[serde(rename = "committer")]
-    pub committer: GitUser,
-    #[serde(rename = "message", deserialize_with="deser_string")]
-    pub message: String,
-    #[serde(rename = "comment_count")]
-    pub comment_count: i64,
-    #[serde(rename = "tree")]
-    pub tree: CommitCommitTree,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub verification: Option<Verification>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommitCommitTree {
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-}
-
-/// Commit Comparison
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommitComparison {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "permalink_url", deserialize_with="deser_string")]
-    pub permalink_url: String,
-    #[serde(rename = "diff_url", deserialize_with="deser_string")]
-    pub diff_url: String,
-    #[serde(rename = "patch_url", deserialize_with="deser_string")]
-    pub patch_url: String,
-    #[serde(rename = "base_commit")]
-    pub base_commit: Commit,
-    #[serde(rename = "merge_base_commit")]
-    pub merge_base_commit: Commit,
-    #[serde(rename = "status", deserialize_with="deser_string")]
-    pub status: String,
-    #[serde(rename = "ahead_by")]
-    pub ahead_by: i64,
-    #[serde(rename = "behind_by")]
-    pub behind_by: i64,
-    #[serde(rename = "total_commits")]
-    pub total_commits: i64,
-    #[serde(rename = "commits")]
-    pub commits: Vec<Commit>,
-    #[serde(rename = "files")]
-    pub files: Vec<DiffEntry>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommitFiles {
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub filename: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub additions: Option<i64>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub deletions: Option<i64>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub changes: Option<i64>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub status: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub raw_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub blob_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub patch: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub sha: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub contents_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub previous_filename: Option<String>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommitParents {
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub html_url: Option<String>,
-}
-
-/// Commit Search Result Item
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommitSearchResultItem {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "comments_url", deserialize_with="deser_string")]
-    pub comments_url: String,
-    #[serde(rename = "commit")]
-    pub commit: CommitsearchresultitemCommit,
-    #[serde(rename = "author")]
-    pub author: SimpleUser,
-    #[serde(rename = "committer")]
-    pub committer: GitUser,
-    #[serde(rename = "parents")]
-    pub parents: Vec<FilecommitCommitParents>,
-    #[serde(rename = "repository")]
-    pub repository: MinimalRepository,
-    #[serde(rename = "score")]
-    pub score: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub text_matches: Option<SearchResultTextMatches>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommitStats {
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub additions: Option<i64>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub deletions: Option<i64>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub total: Option<i64>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommitsearchresultitemCommit {
-    #[serde(rename = "author")]
-    pub author: CommitsearchresultitemCommitAuthor,
-    #[serde(rename = "committer")]
-    pub committer: GitUser,
-    #[serde(rename = "comment_count")]
-    pub comment_count: i64,
-    #[serde(rename = "message", deserialize_with="deser_string")]
-    pub message: String,
-    #[serde(rename = "tree")]
-    pub tree: ShortbranchCommit,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub verification: Option<Verification>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommitsearchresultitemCommitAuthor {
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "email", deserialize_with="deser_string")]
-    pub email: String,
-    #[serde(rename = "date")]
-    pub date: chrono::DateTime<chrono::Utc>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommunityHealthFile {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-}
-
-/// Community Profile
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommunityProfile {
-    #[serde(rename = "health_percentage")]
-    pub health_percentage: i64,
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
-    #[serde(rename = "documentation", deserialize_with="deser_string")]
-    pub documentation: String,
-    #[serde(rename = "files")]
-    pub files: CommunityprofileFiles,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub content_reports_enabled: Option<bool>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommunityprofileFiles {
-    #[serde(rename = "code_of_conduct")]
-    pub code_of_conduct: CodeOfConductSimple,
-    #[serde(rename = "license")]
-    pub license: LicenseSimple,
-    #[serde(rename = "contributing")]
-    pub contributing: CommunityHealthFile,
-    #[serde(rename = "readme")]
-    pub readme: CommunityHealthFile,
-    #[serde(rename = "issue_template")]
-    pub issue_template: CommunityHealthFile,
-    #[serde(rename = "pull_request_template")]
-    pub pull_request_template: CommunityHealthFile,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct ContainerMetadata {
-    #[serde(rename = "tags")]
-    pub tags: Vec<Value>,
-}
-
-/// A list of directory items
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct ContentDirectory {
-}
-
-/// Content File
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct ContentFile {
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
-    #[serde(rename = "encoding", deserialize_with="deser_string")]
-    pub encoding: String,
-    #[serde(rename = "size")]
-    pub size: i64,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "path", deserialize_with="deser_string")]
-    pub path: String,
-    #[serde(rename = "content", deserialize_with="deser_string")]
-    pub content: String,
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "git_url", deserialize_with="deser_string")]
-    pub git_url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "download_url", deserialize_with="deser_string")]
-    pub download_url: String,
-    #[serde(rename = "_links")]
-    pub _links: ContenttreeLinks,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub target: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub submodule_git_url: Option<String>,
-}
-
-/// Content Reference attachments allow you to provide context around URLs posted in comments
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct ContentReferenceAttachment {
-    /// The ID of the attachment
-    #[serde(rename = "id")]
-    pub id: i64,
-    /// The title of the attachment
-    #[serde(rename = "title", deserialize_with="deser_string")]
-    pub title: String,
-    /// The body of the attachment
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
-    /// The node_id of the content attachment
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub node_id: Option<String>,
-}
-
-/// An object describing a symlink
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct ContentSubmodule {
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
-    #[serde(rename = "submodule_git_url", deserialize_with="deser_string")]
-    pub submodule_git_url: String,
-    #[serde(rename = "size")]
-    pub size: i64,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "path", deserialize_with="deser_string")]
-    pub path: String,
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "git_url", deserialize_with="deser_string")]
-    pub git_url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "download_url", deserialize_with="deser_string")]
-    pub download_url: String,
-    #[serde(rename = "_links")]
-    pub _links: ContenttreeLinks,
-}
-
-/// An object describing a symlink
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct ContentSymlink {
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
-    #[serde(rename = "target", deserialize_with="deser_string")]
-    pub target: String,
-    #[serde(rename = "size")]
-    pub size: i64,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "path", deserialize_with="deser_string")]
-    pub path: String,
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "git_url", deserialize_with="deser_string")]
-    pub git_url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "download_url", deserialize_with="deser_string")]
-    pub download_url: String,
-    #[serde(rename = "_links")]
-    pub _links: ContenttreeLinks,
-}
-
-/// Content Traffic
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct ContentTraffic {
-    #[serde(rename = "path", deserialize_with="deser_string")]
-    pub path: String,
-    #[serde(rename = "title", deserialize_with="deser_string")]
-    pub title: String,
-    #[serde(rename = "count")]
-    pub count: i64,
-    #[serde(rename = "uniques")]
-    pub uniques: i64,
-}
-
-/// Content Tree
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct ContentTree {
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
-    #[serde(rename = "size")]
-    pub size: i64,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "path", deserialize_with="deser_string")]
-    pub path: String,
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "git_url", deserialize_with="deser_string")]
-    pub git_url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "download_url", deserialize_with="deser_string")]
-    pub download_url: String,
-    #[serde(rename = "_links")]
-    pub _links: ContenttreeLinks,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub entries: Option<Vec<ContenttreeEntries>>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct ContentdirectoryInner {
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
-    #[serde(rename = "size")]
-    pub size: i64,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "path", deserialize_with="deser_string")]
-    pub path: String,
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "git_url", deserialize_with="deser_string")]
-    pub git_url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "download_url", deserialize_with="deser_string")]
-    pub download_url: String,
-    #[serde(rename = "_links")]
-    pub _links: HashMap<(), ()>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub content: Option<String>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct ContenttreeEntries {
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
-    #[serde(rename = "size")]
-    pub size: i64,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "path", deserialize_with="deser_string")]
-    pub path: String,
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "git_url", deserialize_with="deser_string")]
-    pub git_url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "download_url", deserialize_with="deser_string")]
-    pub download_url: String,
-    #[serde(rename = "_links")]
-    pub _links: ContenttreeLinks,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub content: Option<String>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct ContenttreeLinks {
-    #[serde(rename = "git", deserialize_with="deser_string")]
-    pub git: String,
-    #[serde(rename = "html", deserialize_with="deser_string")]
-    pub html: String,
-    #[serde(rename = "self", deserialize_with="deser_string")]
-    pub _self: String,
-}
-
-/// Contributor
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct Contributor {
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
-    #[serde(rename = "contributions")]
-    pub contributions: i64,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -4526,8 +3957,595 @@ pub struct Contributor {
     pub events_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub received_events_url: Option<String>,
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub site_admin: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub permissions: Option<CollaboratorPermissions>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CollaboratorPermissions {
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pull: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub push: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub admin: Option<bool>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CombinedBillingUsage {
+    /// Numbers of days left in billing cycle.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub days_left_in_billing_cycle: Option<i64>,
+    /// Estimated storage space (GB) used in billing cycle.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub estimated_paid_storage_for_month: Option<i64>,
+    /// Estimated sum of free and paid storage space (GB) used in billing cycle.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub estimated_storage_for_month: Option<i64>,
+}
+
+/// Combined Commit Status
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CombinedCommitStatus {
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub statuses: Option<Vec<SimpleCommitStatus>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repository: Option<MinimalRepository>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+}
+
+/// Commit
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Commit {
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit: Option<CommitCommit>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub committer: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub parents: Option<Vec<CommitParents>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub stats: Option<CommitStats>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub files: Option<Vec<CommitFiles>>,
+}
+
+/// Commit Activity
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommitActivity {
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub days: Option<Vec<i32>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub week: Option<i64>,
+}
+
+/// Commit Comment
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommitComment {
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub path: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub position: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub line: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author_association: Option<AuthorAssociation>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub reactions: Option<ReactionRollup>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommitCommit {
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author: Option<GitUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub committer: Option<GitUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub message: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comment_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tree: Option<CommitCommitTree>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub verification: Option<Verification>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommitCommitTree {
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+}
+
+/// Commit Comparison
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommitComparison {
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub permalink_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub diff_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub patch_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub base_commit: Option<Commit>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub merge_base_commit: Option<Commit>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub status: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub ahead_by: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub behind_by: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_commits: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commits: Option<Vec<Commit>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub files: Option<Vec<DiffEntry>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommitFiles {
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub filename: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub additions: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub deletions: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub changes: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub status: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub raw_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub blob_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub patch: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contents_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub previous_filename: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommitParents {
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+}
+
+/// Commit Search Result Item
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommitSearchResultItem {
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit: Option<CommitsearchresultitemCommit>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub committer: Option<GitUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub parents: Option<Vec<FilecommitCommitParents>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repository: Option<MinimalRepository>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub score: Option<f32>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub text_matches: Option<SearchResultTextMatches>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommitStats {
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub additions: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub deletions: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total: Option<i64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommitsearchresultitemCommit {
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author: Option<CommitsearchresultitemCommitAuthor>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub committer: Option<GitUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comment_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub message: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tree: Option<ShortbranchCommit>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub verification: Option<Verification>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommitsearchresultitemCommitAuthor {
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub date: Option<chrono::DateTime<chrono::Utc>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommunityHealthFile {
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+}
+
+/// Community Profile
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommunityProfile {
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub health_percentage: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub documentation: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub files: Option<CommunityprofileFiles>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub content_reports_enabled: Option<bool>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommunityprofileFiles {
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub code_of_conduct: Option<CodeOfConductSimple>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub license: Option<LicenseSimple>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contributing: Option<CommunityHealthFile>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub readme: Option<CommunityHealthFile>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issue_template: Option<CommunityHealthFile>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pull_request_template: Option<CommunityHealthFile>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ContainerMetadata {
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tags: Option<Vec<Value>>,
+}
+
+/// A list of directory items
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ContentDirectory {
+}
+
+/// Content File
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ContentFile {
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub encoding: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub size: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub path: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub content: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub download_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _links: Option<ContenttreeLinks>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub target: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub submodule_git_url: Option<String>,
+}
+
+/// Content Reference attachments allow you to provide context around URLs posted in comments
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ContentReferenceAttachment {
+    /// The ID of the attachment
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    /// The title of the attachment
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub title: Option<String>,
+    /// The body of the attachment
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
+    /// The node_id of the content attachment
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+}
+
+/// An object describing a symlink
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ContentSubmodule {
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub submodule_git_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub size: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub path: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub download_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _links: Option<ContenttreeLinks>,
+}
+
+/// An object describing a symlink
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ContentSymlink {
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub target: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub size: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub path: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub download_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _links: Option<ContenttreeLinks>,
+}
+
+/// Content Traffic
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ContentTraffic {
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub path: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub title: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub uniques: Option<i64>,
+}
+
+/// Content Tree
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ContentTree {
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub size: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub path: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub download_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub entries: Option<Vec<ContenttreeEntries>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _links: Option<ContenttreeLinks>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ContentdirectoryInner {
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub size: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub path: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub content: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub download_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _links: Option<HashMap<(), ()>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ContenttreeEntries {
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub size: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub path: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub content: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub download_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _links: Option<ContenttreeLinks>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ContenttreeLinks {
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html: Option<String>,
+    #[serde(rename = "self")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _self: Option<String>,
+}
+
+/// Contributor
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Contributor {
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub login: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub avatar_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub gravatar_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub followers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub following_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub gists_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub starred_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscriptions_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub organizations_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repos_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub received_events_url: Option<String>,
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub site_admin: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contributions: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -4537,12 +4555,12 @@ pub struct Contributor {
 /// Contributor Activity
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ContributorActivity {
-    #[serde(rename = "author")]
-    pub author: SimpleUser,
-    #[serde(rename = "total")]
-    pub total: i64,
-    #[serde(rename = "weeks")]
-    pub weeks: Vec<ContributoractivityWeeks>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub weeks: Option<Vec<ContributoractivityWeeks>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -4561,20 +4579,20 @@ pub struct ContributoractivityWeeks {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CredentialAuthorization {
     /// User login that owns the underlying credential.
-    #[serde(rename = "login", deserialize_with="deser_string")]
-    pub login: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub login: Option<String>,
     /// Unique identifier for the credential.
-    #[serde(rename = "credential_id")]
-    pub credential_id: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub credential_id: Option<i64>,
     /// Human-readable description of the credential type.
-    #[serde(rename = "credential_type", deserialize_with="deser_string")]
-    pub credential_type: String,
-    /// Date when the credential was authorized for use.
-    #[serde(rename = "credential_authorized_at")]
-    pub credential_authorized_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub credential_type: Option<String>,
     /// Last eight characters of the credential. Only included in responses with credential_type of personal access token.
     #[serde(skip_serializing_if="Option::is_none")]
     pub token_last_eight: Option<String>,
+    /// Date when the credential was authorized for use.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub credential_authorized_at: Option<chrono::DateTime<chrono::Utc>>,
     /// List of oauth scopes the token has been granted.
     #[serde(skip_serializing_if="Option::is_none")]
     pub scopes: Option<Vec<String>>,
@@ -4597,59 +4615,60 @@ pub struct CredentialAuthorization {
 /// An SSH key granting access to a single repository.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeployKey {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "key", deserialize_with="deser_string")]
-    pub key: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "title", deserialize_with="deser_string")]
-    pub title: String,
-    #[serde(rename = "verified")]
-    pub verified: bool,
-    #[serde(rename = "created_at", deserialize_with="deser_string")]
-    pub created_at: String,
-    #[serde(rename = "read_only")]
-    pub read_only: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub key: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub title: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub verified: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub read_only: Option<bool>,
 }
 
 /// A request for a specific ref(branch,sha,tag) to be deployed
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Deployment {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
     /// Unique identifier of the deployment
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
     /// The ref to deploy. This can be a branch, tag, or sha.
-    #[serde(rename = "ref", deserialize_with="deser_string")]
-    pub _ref: String,
+    #[serde(rename = "ref")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_ref: Option<String>,
     /// Parameter to specify a task to execute
-    #[serde(rename = "task", deserialize_with="deser_string")]
-    pub task: String,
-    #[serde(rename = "payload")]
-    pub payload: HashMap<(), ()>,
-    /// Name for the target deployment environment.
-    #[serde(rename = "environment", deserialize_with="deser_string")]
-    pub environment: String,
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
-    #[serde(rename = "creator")]
-    pub creator: SimpleUser,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "statuses_url", deserialize_with="deser_string")]
-    pub statuses_url: String,
-    #[serde(rename = "repository_url", deserialize_with="deser_string")]
-    pub repository_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub task: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub payload: Option<HashMap<(), ()>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub original_environment: Option<String>,
+    /// Name for the target deployment environment.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub environment: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub creator: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub statuses_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repository_url: Option<String>,
     /// Specifies if the given environment is will no longer exist at some point in the future. Default: false.
     #[serde(skip_serializing_if="Option::is_none")]
     pub transient_environment: Option<bool>,
@@ -4664,11 +4683,11 @@ pub struct Deployment {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeploymentBranchPolicy {
     /// Whether only branches with branch protection rules can deploy to this environment. If `protected_branches` is `true`, `custom_branch_policies` must be `false`; if `protected_branches` is `false`, `custom_branch_policies` must be `true`.
-    #[serde(rename = "protected_branches")]
-    pub protected_branches: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub protected_branches: Option<bool>,
     /// Whether only branches that match the specified name patterns can deploy to this environment.  If `custom_branch_policies` is `true`, `protected_branches` must be `false`; if `custom_branch_policies` is `false`, `protected_branches` must be `true`.
-    #[serde(rename = "custom_branch_policies")]
-    pub custom_branch_policies: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub custom_branch_policies: Option<bool>,
 }
 
 /// The type of reviewer. Must be one of: `User` or `Team`
@@ -4708,31 +4727,31 @@ impl std::str::FromStr for DeploymentReviewerType {
 /// A deployment created as the result of an Actions check run from a workflow that references an environment
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeploymentSimple {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
     /// Unique identifier of the deployment
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     /// Parameter to specify a task to execute
-    #[serde(rename = "task", deserialize_with="deser_string")]
-    pub task: String,
-    /// Name for the target deployment environment.
-    #[serde(rename = "environment", deserialize_with="deser_string")]
-    pub environment: String,
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "statuses_url", deserialize_with="deser_string")]
-    pub statuses_url: String,
-    #[serde(rename = "repository_url", deserialize_with="deser_string")]
-    pub repository_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub task: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub original_environment: Option<String>,
+    /// Name for the target deployment environment.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub environment: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub statuses_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repository_url: Option<String>,
     /// Specifies if the given environment is will no longer exist at some point in the future. Default: false.
     #[serde(skip_serializing_if="Option::is_none")]
     pub transient_environment: Option<bool>,
@@ -4746,34 +4765,34 @@ pub struct DeploymentSimple {
 /// The status of a deployment.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeploymentStatus {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     /// The state of the status.
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
-    #[serde(rename = "creator")]
-    pub creator: SimpleUser,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub creator: Option<SimpleUser>,
     /// A short description of the status.
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
-    /// Deprecated: the URL to associate with this status.
-    #[serde(rename = "target_url", deserialize_with="deser_string")]
-    pub target_url: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "deployment_url", deserialize_with="deser_string")]
-    pub deployment_url: String,
-    #[serde(rename = "repository_url", deserialize_with="deser_string")]
-    pub repository_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
     /// The environment of the deployment that the status is for.
     #[serde(skip_serializing_if="Option::is_none")]
     pub environment: Option<String>,
+    /// Deprecated: the URL to associate with this status.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub target_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub deployment_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repository_url: Option<String>,
     /// The URL for accessing your environment.
     #[serde(skip_serializing_if="Option::is_none")]
     pub environment_url: Option<String>,
@@ -4787,24 +4806,24 @@ pub struct DeploymentStatus {
 /// Diff Entry
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DiffEntry {
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "filename", deserialize_with="deser_string")]
-    pub filename: String,
-    #[serde(rename = "status", deserialize_with="deser_string")]
-    pub status: String,
-    #[serde(rename = "additions")]
-    pub additions: i64,
-    #[serde(rename = "deletions")]
-    pub deletions: i64,
-    #[serde(rename = "changes")]
-    pub changes: i64,
-    #[serde(rename = "blob_url", deserialize_with="deser_string")]
-    pub blob_url: String,
-    #[serde(rename = "raw_url", deserialize_with="deser_string")]
-    pub raw_url: String,
-    #[serde(rename = "contents_url", deserialize_with="deser_string")]
-    pub contents_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub filename: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub status: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub additions: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub deletions: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub changes: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub blob_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub raw_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contents_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub patch: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -4820,14 +4839,14 @@ pub struct DockerMetadata {
 /// Email
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Email {
-    #[serde(rename = "email", deserialize_with="deser_string")]
-    pub email: String,
-    #[serde(rename = "primary")]
-    pub primary: bool,
-    #[serde(rename = "verified")]
-    pub verified: bool,
-    #[serde(rename = "visibility", deserialize_with="deser_string")]
-    pub visibility: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub primary: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub verified: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub visibility: Option<String>,
 }
 
 /// The policy that controls the organizations in the enterprise that are allowed to run GitHub Actions. Can be one of: `all`, `none`, or `selected`.
@@ -4909,54 +4928,54 @@ impl std::str::FromStr for EnabledRepositories {
 /// An enterprise account
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Enterprise {
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    /// Unique identifier of the enterprise
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    /// The name of the enterprise.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    /// The slug url identifier for the enterprise.
-    #[serde(rename = "slug", deserialize_with="deser_string")]
-    pub slug: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "avatar_url", deserialize_with="deser_string")]
-    pub avatar_url: String,
     /// A short description of the enterprise.
     #[serde(skip_serializing_if="Option::is_none")]
     pub description: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
     /// The enterprise's website URL.
     #[serde(skip_serializing_if="Option::is_none")]
     pub website_url: Option<String>,
+    /// Unique identifier of the enterprise
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    /// The name of the enterprise.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    /// The slug url identifier for the enterprise.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub slug: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub avatar_url: Option<String>,
 }
 
 /// Details of a deployment environment
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Environment {
     /// The id of the environment.
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     /// The name of the environment.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
     /// The time that the environment was created, in ISO 8601 format.
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
     /// The time that the environment was last updated, in ISO 8601 format.
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub protection_rules: Option<Vec<Value>>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -4967,16 +4986,16 @@ pub struct Environment {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct EnvironmentApprovals {
     /// The list of environments that were approved or rejected
-    #[serde(rename = "environments")]
-    pub environments: Vec<EnvironmentapprovalsEnvironments>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub environments: Option<Vec<EnvironmentapprovalsEnvironments>>,
     /// Whether deployment to the environment(s) was approved or rejected
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
-    #[serde(rename = "user")]
-    pub user: SimpleUser,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<SimpleUser>,
     /// The comment submitted with the deployment review
-    #[serde(rename = "comment", deserialize_with="deser_string")]
-    pub comment: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comment: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -5004,28 +5023,29 @@ pub struct EnvironmentapprovalsEnvironments {
 /// Event
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Event {
-    #[serde(rename = "id", deserialize_with="deser_string")]
-    pub id: String,
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
-    #[serde(rename = "actor")]
-    pub actor: Actor,
-    #[serde(rename = "repo")]
-    pub repo: EventRepo,
-    #[serde(rename = "payload")]
-    pub payload: EventPayload,
-    #[serde(rename = "public")]
-    pub public: bool,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<String>,
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub actor: Option<Actor>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repo: Option<EventRepo>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub org: Option<Actor>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub payload: Option<EventPayload>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub public: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct EventPayload {
-    #[serde(rename = "action", deserialize_with="deser_string")]
-    pub action: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub action: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub issue: Option<IssueSimple>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -5052,23 +5072,21 @@ pub struct EventPayloadPages {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct EventRepo {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
 }
 
 /// Feed
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Feed {
-    #[serde(rename = "timeline_url", deserialize_with="deser_string")]
-    pub timeline_url: String,
-    #[serde(rename = "user_url", deserialize_with="deser_string")]
-    pub user_url: String,
-    #[serde(rename = "_links")]
-    pub _links: FeedLinks,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub timeline_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub current_user_public_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -5081,14 +5099,16 @@ pub struct Feed {
     pub current_user_organization_urls: Option<Vec<String>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub security_advisories_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _links: Option<FeedLinks>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FeedLinks {
-    #[serde(rename = "timeline")]
-    pub timeline: LinkWithType,
-    #[serde(rename = "user")]
-    pub user: LinkWithType,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub timeline: Option<LinkWithType>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<LinkWithType>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub security_advisories: Option<LinkWithType>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -5106,10 +5126,10 @@ pub struct FeedLinks {
 /// File Commit
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FileCommit {
-    #[serde(rename = "content")]
-    pub content: FilecommitContent,
-    #[serde(rename = "commit")]
-    pub commit: FilecommitCommit,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub content: Option<FilecommitContent>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit: Option<FilecommitCommit>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -5215,164 +5235,152 @@ pub struct FilecommitContentLinks {
 /// Full Repository
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FullRepository {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "full_name", deserialize_with="deser_string")]
-    pub full_name: String,
-    #[serde(rename = "owner")]
-    pub owner: SimpleUser,
-    #[serde(rename = "private")]
-    pub private: bool,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
-    #[serde(rename = "fork")]
-    pub fork: bool,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "archive_url", deserialize_with="deser_string")]
-    pub archive_url: String,
-    #[serde(rename = "assignees_url", deserialize_with="deser_string")]
-    pub assignees_url: String,
-    #[serde(rename = "blobs_url", deserialize_with="deser_string")]
-    pub blobs_url: String,
-    #[serde(rename = "branches_url", deserialize_with="deser_string")]
-    pub branches_url: String,
-    #[serde(rename = "collaborators_url", deserialize_with="deser_string")]
-    pub collaborators_url: String,
-    #[serde(rename = "comments_url", deserialize_with="deser_string")]
-    pub comments_url: String,
-    #[serde(rename = "commits_url", deserialize_with="deser_string")]
-    pub commits_url: String,
-    #[serde(rename = "compare_url", deserialize_with="deser_string")]
-    pub compare_url: String,
-    #[serde(rename = "contents_url", deserialize_with="deser_string")]
-    pub contents_url: String,
-    #[serde(rename = "contributors_url", deserialize_with="deser_string")]
-    pub contributors_url: String,
-    #[serde(rename = "deployments_url", deserialize_with="deser_string")]
-    pub deployments_url: String,
-    #[serde(rename = "downloads_url", deserialize_with="deser_string")]
-    pub downloads_url: String,
-    #[serde(rename = "events_url", deserialize_with="deser_string")]
-    pub events_url: String,
-    #[serde(rename = "forks_url", deserialize_with="deser_string")]
-    pub forks_url: String,
-    #[serde(rename = "git_commits_url", deserialize_with="deser_string")]
-    pub git_commits_url: String,
-    #[serde(rename = "git_refs_url", deserialize_with="deser_string")]
-    pub git_refs_url: String,
-    #[serde(rename = "git_tags_url", deserialize_with="deser_string")]
-    pub git_tags_url: String,
-    #[serde(rename = "git_url", deserialize_with="deser_string")]
-    pub git_url: String,
-    #[serde(rename = "issue_comment_url", deserialize_with="deser_string")]
-    pub issue_comment_url: String,
-    #[serde(rename = "issue_events_url", deserialize_with="deser_string")]
-    pub issue_events_url: String,
-    #[serde(rename = "issues_url", deserialize_with="deser_string")]
-    pub issues_url: String,
-    #[serde(rename = "keys_url", deserialize_with="deser_string")]
-    pub keys_url: String,
-    #[serde(rename = "labels_url", deserialize_with="deser_string")]
-    pub labels_url: String,
-    #[serde(rename = "languages_url", deserialize_with="deser_string")]
-    pub languages_url: String,
-    #[serde(rename = "merges_url", deserialize_with="deser_string")]
-    pub merges_url: String,
-    #[serde(rename = "milestones_url", deserialize_with="deser_string")]
-    pub milestones_url: String,
-    #[serde(rename = "notifications_url", deserialize_with="deser_string")]
-    pub notifications_url: String,
-    #[serde(rename = "pulls_url", deserialize_with="deser_string")]
-    pub pulls_url: String,
-    #[serde(rename = "releases_url", deserialize_with="deser_string")]
-    pub releases_url: String,
-    #[serde(rename = "ssh_url", deserialize_with="deser_string")]
-    pub ssh_url: String,
-    #[serde(rename = "stargazers_url", deserialize_with="deser_string")]
-    pub stargazers_url: String,
-    #[serde(rename = "statuses_url", deserialize_with="deser_string")]
-    pub statuses_url: String,
-    #[serde(rename = "subscribers_url", deserialize_with="deser_string")]
-    pub subscribers_url: String,
-    #[serde(rename = "subscription_url", deserialize_with="deser_string")]
-    pub subscription_url: String,
-    #[serde(rename = "tags_url", deserialize_with="deser_string")]
-    pub tags_url: String,
-    #[serde(rename = "teams_url", deserialize_with="deser_string")]
-    pub teams_url: String,
-    #[serde(rename = "trees_url", deserialize_with="deser_string")]
-    pub trees_url: String,
-    #[serde(rename = "clone_url", deserialize_with="deser_string")]
-    pub clone_url: String,
-    #[serde(rename = "mirror_url", deserialize_with="deser_string")]
-    pub mirror_url: String,
-    #[serde(rename = "hooks_url", deserialize_with="deser_string")]
-    pub hooks_url: String,
-    #[serde(rename = "svn_url", deserialize_with="deser_string")]
-    pub svn_url: String,
-    #[serde(rename = "homepage", deserialize_with="deser_string")]
-    pub homepage: String,
-    #[serde(rename = "language", deserialize_with="deser_string")]
-    pub language: String,
-    #[serde(rename = "forks_count")]
-    pub forks_count: i64,
-    #[serde(rename = "stargazers_count")]
-    pub stargazers_count: i64,
-    #[serde(rename = "watchers_count")]
-    pub watchers_count: i64,
-    #[serde(rename = "size")]
-    pub size: i64,
-    #[serde(rename = "default_branch", deserialize_with="deser_string")]
-    pub default_branch: String,
-    #[serde(rename = "open_issues_count")]
-    pub open_issues_count: i64,
-    #[serde(rename = "has_issues")]
-    pub has_issues: bool,
-    #[serde(rename = "has_projects")]
-    pub has_projects: bool,
-    #[serde(rename = "has_wiki")]
-    pub has_wiki: bool,
-    #[serde(rename = "has_pages")]
-    pub has_pages: bool,
-    #[serde(rename = "has_downloads")]
-    pub has_downloads: bool,
-    #[serde(rename = "archived")]
-    pub archived: bool,
-    /// Returns whether or not this repository disabled.
-    #[serde(rename = "disabled")]
-    pub disabled: bool,
-    #[serde(rename = "pushed_at")]
-    pub pushed_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "subscribers_count")]
-    pub subscribers_count: i64,
-    #[serde(rename = "network_count")]
-    pub network_count: i64,
-    #[serde(rename = "license")]
-    pub license: LicenseSimple,
-    #[serde(rename = "forks")]
-    pub forks: i64,
-    #[serde(rename = "open_issues")]
-    pub open_issues: i64,
-    #[serde(rename = "watchers")]
-    pub watchers: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub full_name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub owner: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub private: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub fork: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub archive_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub assignees_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub blobs_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub branches_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub collaborators_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commits_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub compare_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contents_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contributors_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub deployments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub downloads_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub forks_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_commits_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_refs_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_tags_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issue_comment_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issue_events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issues_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub keys_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub labels_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub languages_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub merges_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub milestones_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub notifications_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pulls_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub releases_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub ssh_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub stargazers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub statuses_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscribers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscription_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tags_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub teams_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub trees_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub clone_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub mirror_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub hooks_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub svn_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub homepage: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub language: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub forks_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub stargazers_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub watchers_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub size: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub default_branch: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub open_issues_count: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub is_template: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub topics: Option<Vec<String>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_issues: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_projects: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_wiki: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_pages: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_downloads: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub archived: Option<bool>,
+    /// Returns whether or not this repository disabled.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub disabled: Option<bool>,
     /// The repository visibility: public, private, or internal.
     #[serde(skip_serializing_if="Option::is_none")]
     pub visibility: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pushed_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub permissions: Option<FullrepositoryPermissions>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -5388,13 +5396,25 @@ pub struct FullRepository {
     #[serde(skip_serializing_if="Option::is_none")]
     pub allow_merge_commit: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub subscribers_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub network_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub license: Option<LicenseSimple>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub organization: Option<SimpleUser>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub parent: Option<Repository>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub source: Option<Repository>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub forks: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub master_branch: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub open_issues: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub watchers: Option<i64>,
     /// Whether anonymous git access is allowed.
     #[serde(skip_serializing_if="Option::is_none")]
     pub anonymous_access_enabled: Option<bool>,
@@ -5404,49 +5424,49 @@ pub struct FullRepository {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FullrepositoryPermissions {
-    #[serde(rename = "admin")]
-    pub admin: bool,
-    #[serde(rename = "pull")]
-    pub pull: bool,
-    #[serde(rename = "push")]
-    pub push: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub admin: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pull: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub push: Option<bool>,
 }
 
 /// A comment made to a gist.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GistComment {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
     /// The comment text.
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
-    #[serde(rename = "user")]
-    pub user: SimpleUser,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "author_association")]
-    pub author_association: AuthorAssociation,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author_association: Option<AuthorAssociation>,
 }
 
 /// Gist Commit
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GistCommit {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "version", deserialize_with="deser_string")]
-    pub version: String,
-    #[serde(rename = "user")]
-    pub user: SimpleUser,
-    #[serde(rename = "change_status")]
-    pub change_status: GistcommitChangeStatus,
-    #[serde(rename = "committed_at")]
-    pub committed_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub version: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub change_status: Option<GistcommitChangeStatus>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub committed_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 /// Gist Simple
@@ -5503,8 +5523,8 @@ pub struct GistcommitChangeStatus {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GistsFiles {
     /// Content of the file
-    #[serde(rename = "content", deserialize_with="deser_string")]
-    pub content: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub content: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -5540,62 +5560,63 @@ pub struct GistsimpleFiles {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GitCommit {
     /// SHA for the commit
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "author")]
-    pub author: GitcommitAuthor,
-    #[serde(rename = "committer")]
-    pub committer: GitcommitAuthor,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author: Option<GitcommitAuthor>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub committer: Option<GitcommitAuthor>,
     /// Message describing the purpose of the commit
-    #[serde(rename = "message", deserialize_with="deser_string")]
-    pub message: String,
-    #[serde(rename = "tree")]
-    pub tree: GitcommitTree,
-    #[serde(rename = "parents")]
-    pub parents: Vec<GitcommitParents>,
-    #[serde(rename = "verification")]
-    pub verification: GitcommitVerification,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub message: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tree: Option<GitcommitTree>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub parents: Option<Vec<GitcommitParents>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub verification: Option<GitcommitVerification>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
 }
 
 /// Git references within a repository
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GitRef {
-    #[serde(rename = "ref", deserialize_with="deser_string")]
-    pub _ref: String,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "object")]
-    pub object: GitrefObject,
+    #[serde(rename = "ref")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_ref: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub object: Option<GitrefObject>,
 }
 
 /// Metadata for a Git tag
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GitTag {
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     /// Name of the tag
-    #[serde(rename = "tag", deserialize_with="deser_string")]
-    pub tag: String,
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tag: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
     /// URL for the tag
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
     /// Message describing the purpose of the tag
-    #[serde(rename = "message", deserialize_with="deser_string")]
-    pub message: String,
-    #[serde(rename = "tagger")]
-    pub tagger: GittagTagger,
-    #[serde(rename = "object")]
-    pub object: GittagObject,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub message: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tagger: Option<GittagTagger>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub object: Option<GittagObject>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub verification: Option<Verification>,
 }
@@ -5603,15 +5624,15 @@ pub struct GitTag {
 /// The hierarchy between files in a Git repository.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GitTree {
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "truncated")]
-    pub truncated: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub truncated: Option<bool>,
     /// Objects specifying a tree structure
-    #[serde(rename = "tree")]
-    pub tree: Vec<GittreeTree>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tree: Option<Vec<GittreeTree>>,
 }
 
 /// Metaproperties for Git author/committer information.
@@ -5629,86 +5650,88 @@ pub struct GitUser {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GitcommitAuthor {
     /// Timestamp of the commit
-    #[serde(rename = "date")]
-    pub date: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub date: Option<chrono::DateTime<chrono::Utc>>,
     /// Git email address of the user
-    #[serde(rename = "email", deserialize_with="deser_string")]
-    pub email: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     /// Name of the git user
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GitcommitParents {
     /// SHA for the commit
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GitcommitTree {
     /// SHA for the commit
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GitcommitVerification {
-    #[serde(rename = "verified")]
-    pub verified: bool,
-    #[serde(rename = "reason", deserialize_with="deser_string")]
-    pub reason: String,
-    #[serde(rename = "signature", deserialize_with="deser_string")]
-    pub signature: String,
-    #[serde(rename = "payload", deserialize_with="deser_string")]
-    pub payload: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub verified: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub reason: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub signature: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub payload: Option<String>,
 }
 
 /// Gitignore Template
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GitignoreTemplate {
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "source", deserialize_with="deser_string")]
-    pub source: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub source: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GitrefObject {
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
     /// SHA for the reference
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GittagObject {
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GittagTagger {
-    #[serde(rename = "date", deserialize_with="deser_string")]
-    pub date: String,
-    #[serde(rename = "email", deserialize_with="deser_string")]
-    pub email: String,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub date: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -5731,32 +5754,32 @@ pub struct GittreeTree {
 /// A unique encryption key
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GpgKey {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "primary_key_id")]
-    pub primary_key_id: i64,
-    #[serde(rename = "key_id", deserialize_with="deser_string")]
-    pub key_id: String,
-    #[serde(rename = "public_key", deserialize_with="deser_string")]
-    pub public_key: String,
-    #[serde(rename = "emails")]
-    pub emails: Vec<GpgkeyEmails>,
-    #[serde(rename = "subkeys")]
-    pub subkeys: Vec<GpgkeySubkeys>,
-    #[serde(rename = "can_sign")]
-    pub can_sign: bool,
-    #[serde(rename = "can_encrypt_comms")]
-    pub can_encrypt_comms: bool,
-    #[serde(rename = "can_encrypt_storage")]
-    pub can_encrypt_storage: bool,
-    #[serde(rename = "can_certify")]
-    pub can_certify: bool,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "expires_at")]
-    pub expires_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "raw_key", deserialize_with="deser_string")]
-    pub raw_key: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub primary_key_id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub key_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub public_key: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub emails: Option<Vec<GpgkeyEmails>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subkeys: Option<Vec<GpgkeySubkeys>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub can_sign: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub can_encrypt_comms: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub can_encrypt_storage: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub can_certify: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub expires_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub raw_key: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -5808,14 +5831,14 @@ pub struct GroupMapping {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GroupmappingGroups {
     /// The ID of the group
-    #[serde(rename = "group_id", deserialize_with="deser_string")]
-    pub group_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub group_id: Option<String>,
     /// The name of the group
-    #[serde(rename = "group_name", deserialize_with="deser_string")]
-    pub group_name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub group_name: Option<String>,
     /// a description of the group
-    #[serde(rename = "group_description", deserialize_with="deser_string")]
-    pub group_description: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub group_description: Option<String>,
     /// synchronization status for this group mapping
     #[serde(skip_serializing_if="Option::is_none")]
     pub status: Option<String>,
@@ -5827,34 +5850,35 @@ pub struct GroupmappingGroups {
 /// Webhooks for repositories.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Hook {
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
     /// Unique identifier of the webhook.
-    #[serde(rename = "id")]
-    pub id: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
     /// The name of a valid service, use 'web' for a webhook.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
     /// Determines whether the hook is actually triggered on pushes.
-    #[serde(rename = "active")]
-    pub active: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub active: Option<bool>,
     /// Determines what events the hook is triggered for. Default: ['push'].
-    #[serde(rename = "events")]
-    pub events: Vec<String>,
-    #[serde(rename = "config")]
-    pub config: HookConfig,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "test_url", deserialize_with="deser_string")]
-    pub test_url: String,
-    #[serde(rename = "ping_url", deserialize_with="deser_string")]
-    pub ping_url: String,
-    #[serde(rename = "last_response")]
-    pub last_response: HookResponse,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events: Option<Vec<String>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub config: Option<HookConfig>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub test_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub ping_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub last_response: Option<HookResponse>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -5883,53 +5907,45 @@ pub struct HookConfig {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct HookResponse {
-    #[serde(rename = "code")]
-    pub code: i64,
-    #[serde(rename = "status", deserialize_with="deser_string")]
-    pub status: String,
-    #[serde(rename = "message", deserialize_with="deser_string")]
-    pub message: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub code: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub status: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub message: Option<String>,
 }
 
 /// Hovercard
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Hovercard {
-    #[serde(rename = "contexts")]
-    pub contexts: Vec<HovercardContexts>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contexts: Option<Vec<HovercardContexts>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct HovercardContexts {
-    #[serde(rename = "message", deserialize_with="deser_string")]
-    pub message: String,
-    #[serde(rename = "octicon", deserialize_with="deser_string")]
-    pub octicon: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub message: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub octicon: Option<String>,
 }
 
 /// A repository import from an external source.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Import {
-    #[serde(rename = "vcs", deserialize_with="deser_string")]
-    pub vcs: String,
-    /// The URL of the originating repository.
-    #[serde(rename = "vcs_url", deserialize_with="deser_string")]
-    pub vcs_url: String,
-    #[serde(rename = "status", deserialize_with="deser_string")]
-    pub status: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "authors_url", deserialize_with="deser_string")]
-    pub authors_url: String,
-    #[serde(rename = "repository_url", deserialize_with="deser_string")]
-    pub repository_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub vcs: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub use_lfs: Option<String>,
+    /// The URL of the originating repository.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub vcs_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub svc_root: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub tfvc_project: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub status: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub status_text: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -5955,6 +5971,14 @@ pub struct Import {
     #[serde(skip_serializing_if="Option::is_none")]
     pub authors_count: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub authors_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repository_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub svn_root: Option<String>,
 }
 
@@ -5970,101 +5994,101 @@ pub struct ImportProjectChoices {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetMetaRootResponse200 {
-    #[serde(rename = "current_user_url", deserialize_with="deser_string")]
-    pub current_user_url: String,
-    #[serde(rename = "current_user_authorizations_html_url", deserialize_with="deser_string")]
-    pub current_user_authorizations_html_url: String,
-    #[serde(rename = "authorizations_url", deserialize_with="deser_string")]
-    pub authorizations_url: String,
-    #[serde(rename = "code_search_url", deserialize_with="deser_string")]
-    pub code_search_url: String,
-    #[serde(rename = "commit_search_url", deserialize_with="deser_string")]
-    pub commit_search_url: String,
-    #[serde(rename = "emails_url", deserialize_with="deser_string")]
-    pub emails_url: String,
-    #[serde(rename = "emojis_url", deserialize_with="deser_string")]
-    pub emojis_url: String,
-    #[serde(rename = "events_url", deserialize_with="deser_string")]
-    pub events_url: String,
-    #[serde(rename = "feeds_url", deserialize_with="deser_string")]
-    pub feeds_url: String,
-    #[serde(rename = "followers_url", deserialize_with="deser_string")]
-    pub followers_url: String,
-    #[serde(rename = "following_url", deserialize_with="deser_string")]
-    pub following_url: String,
-    #[serde(rename = "gists_url", deserialize_with="deser_string")]
-    pub gists_url: String,
-    #[serde(rename = "hub_url", deserialize_with="deser_string")]
-    pub hub_url: String,
-    #[serde(rename = "issue_search_url", deserialize_with="deser_string")]
-    pub issue_search_url: String,
-    #[serde(rename = "issues_url", deserialize_with="deser_string")]
-    pub issues_url: String,
-    #[serde(rename = "keys_url", deserialize_with="deser_string")]
-    pub keys_url: String,
-    #[serde(rename = "label_search_url", deserialize_with="deser_string")]
-    pub label_search_url: String,
-    #[serde(rename = "notifications_url", deserialize_with="deser_string")]
-    pub notifications_url: String,
-    #[serde(rename = "organization_url", deserialize_with="deser_string")]
-    pub organization_url: String,
-    #[serde(rename = "organization_repositories_url", deserialize_with="deser_string")]
-    pub organization_repositories_url: String,
-    #[serde(rename = "organization_teams_url", deserialize_with="deser_string")]
-    pub organization_teams_url: String,
-    #[serde(rename = "public_gists_url", deserialize_with="deser_string")]
-    pub public_gists_url: String,
-    #[serde(rename = "rate_limit_url", deserialize_with="deser_string")]
-    pub rate_limit_url: String,
-    #[serde(rename = "repository_url", deserialize_with="deser_string")]
-    pub repository_url: String,
-    #[serde(rename = "repository_search_url", deserialize_with="deser_string")]
-    pub repository_search_url: String,
-    #[serde(rename = "current_user_repositories_url", deserialize_with="deser_string")]
-    pub current_user_repositories_url: String,
-    #[serde(rename = "starred_url", deserialize_with="deser_string")]
-    pub starred_url: String,
-    #[serde(rename = "starred_gists_url", deserialize_with="deser_string")]
-    pub starred_gists_url: String,
-    #[serde(rename = "user_url", deserialize_with="deser_string")]
-    pub user_url: String,
-    #[serde(rename = "user_organizations_url", deserialize_with="deser_string")]
-    pub user_organizations_url: String,
-    #[serde(rename = "user_repositories_url", deserialize_with="deser_string")]
-    pub user_repositories_url: String,
-    #[serde(rename = "user_search_url", deserialize_with="deser_string")]
-    pub user_search_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub current_user_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub current_user_authorizations_html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub authorizations_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub code_search_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_search_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub emails_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub emojis_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub feeds_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub followers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub following_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub gists_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub hub_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issue_search_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issues_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub keys_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub label_search_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub notifications_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub organization_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub organization_repositories_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub organization_teams_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub public_gists_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub rate_limit_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repository_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repository_search_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub current_user_repositories_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub starred_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub starred_gists_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub topic_search_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user_organizations_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user_repositories_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user_search_url: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetAppsCheckAuthorizationResponse200 {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
     /// A list of scopes that this authorization is in.
-    #[serde(rename = "scopes")]
-    pub scopes: Vec<String>,
-    #[serde(rename = "token", deserialize_with="deser_string")]
-    pub token: String,
-    #[serde(rename = "token_last_eight", deserialize_with="deser_string")]
-    pub token_last_eight: String,
-    #[serde(rename = "hashed_token", deserialize_with="deser_string")]
-    pub hashed_token: String,
-    #[serde(rename = "app")]
-    pub app: ApplicationgrantApp,
-    #[serde(rename = "note", deserialize_with="deser_string")]
-    pub note: String,
-    #[serde(rename = "note_url", deserialize_with="deser_string")]
-    pub note_url: String,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "fingerprint", deserialize_with="deser_string")]
-    pub fingerprint: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub scopes: Option<Vec<String>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub token: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub token_last_eight: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub hashed_token: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub app: Option<ApplicationgrantApp>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub note: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub note_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub fingerprint: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub user: Option<SimpleUser>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -6073,90 +6097,90 @@ pub struct GetAppsCheckAuthorizationResponse200 {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetActionsListOrgSecretsResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: i64,
-    #[serde(rename = "secrets")]
-    pub secrets: Vec<OrganizationActionsSecret>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub secrets: Option<Vec<OrganizationActionsSecret>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetActionsListSelectedReposForOrgSecretResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: i64,
-    #[serde(rename = "repositories")]
-    pub repositories: Vec<MinimalRepository>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repositories: Option<Vec<MinimalRepository>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetAppsListInstallationsForAuthenticatedUserResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: i64,
-    #[serde(rename = "installations")]
-    pub installations: Vec<Installation>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub installations: Option<Vec<Installation>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetActionsListWorkflowRunArtifactsResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: i64,
-    #[serde(rename = "artifacts")]
-    pub artifacts: Vec<Artifact>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub artifacts: Option<Vec<Artifact>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetActionsListWorkflowRunsResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: i64,
-    #[serde(rename = "workflow_runs")]
-    pub workflow_runs: Vec<WorkflowRun>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub workflow_runs: Option<Vec<WorkflowRun>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetActionsListJobsForWorkflowRunResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: i64,
-    #[serde(rename = "jobs")]
-    pub jobs: Vec<Job>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub jobs: Option<Vec<Job>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetActionsListEnvironmentSecretsResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: i64,
-    #[serde(rename = "secrets")]
-    pub secrets: Vec<ActionsSecret>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub secrets: Option<Vec<ActionsSecret>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetActionsListRepoWorkflowsResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: i64,
-    #[serde(rename = "workflows")]
-    pub workflows: Vec<Workflow>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub workflows: Option<Vec<Workflow>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetChecksListForRefResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: i64,
-    #[serde(rename = "check_runs")]
-    pub check_runs: Vec<CheckRun>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub check_runs: Option<Vec<CheckRun>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetChecksListSuitesForRefResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: i64,
-    #[serde(rename = "check_suites")]
-    pub check_suites: Vec<CheckSuite>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub check_suites: Option<Vec<CheckSuite>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetEnterpriseAdminListOrgAccessToSelfHostedRunnerGroupInEnterpriseResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: f64,
-    #[serde(rename = "organizations")]
-    pub organizations: Vec<OrganizationSimple>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<f64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub organizations: Option<Vec<OrganizationSimple>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -6174,72 +6198,72 @@ pub struct GetReposGetAllEnvironmentsResponse200 {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetSearchCodeResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: i64,
-    #[serde(rename = "incomplete_results")]
-    pub incomplete_results: bool,
-    #[serde(rename = "items")]
-    pub items: Vec<CodeSearchResultItem>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub incomplete_results: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub items: Option<Vec<CodeSearchResultItem>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetSearchCommitsResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: i64,
-    #[serde(rename = "incomplete_results")]
-    pub incomplete_results: bool,
-    #[serde(rename = "items")]
-    pub items: Vec<CommitSearchResultItem>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub incomplete_results: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub items: Option<Vec<CommitSearchResultItem>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetSearchIssuesAndPullRequestsResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: i64,
-    #[serde(rename = "incomplete_results")]
-    pub incomplete_results: bool,
-    #[serde(rename = "items")]
-    pub items: Vec<IssueSearchResultItem>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub incomplete_results: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub items: Option<Vec<IssueSearchResultItem>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetSearchLabelsResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: i64,
-    #[serde(rename = "incomplete_results")]
-    pub incomplete_results: bool,
-    #[serde(rename = "items")]
-    pub items: Vec<LabelSearchResultItem>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub incomplete_results: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub items: Option<Vec<LabelSearchResultItem>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetSearchReposResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: i64,
-    #[serde(rename = "incomplete_results")]
-    pub incomplete_results: bool,
-    #[serde(rename = "items")]
-    pub items: Vec<RepoSearchResultItem>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub incomplete_results: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub items: Option<Vec<RepoSearchResultItem>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetSearchTopicsResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: i64,
-    #[serde(rename = "incomplete_results")]
-    pub incomplete_results: bool,
-    #[serde(rename = "items")]
-    pub items: Vec<TopicSearchResultItem>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub incomplete_results: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub items: Option<Vec<TopicSearchResultItem>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetSearchUsersResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: i64,
-    #[serde(rename = "incomplete_results")]
-    pub incomplete_results: bool,
-    #[serde(rename = "items")]
-    pub items: Vec<UserSearchResultItem>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub incomplete_results: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub items: Option<Vec<UserSearchResultItem>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -6248,28 +6272,28 @@ pub struct GetUsersGetByUsernameResponse200 {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetEnterpriseAdminListSelfHostedRunnerGroupsForEnterpriseResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: f64,
-    #[serde(rename = "runner_groups")]
-    pub runner_groups: Vec<RunnerGroupsEnterprise>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<f64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub runner_groups: Option<Vec<RunnerGroupsEnterprise>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetAppsListInstallationReposForAuthenticatedUserResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: i64,
-    #[serde(rename = "repositories")]
-    pub repositories: Vec<Repository>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub repository_selection: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repositories: Option<Vec<Repository>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetActionsListSelfHostedRunnersInGroupForOrgResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: f64,
-    #[serde(rename = "runners")]
-    pub runners: Vec<Runner>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<f64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub runners: Option<Vec<Runner>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -6282,79 +6306,79 @@ pub struct GetEnterpriseAdminListSelfHostedRunnersForEnterpriseResponse200 {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetAppsListReposAccessibleToInstallationResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: i64,
-    #[serde(rename = "repositories")]
-    pub repositories: Vec<Repository>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repositories: Option<Vec<Repository>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub repository_selection: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetActionsListRepoAccessToSelfHostedRunnerGroupInOrgResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: f64,
-    #[serde(rename = "repositories")]
-    pub repositories: Vec<Repository>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<f64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repositories: Option<Vec<Repository>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetActionsListSelfHostedRunnerGroupsForOrgResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: f64,
-    #[serde(rename = "runner_groups")]
-    pub runner_groups: Vec<RunnerGroupsOrg>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<f64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub runner_groups: Option<Vec<RunnerGroupsOrg>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetActionsListSelfHostedRunnersForRepoResponse200 {
-    #[serde(rename = "total_count")]
-    pub total_count: i64,
-    #[serde(rename = "runners")]
-    pub runners: Vec<Runner>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub runners: Option<Vec<Runner>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostAppsCreateFromManifestResponse201 {
     /// Unique identifier of the GitHub app
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "owner")]
-    pub owner: SimpleUser,
-    /// The name of the GitHub app
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
-    #[serde(rename = "external_url", deserialize_with="deser_string")]
-    pub external_url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "permissions")]
-    pub permissions: IntegrationPermissions,
-    /// The list of events for the GitHub app
-    #[serde(rename = "events")]
-    pub events: Vec<String>,
-    #[serde(rename = "client_id", deserialize_with="deser_string")]
-    pub client_id: String,
-    #[serde(rename = "client_secret", deserialize_with="deser_string")]
-    pub client_secret: String,
-    #[serde(rename = "webhook_secret", deserialize_with="deser_string")]
-    pub webhook_secret: String,
-    #[serde(rename = "pem", deserialize_with="deser_string")]
-    pub pem: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
     /// The slug name of the GitHub app
     #[serde(skip_serializing_if="Option::is_none")]
     pub slug: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub owner: Option<SimpleUser>,
+    /// The name of the GitHub app
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub external_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub permissions: Option<IntegrationPermissions>,
+    /// The list of events for the GitHub app
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events: Option<Vec<String>>,
     /// The number of installations associated with the GitHub app
     #[serde(skip_serializing_if="Option::is_none")]
     pub installations_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub client_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub client_secret: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub webhook_secret: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pem: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -6449,10 +6473,10 @@ pub struct PostReposCreateDeploymentResponse409 {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetProjectsListForUserResponse415 {
-    #[serde(rename = "message", deserialize_with="deser_string")]
-    pub message: String,
-    #[serde(rename = "documentation_url", deserialize_with="deser_string")]
-    pub documentation_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub message: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub documentation_url: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -6531,42 +6555,42 @@ pub struct InlineResponse5031Errors {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Installation {
     /// The ID of the installation.
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "account")]
-    pub account: Value,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub account: Option<Value>,
     /// Describe whether all repositories have been selected or there's a selection involved
-    #[serde(rename = "repository_selection", deserialize_with="deser_string")]
-    pub repository_selection: String,
-    #[serde(rename = "access_tokens_url", deserialize_with="deser_string")]
-    pub access_tokens_url: String,
-    #[serde(rename = "repositories_url", deserialize_with="deser_string")]
-    pub repositories_url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "app_id")]
-    pub app_id: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repository_selection: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub access_tokens_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repositories_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub app_id: Option<i64>,
     /// The ID of the user or organization this token is being scoped to.
-    #[serde(rename = "target_id")]
-    pub target_id: i64,
-    #[serde(rename = "target_type", deserialize_with="deser_string")]
-    pub target_type: String,
-    #[serde(rename = "permissions")]
-    pub permissions: InstallationPermissions,
-    #[serde(rename = "events")]
-    pub events: Vec<String>,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "single_file_name", deserialize_with="deser_string")]
-    pub single_file_name: String,
-    #[serde(rename = "app_slug", deserialize_with="deser_string")]
-    pub app_slug: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub target_id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub target_type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub permissions: Option<InstallationPermissions>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events: Option<Vec<String>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub single_file_name: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub has_multiple_single_files: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub single_file_paths: Option<Vec<String>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub app_slug: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub suspended_by: Option<SimpleUser>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -6598,10 +6622,10 @@ pub struct InstallationPermissions {
 /// Authentication token for a GitHub App installed on a user or org.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct InstallationToken {
-    #[serde(rename = "token", deserialize_with="deser_string")]
-    pub token: String,
-    #[serde(rename = "expires_at", deserialize_with="deser_string")]
-    pub expires_at: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub token: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub expires_at: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub permissions: Option<InstallationtokenPermissions>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -6735,8 +6759,8 @@ impl std::str::FromStr for InteractionGroup {
 /// Limit interactions to a specific type of user for a specified duration
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutInteractionsSetRestrictionsForAuthenticatedUser {
-    #[serde(rename = "limit")]
-    pub limit: InteractionGroup,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub limit: Option<InteractionGroup>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub expiry: Option<InteractionExpiry>,
 }
@@ -6744,73 +6768,71 @@ pub struct PutInteractionsSetRestrictionsForAuthenticatedUser {
 /// Interaction limit settings.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct InteractionLimitResponse {
-    #[serde(rename = "limit")]
-    pub limit: InteractionGroup,
-    #[serde(rename = "origin", deserialize_with="deser_string")]
-    pub origin: String,
-    #[serde(rename = "expires_at")]
-    pub expires_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub limit: Option<InteractionGroup>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub origin: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub expires_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 /// Issues are a great way to keep track of tasks, enhancements, and bugs for your projects.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Issue {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     /// URL for the issue
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "repository_url", deserialize_with="deser_string")]
-    pub repository_url: String,
-    #[serde(rename = "labels_url", deserialize_with="deser_string")]
-    pub labels_url: String,
-    #[serde(rename = "comments_url", deserialize_with="deser_string")]
-    pub comments_url: String,
-    #[serde(rename = "events_url", deserialize_with="deser_string")]
-    pub events_url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repository_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub labels_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
     /// Number uniquely identifying the issue within its repository
-    #[serde(rename = "number")]
-    pub number: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub number: Option<i64>,
     /// State of the issue; either 'open' or 'closed'
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
     /// Title of the issue
-    #[serde(rename = "title", deserialize_with="deser_string")]
-    pub title: String,
-    #[serde(rename = "user")]
-    pub user: SimpleUser,
-    /// Labels to associate with this issue; pass one or more label names to replace the set of labels on this issue; send an empty array to clear all labels from the issue; note that the labels are silently dropped for users without push access to the repository
-    #[serde(rename = "labels")]
-    pub labels: Vec<Value>,
-    #[serde(rename = "assignee")]
-    pub assignee: SimpleUser,
-    #[serde(rename = "milestone")]
-    pub milestone: Milestone,
-    #[serde(rename = "locked")]
-    pub locked: bool,
-    #[serde(rename = "comments")]
-    pub comments: i64,
-    #[serde(rename = "closed_at")]
-    pub closed_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "author_association")]
-    pub author_association: AuthorAssociation,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub title: Option<String>,
     /// Contents of the issue
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<SimpleUser>,
+    /// Labels to associate with this issue; pass one or more label names to replace the set of labels on this issue; send an empty array to clear all labels from the issue; note that the labels are silently dropped for users without push access to the repository
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub labels: Option<Vec<Value>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub assignee: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub assignees: Option<Vec<SimpleUser>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub milestone: Option<Milestone>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub locked: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub active_lock_reason: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub comments: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub pull_request: Option<IssuesimplePullRequest>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub closed_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub closed_by: Option<SimpleUser>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -6824,6 +6846,8 @@ pub struct Issue {
     #[serde(skip_serializing_if="Option::is_none")]
     pub performed_via_github_app: Option<Integration>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub author_association: Option<AuthorAssociation>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub reactions: Option<ReactionRollup>,
 }
 
@@ -6831,25 +6855,13 @@ pub struct Issue {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IssueComment {
     /// Unique identifier of the issue comment
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     /// URL for the issue comment
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "user")]
-    pub user: SimpleUser,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "issue_url", deserialize_with="deser_string")]
-    pub issue_url: String,
-    #[serde(rename = "author_association")]
-    pub author_association: AuthorAssociation,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
     /// Contents of the issue comment
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
@@ -6857,6 +6869,18 @@ pub struct IssueComment {
     pub body_text: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub body_html: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issue_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author_association: Option<AuthorAssociation>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub performed_via_github_app: Option<Integration>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -6866,22 +6890,22 @@ pub struct IssueComment {
 /// Issue Event
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IssueEvent {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "actor")]
-    pub actor: SimpleUser,
-    #[serde(rename = "event", deserialize_with="deser_string")]
-    pub event: String,
-    #[serde(rename = "commit_id", deserialize_with="deser_string")]
-    pub commit_id: String,
-    #[serde(rename = "commit_url", deserialize_with="deser_string")]
-    pub commit_url: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub actor: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub issue: Option<IssueSimple>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -6912,12 +6936,12 @@ pub struct IssueEvent {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IssueEventDismissedReview {
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
-    #[serde(rename = "review_id")]
-    pub review_id: i64,
-    #[serde(rename = "dismissal_message", deserialize_with="deser_string")]
-    pub dismissal_message: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub review_id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub dismissal_message: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub dismissal_commit_id: Option<String>,
 }
@@ -6972,32 +6996,32 @@ pub struct IssueEventForIssue {
 /// Issue Event Label
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IssueEventLabel {
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "color", deserialize_with="deser_string")]
-    pub color: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub color: Option<String>,
 }
 
 /// Issue Event Milestone
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IssueEventMilestone {
-    #[serde(rename = "title", deserialize_with="deser_string")]
-    pub title: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub title: Option<String>,
 }
 
 /// Issue Event Project Card
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IssueEventProjectCard {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "project_url", deserialize_with="deser_string")]
-    pub project_url: String,
-    #[serde(rename = "project_id")]
-    pub project_id: i64,
-    #[serde(rename = "column_name", deserialize_with="deser_string")]
-    pub column_name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub project_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub project_id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub column_name: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub previous_column_name: Option<String>,
 }
@@ -7005,69 +7029,69 @@ pub struct IssueEventProjectCard {
 /// Issue Event Rename
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IssueEventRename {
-    #[serde(rename = "from", deserialize_with="deser_string")]
-    pub from: String,
-    #[serde(rename = "to", deserialize_with="deser_string")]
-    pub to: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub from: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub to: Option<String>,
 }
 
 /// Issue Search Result Item
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IssueSearchResultItem {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "repository_url", deserialize_with="deser_string")]
-    pub repository_url: String,
-    #[serde(rename = "labels_url", deserialize_with="deser_string")]
-    pub labels_url: String,
-    #[serde(rename = "comments_url", deserialize_with="deser_string")]
-    pub comments_url: String,
-    #[serde(rename = "events_url", deserialize_with="deser_string")]
-    pub events_url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "number")]
-    pub number: i64,
-    #[serde(rename = "title", deserialize_with="deser_string")]
-    pub title: String,
-    #[serde(rename = "locked")]
-    pub locked: bool,
-    #[serde(rename = "user")]
-    pub user: SimpleUser,
-    #[serde(rename = "labels")]
-    pub labels: Vec<IssuesearchresultitemLabels>,
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
-    #[serde(rename = "assignee")]
-    pub assignee: SimpleUser,
-    #[serde(rename = "milestone")]
-    pub milestone: Milestone,
-    #[serde(rename = "comments")]
-    pub comments: i64,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "closed_at")]
-    pub closed_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "score")]
-    pub score: i64,
-    #[serde(rename = "author_association")]
-    pub author_association: AuthorAssociation,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repository_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub labels_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub number: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub title: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub locked: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub active_lock_reason: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub assignees: Option<Vec<SimpleUser>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub labels: Option<Vec<IssuesearchresultitemLabels>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub assignee: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub milestone: Option<Milestone>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub closed_at: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub text_matches: Option<SearchResultTextMatches>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub pull_request: Option<IssuesimplePullRequest>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub score: Option<f32>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author_association: Option<AuthorAssociation>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub draft: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -7085,56 +7109,56 @@ pub struct IssueSearchResultItem {
 /// Issue Simple
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IssueSimple {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "repository_url", deserialize_with="deser_string")]
-    pub repository_url: String,
-    #[serde(rename = "labels_url", deserialize_with="deser_string")]
-    pub labels_url: String,
-    #[serde(rename = "comments_url", deserialize_with="deser_string")]
-    pub comments_url: String,
-    #[serde(rename = "events_url", deserialize_with="deser_string")]
-    pub events_url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "number")]
-    pub number: i64,
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
-    #[serde(rename = "title", deserialize_with="deser_string")]
-    pub title: String,
-    #[serde(rename = "user")]
-    pub user: SimpleUser,
-    #[serde(rename = "labels")]
-    pub labels: Vec<Label>,
-    #[serde(rename = "assignee")]
-    pub assignee: SimpleUser,
-    #[serde(rename = "milestone")]
-    pub milestone: Milestone,
-    #[serde(rename = "locked")]
-    pub locked: bool,
-    #[serde(rename = "comments")]
-    pub comments: i64,
-    #[serde(rename = "closed_at")]
-    pub closed_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "author_association")]
-    pub author_association: AuthorAssociation,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repository_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub labels_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub number: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub title: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub labels: Option<Vec<Label>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub assignee: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub assignees: Option<Vec<SimpleUser>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub milestone: Option<Milestone>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub locked: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub active_lock_reason: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub comments: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub pull_request: Option<IssuesimplePullRequest>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub closed_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author_association: Option<AuthorAssociation>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub body_html: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -7167,73 +7191,73 @@ pub struct IssuesearchresultitemLabels {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IssuesimplePullRequest {
-    #[serde(rename = "diff_url", deserialize_with="deser_string")]
-    pub diff_url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "patch_url", deserialize_with="deser_string")]
-    pub patch_url: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
     #[serde(skip_serializing_if="Option::is_none")]
     pub merged_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub diff_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub patch_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
 }
 
 /// Information of a job execution in a workflow run
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Job {
     /// The id of the job.
-    #[serde(rename = "id")]
-    pub id: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
     /// The id of the associated workflow run.
-    #[serde(rename = "run_id")]
-    pub run_id: i64,
-    #[serde(rename = "run_url", deserialize_with="deser_string")]
-    pub run_url: String,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub run_id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub run_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     /// The SHA of the commit that is being run.
-    #[serde(rename = "head_sha", deserialize_with="deser_string")]
-    pub head_sha: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub head_sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
     /// The phase of the lifecycle that the job is currently in.
-    #[serde(rename = "status", deserialize_with="deser_string")]
-    pub status: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub status: Option<String>,
     /// The outcome of the job.
-    #[serde(rename = "conclusion", deserialize_with="deser_string")]
-    pub conclusion: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub conclusion: Option<String>,
     /// The time that the job started, in ISO 8601 format.
-    #[serde(rename = "started_at")]
-    pub started_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub started_at: Option<chrono::DateTime<chrono::Utc>>,
     /// The time that the job finished, in ISO 8601 format.
-    #[serde(rename = "completed_at")]
-    pub completed_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub completed_at: Option<chrono::DateTime<chrono::Utc>>,
     /// The name of the job.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "check_run_url", deserialize_with="deser_string")]
-    pub check_run_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
     /// Steps in this job.
     #[serde(skip_serializing_if="Option::is_none")]
     pub steps: Option<Vec<JobSteps>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub check_run_url: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct JobSteps {
     /// The phase of the lifecycle that the job is currently in.
-    #[serde(rename = "status", deserialize_with="deser_string")]
-    pub status: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub status: Option<String>,
     /// The outcome of the job.
-    #[serde(rename = "conclusion", deserialize_with="deser_string")]
-    pub conclusion: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub conclusion: Option<String>,
     /// The name of the job.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "number")]
-    pub number: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub number: Option<i64>,
     /// The time that the step started, in ISO 8601 format.
     #[serde(skip_serializing_if="Option::is_none")]
     pub started_at: Option<chrono::DateTime<chrono::Utc>>,
@@ -7245,74 +7269,74 @@ pub struct JobSteps {
 /// Key
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Key {
-    #[serde(rename = "key_id", deserialize_with="deser_string")]
-    pub key_id: String,
-    #[serde(rename = "key", deserialize_with="deser_string")]
-    pub key: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "title", deserialize_with="deser_string")]
-    pub title: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "verified")]
-    pub verified: bool,
-    #[serde(rename = "read_only")]
-    pub read_only: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub key_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub key: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub title: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub verified: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub read_only: Option<bool>,
 }
 
 /// Key Simple
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct KeySimple {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "key", deserialize_with="deser_string")]
-    pub key: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub key: Option<String>,
 }
 
 /// Color-coded labels help you categorize and filter your issues (just like labels in Gmail).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Label {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     /// URL for the label
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
     /// The name of the label.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
     /// 6-character hex code, without the leading #, identifying the color
-    #[serde(rename = "color", deserialize_with="deser_string")]
-    pub color: String,
-    #[serde(rename = "default")]
-    pub default: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub color: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub default: Option<bool>,
 }
 
 /// Label Search Result Item
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct LabelSearchResultItem {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "color", deserialize_with="deser_string")]
-    pub color: String,
-    #[serde(rename = "default")]
-    pub default: bool,
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
-    #[serde(rename = "score")]
-    pub score: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub color: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub default: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub score: Option<f32>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub text_matches: Option<SearchResultTextMatches>,
 }
@@ -7325,78 +7349,79 @@ pub struct Language {
 /// License
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct License {
-    #[serde(rename = "key", deserialize_with="deser_string")]
-    pub key: String,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "spdx_id", deserialize_with="deser_string")]
-    pub spdx_id: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
-    #[serde(rename = "implementation", deserialize_with="deser_string")]
-    pub implementation: String,
-    #[serde(rename = "permissions")]
-    pub permissions: Vec<String>,
-    #[serde(rename = "conditions")]
-    pub conditions: Vec<String>,
-    #[serde(rename = "limitations")]
-    pub limitations: Vec<String>,
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
-    #[serde(rename = "featured")]
-    pub featured: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub key: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub spdx_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub implementation: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub permissions: Option<Vec<String>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub conditions: Option<Vec<String>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub limitations: Option<Vec<String>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub featured: Option<bool>,
 }
 
 /// License Content
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct LicenseContent {
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "path", deserialize_with="deser_string")]
-    pub path: String,
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "size")]
-    pub size: i64,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "git_url", deserialize_with="deser_string")]
-    pub git_url: String,
-    #[serde(rename = "download_url", deserialize_with="deser_string")]
-    pub download_url: String,
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
-    #[serde(rename = "content", deserialize_with="deser_string")]
-    pub content: String,
-    #[serde(rename = "encoding", deserialize_with="deser_string")]
-    pub encoding: String,
-    #[serde(rename = "_links")]
-    pub _links: ContenttreeLinks,
-    #[serde(rename = "license")]
-    pub license: LicenseSimple,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub path: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub size: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub download_url: Option<String>,
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub content: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub encoding: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _links: Option<ContenttreeLinks>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub license: Option<LicenseSimple>,
 }
 
 /// License Simple
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct LicenseSimple {
-    #[serde(rename = "key", deserialize_with="deser_string")]
-    pub key: String,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "spdx_id", deserialize_with="deser_string")]
-    pub spdx_id: String,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub key: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub spdx_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub html_url: Option<String>,
 }
@@ -7404,31 +7429,33 @@ pub struct LicenseSimple {
 /// Hypermedia Link
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Link {
-    #[serde(rename = "href", deserialize_with="deser_string")]
-    pub href: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub href: Option<String>,
 }
 
 /// Hypermedia Link with Type
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct LinkWithType {
-    #[serde(rename = "href", deserialize_with="deser_string")]
-    pub href: String,
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub href: Option<String>,
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct MarketplaceAccount {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
-    #[serde(rename = "login", deserialize_with="deser_string")]
-    pub login: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -7438,51 +7465,52 @@ pub struct MarketplaceAccount {
 /// Marketplace Listing Plan
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct MarketplaceListingPlan {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "accounts_url", deserialize_with="deser_string")]
-    pub accounts_url: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "number")]
-    pub number: i64,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
-    #[serde(rename = "monthly_price_in_cents")]
-    pub monthly_price_in_cents: i64,
-    #[serde(rename = "yearly_price_in_cents")]
-    pub yearly_price_in_cents: i64,
-    #[serde(rename = "price_model", deserialize_with="deser_string")]
-    pub price_model: String,
-    #[serde(rename = "has_free_trial")]
-    pub has_free_trial: bool,
-    #[serde(rename = "unit_name", deserialize_with="deser_string")]
-    pub unit_name: String,
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
-    #[serde(rename = "bullets")]
-    pub bullets: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub accounts_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub number: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub monthly_price_in_cents: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub yearly_price_in_cents: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub price_model: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_free_trial: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub unit_name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub bullets: Option<Vec<String>>,
 }
 
 /// Marketplace Purchase
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct MarketplacePurchase {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "login", deserialize_with="deser_string")]
-    pub login: String,
-    #[serde(rename = "marketplace_purchase")]
-    pub marketplace_purchase: MarketplacepurchaseMarketplacePurchase,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub organization_billing_email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub marketplace_pending_change: Option<MarketplacepurchaseMarketplacePendingChange>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub marketplace_purchase: Option<MarketplacepurchaseMarketplacePurchase>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -7522,28 +7550,28 @@ pub struct MarketplacepurchaseMarketplacePurchase {
 /// A migration.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Migration {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "owner")]
-    pub owner: SimpleUser,
-    #[serde(rename = "guid", deserialize_with="deser_string")]
-    pub guid: String,
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
-    #[serde(rename = "lock_repositories")]
-    pub lock_repositories: bool,
-    #[serde(rename = "exclude_attachments")]
-    pub exclude_attachments: bool,
-    #[serde(rename = "repositories")]
-    pub repositories: Vec<Repository>,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub owner: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub guid: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub lock_repositories: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub exclude_attachments: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repositories: Option<Vec<Repository>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub archive_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -7553,146 +7581,146 @@ pub struct Migration {
 /// A collection of related issues and pull requests.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Milestone {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "labels_url", deserialize_with="deser_string")]
-    pub labels_url: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub labels_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     /// The number of the milestone.
-    #[serde(rename = "number")]
-    pub number: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub number: Option<i64>,
     /// The state of the milestone.
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
     /// The title of the milestone.
-    #[serde(rename = "title", deserialize_with="deser_string")]
-    pub title: String,
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
-    #[serde(rename = "creator")]
-    pub creator: SimpleUser,
-    #[serde(rename = "open_issues")]
-    pub open_issues: i64,
-    #[serde(rename = "closed_issues")]
-    pub closed_issues: i64,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "closed_at")]
-    pub closed_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "due_on")]
-    pub due_on: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub title: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub creator: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub open_issues: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub closed_issues: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub closed_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub due_on: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 /// Minimal Repository
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct MinimalRepository {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "full_name", deserialize_with="deser_string")]
-    pub full_name: String,
-    #[serde(rename = "owner")]
-    pub owner: SimpleUser,
-    #[serde(rename = "private")]
-    pub private: bool,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
-    #[serde(rename = "fork")]
-    pub fork: bool,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "archive_url", deserialize_with="deser_string")]
-    pub archive_url: String,
-    #[serde(rename = "assignees_url", deserialize_with="deser_string")]
-    pub assignees_url: String,
-    #[serde(rename = "blobs_url", deserialize_with="deser_string")]
-    pub blobs_url: String,
-    #[serde(rename = "branches_url", deserialize_with="deser_string")]
-    pub branches_url: String,
-    #[serde(rename = "collaborators_url", deserialize_with="deser_string")]
-    pub collaborators_url: String,
-    #[serde(rename = "comments_url", deserialize_with="deser_string")]
-    pub comments_url: String,
-    #[serde(rename = "commits_url", deserialize_with="deser_string")]
-    pub commits_url: String,
-    #[serde(rename = "compare_url", deserialize_with="deser_string")]
-    pub compare_url: String,
-    #[serde(rename = "contents_url", deserialize_with="deser_string")]
-    pub contents_url: String,
-    #[serde(rename = "contributors_url", deserialize_with="deser_string")]
-    pub contributors_url: String,
-    #[serde(rename = "deployments_url", deserialize_with="deser_string")]
-    pub deployments_url: String,
-    #[serde(rename = "downloads_url", deserialize_with="deser_string")]
-    pub downloads_url: String,
-    #[serde(rename = "events_url", deserialize_with="deser_string")]
-    pub events_url: String,
-    #[serde(rename = "forks_url", deserialize_with="deser_string")]
-    pub forks_url: String,
-    #[serde(rename = "git_commits_url", deserialize_with="deser_string")]
-    pub git_commits_url: String,
-    #[serde(rename = "git_refs_url", deserialize_with="deser_string")]
-    pub git_refs_url: String,
-    #[serde(rename = "git_tags_url", deserialize_with="deser_string")]
-    pub git_tags_url: String,
-    #[serde(rename = "issue_comment_url", deserialize_with="deser_string")]
-    pub issue_comment_url: String,
-    #[serde(rename = "issue_events_url", deserialize_with="deser_string")]
-    pub issue_events_url: String,
-    #[serde(rename = "issues_url", deserialize_with="deser_string")]
-    pub issues_url: String,
-    #[serde(rename = "keys_url", deserialize_with="deser_string")]
-    pub keys_url: String,
-    #[serde(rename = "labels_url", deserialize_with="deser_string")]
-    pub labels_url: String,
-    #[serde(rename = "languages_url", deserialize_with="deser_string")]
-    pub languages_url: String,
-    #[serde(rename = "merges_url", deserialize_with="deser_string")]
-    pub merges_url: String,
-    #[serde(rename = "milestones_url", deserialize_with="deser_string")]
-    pub milestones_url: String,
-    #[serde(rename = "notifications_url", deserialize_with="deser_string")]
-    pub notifications_url: String,
-    #[serde(rename = "pulls_url", deserialize_with="deser_string")]
-    pub pulls_url: String,
-    #[serde(rename = "releases_url", deserialize_with="deser_string")]
-    pub releases_url: String,
-    #[serde(rename = "stargazers_url", deserialize_with="deser_string")]
-    pub stargazers_url: String,
-    #[serde(rename = "statuses_url", deserialize_with="deser_string")]
-    pub statuses_url: String,
-    #[serde(rename = "subscribers_url", deserialize_with="deser_string")]
-    pub subscribers_url: String,
-    #[serde(rename = "subscription_url", deserialize_with="deser_string")]
-    pub subscription_url: String,
-    #[serde(rename = "tags_url", deserialize_with="deser_string")]
-    pub tags_url: String,
-    #[serde(rename = "teams_url", deserialize_with="deser_string")]
-    pub teams_url: String,
-    #[serde(rename = "trees_url", deserialize_with="deser_string")]
-    pub trees_url: String,
-    #[serde(rename = "hooks_url", deserialize_with="deser_string")]
-    pub hooks_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub full_name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub owner: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub private: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub fork: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub archive_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub assignees_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub blobs_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub branches_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub collaborators_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commits_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub compare_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contents_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contributors_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub deployments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub downloads_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub forks_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_commits_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_refs_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_tags_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub git_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub issue_comment_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issue_events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issues_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub keys_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub labels_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub languages_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub merges_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub milestones_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub notifications_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pulls_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub releases_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub ssh_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub stargazers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub statuses_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscribers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscription_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tags_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub teams_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub trees_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub clone_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub mirror_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub hooks_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub svn_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -7776,43 +7804,44 @@ pub struct MinimalrepositoryLicense {
 /// Org Hook
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OrgHook {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "ping_url", deserialize_with="deser_string")]
-    pub ping_url: String,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "events")]
-    pub events: Vec<String>,
-    #[serde(rename = "active")]
-    pub active: bool,
-    #[serde(rename = "config")]
-    pub config: OrghookConfig,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub ping_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events: Option<Vec<String>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub active: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub config: Option<OrghookConfig>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
 }
 
 /// Org Membership
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OrgMembership {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
-    #[serde(rename = "role", deserialize_with="deser_string")]
-    pub role: String,
-    #[serde(rename = "organization_url", deserialize_with="deser_string")]
-    pub organization_url: String,
-    #[serde(rename = "organization")]
-    pub organization: OrganizationSimple,
-    #[serde(rename = "user")]
-    pub user: SimpleUser,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub role: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub organization_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub organization: Option<OrganizationSimple>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<SimpleUser>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub permissions: Option<OrgmembershipPermissions>,
 }
@@ -7821,15 +7850,15 @@ pub struct OrgMembership {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OrganizationActionsSecret {
     /// The name of the secret.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
     /// Visibility of a secret
-    #[serde(rename = "visibility", deserialize_with="deser_string")]
-    pub visibility: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub visibility: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub selected_repositories_url: Option<String>,
 }
@@ -7837,50 +7866,30 @@ pub struct OrganizationActionsSecret {
 /// Organization Full
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OrganizationFull {
-    #[serde(rename = "login", deserialize_with="deser_string")]
-    pub login: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "repos_url", deserialize_with="deser_string")]
-    pub repos_url: String,
-    #[serde(rename = "events_url", deserialize_with="deser_string")]
-    pub events_url: String,
-    #[serde(rename = "hooks_url", deserialize_with="deser_string")]
-    pub hooks_url: String,
-    #[serde(rename = "issues_url", deserialize_with="deser_string")]
-    pub issues_url: String,
-    #[serde(rename = "members_url", deserialize_with="deser_string")]
-    pub members_url: String,
-    #[serde(rename = "public_members_url", deserialize_with="deser_string")]
-    pub public_members_url: String,
-    #[serde(rename = "avatar_url", deserialize_with="deser_string")]
-    pub avatar_url: String,
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
-    #[serde(rename = "has_organization_projects")]
-    pub has_organization_projects: bool,
-    #[serde(rename = "has_repository_projects")]
-    pub has_repository_projects: bool,
-    #[serde(rename = "public_repos")]
-    pub public_repos: i64,
-    #[serde(rename = "public_gists")]
-    pub public_gists: i64,
-    #[serde(rename = "followers")]
-    pub followers: i64,
-    #[serde(rename = "following")]
-    pub following: i64,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub login: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repos_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub hooks_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issues_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub members_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub public_members_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub avatar_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -7895,6 +7904,25 @@ pub struct OrganizationFull {
     pub twitter_username: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub is_verified: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_organization_projects: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_repository_projects: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub public_repos: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub public_gists: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub followers: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub following: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_private_repos: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -7925,33 +7953,35 @@ pub struct OrganizationFull {
     pub members_can_create_internal_repositories: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub members_can_create_pages: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 /// Organization Invitation
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OrganizationInvitation {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "login", deserialize_with="deser_string")]
-    pub login: String,
-    #[serde(rename = "email", deserialize_with="deser_string")]
-    pub email: String,
-    #[serde(rename = "role", deserialize_with="deser_string")]
-    pub role: String,
-    #[serde(rename = "created_at", deserialize_with="deser_string")]
-    pub created_at: String,
-    #[serde(rename = "inviter")]
-    pub inviter: SimpleUser,
-    #[serde(rename = "team_count")]
-    pub team_count: i64,
-    #[serde(rename = "invitation_team_url", deserialize_with="deser_string")]
-    pub invitation_team_url: String,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub login: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub role: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub failed_at: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub failed_reason: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub inviter: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub team_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub invitation_team_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub invitation_teams_url: Option<String>,
 }
@@ -7959,40 +7989,40 @@ pub struct OrganizationInvitation {
 /// Organization Simple
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OrganizationSimple {
-    #[serde(rename = "login", deserialize_with="deser_string")]
-    pub login: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "repos_url", deserialize_with="deser_string")]
-    pub repos_url: String,
-    #[serde(rename = "events_url", deserialize_with="deser_string")]
-    pub events_url: String,
-    #[serde(rename = "hooks_url", deserialize_with="deser_string")]
-    pub hooks_url: String,
-    #[serde(rename = "issues_url", deserialize_with="deser_string")]
-    pub issues_url: String,
-    #[serde(rename = "members_url", deserialize_with="deser_string")]
-    pub members_url: String,
-    #[serde(rename = "public_members_url", deserialize_with="deser_string")]
-    pub public_members_url: String,
-    #[serde(rename = "avatar_url", deserialize_with="deser_string")]
-    pub avatar_url: String,
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub login: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repos_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub hooks_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issues_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub members_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub public_members_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub avatar_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OrganizationfullPlan {
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "space")]
-    pub space: i64,
-    #[serde(rename = "private_repos")]
-    pub private_repos: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub space: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub private_repos: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub filled_seats: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -8013,15 +8043,15 @@ pub struct OrghookConfig {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OrgmembershipPermissions {
-    #[serde(rename = "can_create_repository")]
-    pub can_create_repository: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub can_create_repository: Option<bool>,
 }
 
 /// Key/value pairs to provide settings for this webhook. [These are defined below](https://docs.github.com/rest/reference/orgs#create-hook-config-params).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OrgsorghooksConfig {
-    #[serde(rename = "url")]
-    pub url: WebhookConfigUrl,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<WebhookConfigUrl>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub content_type: Option<WebhookConfigContentType>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -8037,8 +8067,8 @@ pub struct OrgsorghooksConfig {
 /// Key/value pairs to provide settings for this webhook. [These are defined below](https://docs.github.com/rest/reference/orgs#update-hook-config-params).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OrgsorghookshookIdConfig {
-    #[serde(rename = "url")]
-    pub url: WebhookConfigUrl,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<WebhookConfigUrl>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub content_type: Option<WebhookConfigContentType>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -8050,69 +8080,69 @@ pub struct OrgsorghookshookIdConfig {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OrgsorgteamsteamSlugteamsyncgroupmappingsGroups {
     /// ID of the IdP group.
-    #[serde(rename = "group_id", deserialize_with="deser_string")]
-    pub group_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub group_id: Option<String>,
     /// Name of the IdP group.
-    #[serde(rename = "group_name", deserialize_with="deser_string")]
-    pub group_name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub group_name: Option<String>,
     /// Description of the IdP group.
-    #[serde(rename = "group_description", deserialize_with="deser_string")]
-    pub group_description: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub group_description: Option<String>,
 }
 
 /// A software package
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Package {
     /// Unique identifier of the package.
-    #[serde(rename = "id")]
-    pub id: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
     /// The name of the package.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "package_type", deserialize_with="deser_string")]
-    pub package_type: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub package_type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
     /// The number of versions of the package.
-    #[serde(rename = "version_count")]
-    pub version_count: i64,
-    #[serde(rename = "visibility", deserialize_with="deser_string")]
-    pub visibility: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub version_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub visibility: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub owner: Option<SimpleUser>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub repository: Option<MinimalRepository>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 /// A version of a software package
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PackageVersion {
     /// Unique identifier of the package version.
-    #[serde(rename = "id")]
-    pub id: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
     /// The name of the package version.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "package_html_url", deserialize_with="deser_string")]
-    pub package_html_url: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub package_html_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub html_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub license: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub description: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub deleted_at: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -8121,8 +8151,8 @@ pub struct PackageVersion {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PackageVersionMetadata {
-    #[serde(rename = "package_type", deserialize_with="deser_string")]
-    pub package_type: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub package_type: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub container: Option<ContainerMetadata>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -8132,110 +8162,110 @@ pub struct PackageVersionMetadata {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PackagesBillingUsage {
     /// Sum of the free and paid storage space (GB) for GitHuub Packages.
-    #[serde(rename = "total_gigabytes_bandwidth_used")]
-    pub total_gigabytes_bandwidth_used: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_gigabytes_bandwidth_used: Option<i64>,
     /// Total paid storage space (GB) for GitHuub Packages.
-    #[serde(rename = "total_paid_gigabytes_bandwidth_used")]
-    pub total_paid_gigabytes_bandwidth_used: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_paid_gigabytes_bandwidth_used: Option<i64>,
     /// Free storage space (GB) for GitHub Packages.
-    #[serde(rename = "included_gigabytes_bandwidth")]
-    pub included_gigabytes_bandwidth: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub included_gigabytes_bandwidth: Option<i64>,
 }
 
 /// The configuration for GitHub Pages for a repository.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Page {
     /// The API address for accessing this Page resource.
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
     /// The status of the most recent build of the Page.
-    #[serde(rename = "status", deserialize_with="deser_string")]
-    pub status: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub status: Option<String>,
     /// The Pages site's custom domain
-    #[serde(rename = "cname", deserialize_with="deser_string")]
-    pub cname: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub cname: Option<String>,
     /// Whether the Page has a custom 404 page.
-    #[serde(rename = "custom_404")]
-    pub custom_404: bool,
-    /// Whether the GitHub Pages site is publicly visible. If set to `true`, the site is accessible to anyone on the internet. If set to `false`, the site will only be accessible to users who have at least `read` access to the repository that published the site.
-    #[serde(rename = "public")]
-    pub public: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub custom_404: Option<bool>,
     /// The web address the Page can be accessed from.
     #[serde(skip_serializing_if="Option::is_none")]
     pub html_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub source: Option<PagesSourceHash>,
+    /// Whether the GitHub Pages site is publicly visible. If set to `true`, the site is accessible to anyone on the internet. If set to `false`, the site will only be accessible to users who have at least `read` access to the repository that published the site.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub public: Option<bool>,
 }
 
 /// Page Build
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PageBuild {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "status", deserialize_with="deser_string")]
-    pub status: String,
-    #[serde(rename = "error")]
-    pub error: PagebuildError,
-    #[serde(rename = "pusher")]
-    pub pusher: SimpleUser,
-    #[serde(rename = "commit", deserialize_with="deser_string")]
-    pub commit: String,
-    #[serde(rename = "duration")]
-    pub duration: i64,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub status: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub error: Option<PagebuildError>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pusher: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub duration: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 /// Page Build Status
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PageBuildStatus {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "status", deserialize_with="deser_string")]
-    pub status: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub status: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PagebuildError {
-    #[serde(rename = "message", deserialize_with="deser_string")]
-    pub message: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub message: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PagesSourceHash {
-    #[serde(rename = "branch", deserialize_with="deser_string")]
-    pub branch: String,
-    #[serde(rename = "path", deserialize_with="deser_string")]
-    pub path: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub branch: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub path: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ParticipationStats {
-    #[serde(rename = "all")]
-    pub all: Vec<i32>,
-    #[serde(rename = "owner")]
-    pub owner: Vec<i32>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub all: Option<Vec<i32>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub owner: Option<Vec<i32>>,
 }
 
 /// Details of a deployment that is waiting for protection rules to pass
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PendingDeployment {
-    #[serde(rename = "environment")]
-    pub environment: PendingdeploymentEnvironment,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub environment: Option<PendingdeploymentEnvironment>,
     /// The set duration of the wait timer
-    #[serde(rename = "wait_timer")]
-    pub wait_timer: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub wait_timer: Option<i64>,
     /// The time that the wait timer began.
-    #[serde(rename = "wait_timer_started_at")]
-    pub wait_timer_started_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub wait_timer_started_at: Option<chrono::DateTime<chrono::Utc>>,
     /// Whether the currently authenticated user can approve the deployment
-    #[serde(rename = "current_user_can_approve")]
-    pub current_user_can_approve: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub current_user_can_approve: Option<bool>,
     /// The people or teams that may approve jobs that reference the environment. You can list up to six users or teams as reviewers. The reviewers must have at least read access to the repository. Only one of the required reviewers needs to approve the job for it to proceed.
-    #[serde(rename = "reviewers")]
-    pub reviewers: Vec<PendingdeploymentReviewers>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub reviewers: Option<Vec<PendingdeploymentReviewers>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -8266,114 +8296,115 @@ pub struct PendingdeploymentReviewers {
 /// Porter Author
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PorterAuthor {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "remote_id", deserialize_with="deser_string")]
-    pub remote_id: String,
-    #[serde(rename = "remote_name", deserialize_with="deser_string")]
-    pub remote_name: String,
-    #[serde(rename = "email", deserialize_with="deser_string")]
-    pub email: String,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "import_url", deserialize_with="deser_string")]
-    pub import_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub remote_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub remote_name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub import_url: Option<String>,
 }
 
 /// Porter Large File
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PorterLargeFile {
-    #[serde(rename = "ref_name", deserialize_with="deser_string")]
-    pub ref_name: String,
-    #[serde(rename = "path", deserialize_with="deser_string")]
-    pub path: String,
-    #[serde(rename = "oid", deserialize_with="deser_string")]
-    pub oid: String,
-    #[serde(rename = "size")]
-    pub size: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub ref_name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub path: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub oid: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub size: Option<i64>,
 }
 
 /// Private User
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PrivateUser {
-    #[serde(rename = "login", deserialize_with="deser_string")]
-    pub login: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "avatar_url", deserialize_with="deser_string")]
-    pub avatar_url: String,
-    #[serde(rename = "gravatar_id", deserialize_with="deser_string")]
-    pub gravatar_id: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "followers_url", deserialize_with="deser_string")]
-    pub followers_url: String,
-    #[serde(rename = "following_url", deserialize_with="deser_string")]
-    pub following_url: String,
-    #[serde(rename = "gists_url", deserialize_with="deser_string")]
-    pub gists_url: String,
-    #[serde(rename = "starred_url", deserialize_with="deser_string")]
-    pub starred_url: String,
-    #[serde(rename = "subscriptions_url", deserialize_with="deser_string")]
-    pub subscriptions_url: String,
-    #[serde(rename = "organizations_url", deserialize_with="deser_string")]
-    pub organizations_url: String,
-    #[serde(rename = "repos_url", deserialize_with="deser_string")]
-    pub repos_url: String,
-    #[serde(rename = "events_url", deserialize_with="deser_string")]
-    pub events_url: String,
-    #[serde(rename = "received_events_url", deserialize_with="deser_string")]
-    pub received_events_url: String,
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
-    #[serde(rename = "site_admin")]
-    pub site_admin: bool,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "company", deserialize_with="deser_string")]
-    pub company: String,
-    #[serde(rename = "blog", deserialize_with="deser_string")]
-    pub blog: String,
-    #[serde(rename = "location", deserialize_with="deser_string")]
-    pub location: String,
-    #[serde(rename = "email", deserialize_with="deser_string")]
-    pub email: String,
-    #[serde(rename = "hireable")]
-    pub hireable: bool,
-    #[serde(rename = "bio", deserialize_with="deser_string")]
-    pub bio: String,
-    #[serde(rename = "public_repos")]
-    pub public_repos: i64,
-    #[serde(rename = "public_gists")]
-    pub public_gists: i64,
-    #[serde(rename = "followers")]
-    pub followers: i64,
-    #[serde(rename = "following")]
-    pub following: i64,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "private_gists")]
-    pub private_gists: i64,
-    #[serde(rename = "total_private_repos")]
-    pub total_private_repos: i64,
-    #[serde(rename = "owned_private_repos")]
-    pub owned_private_repos: i64,
-    #[serde(rename = "disk_usage")]
-    pub disk_usage: i64,
-    #[serde(rename = "collaborators")]
-    pub collaborators: i64,
-    #[serde(rename = "two_factor_authentication")]
-    pub two_factor_authentication: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub login: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub avatar_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub gravatar_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub followers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub following_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub gists_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub starred_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscriptions_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub organizations_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repos_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub received_events_url: Option<String>,
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub site_admin: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub company: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub blog: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub location: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub hireable: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub bio: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub twitter_username: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub public_repos: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub public_gists: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub followers: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub following: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub private_gists: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_private_repos: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub owned_private_repos: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub disk_usage: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub collaborators: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub two_factor_authentication: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub plan: Option<PrivateuserPlan>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -8386,48 +8417,48 @@ pub struct PrivateUser {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PrivateuserPlan {
-    #[serde(rename = "collaborators")]
-    pub collaborators: i64,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "space")]
-    pub space: i64,
-    #[serde(rename = "private_repos")]
-    pub private_repos: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub collaborators: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub space: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub private_repos: Option<i64>,
 }
 
 /// Projects are a way to organize columns and cards of work.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Project {
-    #[serde(rename = "owner_url", deserialize_with="deser_string")]
-    pub owner_url: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "columns_url", deserialize_with="deser_string")]
-    pub columns_url: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub owner_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub columns_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     /// Name of the project
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
     /// Body of the project
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
-    #[serde(rename = "number")]
-    pub number: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub number: Option<i64>,
     /// State of the project; either 'open' or 'closed'
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
-    #[serde(rename = "creator")]
-    pub creator: SimpleUser,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub creator: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
     /// The baseline permission that all organization members have on this project. Only present if owner is an organization.
     #[serde(skip_serializing_if="Option::is_none")]
     pub organization_permission: Option<String>,
@@ -8439,60 +8470,60 @@ pub struct Project {
 /// Project cards represent a scope of work.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProjectCard {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
     /// The project card's ID
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "note", deserialize_with="deser_string")]
-    pub note: String,
-    #[serde(rename = "creator")]
-    pub creator: SimpleUser,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "column_url", deserialize_with="deser_string")]
-    pub column_url: String,
-    #[serde(rename = "project_url", deserialize_with="deser_string")]
-    pub project_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub note: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub creator: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
     /// Whether or not the card is archived
     #[serde(skip_serializing_if="Option::is_none")]
     pub archived: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub column_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub content_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub project_url: Option<String>,
 }
 
 /// Project columns contain cards of work.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProjectColumn {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "project_url", deserialize_with="deser_string")]
-    pub project_url: String,
-    #[serde(rename = "cards_url", deserialize_with="deser_string")]
-    pub cards_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub project_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub cards_url: Option<String>,
     /// The unique identifier of the project column
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     /// Name of the project column
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 /// Branch protections protect branches
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProtectedBranch {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub required_status_checks: Option<StatusCheckPolicy>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -8514,45 +8545,45 @@ pub struct ProtectedBranch {
 /// Protected Branch Admin Enforced
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProtectedBranchAdminEnforced {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "enabled")]
-    pub enabled: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub enabled: Option<bool>,
 }
 
 /// Protected Branch Pull Request Review
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProtectedBranchPullRequestReview {
-    #[serde(rename = "dismiss_stale_reviews")]
-    pub dismiss_stale_reviews: bool,
-    #[serde(rename = "require_code_owner_reviews")]
-    pub require_code_owner_reviews: bool,
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub dismissal_restrictions: Option<ProtectedbranchpullrequestreviewDismissalRestrictions>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub dismiss_stale_reviews: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub require_code_owner_reviews: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub required_approving_review_count: Option<u8>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProtectedbranchEnforceAdmins {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "enabled")]
-    pub enabled: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub enabled: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProtectedbranchRequiredLinearHistory {
-    #[serde(rename = "enabled")]
-    pub enabled: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub enabled: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProtectedbranchRequiredPullRequestReviews {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub dismiss_stale_reviews: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -8565,24 +8596,24 @@ pub struct ProtectedbranchRequiredPullRequestReviews {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProtectedbranchRequiredPullRequestReviewsDismissalRestrictions {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "users_url", deserialize_with="deser_string")]
-    pub users_url: String,
-    #[serde(rename = "teams_url", deserialize_with="deser_string")]
-    pub teams_url: String,
-    #[serde(rename = "users")]
-    pub users: Vec<SimpleUser>,
-    #[serde(rename = "teams")]
-    pub teams: Vec<Team>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub users_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub teams_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub users: Option<Vec<SimpleUser>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub teams: Option<Vec<Team>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProtectedbranchRequiredSignatures {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "enabled")]
-    pub enabled: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub enabled: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -8604,70 +8635,71 @@ pub struct ProtectedbranchpullrequestreviewDismissalRestrictions {
 /// Public User
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PublicUser {
-    #[serde(rename = "login", deserialize_with="deser_string")]
-    pub login: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "avatar_url", deserialize_with="deser_string")]
-    pub avatar_url: String,
-    #[serde(rename = "gravatar_id", deserialize_with="deser_string")]
-    pub gravatar_id: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "followers_url", deserialize_with="deser_string")]
-    pub followers_url: String,
-    #[serde(rename = "following_url", deserialize_with="deser_string")]
-    pub following_url: String,
-    #[serde(rename = "gists_url", deserialize_with="deser_string")]
-    pub gists_url: String,
-    #[serde(rename = "starred_url", deserialize_with="deser_string")]
-    pub starred_url: String,
-    #[serde(rename = "subscriptions_url", deserialize_with="deser_string")]
-    pub subscriptions_url: String,
-    #[serde(rename = "organizations_url", deserialize_with="deser_string")]
-    pub organizations_url: String,
-    #[serde(rename = "repos_url", deserialize_with="deser_string")]
-    pub repos_url: String,
-    #[serde(rename = "events_url", deserialize_with="deser_string")]
-    pub events_url: String,
-    #[serde(rename = "received_events_url", deserialize_with="deser_string")]
-    pub received_events_url: String,
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
-    #[serde(rename = "site_admin")]
-    pub site_admin: bool,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "company", deserialize_with="deser_string")]
-    pub company: String,
-    #[serde(rename = "blog", deserialize_with="deser_string")]
-    pub blog: String,
-    #[serde(rename = "location", deserialize_with="deser_string")]
-    pub location: String,
-    #[serde(rename = "email", deserialize_with="deser_string")]
-    pub email: String,
-    #[serde(rename = "hireable")]
-    pub hireable: bool,
-    #[serde(rename = "bio", deserialize_with="deser_string")]
-    pub bio: String,
-    #[serde(rename = "public_repos")]
-    pub public_repos: i64,
-    #[serde(rename = "public_gists")]
-    pub public_gists: i64,
-    #[serde(rename = "followers")]
-    pub followers: i64,
-    #[serde(rename = "following")]
-    pub following: i64,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub login: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub avatar_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub gravatar_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub followers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub following_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub gists_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub starred_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscriptions_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub organizations_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repos_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub received_events_url: Option<String>,
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub site_admin: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub company: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub blog: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub location: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub hireable: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub bio: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub twitter_username: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub public_repos: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub public_gists: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub followers: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub following: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub plan: Option<PrivateuserPlan>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -8687,223 +8719,223 @@ pub struct PublicUser {
 /// Pull requests let you tell others about changes you've pushed to a repository on GitHub. Once a pull request is sent, interested parties can review the set of changes, discuss potential modifications, and even push follow-up commits if necessary.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullRequest {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "diff_url", deserialize_with="deser_string")]
-    pub diff_url: String,
-    #[serde(rename = "patch_url", deserialize_with="deser_string")]
-    pub patch_url: String,
-    #[serde(rename = "issue_url", deserialize_with="deser_string")]
-    pub issue_url: String,
-    #[serde(rename = "commits_url", deserialize_with="deser_string")]
-    pub commits_url: String,
-    #[serde(rename = "review_comments_url", deserialize_with="deser_string")]
-    pub review_comments_url: String,
-    #[serde(rename = "review_comment_url", deserialize_with="deser_string")]
-    pub review_comment_url: String,
-    #[serde(rename = "comments_url", deserialize_with="deser_string")]
-    pub comments_url: String,
-    #[serde(rename = "statuses_url", deserialize_with="deser_string")]
-    pub statuses_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub diff_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub patch_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issue_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commits_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub review_comments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub review_comment_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub statuses_url: Option<String>,
     /// Number uniquely identifying the pull request within its repository.
-    #[serde(rename = "number")]
-    pub number: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub number: Option<i64>,
     /// State of this Pull Request. Either `open` or `closed`.
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
-    #[serde(rename = "locked")]
-    pub locked: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub locked: Option<bool>,
     /// The title of the pull request.
-    #[serde(rename = "title", deserialize_with="deser_string")]
-    pub title: String,
-    #[serde(rename = "user")]
-    pub user: SimpleUser,
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
-    #[serde(rename = "labels")]
-    pub labels: Vec<PullrequestLabels>,
-    #[serde(rename = "milestone")]
-    pub milestone: Milestone,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "closed_at")]
-    pub closed_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "merged_at")]
-    pub merged_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "merge_commit_sha", deserialize_with="deser_string")]
-    pub merge_commit_sha: String,
-    #[serde(rename = "assignee")]
-    pub assignee: SimpleUser,
-    #[serde(rename = "head")]
-    pub head: PullrequestHead,
-    #[serde(rename = "base")]
-    pub base: PullrequestBase,
-    #[serde(rename = "_links")]
-    pub _links: PullrequestsimpleLinks,
-    #[serde(rename = "author_association")]
-    pub author_association: AuthorAssociation,
-    #[serde(rename = "auto_merge")]
-    pub auto_merge: AutoMerge,
-    #[serde(rename = "merged")]
-    pub merged: bool,
-    #[serde(rename = "mergeable")]
-    pub mergeable: bool,
-    #[serde(rename = "mergeable_state", deserialize_with="deser_string")]
-    pub mergeable_state: String,
-    #[serde(rename = "merged_by")]
-    pub merged_by: SimpleUser,
-    #[serde(rename = "comments")]
-    pub comments: i64,
-    #[serde(rename = "review_comments")]
-    pub review_comments: i64,
-    /// Indicates whether maintainers can modify the pull request.
-    #[serde(rename = "maintainer_can_modify")]
-    pub maintainer_can_modify: bool,
-    #[serde(rename = "commits")]
-    pub commits: i64,
-    #[serde(rename = "additions")]
-    pub additions: i64,
-    #[serde(rename = "deletions")]
-    pub deletions: i64,
-    #[serde(rename = "changed_files")]
-    pub changed_files: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub title: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub labels: Option<Vec<PullrequestLabels>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub milestone: Option<Milestone>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub active_lock_reason: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub closed_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub merged_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub merge_commit_sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub assignee: Option<SimpleUser>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub assignees: Option<Vec<SimpleUser>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub requested_reviewers: Option<Vec<SimpleUser>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub requested_teams: Option<Vec<TeamSimple>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub head: Option<PullrequestHead>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub base: Option<PullrequestBase>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _links: Option<PullrequestsimpleLinks>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author_association: Option<AuthorAssociation>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub auto_merge: Option<AutoMerge>,
     /// Indicates whether or not the pull request is a draft.
     #[serde(skip_serializing_if="Option::is_none")]
     pub draft: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub merged: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub mergeable: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub rebaseable: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub mergeable_state: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub merged_by: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub review_comments: Option<i64>,
+    /// Indicates whether maintainers can modify the pull request.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub maintainer_can_modify: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commits: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub additions: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub deletions: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub changed_files: Option<i64>,
 }
 
 /// Pull Request Merge Result
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullRequestMergeResult {
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "merged")]
-    pub merged: bool,
-    #[serde(rename = "message", deserialize_with="deser_string")]
-    pub message: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub merged: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub message: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullRequestMinimal {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "number")]
-    pub number: i64,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "head")]
-    pub head: PullrequestminimalHead,
-    #[serde(rename = "base")]
-    pub base: PullrequestminimalHead,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub number: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub head: Option<PullrequestminimalHead>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub base: Option<PullrequestminimalHead>,
 }
 
 /// Pull Request Reviews are reviews on pull requests.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullRequestReview {
     /// Unique identifier of the review
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "user")]
-    pub user: SimpleUser,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<SimpleUser>,
     /// The text of the review.
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "pull_request_url", deserialize_with="deser_string")]
-    pub pull_request_url: String,
-    #[serde(rename = "_links")]
-    pub _links: PullrequestreviewLinks,
-    /// A commit SHA for the review.
-    #[serde(rename = "commit_id", deserialize_with="deser_string")]
-    pub commit_id: String,
-    #[serde(rename = "author_association")]
-    pub author_association: AuthorAssociation,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pull_request_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _links: Option<PullrequestreviewLinks>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub submitted_at: Option<chrono::DateTime<chrono::Utc>>,
+    /// A commit SHA for the review.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub body_html: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub body_text: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author_association: Option<AuthorAssociation>,
 }
 
 /// Pull Request Review Comments are comments on a portion of the Pull Request's diff.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullRequestReviewComment {
     /// URL for the pull request review comment
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
     /// The ID of the pull request review to which the comment belongs.
-    #[serde(rename = "pull_request_review_id")]
-    pub pull_request_review_id: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pull_request_review_id: Option<i64>,
     /// The ID of the pull request review comment.
-    #[serde(rename = "id")]
-    pub id: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
     /// The node ID of the pull request review comment.
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     /// The diff of the line that the comment refers to.
-    #[serde(rename = "diff_hunk", deserialize_with="deser_string")]
-    pub diff_hunk: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub diff_hunk: Option<String>,
     /// The relative path of the file to which the comment applies.
-    #[serde(rename = "path", deserialize_with="deser_string")]
-    pub path: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub path: Option<String>,
     /// The line index in the diff to which the comment applies.
-    #[serde(rename = "position")]
-    pub position: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub position: Option<i64>,
     /// The index of the original line in the diff to which the comment applies.
-    #[serde(rename = "original_position")]
-    pub original_position: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub original_position: Option<i64>,
     /// The SHA of the commit to which the comment applies.
-    #[serde(rename = "commit_id", deserialize_with="deser_string")]
-    pub commit_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
     /// The SHA of the original commit to which the comment applies.
-    #[serde(rename = "original_commit_id", deserialize_with="deser_string")]
-    pub original_commit_id: String,
-    #[serde(rename = "user")]
-    pub user: SimpleUser,
-    /// The text of the comment.
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    /// HTML URL for the pull request review comment.
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    /// URL for the pull request that the review comment belongs to.
-    #[serde(rename = "pull_request_url", deserialize_with="deser_string")]
-    pub pull_request_url: String,
-    #[serde(rename = "author_association")]
-    pub author_association: AuthorAssociation,
-    #[serde(rename = "_links")]
-    pub _links: PullrequestreviewcommentLinks,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub original_commit_id: Option<String>,
     /// The comment ID to reply to.
     #[serde(skip_serializing_if="Option::is_none")]
     pub in_reply_to_id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<SimpleUser>,
+    /// The text of the comment.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    /// HTML URL for the pull request review comment.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    /// URL for the pull request that the review comment belongs to.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pull_request_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author_association: Option<AuthorAssociation>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _links: Option<PullrequestreviewcommentLinks>,
     /// The first line of the range for a multi-line comment.
     #[serde(skip_serializing_if="Option::is_none")]
     pub start_line: Option<i64>,
@@ -8933,85 +8965,85 @@ pub struct PullRequestReviewComment {
 /// Pull Request Review Request
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullRequestReviewRequest {
-    #[serde(rename = "users")]
-    pub users: Vec<SimpleUser>,
-    #[serde(rename = "teams")]
-    pub teams: Vec<TeamSimple>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub users: Option<Vec<SimpleUser>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub teams: Option<Vec<TeamSimple>>,
 }
 
 /// Pull Request Simple
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullRequestSimple {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "diff_url", deserialize_with="deser_string")]
-    pub diff_url: String,
-    #[serde(rename = "patch_url", deserialize_with="deser_string")]
-    pub patch_url: String,
-    #[serde(rename = "issue_url", deserialize_with="deser_string")]
-    pub issue_url: String,
-    #[serde(rename = "commits_url", deserialize_with="deser_string")]
-    pub commits_url: String,
-    #[serde(rename = "review_comments_url", deserialize_with="deser_string")]
-    pub review_comments_url: String,
-    #[serde(rename = "review_comment_url", deserialize_with="deser_string")]
-    pub review_comment_url: String,
-    #[serde(rename = "comments_url", deserialize_with="deser_string")]
-    pub comments_url: String,
-    #[serde(rename = "statuses_url", deserialize_with="deser_string")]
-    pub statuses_url: String,
-    #[serde(rename = "number")]
-    pub number: i64,
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
-    #[serde(rename = "locked")]
-    pub locked: bool,
-    #[serde(rename = "title", deserialize_with="deser_string")]
-    pub title: String,
-    #[serde(rename = "user")]
-    pub user: SimpleUser,
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
-    #[serde(rename = "labels")]
-    pub labels: Vec<PullrequestsimpleLabels>,
-    #[serde(rename = "milestone")]
-    pub milestone: Milestone,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "closed_at")]
-    pub closed_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "merged_at")]
-    pub merged_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "merge_commit_sha", deserialize_with="deser_string")]
-    pub merge_commit_sha: String,
-    #[serde(rename = "assignee")]
-    pub assignee: SimpleUser,
-    #[serde(rename = "head")]
-    pub head: PullrequestsimpleHead,
-    #[serde(rename = "base")]
-    pub base: PullrequestsimpleHead,
-    #[serde(rename = "_links")]
-    pub _links: PullrequestsimpleLinks,
-    #[serde(rename = "author_association")]
-    pub author_association: AuthorAssociation,
-    #[serde(rename = "auto_merge")]
-    pub auto_merge: AutoMerge,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub diff_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub patch_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issue_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commits_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub review_comments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub review_comment_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub statuses_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub number: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub locked: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub title: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub labels: Option<Vec<PullrequestsimpleLabels>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub milestone: Option<Milestone>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub active_lock_reason: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub closed_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub merged_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub merge_commit_sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub assignee: Option<SimpleUser>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub assignees: Option<Vec<SimpleUser>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub requested_reviewers: Option<Vec<SimpleUser>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub requested_teams: Option<Vec<TeamSimple>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub head: Option<PullrequestsimpleHead>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub base: Option<PullrequestsimpleHead>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _links: Option<PullrequestsimpleLinks>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author_association: Option<AuthorAssociation>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub auto_merge: Option<AutoMerge>,
     /// Indicates whether or not the pull request is a draft.
     #[serde(skip_serializing_if="Option::is_none")]
     pub draft: Option<bool>,
@@ -9019,168 +9051,149 @@ pub struct PullRequestSimple {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestBase {
-    #[serde(rename = "label", deserialize_with="deser_string")]
-    pub label: String,
-    #[serde(rename = "ref", deserialize_with="deser_string")]
-    pub _ref: String,
-    #[serde(rename = "repo")]
-    pub repo: PullrequestBaseRepo,
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "user")]
-    pub user: PullrequestHeadRepoOwner,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub label: Option<String>,
+    #[serde(rename = "ref")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_ref: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repo: Option<PullrequestBaseRepo>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<PullrequestHeadRepoOwner>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestBaseRepo {
-    #[serde(rename = "archive_url", deserialize_with="deser_string")]
-    pub archive_url: String,
-    #[serde(rename = "assignees_url", deserialize_with="deser_string")]
-    pub assignees_url: String,
-    #[serde(rename = "blobs_url", deserialize_with="deser_string")]
-    pub blobs_url: String,
-    #[serde(rename = "branches_url", deserialize_with="deser_string")]
-    pub branches_url: String,
-    #[serde(rename = "collaborators_url", deserialize_with="deser_string")]
-    pub collaborators_url: String,
-    #[serde(rename = "comments_url", deserialize_with="deser_string")]
-    pub comments_url: String,
-    #[serde(rename = "commits_url", deserialize_with="deser_string")]
-    pub commits_url: String,
-    #[serde(rename = "compare_url", deserialize_with="deser_string")]
-    pub compare_url: String,
-    #[serde(rename = "contents_url", deserialize_with="deser_string")]
-    pub contents_url: String,
-    #[serde(rename = "contributors_url", deserialize_with="deser_string")]
-    pub contributors_url: String,
-    #[serde(rename = "deployments_url", deserialize_with="deser_string")]
-    pub deployments_url: String,
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
-    #[serde(rename = "downloads_url", deserialize_with="deser_string")]
-    pub downloads_url: String,
-    #[serde(rename = "events_url", deserialize_with="deser_string")]
-    pub events_url: String,
-    #[serde(rename = "fork")]
-    pub fork: bool,
-    #[serde(rename = "forks_url", deserialize_with="deser_string")]
-    pub forks_url: String,
-    #[serde(rename = "full_name", deserialize_with="deser_string")]
-    pub full_name: String,
-    #[serde(rename = "git_commits_url", deserialize_with="deser_string")]
-    pub git_commits_url: String,
-    #[serde(rename = "git_refs_url", deserialize_with="deser_string")]
-    pub git_refs_url: String,
-    #[serde(rename = "git_tags_url", deserialize_with="deser_string")]
-    pub git_tags_url: String,
-    #[serde(rename = "hooks_url", deserialize_with="deser_string")]
-    pub hooks_url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "issue_comment_url", deserialize_with="deser_string")]
-    pub issue_comment_url: String,
-    #[serde(rename = "issue_events_url", deserialize_with="deser_string")]
-    pub issue_events_url: String,
-    #[serde(rename = "issues_url", deserialize_with="deser_string")]
-    pub issues_url: String,
-    #[serde(rename = "keys_url", deserialize_with="deser_string")]
-    pub keys_url: String,
-    #[serde(rename = "labels_url", deserialize_with="deser_string")]
-    pub labels_url: String,
-    #[serde(rename = "languages_url", deserialize_with="deser_string")]
-    pub languages_url: String,
-    #[serde(rename = "merges_url", deserialize_with="deser_string")]
-    pub merges_url: String,
-    #[serde(rename = "milestones_url", deserialize_with="deser_string")]
-    pub milestones_url: String,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "notifications_url", deserialize_with="deser_string")]
-    pub notifications_url: String,
-    #[serde(rename = "owner")]
-    pub owner: PullrequestHeadRepoOwner,
-    #[serde(rename = "private")]
-    pub private: bool,
-    #[serde(rename = "pulls_url", deserialize_with="deser_string")]
-    pub pulls_url: String,
-    #[serde(rename = "releases_url", deserialize_with="deser_string")]
-    pub releases_url: String,
-    #[serde(rename = "stargazers_url", deserialize_with="deser_string")]
-    pub stargazers_url: String,
-    #[serde(rename = "statuses_url", deserialize_with="deser_string")]
-    pub statuses_url: String,
-    #[serde(rename = "subscribers_url", deserialize_with="deser_string")]
-    pub subscribers_url: String,
-    #[serde(rename = "subscription_url", deserialize_with="deser_string")]
-    pub subscription_url: String,
-    #[serde(rename = "tags_url", deserialize_with="deser_string")]
-    pub tags_url: String,
-    #[serde(rename = "teams_url", deserialize_with="deser_string")]
-    pub teams_url: String,
-    #[serde(rename = "trees_url", deserialize_with="deser_string")]
-    pub trees_url: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "clone_url", deserialize_with="deser_string")]
-    pub clone_url: String,
-    #[serde(rename = "default_branch", deserialize_with="deser_string")]
-    pub default_branch: String,
-    #[serde(rename = "forks")]
-    pub forks: i64,
-    #[serde(rename = "forks_count")]
-    pub forks_count: i64,
-    #[serde(rename = "git_url", deserialize_with="deser_string")]
-    pub git_url: String,
-    #[serde(rename = "has_downloads")]
-    pub has_downloads: bool,
-    #[serde(rename = "has_issues")]
-    pub has_issues: bool,
-    #[serde(rename = "has_projects")]
-    pub has_projects: bool,
-    #[serde(rename = "has_wiki")]
-    pub has_wiki: bool,
-    #[serde(rename = "has_pages")]
-    pub has_pages: bool,
-    #[serde(rename = "homepage", deserialize_with="deser_string")]
-    pub homepage: String,
-    #[serde(rename = "language", deserialize_with="deser_string")]
-    pub language: String,
-    #[serde(rename = "archived")]
-    pub archived: bool,
-    #[serde(rename = "disabled")]
-    pub disabled: bool,
-    #[serde(rename = "mirror_url", deserialize_with="deser_string")]
-    pub mirror_url: String,
-    #[serde(rename = "open_issues")]
-    pub open_issues: i64,
-    #[serde(rename = "open_issues_count")]
-    pub open_issues_count: i64,
-    #[serde(rename = "license")]
-    pub license: LicenseSimple,
-    #[serde(rename = "pushed_at")]
-    pub pushed_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "size")]
-    pub size: i64,
-    #[serde(rename = "ssh_url", deserialize_with="deser_string")]
-    pub ssh_url: String,
-    #[serde(rename = "stargazers_count")]
-    pub stargazers_count: i64,
-    #[serde(rename = "svn_url", deserialize_with="deser_string")]
-    pub svn_url: String,
-    #[serde(rename = "watchers")]
-    pub watchers: i64,
-    #[serde(rename = "watchers_count")]
-    pub watchers_count: i64,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub archive_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub assignees_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub blobs_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub branches_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub collaborators_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commits_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub compare_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contents_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contributors_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub deployments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub downloads_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub fork: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub forks_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub full_name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_commits_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_refs_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_tags_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub hooks_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issue_comment_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issue_events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issues_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub keys_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub labels_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub languages_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub merges_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub milestones_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub notifications_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub owner: Option<PullrequestHeadRepoOwner>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub private: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pulls_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub releases_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub stargazers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub statuses_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscribers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscription_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tags_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub teams_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub trees_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub clone_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub default_branch: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub forks: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub forks_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_downloads: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_issues: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_projects: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_wiki: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_pages: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub homepage: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub language: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub master_branch: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub archived: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub disabled: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub mirror_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub open_issues: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub open_issues_count: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub permissions: Option<FullrepositoryPermissions>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -9192,173 +9205,174 @@ pub struct PullrequestBaseRepo {
     #[serde(skip_serializing_if="Option::is_none")]
     pub allow_rebase_merge: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub license: Option<LicenseSimple>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pushed_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub size: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub ssh_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub stargazers_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub svn_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub topics: Option<Vec<String>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub watchers: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub watchers_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestHead {
-    #[serde(rename = "label", deserialize_with="deser_string")]
-    pub label: String,
-    #[serde(rename = "ref", deserialize_with="deser_string")]
-    pub _ref: String,
-    #[serde(rename = "repo")]
-    pub repo: PullrequestHeadRepo,
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "user")]
-    pub user: PullrequestHeadRepoOwner,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub label: Option<String>,
+    #[serde(rename = "ref")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_ref: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repo: Option<PullrequestHeadRepo>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<PullrequestHeadRepoOwner>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestHeadRepo {
-    #[serde(rename = "archive_url", deserialize_with="deser_string")]
-    pub archive_url: String,
-    #[serde(rename = "assignees_url", deserialize_with="deser_string")]
-    pub assignees_url: String,
-    #[serde(rename = "blobs_url", deserialize_with="deser_string")]
-    pub blobs_url: String,
-    #[serde(rename = "branches_url", deserialize_with="deser_string")]
-    pub branches_url: String,
-    #[serde(rename = "collaborators_url", deserialize_with="deser_string")]
-    pub collaborators_url: String,
-    #[serde(rename = "comments_url", deserialize_with="deser_string")]
-    pub comments_url: String,
-    #[serde(rename = "commits_url", deserialize_with="deser_string")]
-    pub commits_url: String,
-    #[serde(rename = "compare_url", deserialize_with="deser_string")]
-    pub compare_url: String,
-    #[serde(rename = "contents_url", deserialize_with="deser_string")]
-    pub contents_url: String,
-    #[serde(rename = "contributors_url", deserialize_with="deser_string")]
-    pub contributors_url: String,
-    #[serde(rename = "deployments_url", deserialize_with="deser_string")]
-    pub deployments_url: String,
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
-    #[serde(rename = "downloads_url", deserialize_with="deser_string")]
-    pub downloads_url: String,
-    #[serde(rename = "events_url", deserialize_with="deser_string")]
-    pub events_url: String,
-    #[serde(rename = "fork")]
-    pub fork: bool,
-    #[serde(rename = "forks_url", deserialize_with="deser_string")]
-    pub forks_url: String,
-    #[serde(rename = "full_name", deserialize_with="deser_string")]
-    pub full_name: String,
-    #[serde(rename = "git_commits_url", deserialize_with="deser_string")]
-    pub git_commits_url: String,
-    #[serde(rename = "git_refs_url", deserialize_with="deser_string")]
-    pub git_refs_url: String,
-    #[serde(rename = "git_tags_url", deserialize_with="deser_string")]
-    pub git_tags_url: String,
-    #[serde(rename = "hooks_url", deserialize_with="deser_string")]
-    pub hooks_url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "issue_comment_url", deserialize_with="deser_string")]
-    pub issue_comment_url: String,
-    #[serde(rename = "issue_events_url", deserialize_with="deser_string")]
-    pub issue_events_url: String,
-    #[serde(rename = "issues_url", deserialize_with="deser_string")]
-    pub issues_url: String,
-    #[serde(rename = "keys_url", deserialize_with="deser_string")]
-    pub keys_url: String,
-    #[serde(rename = "labels_url", deserialize_with="deser_string")]
-    pub labels_url: String,
-    #[serde(rename = "languages_url", deserialize_with="deser_string")]
-    pub languages_url: String,
-    #[serde(rename = "merges_url", deserialize_with="deser_string")]
-    pub merges_url: String,
-    #[serde(rename = "milestones_url", deserialize_with="deser_string")]
-    pub milestones_url: String,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "notifications_url", deserialize_with="deser_string")]
-    pub notifications_url: String,
-    #[serde(rename = "owner")]
-    pub owner: PullrequestHeadRepoOwner,
-    #[serde(rename = "private")]
-    pub private: bool,
-    #[serde(rename = "pulls_url", deserialize_with="deser_string")]
-    pub pulls_url: String,
-    #[serde(rename = "releases_url", deserialize_with="deser_string")]
-    pub releases_url: String,
-    #[serde(rename = "stargazers_url", deserialize_with="deser_string")]
-    pub stargazers_url: String,
-    #[serde(rename = "statuses_url", deserialize_with="deser_string")]
-    pub statuses_url: String,
-    #[serde(rename = "subscribers_url", deserialize_with="deser_string")]
-    pub subscribers_url: String,
-    #[serde(rename = "subscription_url", deserialize_with="deser_string")]
-    pub subscription_url: String,
-    #[serde(rename = "tags_url", deserialize_with="deser_string")]
-    pub tags_url: String,
-    #[serde(rename = "teams_url", deserialize_with="deser_string")]
-    pub teams_url: String,
-    #[serde(rename = "trees_url", deserialize_with="deser_string")]
-    pub trees_url: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "clone_url", deserialize_with="deser_string")]
-    pub clone_url: String,
-    #[serde(rename = "default_branch", deserialize_with="deser_string")]
-    pub default_branch: String,
-    #[serde(rename = "forks")]
-    pub forks: i64,
-    #[serde(rename = "forks_count")]
-    pub forks_count: i64,
-    #[serde(rename = "git_url", deserialize_with="deser_string")]
-    pub git_url: String,
-    #[serde(rename = "has_downloads")]
-    pub has_downloads: bool,
-    #[serde(rename = "has_issues")]
-    pub has_issues: bool,
-    #[serde(rename = "has_projects")]
-    pub has_projects: bool,
-    #[serde(rename = "has_wiki")]
-    pub has_wiki: bool,
-    #[serde(rename = "has_pages")]
-    pub has_pages: bool,
-    #[serde(rename = "homepage", deserialize_with="deser_string")]
-    pub homepage: String,
-    #[serde(rename = "language", deserialize_with="deser_string")]
-    pub language: String,
-    #[serde(rename = "archived")]
-    pub archived: bool,
-    #[serde(rename = "disabled")]
-    pub disabled: bool,
-    #[serde(rename = "mirror_url", deserialize_with="deser_string")]
-    pub mirror_url: String,
-    #[serde(rename = "open_issues")]
-    pub open_issues: i64,
-    #[serde(rename = "open_issues_count")]
-    pub open_issues_count: i64,
-    #[serde(rename = "license")]
-    pub license: PullrequestHeadRepoLicense,
-    #[serde(rename = "pushed_at")]
-    pub pushed_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "size")]
-    pub size: i64,
-    #[serde(rename = "ssh_url", deserialize_with="deser_string")]
-    pub ssh_url: String,
-    #[serde(rename = "stargazers_count")]
-    pub stargazers_count: i64,
-    #[serde(rename = "svn_url", deserialize_with="deser_string")]
-    pub svn_url: String,
-    #[serde(rename = "watchers")]
-    pub watchers: i64,
-    #[serde(rename = "watchers_count")]
-    pub watchers_count: i64,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub archive_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub assignees_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub blobs_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub branches_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub collaborators_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commits_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub compare_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contents_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contributors_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub deployments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub downloads_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub fork: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub forks_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub full_name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_commits_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_refs_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_tags_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub hooks_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issue_comment_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issue_events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issues_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub keys_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub labels_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub languages_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub merges_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub milestones_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub notifications_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub owner: Option<PullrequestHeadRepoOwner>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub private: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pulls_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub releases_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub stargazers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub statuses_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscribers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscription_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tags_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub teams_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub trees_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub clone_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub default_branch: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub forks: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub forks_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_downloads: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_issues: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_projects: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_wiki: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_pages: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub homepage: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub language: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub master_branch: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub archived: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub disabled: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub mirror_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub open_issues: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub open_issues_count: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub permissions: Option<FullrepositoryPermissions>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -9370,61 +9384,82 @@ pub struct PullrequestHeadRepo {
     #[serde(skip_serializing_if="Option::is_none")]
     pub allow_rebase_merge: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub license: Option<PullrequestHeadRepoLicense>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pushed_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub size: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub ssh_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub stargazers_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub svn_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub topics: Option<Vec<String>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub watchers: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub watchers_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestHeadRepoLicense {
-    #[serde(rename = "key", deserialize_with="deser_string")]
-    pub key: String,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "spdx_id", deserialize_with="deser_string")]
-    pub spdx_id: String,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub key: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub spdx_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestHeadRepoOwner {
-    #[serde(rename = "avatar_url", deserialize_with="deser_string")]
-    pub avatar_url: String,
-    #[serde(rename = "events_url", deserialize_with="deser_string")]
-    pub events_url: String,
-    #[serde(rename = "followers_url", deserialize_with="deser_string")]
-    pub followers_url: String,
-    #[serde(rename = "following_url", deserialize_with="deser_string")]
-    pub following_url: String,
-    #[serde(rename = "gists_url", deserialize_with="deser_string")]
-    pub gists_url: String,
-    #[serde(rename = "gravatar_id", deserialize_with="deser_string")]
-    pub gravatar_id: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "login", deserialize_with="deser_string")]
-    pub login: String,
-    #[serde(rename = "organizations_url", deserialize_with="deser_string")]
-    pub organizations_url: String,
-    #[serde(rename = "received_events_url", deserialize_with="deser_string")]
-    pub received_events_url: String,
-    #[serde(rename = "repos_url", deserialize_with="deser_string")]
-    pub repos_url: String,
-    #[serde(rename = "site_admin")]
-    pub site_admin: bool,
-    #[serde(rename = "starred_url", deserialize_with="deser_string")]
-    pub starred_url: String,
-    #[serde(rename = "subscriptions_url", deserialize_with="deser_string")]
-    pub subscriptions_url: String,
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub avatar_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub followers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub following_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub gists_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub gravatar_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub login: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub organizations_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub received_events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repos_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub site_admin: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub starred_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscriptions_url: Option<String>,
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -9447,78 +9482,81 @@ pub struct PullrequestLabels {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestminimalHead {
-    #[serde(rename = "ref", deserialize_with="deser_string")]
-    pub _ref: String,
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "repo")]
-    pub repo: PullrequestminimalHeadRepo,
+    #[serde(rename = "ref")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_ref: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repo: Option<PullrequestminimalHeadRepo>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestminimalHeadRepo {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestreviewLinks {
-    #[serde(rename = "html")]
-    pub html: PullrequestreviewLinksHtml,
-    #[serde(rename = "pull_request")]
-    pub pull_request: PullrequestreviewLinksHtml,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html: Option<PullrequestreviewLinksHtml>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pull_request: Option<PullrequestreviewLinksHtml>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestreviewLinksHtml {
-    #[serde(rename = "href", deserialize_with="deser_string")]
-    pub href: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub href: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestreviewcommentLinks {
     #[serde(rename = "self")]
-    pub _self: PullrequestreviewcommentLinksSelf,
-    #[serde(rename = "html")]
-    pub html: PullrequestreviewcommentLinksHtml,
-    #[serde(rename = "pull_request")]
-    pub pull_request: PullrequestreviewcommentLinksPullRequest,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _self: Option<PullrequestreviewcommentLinksSelf>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html: Option<PullrequestreviewcommentLinksHtml>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pull_request: Option<PullrequestreviewcommentLinksPullRequest>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestreviewcommentLinksHtml {
-    #[serde(rename = "href", deserialize_with="deser_string")]
-    pub href: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub href: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestreviewcommentLinksPullRequest {
-    #[serde(rename = "href", deserialize_with="deser_string")]
-    pub href: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub href: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestreviewcommentLinksSelf {
-    #[serde(rename = "href", deserialize_with="deser_string")]
-    pub href: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub href: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestsimpleHead {
-    #[serde(rename = "label", deserialize_with="deser_string")]
-    pub label: String,
-    #[serde(rename = "ref", deserialize_with="deser_string")]
-    pub _ref: String,
-    #[serde(rename = "repo")]
-    pub repo: Repository,
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "user")]
-    pub user: SimpleUser,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub label: Option<String>,
+    #[serde(rename = "ref")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_ref: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repo: Option<Repository>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<SimpleUser>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -9541,51 +9579,52 @@ pub struct PullrequestsimpleLabels {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestsimpleLinks {
-    #[serde(rename = "comments")]
-    pub comments: Link,
-    #[serde(rename = "commits")]
-    pub commits: Link,
-    #[serde(rename = "statuses")]
-    pub statuses: Link,
-    #[serde(rename = "html")]
-    pub html: Link,
-    #[serde(rename = "issue")]
-    pub issue: Link,
-    #[serde(rename = "review_comments")]
-    pub review_comments: Link,
-    #[serde(rename = "review_comment")]
-    pub review_comment: Link,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments: Option<Link>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commits: Option<Link>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub statuses: Option<Link>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html: Option<Link>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issue: Option<Link>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub review_comments: Option<Link>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub review_comment: Option<Link>,
     #[serde(rename = "self")]
-    pub _self: Link,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _self: Option<Link>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RateLimit {
-    #[serde(rename = "limit")]
-    pub limit: i64,
-    #[serde(rename = "remaining")]
-    pub remaining: i64,
-    #[serde(rename = "reset")]
-    pub reset: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub limit: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub remaining: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub reset: Option<i64>,
 }
 
 /// Rate Limit Overview
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RateLimitOverview {
-    #[serde(rename = "resources")]
-    pub resources: RatelimitoverviewResources,
-    #[serde(rename = "rate")]
-    pub rate: RateLimit,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub resources: Option<RatelimitoverviewResources>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub rate: Option<RateLimit>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RatelimitoverviewResources {
-    #[serde(rename = "core")]
-    pub core: RateLimit,
-    #[serde(rename = "search")]
-    pub search: RateLimit,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub core: Option<RateLimit>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub graphql: Option<RateLimit>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub search: Option<RateLimit>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub source_import: Option<RateLimit>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -9597,97 +9636,99 @@ pub struct RatelimitoverviewResources {
 /// Reactions to conversations provide a way to help people express their feelings more simply and effectively.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Reaction {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "user")]
-    pub user: SimpleUser,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<SimpleUser>,
     /// The reaction to use
-    #[serde(rename = "content", deserialize_with="deser_string")]
-    pub content: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub content: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReactionRollup {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "total_count")]
-    pub total_count: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_count: Option<i64>,
     #[serde(rename = "+1")]
-    pub plus_1: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub plus_1: Option<i64>,
     #[serde(rename = "-1")]
-    pub minus_1: i64,
-    #[serde(rename = "laugh")]
-    pub laugh: i64,
-    #[serde(rename = "confused")]
-    pub confused: i64,
-    #[serde(rename = "heart")]
-    pub heart: i64,
-    #[serde(rename = "hooray")]
-    pub hooray: i64,
-    #[serde(rename = "eyes")]
-    pub eyes: i64,
-    #[serde(rename = "rocket")]
-    pub rocket: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub minus_1: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub laugh: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub confused: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub heart: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub hooray: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub eyes: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub rocket: Option<i64>,
 }
 
 /// Referrer Traffic
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReferrerTraffic {
-    #[serde(rename = "referrer", deserialize_with="deser_string")]
-    pub referrer: String,
-    #[serde(rename = "count")]
-    pub count: i64,
-    #[serde(rename = "uniques")]
-    pub uniques: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub referrer: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub uniques: Option<i64>,
 }
 
 /// A release.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Release {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "assets_url", deserialize_with="deser_string")]
-    pub assets_url: String,
-    #[serde(rename = "upload_url", deserialize_with="deser_string")]
-    pub upload_url: String,
-    #[serde(rename = "tarball_url", deserialize_with="deser_string")]
-    pub tarball_url: String,
-    #[serde(rename = "zipball_url", deserialize_with="deser_string")]
-    pub zipball_url: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub assets_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub upload_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tarball_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub zipball_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     /// The name of the tag.
-    #[serde(rename = "tag_name", deserialize_with="deser_string")]
-    pub tag_name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tag_name: Option<String>,
     /// Specifies the commitish value that determines where the Git tag is created from.
-    #[serde(rename = "target_commitish", deserialize_with="deser_string")]
-    pub target_commitish: String,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    /// true to create a draft (unpublished) release, false to create a published one.
-    #[serde(rename = "draft")]
-    pub draft: bool,
-    /// Whether to identify the release as a prerelease or a full release.
-    #[serde(rename = "prerelease")]
-    pub prerelease: bool,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "published_at")]
-    pub published_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "author")]
-    pub author: SimpleUser,
-    #[serde(rename = "assets")]
-    pub assets: Vec<ReleaseAsset>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub target_commitish: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
+    /// true to create a draft (unpublished) release, false to create a published one.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub draft: Option<bool>,
+    /// Whether to identify the release as a prerelease or a full release.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub prerelease: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub published_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub assets: Option<Vec<ReleaseAsset>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub body_html: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -9697,192 +9738,192 @@ pub struct Release {
 /// Data related to a release.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReleaseAsset {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "browser_download_url", deserialize_with="deser_string")]
-    pub browser_download_url: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub browser_download_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     /// The file name of the asset.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "label", deserialize_with="deser_string")]
-    pub label: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub label: Option<String>,
     /// State of the release asset.
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
-    #[serde(rename = "content_type", deserialize_with="deser_string")]
-    pub content_type: String,
-    #[serde(rename = "size")]
-    pub size: i64,
-    #[serde(rename = "download_count")]
-    pub download_count: i64,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "uploader")]
-    pub uploader: SimpleUser,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub content_type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub size: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub download_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub uploader: Option<SimpleUser>,
 }
 
 /// Repo Search Result Item
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RepoSearchResultItem {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "full_name", deserialize_with="deser_string")]
-    pub full_name: String,
-    #[serde(rename = "owner")]
-    pub owner: SimpleUser,
-    #[serde(rename = "private")]
-    pub private: bool,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
-    #[serde(rename = "fork")]
-    pub fork: bool,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "pushed_at")]
-    pub pushed_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "homepage", deserialize_with="deser_string")]
-    pub homepage: String,
-    #[serde(rename = "size")]
-    pub size: i64,
-    #[serde(rename = "stargazers_count")]
-    pub stargazers_count: i64,
-    #[serde(rename = "watchers_count")]
-    pub watchers_count: i64,
-    #[serde(rename = "language", deserialize_with="deser_string")]
-    pub language: String,
-    #[serde(rename = "forks_count")]
-    pub forks_count: i64,
-    #[serde(rename = "open_issues_count")]
-    pub open_issues_count: i64,
-    #[serde(rename = "default_branch", deserialize_with="deser_string")]
-    pub default_branch: String,
-    #[serde(rename = "score")]
-    pub score: i64,
-    #[serde(rename = "forks_url", deserialize_with="deser_string")]
-    pub forks_url: String,
-    #[serde(rename = "keys_url", deserialize_with="deser_string")]
-    pub keys_url: String,
-    #[serde(rename = "collaborators_url", deserialize_with="deser_string")]
-    pub collaborators_url: String,
-    #[serde(rename = "teams_url", deserialize_with="deser_string")]
-    pub teams_url: String,
-    #[serde(rename = "hooks_url", deserialize_with="deser_string")]
-    pub hooks_url: String,
-    #[serde(rename = "issue_events_url", deserialize_with="deser_string")]
-    pub issue_events_url: String,
-    #[serde(rename = "events_url", deserialize_with="deser_string")]
-    pub events_url: String,
-    #[serde(rename = "assignees_url", deserialize_with="deser_string")]
-    pub assignees_url: String,
-    #[serde(rename = "branches_url", deserialize_with="deser_string")]
-    pub branches_url: String,
-    #[serde(rename = "tags_url", deserialize_with="deser_string")]
-    pub tags_url: String,
-    #[serde(rename = "blobs_url", deserialize_with="deser_string")]
-    pub blobs_url: String,
-    #[serde(rename = "git_tags_url", deserialize_with="deser_string")]
-    pub git_tags_url: String,
-    #[serde(rename = "git_refs_url", deserialize_with="deser_string")]
-    pub git_refs_url: String,
-    #[serde(rename = "trees_url", deserialize_with="deser_string")]
-    pub trees_url: String,
-    #[serde(rename = "statuses_url", deserialize_with="deser_string")]
-    pub statuses_url: String,
-    #[serde(rename = "languages_url", deserialize_with="deser_string")]
-    pub languages_url: String,
-    #[serde(rename = "stargazers_url", deserialize_with="deser_string")]
-    pub stargazers_url: String,
-    #[serde(rename = "contributors_url", deserialize_with="deser_string")]
-    pub contributors_url: String,
-    #[serde(rename = "subscribers_url", deserialize_with="deser_string")]
-    pub subscribers_url: String,
-    #[serde(rename = "subscription_url", deserialize_with="deser_string")]
-    pub subscription_url: String,
-    #[serde(rename = "commits_url", deserialize_with="deser_string")]
-    pub commits_url: String,
-    #[serde(rename = "git_commits_url", deserialize_with="deser_string")]
-    pub git_commits_url: String,
-    #[serde(rename = "comments_url", deserialize_with="deser_string")]
-    pub comments_url: String,
-    #[serde(rename = "issue_comment_url", deserialize_with="deser_string")]
-    pub issue_comment_url: String,
-    #[serde(rename = "contents_url", deserialize_with="deser_string")]
-    pub contents_url: String,
-    #[serde(rename = "compare_url", deserialize_with="deser_string")]
-    pub compare_url: String,
-    #[serde(rename = "merges_url", deserialize_with="deser_string")]
-    pub merges_url: String,
-    #[serde(rename = "archive_url", deserialize_with="deser_string")]
-    pub archive_url: String,
-    #[serde(rename = "downloads_url", deserialize_with="deser_string")]
-    pub downloads_url: String,
-    #[serde(rename = "issues_url", deserialize_with="deser_string")]
-    pub issues_url: String,
-    #[serde(rename = "pulls_url", deserialize_with="deser_string")]
-    pub pulls_url: String,
-    #[serde(rename = "milestones_url", deserialize_with="deser_string")]
-    pub milestones_url: String,
-    #[serde(rename = "notifications_url", deserialize_with="deser_string")]
-    pub notifications_url: String,
-    #[serde(rename = "labels_url", deserialize_with="deser_string")]
-    pub labels_url: String,
-    #[serde(rename = "releases_url", deserialize_with="deser_string")]
-    pub releases_url: String,
-    #[serde(rename = "deployments_url", deserialize_with="deser_string")]
-    pub deployments_url: String,
-    #[serde(rename = "git_url", deserialize_with="deser_string")]
-    pub git_url: String,
-    #[serde(rename = "ssh_url", deserialize_with="deser_string")]
-    pub ssh_url: String,
-    #[serde(rename = "clone_url", deserialize_with="deser_string")]
-    pub clone_url: String,
-    #[serde(rename = "svn_url", deserialize_with="deser_string")]
-    pub svn_url: String,
-    #[serde(rename = "forks")]
-    pub forks: i64,
-    #[serde(rename = "open_issues")]
-    pub open_issues: i64,
-    #[serde(rename = "watchers")]
-    pub watchers: i64,
-    #[serde(rename = "mirror_url", deserialize_with="deser_string")]
-    pub mirror_url: String,
-    #[serde(rename = "has_issues")]
-    pub has_issues: bool,
-    #[serde(rename = "has_projects")]
-    pub has_projects: bool,
-    #[serde(rename = "has_pages")]
-    pub has_pages: bool,
-    #[serde(rename = "has_wiki")]
-    pub has_wiki: bool,
-    #[serde(rename = "has_downloads")]
-    pub has_downloads: bool,
-    #[serde(rename = "archived")]
-    pub archived: bool,
-    /// Returns whether or not this repository disabled.
-    #[serde(rename = "disabled")]
-    pub disabled: bool,
-    #[serde(rename = "license")]
-    pub license: LicenseSimple,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub full_name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub owner: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub private: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub fork: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pushed_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub homepage: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub size: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub stargazers_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub watchers_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub language: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub forks_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub open_issues_count: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub master_branch: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub default_branch: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub score: Option<f32>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub forks_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub keys_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub collaborators_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub teams_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub hooks_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issue_events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub assignees_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub branches_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tags_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub blobs_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_tags_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_refs_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub trees_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub statuses_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub languages_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub stargazers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contributors_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscribers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscription_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commits_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_commits_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issue_comment_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contents_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub compare_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub merges_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub archive_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub downloads_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issues_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pulls_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub milestones_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub notifications_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub labels_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub releases_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub deployments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub ssh_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub clone_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub svn_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub forks: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub open_issues: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub watchers: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub topics: Option<Vec<String>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub mirror_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_issues: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_projects: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_pages: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_wiki: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_downloads: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub archived: Option<bool>,
+    /// Returns whether or not this repository disabled.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub disabled: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub license: Option<LicenseSimple>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub permissions: Option<FullrepositoryPermissions>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -9903,171 +9944,167 @@ pub struct RepoSearchResultItem {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Repository {
     /// Unique identifier of the repository
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     /// The name of the repository.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "full_name", deserialize_with="deser_string")]
-    pub full_name: String,
-    #[serde(rename = "license")]
-    pub license: LicenseSimple,
-    #[serde(rename = "forks")]
-    pub forks: i64,
-    #[serde(rename = "owner")]
-    pub owner: SimpleUser,
-    /// Whether the repository is private or public.
-    #[serde(rename = "private")]
-    pub private: bool,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
-    #[serde(rename = "fork")]
-    pub fork: bool,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "archive_url", deserialize_with="deser_string")]
-    pub archive_url: String,
-    #[serde(rename = "assignees_url", deserialize_with="deser_string")]
-    pub assignees_url: String,
-    #[serde(rename = "blobs_url", deserialize_with="deser_string")]
-    pub blobs_url: String,
-    #[serde(rename = "branches_url", deserialize_with="deser_string")]
-    pub branches_url: String,
-    #[serde(rename = "collaborators_url", deserialize_with="deser_string")]
-    pub collaborators_url: String,
-    #[serde(rename = "comments_url", deserialize_with="deser_string")]
-    pub comments_url: String,
-    #[serde(rename = "commits_url", deserialize_with="deser_string")]
-    pub commits_url: String,
-    #[serde(rename = "compare_url", deserialize_with="deser_string")]
-    pub compare_url: String,
-    #[serde(rename = "contents_url", deserialize_with="deser_string")]
-    pub contents_url: String,
-    #[serde(rename = "contributors_url", deserialize_with="deser_string")]
-    pub contributors_url: String,
-    #[serde(rename = "deployments_url", deserialize_with="deser_string")]
-    pub deployments_url: String,
-    #[serde(rename = "downloads_url", deserialize_with="deser_string")]
-    pub downloads_url: String,
-    #[serde(rename = "events_url", deserialize_with="deser_string")]
-    pub events_url: String,
-    #[serde(rename = "forks_url", deserialize_with="deser_string")]
-    pub forks_url: String,
-    #[serde(rename = "git_commits_url", deserialize_with="deser_string")]
-    pub git_commits_url: String,
-    #[serde(rename = "git_refs_url", deserialize_with="deser_string")]
-    pub git_refs_url: String,
-    #[serde(rename = "git_tags_url", deserialize_with="deser_string")]
-    pub git_tags_url: String,
-    #[serde(rename = "git_url", deserialize_with="deser_string")]
-    pub git_url: String,
-    #[serde(rename = "issue_comment_url", deserialize_with="deser_string")]
-    pub issue_comment_url: String,
-    #[serde(rename = "issue_events_url", deserialize_with="deser_string")]
-    pub issue_events_url: String,
-    #[serde(rename = "issues_url", deserialize_with="deser_string")]
-    pub issues_url: String,
-    #[serde(rename = "keys_url", deserialize_with="deser_string")]
-    pub keys_url: String,
-    #[serde(rename = "labels_url", deserialize_with="deser_string")]
-    pub labels_url: String,
-    #[serde(rename = "languages_url", deserialize_with="deser_string")]
-    pub languages_url: String,
-    #[serde(rename = "merges_url", deserialize_with="deser_string")]
-    pub merges_url: String,
-    #[serde(rename = "milestones_url", deserialize_with="deser_string")]
-    pub milestones_url: String,
-    #[serde(rename = "notifications_url", deserialize_with="deser_string")]
-    pub notifications_url: String,
-    #[serde(rename = "pulls_url", deserialize_with="deser_string")]
-    pub pulls_url: String,
-    #[serde(rename = "releases_url", deserialize_with="deser_string")]
-    pub releases_url: String,
-    #[serde(rename = "ssh_url", deserialize_with="deser_string")]
-    pub ssh_url: String,
-    #[serde(rename = "stargazers_url", deserialize_with="deser_string")]
-    pub stargazers_url: String,
-    #[serde(rename = "statuses_url", deserialize_with="deser_string")]
-    pub statuses_url: String,
-    #[serde(rename = "subscribers_url", deserialize_with="deser_string")]
-    pub subscribers_url: String,
-    #[serde(rename = "subscription_url", deserialize_with="deser_string")]
-    pub subscription_url: String,
-    #[serde(rename = "tags_url", deserialize_with="deser_string")]
-    pub tags_url: String,
-    #[serde(rename = "teams_url", deserialize_with="deser_string")]
-    pub teams_url: String,
-    #[serde(rename = "trees_url", deserialize_with="deser_string")]
-    pub trees_url: String,
-    #[serde(rename = "clone_url", deserialize_with="deser_string")]
-    pub clone_url: String,
-    #[serde(rename = "mirror_url", deserialize_with="deser_string")]
-    pub mirror_url: String,
-    #[serde(rename = "hooks_url", deserialize_with="deser_string")]
-    pub hooks_url: String,
-    #[serde(rename = "svn_url", deserialize_with="deser_string")]
-    pub svn_url: String,
-    #[serde(rename = "homepage", deserialize_with="deser_string")]
-    pub homepage: String,
-    #[serde(rename = "language", deserialize_with="deser_string")]
-    pub language: String,
-    #[serde(rename = "forks_count")]
-    pub forks_count: i64,
-    #[serde(rename = "stargazers_count")]
-    pub stargazers_count: i64,
-    #[serde(rename = "watchers_count")]
-    pub watchers_count: i64,
-    #[serde(rename = "size")]
-    pub size: i64,
-    /// The default branch of the repository.
-    #[serde(rename = "default_branch", deserialize_with="deser_string")]
-    pub default_branch: String,
-    #[serde(rename = "open_issues_count")]
-    pub open_issues_count: i64,
-    /// Whether issues are enabled.
-    #[serde(rename = "has_issues")]
-    pub has_issues: bool,
-    /// Whether projects are enabled.
-    #[serde(rename = "has_projects")]
-    pub has_projects: bool,
-    /// Whether the wiki is enabled.
-    #[serde(rename = "has_wiki")]
-    pub has_wiki: bool,
-    #[serde(rename = "has_pages")]
-    pub has_pages: bool,
-    /// Whether downloads are enabled.
-    #[serde(rename = "has_downloads")]
-    pub has_downloads: bool,
-    /// Whether the repository is archived.
-    #[serde(rename = "archived")]
-    pub archived: bool,
-    /// Returns whether or not this repository disabled.
-    #[serde(rename = "disabled")]
-    pub disabled: bool,
-    #[serde(rename = "pushed_at")]
-    pub pushed_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "open_issues")]
-    pub open_issues: i64,
-    #[serde(rename = "watchers")]
-    pub watchers: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub full_name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub license: Option<LicenseSimple>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub forks: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub permissions: Option<RepositoryPermissions>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub owner: Option<SimpleUser>,
+    /// Whether the repository is private or public.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub private: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub fork: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub archive_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub assignees_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub blobs_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub branches_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub collaborators_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commits_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub compare_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contents_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contributors_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub deployments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub downloads_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub forks_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_commits_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_refs_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_tags_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issue_comment_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issue_events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issues_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub keys_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub labels_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub languages_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub merges_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub milestones_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub notifications_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pulls_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub releases_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub ssh_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub stargazers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub statuses_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscribers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscription_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tags_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub teams_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub trees_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub clone_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub mirror_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub hooks_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub svn_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub homepage: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub language: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub forks_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub stargazers_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub watchers_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub size: Option<i64>,
+    /// The default branch of the repository.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub default_branch: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub open_issues_count: Option<i64>,
     /// Whether this repository acts as a template that can be used to generate new repositories.
     #[serde(skip_serializing_if="Option::is_none")]
     pub is_template: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub topics: Option<Vec<String>>,
+    /// Whether issues are enabled.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_issues: Option<bool>,
+    /// Whether projects are enabled.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_projects: Option<bool>,
+    /// Whether the wiki is enabled.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_wiki: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_pages: Option<bool>,
+    /// Whether downloads are enabled.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_downloads: Option<bool>,
+    /// Whether the repository is archived.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub archived: Option<bool>,
+    /// Returns whether or not this repository disabled.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub disabled: Option<bool>,
     /// The repository visibility: public, private, or internal.
     #[serde(skip_serializing_if="Option::is_none")]
     pub visibility: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pushed_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
     /// Whether to allow rebase merges for pull requests.
     #[serde(skip_serializing_if="Option::is_none")]
     pub allow_rebase_merge: Option<bool>,
@@ -10089,6 +10126,10 @@ pub struct Repository {
     #[serde(skip_serializing_if="Option::is_none")]
     pub network_count: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub open_issues: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub watchers: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub master_branch: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub starred_at: Option<String>,
@@ -10097,51 +10138,51 @@ pub struct Repository {
 /// Repository Collaborator Permission
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RepositoryCollaboratorPermission {
-    #[serde(rename = "permission", deserialize_with="deser_string")]
-    pub permission: String,
-    #[serde(rename = "user")]
-    pub user: SimpleUser,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub permission: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<SimpleUser>,
 }
 
 /// Repository invitations let you manage who you collaborate with.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RepositoryInvitation {
     /// Unique identifier of the repository invitation.
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "repository")]
-    pub repository: MinimalRepository,
-    #[serde(rename = "invitee")]
-    pub invitee: SimpleUser,
-    #[serde(rename = "inviter")]
-    pub inviter: SimpleUser,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repository: Option<MinimalRepository>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub invitee: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub inviter: Option<SimpleUser>,
     /// The permission associated with the invitation.
-    #[serde(rename = "permissions", deserialize_with="deser_string")]
-    pub permissions: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    /// URL for the repository invitation
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub permissions: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
     /// Whether or not the invitation has expired
     #[serde(skip_serializing_if="Option::is_none")]
     pub expired: Option<bool>,
+    /// URL for the repository invitation
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RepositoryPermissions {
-    #[serde(rename = "admin")]
-    pub admin: bool,
-    #[serde(rename = "pull")]
-    pub pull: bool,
-    #[serde(rename = "push")]
-    pub push: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub admin: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pull: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub triage: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub push: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub maintain: Option<bool>,
 }
@@ -10150,19 +10191,19 @@ pub struct RepositoryPermissions {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RepositorySubscription {
     /// Determines if notifications should be received from this repository.
-    #[serde(rename = "subscribed")]
-    pub subscribed: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscribed: Option<bool>,
     /// Determines if all notifications should be blocked from this repository.
-    #[serde(rename = "ignored")]
-    pub ignored: bool,
-    #[serde(rename = "reason", deserialize_with="deser_string")]
-    pub reason: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "repository_url", deserialize_with="deser_string")]
-    pub repository_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub ignored: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub reason: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repository_url: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -10411,22 +10452,22 @@ pub struct ReposownerrepobranchesbranchprotectionRequiredPullRequestReviewsDismi
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepobranchesbranchprotectionRequiredStatusChecks {
     /// Require branches to be up to date before merging.
-    #[serde(rename = "strict")]
-    pub strict: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub strict: Option<bool>,
     /// The list of status checks to require in order to merge into this branch
-    #[serde(rename = "contexts")]
-    pub contexts: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contexts: Option<Vec<String>>,
 }
 
 /// Restrict who can push to the protected branch. User, app, and team `restrictions` are only available for organization-owned repositories. Set to `null` to disable.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepobranchesbranchprotectionRestrictions {
     /// The list of user `login`s with push access
-    #[serde(rename = "users")]
-    pub users: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub users: Option<Vec<String>>,
     /// The list of team `slug`s with push access
-    #[serde(rename = "teams")]
-    pub teams: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub teams: Option<Vec<String>>,
     /// The list of app `slug`s with push access
     #[serde(skip_serializing_if="Option::is_none")]
     pub apps: Option<Vec<String>>,
@@ -10435,25 +10476,25 @@ pub struct ReposownerrepobranchesbranchprotectionRestrictions {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepocheckrunsActions {
     /// The text to be displayed on a button in the web UI. The maximum size is 20 characters.
-    #[serde(rename = "label", deserialize_with="deser_string")]
-    pub label: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub label: Option<String>,
     /// A short explanation of what this action would do. The maximum size is 40 characters.
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
     /// A reference for the action on the integrator's system. The maximum size is 20 characters.
-    #[serde(rename = "identifier", deserialize_with="deser_string")]
-    pub identifier: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub identifier: Option<String>,
 }
 
 /// Check runs can accept a variety of data in the `output` object, including a `title` and `summary` and can optionally provide descriptive details about the run. See the [`output` object](https://docs.github.com/rest/reference/checks#output-object) description.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepocheckrunsOutput {
     /// The title of the check run.
-    #[serde(rename = "title", deserialize_with="deser_string")]
-    pub title: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub title: Option<String>,
     /// The summary of the check run. This parameter supports Markdown.
-    #[serde(rename = "summary", deserialize_with="deser_string")]
-    pub summary: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub summary: Option<String>,
     /// The details of the check run. This parameter supports Markdown.
     #[serde(skip_serializing_if="Option::is_none")]
     pub text: Option<String>,
@@ -10468,26 +10509,26 @@ pub struct ReposownerrepocheckrunsOutput {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepocheckrunsOutputAnnotations {
     /// The path of the file to add an annotation to. For example, `assets/css/main.css`.
-    #[serde(rename = "path", deserialize_with="deser_string")]
-    pub path: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub path: Option<String>,
     /// The start line of the annotation.
-    #[serde(rename = "start_line")]
-    pub start_line: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub start_line: Option<i64>,
     /// The end line of the annotation.
-    #[serde(rename = "end_line")]
-    pub end_line: i64,
-    /// The level of the annotation. Can be one of `notice`, `warning`, or `failure`.
-    #[serde(rename = "annotation_level", deserialize_with="deser_string")]
-    pub annotation_level: String,
-    /// A short description of the feedback for these lines of code. The maximum size is 64 KB.
-    #[serde(rename = "message", deserialize_with="deser_string")]
-    pub message: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub end_line: Option<i64>,
     /// The start column of the annotation. Annotations only support `start_column` and `end_column` on the same line. Omit this parameter if `start_line` and `end_line` have different values.
     #[serde(skip_serializing_if="Option::is_none")]
     pub start_column: Option<i64>,
     /// The end column of the annotation. Annotations only support `start_column` and `end_column` on the same line. Omit this parameter if `start_line` and `end_line` have different values.
     #[serde(skip_serializing_if="Option::is_none")]
     pub end_column: Option<i64>,
+    /// The level of the annotation. Can be one of `notice`, `warning`, or `failure`.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub annotation_level: Option<String>,
+    /// A short description of the feedback for these lines of code. The maximum size is 64 KB.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub message: Option<String>,
     /// The title that represents the annotation. The maximum size is 255 characters.
     #[serde(skip_serializing_if="Option::is_none")]
     pub title: Option<String>,
@@ -10499,11 +10540,11 @@ pub struct ReposownerrepocheckrunsOutputAnnotations {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepocheckrunsOutputImages {
     /// The alternative text for the image.
-    #[serde(rename = "alt", deserialize_with="deser_string")]
-    pub alt: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub alt: Option<String>,
     /// The full URL of the image.
-    #[serde(rename = "image_url", deserialize_with="deser_string")]
-    pub image_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub image_url: Option<String>,
     /// A short image description.
     #[serde(skip_serializing_if="Option::is_none")]
     pub caption: Option<String>,
@@ -10512,12 +10553,12 @@ pub struct ReposownerrepocheckrunsOutputImages {
 /// Check runs can accept a variety of data in the `output` object, including a `title` and `summary` and can optionally provide descriptive details about the run. See the [`output` object](https://docs.github.com/rest/reference/checks#output-object-1) description.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepocheckrunscheckRunIdOutput {
-    /// Can contain Markdown.
-    #[serde(rename = "summary", deserialize_with="deser_string")]
-    pub summary: String,
     /// **Required**.
     #[serde(skip_serializing_if="Option::is_none")]
     pub title: Option<String>,
+    /// Can contain Markdown.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub summary: Option<String>,
     /// Can contain Markdown.
     #[serde(skip_serializing_if="Option::is_none")]
     pub text: Option<String>,
@@ -10532,22 +10573,22 @@ pub struct ReposownerrepocheckrunscheckRunIdOutput {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepochecksuitespreferencesAutoTriggerChecks {
     /// The `id` of the GitHub App.
-    #[serde(rename = "app_id")]
-    pub app_id: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub app_id: Option<i64>,
     /// Set to `true` to enable automatic creation of CheckSuite events upon pushes to the repository, or `false` to disable them.
-    #[serde(rename = "setting")]
-    pub setting: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub setting: Option<bool>,
 }
 
 /// The author of the file. Default: The `committer` or the authenticated user if you omit `committer`.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepocontentspathAuthor {
     /// The name of the author or committer of the commit. You'll receive a `422` status code if `name` is omitted.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
     /// The email of the author or committer of the commit. You'll receive a `422` status code if `email` is omitted.
-    #[serde(rename = "email", deserialize_with="deser_string")]
-    pub email: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub date: Option<String>,
 }
@@ -10567,11 +10608,11 @@ pub struct ReposownerrepocontentspathAuthor1 {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepocontentspathCommitter {
     /// The name of the author or committer of the commit. You'll receive a `422` status code if `name` is omitted.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
     /// The email of the author or committer of the commit. You'll receive a `422` status code if `email` is omitted.
-    #[serde(rename = "email", deserialize_with="deser_string")]
-    pub email: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub date: Option<String>,
 }
@@ -10662,8 +10703,8 @@ pub struct ReposownerrepogittreesTree {
 /// Key/value pairs to provide settings for this webhook. [These are defined below](https://docs.github.com/rest/reference/repos#create-hook-config-params).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepohooksConfig {
-    #[serde(rename = "url")]
-    pub url: WebhookConfigUrl,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<WebhookConfigUrl>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub content_type: Option<WebhookConfigContentType>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10679,8 +10720,8 @@ pub struct ReposownerrepohooksConfig {
 /// Key/value pairs to provide settings for this webhook. [These are defined below](https://docs.github.com/rest/reference/repos#create-hook-config-params).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepohookshookIdConfig {
-    #[serde(rename = "url")]
-    pub url: WebhookConfigUrl,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<WebhookConfigUrl>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub content_type: Option<WebhookConfigContentType>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10697,8 +10738,8 @@ pub struct ReposownerrepohookshookIdConfig {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepopagesSource {
     /// The repository branch used to publish your site's source files.
-    #[serde(rename = "branch", deserialize_with="deser_string")]
-    pub branch: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub branch: Option<String>,
     /// The repository directory that includes the source files for the Pages site. Allowed paths are `/` or `/docs`. Default: `/`
     #[serde(skip_serializing_if="Option::is_none")]
     pub path: Option<String>,
@@ -10707,14 +10748,14 @@ pub struct ReposownerrepopagesSource {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepopullspullNumberreviewsComments {
     /// The relative path to the file that necessitates a review comment.
-    #[serde(rename = "path", deserialize_with="deser_string")]
-    pub path: String,
-    /// Text of the review comment.
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub path: Option<String>,
     /// The position in the diff where you want to add a review comment. Note this value is not the same as the line number in the file. For help finding the position value, read the note below.
     #[serde(skip_serializing_if="Option::is_none")]
     pub position: Option<i64>,
+    /// Text of the review comment.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub line: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10728,44 +10769,44 @@ pub struct ReposownerrepopullspullNumberreviewsComments {
 /// Legacy Review Comment
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReviewComment {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "pull_request_review_id")]
-    pub pull_request_review_id: i64,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "diff_hunk", deserialize_with="deser_string")]
-    pub diff_hunk: String,
-    #[serde(rename = "path", deserialize_with="deser_string")]
-    pub path: String,
-    #[serde(rename = "position")]
-    pub position: i64,
-    #[serde(rename = "original_position")]
-    pub original_position: i64,
-    #[serde(rename = "commit_id", deserialize_with="deser_string")]
-    pub commit_id: String,
-    #[serde(rename = "original_commit_id", deserialize_with="deser_string")]
-    pub original_commit_id: String,
-    #[serde(rename = "user")]
-    pub user: SimpleUser,
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "pull_request_url", deserialize_with="deser_string")]
-    pub pull_request_url: String,
-    #[serde(rename = "author_association")]
-    pub author_association: AuthorAssociation,
-    #[serde(rename = "_links")]
-    pub _links: ReviewcommentLinks,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pull_request_review_id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub diff_hunk: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub path: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub position: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub original_position: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub original_commit_id: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub in_reply_to_id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pull_request_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author_association: Option<AuthorAssociation>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _links: Option<ReviewcommentLinks>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub body_text: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10793,86 +10834,87 @@ pub struct ReviewComment {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReviewcommentLinks {
     #[serde(rename = "self")]
-    pub _self: Link,
-    #[serde(rename = "html")]
-    pub html: Link,
-    #[serde(rename = "pull_request")]
-    pub pull_request: Link,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _self: Option<Link>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html: Option<Link>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pull_request: Option<Link>,
 }
 
 /// A self hosted runner
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Runner {
     /// The id of the runner.
-    #[serde(rename = "id")]
-    pub id: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
     /// The name of the runner.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
     /// The Operating System of the runner.
-    #[serde(rename = "os", deserialize_with="deser_string")]
-    pub os: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub os: Option<String>,
     /// The status of the runner.
-    #[serde(rename = "status", deserialize_with="deser_string")]
-    pub status: String,
-    #[serde(rename = "busy")]
-    pub busy: bool,
-    #[serde(rename = "labels")]
-    pub labels: Vec<RunnerLabels>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub status: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub busy: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub labels: Option<Vec<RunnerLabels>>,
 }
 
 /// Runner Application
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RunnerApplication {
-    #[serde(rename = "os", deserialize_with="deser_string")]
-    pub os: String,
-    #[serde(rename = "architecture", deserialize_with="deser_string")]
-    pub architecture: String,
-    #[serde(rename = "download_url", deserialize_with="deser_string")]
-    pub download_url: String,
-    #[serde(rename = "filename", deserialize_with="deser_string")]
-    pub filename: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub os: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub architecture: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub download_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub filename: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RunnerGroupsEnterprise {
-    #[serde(rename = "id")]
-    pub id: f64,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "visibility", deserialize_with="deser_string")]
-    pub visibility: String,
-    #[serde(rename = "default")]
-    pub default: bool,
-    #[serde(rename = "runners_url", deserialize_with="deser_string")]
-    pub runners_url: String,
-    #[serde(rename = "allows_public_repositories")]
-    pub allows_public_repositories: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<f64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub visibility: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub default: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub selected_organizations_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub runners_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub allows_public_repositories: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RunnerGroupsOrg {
-    #[serde(rename = "id")]
-    pub id: f64,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "visibility", deserialize_with="deser_string")]
-    pub visibility: String,
-    #[serde(rename = "default")]
-    pub default: bool,
-    #[serde(rename = "runners_url", deserialize_with="deser_string")]
-    pub runners_url: String,
-    #[serde(rename = "inherited")]
-    pub inherited: bool,
-    #[serde(rename = "allows_public_repositories")]
-    pub allows_public_repositories: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<f64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub visibility: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub default: Option<bool>,
     /// Link to the selected repositories resource for this runner group. Not present unless visibility was set to `selected`
     #[serde(skip_serializing_if="Option::is_none")]
     pub selected_repositories_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub runners_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub inherited: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub inherited_allows_public_repositories: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub allows_public_repositories: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -10891,10 +10933,10 @@ pub struct RunnerLabels {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimEnterpriseGroup {
-    #[serde(rename = "schemas")]
-    pub schemas: Vec<String>,
-    #[serde(rename = "id", deserialize_with="deser_string")]
-    pub id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub schemas: Option<Vec<String>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<String>,
     #[serde(rename = "externalId")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub external_id: Option<String>,
@@ -10909,10 +10951,10 @@ pub struct ScimEnterpriseGroup {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimEnterpriseUser {
-    #[serde(rename = "schemas")]
-    pub schemas: Vec<String>,
-    #[serde(rename = "id", deserialize_with="deser_string")]
-    pub id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub schemas: Option<Vec<String>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<String>,
     #[serde(rename = "externalId")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub external_id: Option<String>,
@@ -10951,47 +10993,53 @@ pub struct ScimError {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimGroupListEnterprise {
-    #[serde(rename = "schemas")]
-    pub schemas: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub schemas: Option<Vec<String>>,
     #[serde(rename = "totalResults")]
-    pub total_results: f64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_results: Option<f64>,
     #[serde(rename = "itemsPerPage")]
-    pub items_per_page: f64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub items_per_page: Option<f64>,
     #[serde(rename = "startIndex")]
-    pub start_index: f64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub start_index: Option<f64>,
     #[serde(rename = "Resources")]
-    pub resources: Vec<ScimgrouplistenterpriseResources>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub resources: Option<Vec<ScimgrouplistenterpriseResources>>,
 }
 
 /// SCIM /Users provisioning endpoints
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimUser {
     /// SCIM schema used.
-    #[serde(rename = "schemas")]
-    pub schemas: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub schemas: Option<Vec<String>>,
     /// Unique identifier of an external identity
-    #[serde(rename = "id", deserialize_with="deser_string")]
-    pub id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<String>,
     /// The ID of the User.
-    #[serde(rename = "externalId", deserialize_with="deser_string")]
-    pub external_id: String,
+    #[serde(rename = "externalId")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub external_id: Option<String>,
     /// Configured by the admin. Could be an email, login, or username
-    #[serde(rename = "userName", deserialize_with="deser_string")]
-    pub user_name: String,
-    #[serde(rename = "name")]
-    pub name: ScimuserName,
-    /// user emails
-    #[serde(rename = "emails")]
-    pub emails: Vec<ScimuserEmails>,
-    /// The active status of the User.
-    #[serde(rename = "active")]
-    pub active: bool,
-    #[serde(rename = "meta")]
-    pub meta: ScimuserMeta,
+    #[serde(rename = "userName")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user_name: Option<String>,
     /// The name of the user, suitable for display to end-users
     #[serde(rename = "displayName")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub display_name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<ScimuserName>,
+    /// user emails
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub emails: Option<Vec<ScimuserEmails>>,
+    /// The active status of the User.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub active: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub meta: Option<ScimuserMeta>,
     /// The ID of the organization.
     #[serde(skip_serializing_if="Option::is_none")]
     pub organization_id: Option<i64>,
@@ -11007,30 +11055,38 @@ pub struct ScimUser {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimUserList {
     /// SCIM schema used.
-    #[serde(rename = "schemas")]
-    pub schemas: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub schemas: Option<Vec<String>>,
     #[serde(rename = "totalResults")]
-    pub total_results: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_results: Option<i64>,
     #[serde(rename = "itemsPerPage")]
-    pub items_per_page: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub items_per_page: Option<i64>,
     #[serde(rename = "startIndex")]
-    pub start_index: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub start_index: Option<i64>,
     #[serde(rename = "Resources")]
-    pub resources: Vec<ScimUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub resources: Option<Vec<ScimUser>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimUserListEnterprise {
-    #[serde(rename = "schemas")]
-    pub schemas: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub schemas: Option<Vec<String>>,
     #[serde(rename = "totalResults")]
-    pub total_results: f64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_results: Option<f64>,
     #[serde(rename = "itemsPerPage")]
-    pub items_per_page: f64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub items_per_page: Option<f64>,
     #[serde(rename = "startIndex")]
-    pub start_index: f64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub start_index: Option<f64>,
     #[serde(rename = "Resources")]
-    pub resources: Vec<ScimuserlistenterpriseResources>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub resources: Option<Vec<ScimuserlistenterpriseResources>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -11071,10 +11127,10 @@ pub struct ScimgrouplistenterpriseMeta {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimgrouplistenterpriseResources {
-    #[serde(rename = "schemas")]
-    pub schemas: Vec<String>,
-    #[serde(rename = "id", deserialize_with="deser_string")]
-    pub id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub schemas: Option<Vec<String>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<String>,
     #[serde(rename = "externalId")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub external_id: Option<String>,
@@ -11089,8 +11145,8 @@ pub struct ScimgrouplistenterpriseResources {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimuserEmails {
-    #[serde(rename = "value", deserialize_with="deser_string")]
-    pub value: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub value: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub primary: Option<bool>,
 }
@@ -11119,18 +11175,20 @@ pub struct ScimuserMeta {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimuserName {
-    #[serde(rename = "givenName", deserialize_with="deser_string")]
-    pub given_name: String,
-    #[serde(rename = "familyName", deserialize_with="deser_string")]
-    pub family_name: String,
+    #[serde(rename = "givenName")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub given_name: Option<String>,
+    #[serde(rename = "familyName")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub family_name: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub formatted: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimuserOperations {
-    #[serde(rename = "op", deserialize_with="deser_string")]
-    pub op: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub op: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub path: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -11160,10 +11218,10 @@ pub struct ScimuserlistenterpriseName {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimuserlistenterpriseResources {
-    #[serde(rename = "schemas")]
-    pub schemas: Vec<String>,
-    #[serde(rename = "id", deserialize_with="deser_string")]
-    pub id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub schemas: Option<Vec<String>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<String>,
     #[serde(rename = "externalId")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub external_id: Option<String>,
@@ -11185,14 +11243,14 @@ pub struct ScimuserlistenterpriseResources {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Scimv2enterprisesenterpriseGroupsMembers {
     /// The SCIM user ID for a user.
-    #[serde(rename = "value", deserialize_with="deser_string")]
-    pub value: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub value: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Scimv2enterprisesenterpriseGroupsscimGroupIdOperations {
-    #[serde(rename = "op", deserialize_with="deser_string")]
-    pub op: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub op: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub path: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -11202,14 +11260,15 @@ pub struct Scimv2enterprisesenterpriseGroupsscimGroupIdOperations {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Scimv2enterprisesenterpriseUsersEmails {
     /// The email address.
-    #[serde(rename = "value", deserialize_with="deser_string")]
-    pub value: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub value: Option<String>,
     /// The type of email address.
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
     /// Whether this email address is the primary address.
-    #[serde(rename = "primary")]
-    pub primary: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub primary: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -11221,17 +11280,19 @@ pub struct Scimv2enterprisesenterpriseUsersGroups {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Scimv2enterprisesenterpriseUsersName {
     /// The first name of the user.
-    #[serde(rename = "givenName", deserialize_with="deser_string")]
-    pub given_name: String,
+    #[serde(rename = "givenName")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub given_name: Option<String>,
     /// The last name of the user.
-    #[serde(rename = "familyName", deserialize_with="deser_string")]
-    pub family_name: String,
+    #[serde(rename = "familyName")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub family_name: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Scimv2organizationsorgUsersEmails {
-    #[serde(rename = "value", deserialize_with="deser_string")]
-    pub value: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub value: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub primary: Option<bool>,
     #[serde(rename = "type")]
@@ -11241,29 +11302,31 @@ pub struct Scimv2organizationsorgUsersEmails {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Scimv2organizationsorgUsersName {
-    #[serde(rename = "givenName", deserialize_with="deser_string")]
-    pub given_name: String,
-    #[serde(rename = "familyName", deserialize_with="deser_string")]
-    pub family_name: String,
+    #[serde(rename = "givenName")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub given_name: Option<String>,
+    #[serde(rename = "familyName")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub family_name: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub formatted: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Scimv2organizationsorgUsersscimUserIdEmails {
-    #[serde(rename = "value", deserialize_with="deser_string")]
-    pub value: String,
     #[serde(rename = "type")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub _type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub value: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub primary: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Scimv2organizationsorgUsersscimUserIdOperations {
-    #[serde(rename = "op", deserialize_with="deser_string")]
-    pub op: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub op: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub path: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -11272,21 +11335,21 @@ pub struct Scimv2organizationsorgUsersscimUserIdOperations {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScopedInstallation {
-    #[serde(rename = "permissions")]
-    pub permissions: AppPermissions,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub permissions: Option<AppPermissions>,
     /// Describe whether all repositories have been selected or there's a selection involved
-    #[serde(rename = "repository_selection", deserialize_with="deser_string")]
-    pub repository_selection: String,
-    #[serde(rename = "single_file_name", deserialize_with="deser_string")]
-    pub single_file_name: String,
-    #[serde(rename = "repositories_url", deserialize_with="deser_string")]
-    pub repositories_url: String,
-    #[serde(rename = "account")]
-    pub account: SimpleUser,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repository_selection: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub single_file_name: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub has_multiple_single_files: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub single_file_paths: Option<Vec<String>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repositories_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub account: Option<SimpleUser>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -11376,14 +11439,14 @@ impl std::str::FromStr for SecretScanningAlertState {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutActionsSetAllowedActionsRepository {
     /// Whether GitHub-owned actions are allowed. For example, this includes the actions in the `actions` organization.
-    #[serde(rename = "github_owned_allowed")]
-    pub github_owned_allowed: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub github_owned_allowed: Option<bool>,
     /// Whether actions in GitHub Marketplace from verified creators are allowed. Set to `true` to allow all GitHub Marketplace actions by verified creators.
-    #[serde(rename = "verified_allowed")]
-    pub verified_allowed: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub verified_allowed: Option<bool>,
     /// Specifies a list of string-matching patterns to allow specific action(s). Wildcards, tags, and SHAs are allowed. For example, `monalisa/octocat@*`, `monalisa/octocat@v2`, `monalisa/_*`.\"
-    #[serde(rename = "patterns_allowed")]
-    pub patterns_allowed: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub patterns_allowed: Option<Vec<String>>,
 }
 
 /// The API URL to use to get or set the actions that are allowed to run, when `allowed_actions` is set to `selected`.
@@ -11394,21 +11457,21 @@ pub struct SelectedActionsUrl {
 /// Short Blob
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ShortBlob {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
 }
 
 /// Short Branch
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ShortBranch {
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "commit")]
-    pub commit: ShortbranchCommit,
-    #[serde(rename = "protected")]
-    pub protected: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit: Option<ShortbranchCommit>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub protected: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub protection: Option<BranchProtection>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -11417,204 +11480,205 @@ pub struct ShortBranch {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ShortbranchCommit {
-    #[serde(rename = "sha", deserialize_with="deser_string")]
-    pub sha: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
 }
 
 /// Simple Commit
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SimpleCommit {
-    #[serde(rename = "id", deserialize_with="deser_string")]
-    pub id: String,
-    #[serde(rename = "tree_id", deserialize_with="deser_string")]
-    pub tree_id: String,
-    #[serde(rename = "message", deserialize_with="deser_string")]
-    pub message: String,
-    #[serde(rename = "timestamp")]
-    pub timestamp: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "author")]
-    pub author: SimplecommitAuthor,
-    #[serde(rename = "committer")]
-    pub committer: SimplecommitAuthor,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tree_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub message: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub timestamp: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author: Option<SimplecommitAuthor>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub committer: Option<SimplecommitAuthor>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SimpleCommitStatus {
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
-    #[serde(rename = "context", deserialize_with="deser_string")]
-    pub context: String,
-    #[serde(rename = "target_url", deserialize_with="deser_string")]
-    pub target_url: String,
-    #[serde(rename = "avatar_url", deserialize_with="deser_string")]
-    pub avatar_url: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub context: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub target_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub required: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub avatar_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 /// Simple User
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SimpleUser {
-    #[serde(rename = "login", deserialize_with="deser_string")]
-    pub login: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "avatar_url", deserialize_with="deser_string")]
-    pub avatar_url: String,
-    #[serde(rename = "gravatar_id", deserialize_with="deser_string")]
-    pub gravatar_id: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "followers_url", deserialize_with="deser_string")]
-    pub followers_url: String,
-    #[serde(rename = "following_url", deserialize_with="deser_string")]
-    pub following_url: String,
-    #[serde(rename = "gists_url", deserialize_with="deser_string")]
-    pub gists_url: String,
-    #[serde(rename = "starred_url", deserialize_with="deser_string")]
-    pub starred_url: String,
-    #[serde(rename = "subscriptions_url", deserialize_with="deser_string")]
-    pub subscriptions_url: String,
-    #[serde(rename = "organizations_url", deserialize_with="deser_string")]
-    pub organizations_url: String,
-    #[serde(rename = "repos_url", deserialize_with="deser_string")]
-    pub repos_url: String,
-    #[serde(rename = "events_url", deserialize_with="deser_string")]
-    pub events_url: String,
-    #[serde(rename = "received_events_url", deserialize_with="deser_string")]
-    pub received_events_url: String,
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
-    #[serde(rename = "site_admin")]
-    pub site_admin: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub login: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub avatar_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub gravatar_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub followers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub following_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub gists_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub starred_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscriptions_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub organizations_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repos_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub received_events_url: Option<String>,
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub site_admin: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub starred_at: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SimplecommitAuthor {
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "email", deserialize_with="deser_string")]
-    pub email: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
 }
 
 /// Stargazer
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Stargazer {
-    #[serde(rename = "starred_at")]
-    pub starred_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "user")]
-    pub user: SimpleUser,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub starred_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<SimpleUser>,
 }
 
 /// Starred Repository
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct StarredRepository {
-    #[serde(rename = "starred_at")]
-    pub starred_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "repo")]
-    pub repo: Repository,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub starred_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repo: Option<Repository>,
 }
 
 /// The status of a commit.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Status {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "avatar_url", deserialize_with="deser_string")]
-    pub avatar_url: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
-    #[serde(rename = "target_url", deserialize_with="deser_string")]
-    pub target_url: String,
-    #[serde(rename = "context", deserialize_with="deser_string")]
-    pub context: String,
-    #[serde(rename = "created_at", deserialize_with="deser_string")]
-    pub created_at: String,
-    #[serde(rename = "updated_at", deserialize_with="deser_string")]
-    pub updated_at: String,
-    #[serde(rename = "creator")]
-    pub creator: SimpleUser,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub avatar_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub target_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub context: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub creator: Option<SimpleUser>,
 }
 
 /// Status Check Policy
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct StatusCheckPolicy {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "strict")]
-    pub strict: bool,
-    #[serde(rename = "contexts")]
-    pub contexts: Vec<String>,
-    #[serde(rename = "contexts_url", deserialize_with="deser_string")]
-    pub contexts_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub strict: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contexts: Option<Vec<String>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contexts_url: Option<String>,
 }
 
 /// Tag
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Tag {
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "commit")]
-    pub commit: ShortbranchCommit,
-    #[serde(rename = "zipball_url", deserialize_with="deser_string")]
-    pub zipball_url: String,
-    #[serde(rename = "tarball_url", deserialize_with="deser_string")]
-    pub tarball_url: String,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit: Option<ShortbranchCommit>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub zipball_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tarball_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
 }
 
 /// Groups of organization members that gives permissions on specified repositories.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Team {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "slug", deserialize_with="deser_string")]
-    pub slug: String,
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
-    #[serde(rename = "permission", deserialize_with="deser_string")]
-    pub permission: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "members_url", deserialize_with="deser_string")]
-    pub members_url: String,
-    #[serde(rename = "repositories_url", deserialize_with="deser_string")]
-    pub repositories_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub slug: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub privacy: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub permission: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub members_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repositories_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub parent: Option<TeamSimple>,
 }
@@ -11622,46 +11686,46 @@ pub struct Team {
 /// A team discussion is a persistent record of a free-form conversation within a team.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TeamDiscussion {
-    #[serde(rename = "author")]
-    pub author: SimpleUser,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author: Option<SimpleUser>,
     /// The main text of the discussion.
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
-    #[serde(rename = "body_html", deserialize_with="deser_string")]
-    pub body_html: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body_html: Option<String>,
     /// The current version of the body content. If provided, this update operation will be rejected if the given version does not match the latest version on the server.
-    #[serde(rename = "body_version", deserialize_with="deser_string")]
-    pub body_version: String,
-    #[serde(rename = "comments_count")]
-    pub comments_count: i64,
-    #[serde(rename = "comments_url", deserialize_with="deser_string")]
-    pub comments_url: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "last_edited_at")]
-    pub last_edited_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body_version: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub last_edited_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     /// The unique sequence number of a team discussion.
-    #[serde(rename = "number")]
-    pub number: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub number: Option<i64>,
     /// Whether or not this discussion should be pinned for easy retrieval.
-    #[serde(rename = "pinned")]
-    pub pinned: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pinned: Option<bool>,
     /// Whether or not this discussion should be restricted to team members and organization administrators.
-    #[serde(rename = "private")]
-    pub private: bool,
-    #[serde(rename = "team_url", deserialize_with="deser_string")]
-    pub team_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub private: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub team_url: Option<String>,
     /// The title of the discussion.
-    #[serde(rename = "title", deserialize_with="deser_string")]
-    pub title: String,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub title: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub reactions: Option<ReactionRollup>,
 }
@@ -11669,33 +11733,33 @@ pub struct TeamDiscussion {
 /// A reply to a discussion within a team.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TeamDiscussionComment {
-    #[serde(rename = "author")]
-    pub author: SimpleUser,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author: Option<SimpleUser>,
     /// The main text of the comment.
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
-    #[serde(rename = "body_html", deserialize_with="deser_string")]
-    pub body_html: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body_html: Option<String>,
     /// The current version of the body content. If provided, this update operation will be rejected if the given version does not match the latest version on the server.
-    #[serde(rename = "body_version", deserialize_with="deser_string")]
-    pub body_version: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "last_edited_at")]
-    pub last_edited_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "discussion_url", deserialize_with="deser_string")]
-    pub discussion_url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body_version: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub last_edited_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub discussion_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     /// The unique sequence number of a team discussion comment.
-    #[serde(rename = "number")]
-    pub number: i64,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub number: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub reactions: Option<ReactionRollup>,
 }
@@ -11704,44 +11768,44 @@ pub struct TeamDiscussionComment {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TeamFull {
     /// Unique identifier of the team
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     /// URL for the team
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
     /// Name of the team
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "slug", deserialize_with="deser_string")]
-    pub slug: String,
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
-    /// Permission that the team will have for its repositories
-    #[serde(rename = "permission", deserialize_with="deser_string")]
-    pub permission: String,
-    #[serde(rename = "members_url", deserialize_with="deser_string")]
-    pub members_url: String,
-    #[serde(rename = "repositories_url", deserialize_with="deser_string")]
-    pub repositories_url: String,
-    #[serde(rename = "members_count")]
-    pub members_count: i64,
-    #[serde(rename = "repos_count")]
-    pub repos_count: i64,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "organization")]
-    pub organization: OrganizationFull,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub slug: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
     /// The level of privacy this team should have
     #[serde(skip_serializing_if="Option::is_none")]
     pub privacy: Option<String>,
+    /// Permission that the team will have for its repositories
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub permission: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub members_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repositories_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub parent: Option<TeamSimple>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub members_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repos_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub organization: Option<OrganizationFull>,
     /// Distinguished Name (DN) that team maps to within LDAP environment
     #[serde(skip_serializing_if="Option::is_none")]
     pub ldap_dn: Option<String>,
@@ -11750,223 +11814,219 @@ pub struct TeamFull {
 /// Team Membership
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TeamMembership {
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
     /// The role of the user in the team.
-    #[serde(rename = "role", deserialize_with="deser_string")]
-    pub role: String,
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub role: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
 }
 
 /// A team's access to a project.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TeamProject {
-    #[serde(rename = "owner_url", deserialize_with="deser_string")]
-    pub owner_url: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "columns_url", deserialize_with="deser_string")]
-    pub columns_url: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "body", deserialize_with="deser_string")]
-    pub body: String,
-    #[serde(rename = "number")]
-    pub number: i64,
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
-    #[serde(rename = "creator")]
-    pub creator: SimpleUser,
-    #[serde(rename = "created_at", deserialize_with="deser_string")]
-    pub created_at: String,
-    #[serde(rename = "updated_at", deserialize_with="deser_string")]
-    pub updated_at: String,
-    #[serde(rename = "permissions")]
-    pub permissions: TeamprojectPermissions,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub owner_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub columns_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub number: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub creator: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<String>,
     /// The organization permission for this project. Only present when owner is an organization.
     #[serde(skip_serializing_if="Option::is_none")]
     pub organization_permission: Option<String>,
     /// Whether the project is private or not. Only present when owner is an organization.
     #[serde(skip_serializing_if="Option::is_none")]
     pub private: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub permissions: Option<TeamprojectPermissions>,
 }
 
 /// A team's access to a repository.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TeamRepository {
     /// Unique identifier of the repository
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     /// The name of the repository.
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "full_name", deserialize_with="deser_string")]
-    pub full_name: String,
-    #[serde(rename = "license")]
-    pub license: LicenseSimple,
-    #[serde(rename = "forks")]
-    pub forks: i64,
-    #[serde(rename = "owner")]
-    pub owner: SimpleUser,
-    /// Whether the repository is private or public.
-    #[serde(rename = "private")]
-    pub private: bool,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
-    #[serde(rename = "fork")]
-    pub fork: bool,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "archive_url", deserialize_with="deser_string")]
-    pub archive_url: String,
-    #[serde(rename = "assignees_url", deserialize_with="deser_string")]
-    pub assignees_url: String,
-    #[serde(rename = "blobs_url", deserialize_with="deser_string")]
-    pub blobs_url: String,
-    #[serde(rename = "branches_url", deserialize_with="deser_string")]
-    pub branches_url: String,
-    #[serde(rename = "collaborators_url", deserialize_with="deser_string")]
-    pub collaborators_url: String,
-    #[serde(rename = "comments_url", deserialize_with="deser_string")]
-    pub comments_url: String,
-    #[serde(rename = "commits_url", deserialize_with="deser_string")]
-    pub commits_url: String,
-    #[serde(rename = "compare_url", deserialize_with="deser_string")]
-    pub compare_url: String,
-    #[serde(rename = "contents_url", deserialize_with="deser_string")]
-    pub contents_url: String,
-    #[serde(rename = "contributors_url", deserialize_with="deser_string")]
-    pub contributors_url: String,
-    #[serde(rename = "deployments_url", deserialize_with="deser_string")]
-    pub deployments_url: String,
-    #[serde(rename = "downloads_url", deserialize_with="deser_string")]
-    pub downloads_url: String,
-    #[serde(rename = "events_url", deserialize_with="deser_string")]
-    pub events_url: String,
-    #[serde(rename = "forks_url", deserialize_with="deser_string")]
-    pub forks_url: String,
-    #[serde(rename = "git_commits_url", deserialize_with="deser_string")]
-    pub git_commits_url: String,
-    #[serde(rename = "git_refs_url", deserialize_with="deser_string")]
-    pub git_refs_url: String,
-    #[serde(rename = "git_tags_url", deserialize_with="deser_string")]
-    pub git_tags_url: String,
-    #[serde(rename = "git_url", deserialize_with="deser_string")]
-    pub git_url: String,
-    #[serde(rename = "issue_comment_url", deserialize_with="deser_string")]
-    pub issue_comment_url: String,
-    #[serde(rename = "issue_events_url", deserialize_with="deser_string")]
-    pub issue_events_url: String,
-    #[serde(rename = "issues_url", deserialize_with="deser_string")]
-    pub issues_url: String,
-    #[serde(rename = "keys_url", deserialize_with="deser_string")]
-    pub keys_url: String,
-    #[serde(rename = "labels_url", deserialize_with="deser_string")]
-    pub labels_url: String,
-    #[serde(rename = "languages_url", deserialize_with="deser_string")]
-    pub languages_url: String,
-    #[serde(rename = "merges_url", deserialize_with="deser_string")]
-    pub merges_url: String,
-    #[serde(rename = "milestones_url", deserialize_with="deser_string")]
-    pub milestones_url: String,
-    #[serde(rename = "notifications_url", deserialize_with="deser_string")]
-    pub notifications_url: String,
-    #[serde(rename = "pulls_url", deserialize_with="deser_string")]
-    pub pulls_url: String,
-    #[serde(rename = "releases_url", deserialize_with="deser_string")]
-    pub releases_url: String,
-    #[serde(rename = "ssh_url", deserialize_with="deser_string")]
-    pub ssh_url: String,
-    #[serde(rename = "stargazers_url", deserialize_with="deser_string")]
-    pub stargazers_url: String,
-    #[serde(rename = "statuses_url", deserialize_with="deser_string")]
-    pub statuses_url: String,
-    #[serde(rename = "subscribers_url", deserialize_with="deser_string")]
-    pub subscribers_url: String,
-    #[serde(rename = "subscription_url", deserialize_with="deser_string")]
-    pub subscription_url: String,
-    #[serde(rename = "tags_url", deserialize_with="deser_string")]
-    pub tags_url: String,
-    #[serde(rename = "teams_url", deserialize_with="deser_string")]
-    pub teams_url: String,
-    #[serde(rename = "trees_url", deserialize_with="deser_string")]
-    pub trees_url: String,
-    #[serde(rename = "clone_url", deserialize_with="deser_string")]
-    pub clone_url: String,
-    #[serde(rename = "mirror_url", deserialize_with="deser_string")]
-    pub mirror_url: String,
-    #[serde(rename = "hooks_url", deserialize_with="deser_string")]
-    pub hooks_url: String,
-    #[serde(rename = "svn_url", deserialize_with="deser_string")]
-    pub svn_url: String,
-    #[serde(rename = "homepage", deserialize_with="deser_string")]
-    pub homepage: String,
-    #[serde(rename = "language", deserialize_with="deser_string")]
-    pub language: String,
-    #[serde(rename = "forks_count")]
-    pub forks_count: i64,
-    #[serde(rename = "stargazers_count")]
-    pub stargazers_count: i64,
-    #[serde(rename = "watchers_count")]
-    pub watchers_count: i64,
-    #[serde(rename = "size")]
-    pub size: i64,
-    /// The default branch of the repository.
-    #[serde(rename = "default_branch", deserialize_with="deser_string")]
-    pub default_branch: String,
-    #[serde(rename = "open_issues_count")]
-    pub open_issues_count: i64,
-    /// Whether issues are enabled.
-    #[serde(rename = "has_issues")]
-    pub has_issues: bool,
-    /// Whether projects are enabled.
-    #[serde(rename = "has_projects")]
-    pub has_projects: bool,
-    /// Whether the wiki is enabled.
-    #[serde(rename = "has_wiki")]
-    pub has_wiki: bool,
-    #[serde(rename = "has_pages")]
-    pub has_pages: bool,
-    /// Whether downloads are enabled.
-    #[serde(rename = "has_downloads")]
-    pub has_downloads: bool,
-    /// Whether the repository is archived.
-    #[serde(rename = "archived")]
-    pub archived: bool,
-    /// Returns whether or not this repository disabled.
-    #[serde(rename = "disabled")]
-    pub disabled: bool,
-    #[serde(rename = "pushed_at")]
-    pub pushed_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "open_issues")]
-    pub open_issues: i64,
-    #[serde(rename = "watchers")]
-    pub watchers: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub full_name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub license: Option<LicenseSimple>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub forks: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub permissions: Option<RepositoryPermissions>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub owner: Option<SimpleUser>,
+    /// Whether the repository is private or public.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub private: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub fork: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub archive_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub assignees_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub blobs_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub branches_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub collaborators_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commits_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub compare_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contents_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub contributors_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub deployments_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub downloads_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub forks_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_commits_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_refs_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_tags_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub git_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issue_comment_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issue_events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issues_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub keys_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub labels_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub languages_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub merges_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub milestones_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub notifications_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pulls_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub releases_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub ssh_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub stargazers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub statuses_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscribers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscription_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tags_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub teams_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub trees_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub clone_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub mirror_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub hooks_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub svn_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub homepage: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub language: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub forks_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub stargazers_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub watchers_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub size: Option<i64>,
+    /// The default branch of the repository.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub default_branch: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub open_issues_count: Option<i64>,
     /// Whether this repository acts as a template that can be used to generate new repositories.
     #[serde(skip_serializing_if="Option::is_none")]
     pub is_template: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub topics: Option<Vec<String>>,
+    /// Whether issues are enabled.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_issues: Option<bool>,
+    /// Whether projects are enabled.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_projects: Option<bool>,
+    /// Whether the wiki is enabled.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_wiki: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_pages: Option<bool>,
+    /// Whether downloads are enabled.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub has_downloads: Option<bool>,
+    /// Whether the repository is archived.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub archived: Option<bool>,
+    /// Returns whether or not this repository disabled.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub disabled: Option<bool>,
     /// The repository visibility: public, private, or internal.
     #[serde(skip_serializing_if="Option::is_none")]
     pub visibility: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pushed_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
     /// Whether to allow rebase merges for pull requests.
     #[serde(skip_serializing_if="Option::is_none")]
     pub allow_rebase_merge: Option<bool>,
@@ -11988,6 +12048,10 @@ pub struct TeamRepository {
     #[serde(skip_serializing_if="Option::is_none")]
     pub network_count: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub open_issues: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub watchers: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub master_branch: Option<String>,
 }
 
@@ -11995,33 +12059,33 @@ pub struct TeamRepository {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TeamSimple {
     /// Unique identifier of the team
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
     /// URL for the team
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "members_url", deserialize_with="deser_string")]
-    pub members_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub members_url: Option<String>,
     /// Name of the team
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
     /// Description of the team
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
     /// Permission that the team will have for its repositories
-    #[serde(rename = "permission", deserialize_with="deser_string")]
-    pub permission: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "repositories_url", deserialize_with="deser_string")]
-    pub repositories_url: String,
-    #[serde(rename = "slug", deserialize_with="deser_string")]
-    pub slug: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub permission: Option<String>,
     /// The level of privacy this team should have
     #[serde(skip_serializing_if="Option::is_none")]
     pub privacy: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repositories_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub slug: Option<String>,
     /// Distinguished Name (DN) that team maps to within LDAP environment
     #[serde(skip_serializing_if="Option::is_none")]
     pub ldap_dn: Option<String>,
@@ -12029,25 +12093,25 @@ pub struct TeamSimple {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TeamprojectPermissions {
-    #[serde(rename = "read")]
-    pub read: bool,
-    #[serde(rename = "write")]
-    pub write: bool,
-    #[serde(rename = "admin")]
-    pub admin: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub read: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub write: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub admin: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TeamsteamIdteamsyncgroupmappingsGroups {
     /// ID of the IdP group.
-    #[serde(rename = "group_id", deserialize_with="deser_string")]
-    pub group_id: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub group_id: Option<String>,
     /// Name of the IdP group.
-    #[serde(rename = "group_name", deserialize_with="deser_string")]
-    pub group_name: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub group_name: Option<String>,
     /// Description of the IdP group.
-    #[serde(rename = "group_description", deserialize_with="deser_string")]
-    pub group_description: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub group_description: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -12059,51 +12123,52 @@ pub struct TeamsteamIdteamsyncgroupmappingsGroups {
 /// Thread
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Thread {
-    #[serde(rename = "id", deserialize_with="deser_string")]
-    pub id: String,
-    #[serde(rename = "repository")]
-    pub repository: MinimalRepository,
-    #[serde(rename = "subject")]
-    pub subject: ThreadSubject,
-    #[serde(rename = "reason", deserialize_with="deser_string")]
-    pub reason: String,
-    #[serde(rename = "unread")]
-    pub unread: bool,
-    #[serde(rename = "updated_at", deserialize_with="deser_string")]
-    pub updated_at: String,
-    #[serde(rename = "last_read_at", deserialize_with="deser_string")]
-    pub last_read_at: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "subscription_url", deserialize_with="deser_string")]
-    pub subscription_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repository: Option<MinimalRepository>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subject: Option<ThreadSubject>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub reason: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub unread: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub last_read_at: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscription_url: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ThreadSubject {
-    #[serde(rename = "title", deserialize_with="deser_string")]
-    pub title: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "latest_comment_url", deserialize_with="deser_string")]
-    pub latest_comment_url: String,
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub title: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub latest_comment_url: Option<String>,
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
 }
 
 /// Thread Subscription
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ThreadSubscription {
-    #[serde(rename = "subscribed")]
-    pub subscribed: bool,
-    #[serde(rename = "ignored")]
-    pub ignored: bool,
-    #[serde(rename = "reason", deserialize_with="deser_string")]
-    pub reason: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscribed: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub ignored: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub reason: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub thread_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -12113,35 +12178,35 @@ pub struct ThreadSubscription {
 /// A topic aggregates entities that are related to a subject.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Topic {
-    #[serde(rename = "names")]
-    pub names: Vec<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub names: Option<Vec<String>>,
 }
 
 /// Topic Search Result Item
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TopicSearchResultItem {
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "display_name", deserialize_with="deser_string")]
-    pub display_name: String,
-    #[serde(rename = "short_description", deserialize_with="deser_string")]
-    pub short_description: String,
-    #[serde(rename = "description", deserialize_with="deser_string")]
-    pub description: String,
-    #[serde(rename = "created_by", deserialize_with="deser_string")]
-    pub created_by: String,
-    #[serde(rename = "released", deserialize_with="deser_string")]
-    pub released: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "featured")]
-    pub featured: bool,
-    #[serde(rename = "curated")]
-    pub curated: bool,
-    #[serde(rename = "score")]
-    pub score: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub display_name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub short_description: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_by: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub released: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub featured: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub curated: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub score: Option<f32>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub repository_count: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -12174,76 +12239,75 @@ pub struct TopicsearchresultitemTopicRelation {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Traffic {
-    #[serde(rename = "timestamp")]
-    pub timestamp: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "uniques")]
-    pub uniques: i64,
-    #[serde(rename = "count")]
-    pub count: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub timestamp: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub uniques: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub count: Option<i64>,
 }
 
 /// User Marketplace Purchase
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct UserMarketplacePurchase {
-    #[serde(rename = "billing_cycle", deserialize_with="deser_string")]
-    pub billing_cycle: String,
-    #[serde(rename = "next_billing_date")]
-    pub next_billing_date: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "unit_count")]
-    pub unit_count: i64,
-    #[serde(rename = "on_free_trial")]
-    pub on_free_trial: bool,
-    #[serde(rename = "free_trial_ends_on")]
-    pub free_trial_ends_on: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "account")]
-    pub account: MarketplaceAccount,
-    #[serde(rename = "plan")]
-    pub plan: MarketplaceListingPlan,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub billing_cycle: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub next_billing_date: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub unit_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub on_free_trial: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub free_trial_ends_on: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub account: Option<MarketplaceAccount>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub plan: Option<MarketplaceListingPlan>,
 }
 
 /// User Search Result Item
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct UserSearchResultItem {
-    #[serde(rename = "login", deserialize_with="deser_string")]
-    pub login: String,
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "avatar_url", deserialize_with="deser_string")]
-    pub avatar_url: String,
-    #[serde(rename = "gravatar_id", deserialize_with="deser_string")]
-    pub gravatar_id: String,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "followers_url", deserialize_with="deser_string")]
-    pub followers_url: String,
-    #[serde(rename = "subscriptions_url", deserialize_with="deser_string")]
-    pub subscriptions_url: String,
-    #[serde(rename = "organizations_url", deserialize_with="deser_string")]
-    pub organizations_url: String,
-    #[serde(rename = "repos_url", deserialize_with="deser_string")]
-    pub repos_url: String,
-    #[serde(rename = "received_events_url", deserialize_with="deser_string")]
-    pub received_events_url: String,
-    #[serde(rename = "type", deserialize_with="deser_string")]
-    pub _type: String,
-    #[serde(rename = "score")]
-    pub score: i64,
-    #[serde(rename = "following_url", deserialize_with="deser_string")]
-    pub following_url: String,
-    #[serde(rename = "gists_url", deserialize_with="deser_string")]
-    pub gists_url: String,
-    #[serde(rename = "starred_url", deserialize_with="deser_string")]
-    pub starred_url: String,
-    #[serde(rename = "events_url", deserialize_with="deser_string")]
-    pub events_url: String,
-    #[serde(rename = "site_admin")]
-    pub site_admin: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub login: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub avatar_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub gravatar_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub followers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscriptions_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub organizations_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repos_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub received_events_url: Option<String>,
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub score: Option<f32>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub following_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub gists_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub starred_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub public_repos: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -12265,6 +12329,8 @@ pub struct UserSearchResultItem {
     #[serde(skip_serializing_if="Option::is_none")]
     pub location: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub site_admin: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub hireable: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub text_matches: Option<SearchResultTextMatches>,
@@ -12279,10 +12345,10 @@ pub struct UserSearchResultItem {
 /// Validation Error
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ValidationError {
-    #[serde(rename = "message", deserialize_with="deser_string")]
-    pub message: String,
-    #[serde(rename = "documentation_url", deserialize_with="deser_string")]
-    pub documentation_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub message: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub documentation_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub errors: Option<Vec<ValidationerrorErrors>>,
 }
@@ -12290,24 +12356,24 @@ pub struct ValidationError {
 /// Validation Error Simple
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ValidationErrorSimple {
-    #[serde(rename = "message", deserialize_with="deser_string")]
-    pub message: String,
-    #[serde(rename = "documentation_url", deserialize_with="deser_string")]
-    pub documentation_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub message: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub documentation_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub errors: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ValidationerrorErrors {
-    #[serde(rename = "code", deserialize_with="deser_string")]
-    pub code: String,
     #[serde(skip_serializing_if="Option::is_none")]
     pub resource: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub field: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub message: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub code: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub index: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -12316,25 +12382,25 @@ pub struct ValidationerrorErrors {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Verification {
-    #[serde(rename = "verified")]
-    pub verified: bool,
-    #[serde(rename = "reason", deserialize_with="deser_string")]
-    pub reason: String,
-    #[serde(rename = "payload", deserialize_with="deser_string")]
-    pub payload: String,
-    #[serde(rename = "signature", deserialize_with="deser_string")]
-    pub signature: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub verified: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub reason: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub payload: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub signature: Option<String>,
 }
 
 /// View Traffic
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ViewTraffic {
-    #[serde(rename = "count")]
-    pub count: i64,
-    #[serde(rename = "uniques")]
-    pub uniques: i64,
-    #[serde(rename = "views")]
-    pub views: Vec<Traffic>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub uniques: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub views: Option<Vec<Traffic>>,
 }
 
 /// The amount of time to delay a job after the job is initially triggered. The time (in minutes) must be an integer between 0 and 43,200 (30 days).
@@ -12376,26 +12442,26 @@ pub struct WebhookConfigUrl {
 /// A GitHub Actions workflow
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Workflow {
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "name", deserialize_with="deser_string")]
-    pub name: String,
-    #[serde(rename = "path", deserialize_with="deser_string")]
-    pub path: String,
-    #[serde(rename = "state", deserialize_with="deser_string")]
-    pub state: String,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "badge_url", deserialize_with="deser_string")]
-    pub badge_url: String,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub path: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub badge_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub deleted_at: Option<chrono::DateTime<chrono::Utc>>,
 }
@@ -12425,68 +12491,68 @@ impl Display for WorkflowId {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WorkflowRun {
     /// The ID of the workflow run.
-    #[serde(rename = "id")]
-    pub id: i64,
-    #[serde(rename = "node_id", deserialize_with="deser_string")]
-    pub node_id: String,
-    #[serde(rename = "head_branch", deserialize_with="deser_string")]
-    pub head_branch: String,
-    /// The SHA of the head commit that points to the version of the worflow being run.
-    #[serde(rename = "head_sha", deserialize_with="deser_string")]
-    pub head_sha: String,
-    /// The auto incrementing run number for the workflow run.
-    #[serde(rename = "run_number")]
-    pub run_number: i64,
-    #[serde(rename = "event", deserialize_with="deser_string")]
-    pub event: String,
-    #[serde(rename = "status", deserialize_with="deser_string")]
-    pub status: String,
-    #[serde(rename = "conclusion", deserialize_with="deser_string")]
-    pub conclusion: String,
-    /// The ID of the parent workflow.
-    #[serde(rename = "workflow_id")]
-    pub workflow_id: i64,
-    /// The URL to the workflow run.
-    #[serde(rename = "url", deserialize_with="deser_string")]
-    pub url: String,
-    #[serde(rename = "html_url", deserialize_with="deser_string")]
-    pub html_url: String,
-    #[serde(rename = "pull_requests")]
-    pub pull_requests: Vec<PullRequestMinimal>,
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::Utc>,
-    /// The URL to the jobs for the workflow run.
-    #[serde(rename = "jobs_url", deserialize_with="deser_string")]
-    pub jobs_url: String,
-    /// The URL to download the logs for the workflow run.
-    #[serde(rename = "logs_url", deserialize_with="deser_string")]
-    pub logs_url: String,
-    /// The URL to the associated check suite.
-    #[serde(rename = "check_suite_url", deserialize_with="deser_string")]
-    pub check_suite_url: String,
-    /// The URL to the artifacts for the workflow run.
-    #[serde(rename = "artifacts_url", deserialize_with="deser_string")]
-    pub artifacts_url: String,
-    /// The URL to cancel the workflow run.
-    #[serde(rename = "cancel_url", deserialize_with="deser_string")]
-    pub cancel_url: String,
-    /// The URL to rerun the workflow run.
-    #[serde(rename = "rerun_url", deserialize_with="deser_string")]
-    pub rerun_url: String,
-    /// The URL to the workflow.
-    #[serde(rename = "workflow_url", deserialize_with="deser_string")]
-    pub workflow_url: String,
-    #[serde(rename = "head_commit")]
-    pub head_commit: SimpleCommit,
-    #[serde(rename = "repository")]
-    pub repository: MinimalRepository,
-    #[serde(rename = "head_repository")]
-    pub head_repository: MinimalRepository,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
     /// The name of the workflow run.
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub head_branch: Option<String>,
+    /// The SHA of the head commit that points to the version of the worflow being run.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub head_sha: Option<String>,
+    /// The auto incrementing run number for the workflow run.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub run_number: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub status: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub conclusion: Option<String>,
+    /// The ID of the parent workflow.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub workflow_id: Option<i64>,
+    /// The URL to the workflow run.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pull_requests: Option<Vec<PullRequestMinimal>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    /// The URL to the jobs for the workflow run.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub jobs_url: Option<String>,
+    /// The URL to download the logs for the workflow run.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub logs_url: Option<String>,
+    /// The URL to the associated check suite.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub check_suite_url: Option<String>,
+    /// The URL to the artifacts for the workflow run.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub artifacts_url: Option<String>,
+    /// The URL to cancel the workflow run.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub cancel_url: Option<String>,
+    /// The URL to rerun the workflow run.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub rerun_url: Option<String>,
+    /// The URL to the workflow.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub workflow_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub head_commit: Option<SimpleCommit>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repository: Option<MinimalRepository>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub head_repository: Option<MinimalRepository>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub head_repository_id: Option<i64>,
 }
@@ -12494,17 +12560,17 @@ pub struct WorkflowRun {
 /// Workflow Run Usage
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WorkflowRunUsage {
-    #[serde(rename = "billable")]
-    pub billable: WorkflowrunusageBillable,
-    #[serde(rename = "run_duration_ms")]
-    pub run_duration_ms: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub billable: Option<WorkflowrunusageBillable>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub run_duration_ms: Option<i64>,
 }
 
 /// Workflow Usage
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WorkflowUsage {
-    #[serde(rename = "billable")]
-    pub billable: WorkflowusageBillable,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub billable: Option<WorkflowusageBillable>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -12522,10 +12588,10 @@ pub struct WorkflowrunusageBillable {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WorkflowrunusageBillableUbuntu {
-    #[serde(rename = "total_ms")]
-    pub total_ms: i64,
-    #[serde(rename = "jobs")]
-    pub jobs: i64,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub total_ms: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub jobs: Option<i64>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

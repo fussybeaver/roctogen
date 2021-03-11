@@ -1,6 +1,8 @@
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, Json, FromJson};
+use crate::adapters::{
+    AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, Json,
+};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -62,58 +64,49 @@ pub mod repos {
     }
 
     #[derive(Default, Serialize)]
-    pub struct ReposListCommitsParams {
-        sha: Option<String>,
-        path: Option<String>,
-        author: Option<String>,
-        since: Option<String>,
-        until: Option<String>,
+    pub struct ReposListCommitsParams<'req> {
+        author: Option<&'req str>,
         per_page: Option<u16>,
         page: Option<u16>,
     }
 
-    impl ReposListCommitsParams {
+    impl<'req> ReposListCommitsParams<'req> {
         pub fn new() -> Self {
             Self::default()
         }
 
-        pub fn path(&mut self, path: impl Into<String>) -> &mut Self {
-            self.path = Some(path.into());
-            self
+        pub fn author(self, author: &'req str) -> Self {
+            Self {
+                author: Some(author),
+                per_page: self.per_page,
+                page: self.page,
+            }
         }
 
-        pub fn author(&mut self, author: impl Into<String>) -> &mut Self {
-            self.author = Some(author.into());
-            self
+        pub fn per_page(self, per_page: u16) -> Self {
+            Self {
+                author: self.author,
+                per_page: Some(per_page),
+                page: self.page,
+            }
         }
 
-        pub fn since(&mut self, since: impl Into<String>) -> &mut Self {
-            self.since = Some(since.into());
-            self
-        }
-
-        pub fn until(&mut self, until: impl Into<String>) -> &mut Self {
-            self.until = Some(until.into());
-            self
-        }
-
-        pub fn per_page(&mut self, per_page: u16) -> &mut Self {
-            self.per_page = Some(per_page);
-            self
-        }
-
-        pub fn page(&mut self, page: u16) -> &mut Self {
-            self.page = Some(page);
-            self
+        pub fn page(self, page: u16) -> Self {
+            Self {
+                author: self.author,
+                per_page: self.per_page,
+                page: Some(page),
+            }
         }
     }
 
-    impl<'enc> From<&'enc PerPage> for ReposListCommitsParams {
+    impl<'enc> From<&'enc PerPage> for ReposListCommitsParams<'enc> {
         fn from(per_page: &'enc PerPage) -> Self {
-            let mut this = Self::new();
-            this.per_page(per_page.per_page);
-            this.page(per_page.page);
-            this
+            Self {
+                per_page: Some(per_page.per_page),
+                page: Some(per_page.page),
+                ..Default::default()
+            }
         }
     }
 
@@ -138,7 +131,7 @@ pub mod repos {
             &self,
             owner: &str,
             repo: &str,
-            query_params: Option<impl Into<ReposListCommitsParams>>,
+            query_params: Option<impl Into<ReposListCommitsParams<'api>>>,
         ) -> Result<Vec<Commit>, ReposListCommitsError> {
             let mut request_uri = format!(
                 "{}/repos/{}/{}/commits",

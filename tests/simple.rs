@@ -3,7 +3,8 @@ use {
     wasm_bindgen_test::*,
 };
 
-use roctogen::api::{self, repos};
+use roctogen::api::{self, gists, repos, search, users};
+//use roctogen::api::{self, repos};
 use roctogen::auth::Auth;
 use roctogen::models;
 
@@ -70,7 +71,7 @@ async fn get_wasm_ok() {
     let per_page = api::PerPage::new(10);
     
     let mut params: repos::ReposListCommitsParams = per_page.as_ref().into();
-    params.author("fussybeaver").page(2);
+    params = params.author("fussybeaver").page(2);
 
     let req = repos::new(&auth).list_commits_async("fussybeaver", "bollard", Some(params)).await;
     match req {
@@ -85,18 +86,74 @@ async fn get_wasm_ok() {
 
 #[cfg(target_arch = "x86_64")]
 #[test]
-fn get_sync_ok() {
+fn list_commits_sync_ok() {
 
     let auth = Auth::None;
     let per_page = api::PerPage::new(10);
     
     let mut params: repos::ReposListCommitsParams = per_page.as_ref().into();
-    params.author("fussybeaver").page(2);
+    params = params.author("fussybeaver").page(2);
 
     let req = repos::new(&auth).list_commits("fussybeaver", "bollard", Some(params));
     match req {
         Ok(ref repos) => {
             assert!(!&repos.is_empty());
+        },
+        Err(ref e) => println!("err: {}", e)
+    };
+
+    assert!(req.is_ok());
+}
+
+#[cfg(target_arch = "x86_64")]
+#[test]
+fn search_sync_ok() {
+
+    let auth = Auth::None;
+    let search = search::new(&auth);
+    let opts = search::SearchReposParams::new().q("bollard");
+    let req = search.repos(opts);
+
+    match req {
+        Ok(ref results) => {
+            assert!(results.total_count.unwrap() > 0);
+        },
+        Err(ref e) => println!("err: {}", e)
+    };
+
+    assert!(req.is_ok());
+}
+
+#[cfg(target_arch = "x86_64")]
+#[test]
+fn gists_sync_ok() {
+
+    let auth = Auth::None;
+    let gists = gists::new(&auth);
+    let req = gists.list_public(Some(&api::PerPage::new(10)));
+
+    match req {
+        Ok(ref results) => {
+            assert!(!results.is_empty());
+        },
+        Err(ref e) => println!("err: {}", e)
+    };
+
+    assert!(req.is_ok());
+}
+
+#[cfg(target_arch = "x86_64")]
+#[test]
+fn users_sync_ok() {
+
+    let auth = Auth::None;
+    let users = users::new(&auth);
+
+    let req = users.list(Some(users::UsersListParams::new().per_page(10)));
+
+    match req {
+        Ok(ref results) => {
+            assert!(!results.is_empty());
         },
         Err(ref e) => println!("err: {}", e)
     };
@@ -111,7 +168,7 @@ async fn post_wasm_fail() {
     let auth = Auth::None;
 
     let body = models::PostReposAddUserAccessRestrictions {
-        users: vec!["fussybeaver".to_string()]
+        users: Some(vec!["fussybeaver".to_string()])
     };
 
     let req = repos::new(&auth).add_user_access_restrictions_async("fussybeaver", "bollard", "master", body).await;

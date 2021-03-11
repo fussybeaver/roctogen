@@ -287,7 +287,7 @@ public class RustServerCodegen extends DefaultCodegenConfig {
         if (isReservedWord(sanitizedName) || sanitizedName.matches("^\\d.*")) {
             sanitizedName = escapeReservedWord(sanitizedName);
         }
-        
+       
         return underscore(sanitizedName);
     }
 
@@ -508,9 +508,6 @@ public class RustServerCodegen extends DefaultCodegenConfig {
         op.vendorExtensions.put("hasPathParams", !op.pathParams.isEmpty());
         op.vendorExtensions.put("HttpMethod",
                 Character.toUpperCase(op.httpMethod.charAt(0)) + op.httpMethod.substring(1).toLowerCase());
-        for (CodegenParameter param : op.allParams) {
-            processParam(param, op);
-        }
 
         Set<String> consumes = new HashSet<String>();
         if (super.getConsumesInfo(operation) != null) {
@@ -590,8 +587,7 @@ public class RustServerCodegen extends DefaultCodegenConfig {
 
         }
         for (CodegenParameter param : op.bodyParams) {
-            processParam(param, op);
-
+ 
             param.vendorExtensions.put("uppercase_operation_id", underscore(op.operationId).toUpperCase());
 
             // Default to producing json if nothing else is specified
@@ -608,17 +604,13 @@ public class RustServerCodegen extends DefaultCodegenConfig {
             if (param.dataType.equals("uuid::Uuid")) {
                 additionalProperties.put("apiUsesUuid", true);
             }
-            processParam(param, op);
 
             // Give header params a name in camel case. CodegenParameters don't have a
             // nameInCamelCase property.
             param.vendorExtensions.put("typeName", toModelName(param.baseName));
         }
-        for (CodegenParameter param : op.formParams) {
-            processParam(param, op);
-        }
+
         for (CodegenParameter param : op.queryParams) {
-            processParam(param, op);
             if (param.getDataType() != null && param.getDataType().equals("Bool")) {
                 param.dataType = "bool";
                 param.vendorExtensions.put(CodegenConstants.IS_BOOLEAN_EXT_NAME, "true");
@@ -770,9 +762,6 @@ public class RustServerCodegen extends DefaultCodegenConfig {
             property.datatype = toModelName(getSchemaType(p));
         }
 
-        // TODO: property.datatype.startsWith("#/paths")
-
-        // TODO: move below to subclass
         // All unknown datatypes mapped to Value
         if (property.getDatatype() == null) {
             property.setDatatype("Value");
@@ -975,74 +964,6 @@ public class RustServerCodegen extends DefaultCodegenConfig {
         return super.postProcessModelsEnum(objs);
 
     }
-    private void processParam(CodegenParameter param, CodegenOperation op) {
-        String example = null;
-
-        if (getBooleanValue(param, CodegenConstants.IS_STRING_EXT_NAME)) {
-            if (param.dataFormat != null && param.dataFormat.equals("byte")) {
-                param.vendorExtensions.put("formatString", "\\\"{:?}\\\"");
-                example = "swagger::ByteArray(\"" + ((param.example != null) ? param.example : "")
-                        + "\".to_string().into_bytes())";
-            } else {
-                param.vendorExtensions.put("formatString", "\\\"{}\\\"");
-                example = "\"" + ((param.example != null) ? param.example : "") + "\".to_string()";
-            }
-        } else if (getBooleanValue(param, CodegenConstants.IS_PRIMITIVE_TYPE_EXT_NAME)) {
-            if ((getBooleanValue(param, CodegenConstants.IS_BYTE_ARRAY_EXT_NAME))
-                    || (getBooleanValue(param, CodegenConstants.IS_BINARY_EXT_NAME))) {
-                // Binary primitive types don't implement `Display`.
-                param.vendorExtensions.put("formatString", "{:?}");
-                example = "swagger::ByteArray(Vec::from(\"" + ((param.example != null) ? param.example : "") + "\"))";
-            } else {
-                param.vendorExtensions.put("formatString", "{}");
-                example = (param.example != null) ? param.example : "";
-            }
-        } else if (getBooleanValue(param, CodegenConstants.IS_LIST_CONTAINER_EXT_NAME)) {
-            param.vendorExtensions.put("formatString", "{:?}");
-            example = (param.example != null) ? param.example : "&Vec::new()";
-        } else if (getBooleanValue(param, CodegenConstants.IS_FILE_EXT_NAME)) {
-            param.vendorExtensions.put("formatString", "{:?}");
-            op.vendorExtensions.put("hasFile", true);
-            additionalProperties.put("apiHasFile", true);
-            example = "Box::new(stream::once(Ok(b\"hello\".to_vec()))) as Box<Stream<Item=_, Error=_> + Send>";
-        } else {
-            param.vendorExtensions.put("formatString", "{:?}");
-            if (param.example != null) {
-                example = "serde_json::from_str::<" + param.dataType + ">(\"" + param.example
-                        + "\").expect(\"Failed to parse JSON example\")";
-            }
-        }
-
-        if (param.required) {
-            if (example != null) {
-                param.vendorExtensions.put("example", example);
-            } else if (getBooleanValue(param, CodegenConstants.IS_LIST_CONTAINER_EXT_NAME)) {
-                // Use the empty list if we don't have an example
-                param.vendorExtensions.put("example", "&Vec::new()");
-            } else {
-                // If we don't have an example that we can provide, we need to disable the
-                // client example, as it won't build.
-                param.vendorExtensions.put("example", "???");
-                op.vendorExtensions.put("noClientExample", Boolean.TRUE);
-            }
-        } else if ((param.dataFormat != null)
-                && ((param.dataFormat.equals("date-time")) || (param.dataFormat.equals("date")))) {
-            param.vendorExtensions.put("formatString", "{:?}");
-            param.vendorExtensions.put("example", "None");
-        } else {
-            // Not required, so override the format string and example
-            param.vendorExtensions.put("formatString", "{:?}");
-            if (getBooleanValue(param, CodegenConstants.IS_FILE_EXT_NAME)) {
-                // Optional file types are wrapped in a future
-                param.vendorExtensions.put("example",
-                        (example != null)
-                                ? "Box::new(future::ok(Some(" + example + "))) as Box<Future<Item=_, Error=_> + Send>"
-                                : "None");
-            } else {
-                param.vendorExtensions.put("example", (example != null) ? "Some(" + example + ")" : "None");
-            }
-        }
-    }
 
     @Override
     public String getDefaultTemplateDir() {
@@ -1070,10 +991,6 @@ public class RustServerCodegen extends DefaultCodegenConfig {
                     typeDeclaration.append(innerType).append(">");
                     res.dataType = typeDeclaration.toString();
                 }
-                //String innerType = getTypeDeclaration(inner);
-                //StringBuilder typeDeclaration = new StringBuilder(typeMapping.get("array")).append("<");
-                //typeDeclaration.append(innerType).append(">");
-                //res.dataType = typeDeclaration.toString();
             } else if (p instanceof MapSchema) {
                 MapSchema mp = (MapSchema) p;
                 Object inner = mp.getAdditionalProperties();

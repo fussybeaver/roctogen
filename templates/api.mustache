@@ -46,23 +46,23 @@ pub enum {{classname}}{{operationIdCamelCase}}Error {
 {{#operation}}{{#contents}}{{#hasQueryParams}}
 /// Query parameters for the [{{summary}}]({{classname}}::{{operationId}}_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct {{classname}}{{operationIdCamelCase}}Params {
+pub struct {{classname}}{{operationIdCamelCase}}Params{{#vendorExtensions.x-codegen-has-string-params}}<'req>{{/vendorExtensions.x-codegen-has-string-params}} {
     {{#queryParams}}
     {{#description}}/// {{{.}}}{{/description}}
-    {{paramName}}: {{^required}}Option<{{#isString}}String{{/isString}}{{#isUuid}}String{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/required}}{{#required}}{{#isString}}String{{/isString}}{{#isUuid}}String{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/required}}{{#hasMore}}, {{/hasMore}}
+    {{paramName}}: {{^required}}Option<{{#isString}}&'req str{{/isString}}{{#isUuid}}&'req str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/required}}{{#required}}{{#isString}}&'req str{{/isString}}{{#isUuid}}&'req str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/required}}{{#hasMore}}, {{/hasMore}}
     {{/queryParams}}
 }
 
-impl {{classname}}{{operationIdCamelCase}}Params {
+impl{{#vendorExtensions.x-codegen-has-string-params}}<'req>{{/vendorExtensions.x-codegen-has-string-params}} {{classname}}{{operationIdCamelCase}}Params{{#vendorExtensions.x-codegen-has-string-params}}<'req>{{/vendorExtensions.x-codegen-has-string-params}} {
     pub fn new() -> Self {
         Self::default()
     }
     {{#queryParams}}
 
     {{#description}}/// {{{.}}}{{/description}}
-    pub fn {{paramName}}(self, {{paramName}}: {{#isString}}impl Into<String>{{/isString}}{{#isUuid}}impl Into<String>{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}) -> Self {
+    pub fn {{paramName}}(self, {{paramName}}: {{#isString}}&'req str{{/isString}}{{#isUuid}}&'req str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}) -> Self {
         Self { 
-{{#queryParams}}            {{#equals paramName ../paramName}}{{paramName}}: {{^required}}Some({{/required}}{{paramName}}{{#isString}}.into(){{/isString}}{{#isUuid}}.into(){{/isUuid}}{{^required}}){{/required}},{{else}}{{paramName}}: self.{{paramName}}, {{/equals}}
+{{#queryParams}}            {{#equals paramName ../paramName}}{{paramName}}: {{^required}}Some({{/required}}{{paramName}}{{#isString}}{{/isString}}{{#isUuid}}{{/isUuid}}{{^required}}){{/required}},{{else}}{{paramName}}: self.{{paramName}}, {{/equals}}
             {{/queryParams}}
         }
     }
@@ -70,7 +70,7 @@ impl {{classname}}{{operationIdCamelCase}}Params {
 }
 
 {{#vendorExtensions.x-codegen-impl-per-page}}
-impl<'enc> From<&'enc PerPage> for {{classname}}{{operationIdCamelCase}}Params {
+impl<'enc> From<&'enc PerPage> for {{classname}}{{operationIdCamelCase}}Params{{#vendorExtensions.x-codegen-has-string-params}}<'enc>{{/vendorExtensions.x-codegen-has-string-params}} {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -83,7 +83,7 @@ impl<'enc> From<&'enc PerPage> for {{classname}}{{operationIdCamelCase}}Params {
 {{/hasQueryParams}}
 {{/contents}}{{/operation}}
 
-impl {{classname}}<'_> {
+impl<'api> {{classname}}<'api> {
 {{#operation}}{{#contents}}
     /// ---
     ///
@@ -94,7 +94,7 @@ impl {{classname}}<'_> {
     {{/unescapedNotes}}{{#externalDocs.url}}
     /// 
     /// [GitHub API docs for {{operationId}}]({{.}}){{/externalDocs.url}}
-    pub async fn {{operationId}}_async(&self, {{#pathParams}}{{paramName}}: {{#nullable}}Option<{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/nullable}}{{^nullable}}{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/nullable}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}query_params: {{#vendorExtensions.x-codegen-has-optional-query-params}}Option<{{/vendorExtensions.x-codegen-has-optional-query-params}}impl Into<{{classname}}{{operationIdCamelCase}}Params>{{#vendorExtensions.x-codegen-has-optional-query-params}}>{{/vendorExtensions.x-codegen-has-optional-query-params}}{{#hasBodyParam}}, {{/hasBodyParam}}{{/hasQueryParams}}{{#hasBodyParam}}{{^hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}{{/hasQueryParams}}body: {{#bodyParam}}{{{dataType}}}{{/bodyParam}}{{/hasBodyParam}}) -> Result<{{#responses}}{{#vendorExtensions.x-is-default}}{{{dataType}}}{{/vendorExtensions.x-is-default}}{{/responses}}{{#vendorExtensions.x-codegen-response-empty-default}}(){{/vendorExtensions.x-codegen-response-empty-default}}, {{classname}}{{operationIdCamelCase}}Error> {
+    pub async fn {{operationId}}_async(&self, {{#pathParams}}{{paramName}}: {{#nullable}}Option<{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/nullable}}{{^nullable}}{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/nullable}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}query_params: {{#vendorExtensions.x-codegen-has-optional-query-params}}Option<{{/vendorExtensions.x-codegen-has-optional-query-params}}impl Into<{{classname}}{{operationIdCamelCase}}Params{{#vendorExtensions.x-codegen-has-string-params}}<'api>{{/vendorExtensions.x-codegen-has-string-params}}>{{#vendorExtensions.x-codegen-has-optional-query-params}}>{{/vendorExtensions.x-codegen-has-optional-query-params}}{{#hasBodyParam}}, {{/hasBodyParam}}{{/hasQueryParams}}{{#hasBodyParam}}{{^hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}{{/hasQueryParams}}body: {{#bodyParam}}{{{dataType}}}{{/bodyParam}}{{/hasBodyParam}}) -> Result<{{#responses}}{{#vendorExtensions.x-is-default}}{{{dataType}}}{{/vendorExtensions.x-is-default}}{{/responses}}{{#vendorExtensions.x-codegen-response-empty-default}}(){{/vendorExtensions.x-codegen-response-empty-default}}, {{classname}}{{operationIdCamelCase}}Error> {
 
         let {{#hasQueryParams}}mut {{/hasQueryParams}}request_uri = format!("{}{{path}}", super::GITHUB_BASE_API_URL{{#hasPathParams}}, {{/hasPathParams}}{{#pathParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}});
 
@@ -102,14 +102,12 @@ impl {{classname}}<'_> {
         {{#vendorExtensions.x-codegen-has-optional-query-params}}
         if let Some(params) = query_params {
             request_uri.push_str("?");
-            let qp: {{classname}}{{operationIdCamelCase}}Params = params.into();
-            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
         }
         {{/vendorExtensions.x-codegen-has-optional-query-params}}
         {{^vendorExtensions.x-codegen-has-optional-query-params}}
         request_uri.push_str("?");
-        let qp: {{classname}}{{operationIdCamelCase}}Params = query_params.into();
-        request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        request_uri.push_str(&serde_urlencoded::to_string(query_params.into())?);
         {{/vendorExtensions.x-codegen-has-optional-query-params}}
         {{/hasQueryParams}}
 
@@ -144,7 +142,7 @@ impl {{classname}}<'_> {
     /// {{/summary}}
     /// API docs: {{.}}{{/externalDocs.url}}
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn {{operationId}}(&self, {{#pathParams}}{{paramName}}: {{#nullable}}Option<{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/nullable}}{{^nullable}}{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/nullable}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}query_params: {{#vendorExtensions.x-codegen-has-optional-query-params}}Option<{{/vendorExtensions.x-codegen-has-optional-query-params}}impl Into<{{classname}}{{operationIdCamelCase}}Params>{{#vendorExtensions.x-codegen-has-optional-query-params}}>{{/vendorExtensions.x-codegen-has-optional-query-params}}{{#hasBodyParam}}, {{/hasBodyParam}}{{/hasQueryParams}}{{#hasBodyParam}}{{^hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}{{/hasQueryParams}}body: {{#bodyParam}}{{{dataType}}}{{/bodyParam}}{{/hasBodyParam}}) -> Result<{{#responses}}{{#vendorExtensions.x-is-default}}{{{dataType}}}{{/vendorExtensions.x-is-default}}{{/responses}}{{#vendorExtensions.x-codegen-response-empty-default}}(){{/vendorExtensions.x-codegen-response-empty-default}}, {{classname}}{{operationIdCamelCase}}Error> {
+    pub fn {{operationId}}(&self, {{#pathParams}}{{paramName}}: {{#nullable}}Option<{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/nullable}}{{^nullable}}{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/nullable}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}query_params: {{#vendorExtensions.x-codegen-has-optional-query-params}}Option<{{/vendorExtensions.x-codegen-has-optional-query-params}}impl Into<{{classname}}{{operationIdCamelCase}}Params{{#vendorExtensions.x-codegen-has-string-params}}<'api>{{/vendorExtensions.x-codegen-has-string-params}}>{{#vendorExtensions.x-codegen-has-optional-query-params}}>{{/vendorExtensions.x-codegen-has-optional-query-params}}{{#hasBodyParam}}, {{/hasBodyParam}}{{/hasQueryParams}}{{#hasBodyParam}}{{^hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}{{/hasQueryParams}}body: {{#bodyParam}}{{{dataType}}}{{/bodyParam}}{{/hasBodyParam}}) -> Result<{{#responses}}{{#vendorExtensions.x-is-default}}{{{dataType}}}{{/vendorExtensions.x-is-default}}{{/responses}}{{#vendorExtensions.x-codegen-response-empty-default}}(){{/vendorExtensions.x-codegen-response-empty-default}}, {{classname}}{{operationIdCamelCase}}Error> {
 
         let {{#hasQueryParams}}mut {{/hasQueryParams}}request_uri = format!("{}{{path}}", super::GITHUB_BASE_API_URL{{#hasPathParams}}, {{/hasPathParams}}{{#pathParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}});
 

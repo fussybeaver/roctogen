@@ -52,9 +52,10 @@ pub(crate) type FromJsonType = Body;
 
 impl<E> FromJson<E> for E
 where
-    E: ser::Serialize,
+    E: ser::Serialize + std::fmt::Debug,
 {
     fn from_json(model: E) -> Result<FromJsonType, serde_json::Error> {
+
         Ok(serde_json::to_vec(&model)?.into())
     }
 }
