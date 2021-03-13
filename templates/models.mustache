@@ -1,0 +1,126 @@
+#![allow(unused_imports, unused_qualifications, unused_extern_crates)]
+{{>partial_header}}
+
+use serde::ser::Serializer;
+use serde::de::{DeserializeOwned, Deserializer};
+use serde::Deserialize;
+use serde_json::value::Value;
+
+use std::cmp::Eq;
+use std::collections::HashMap;
+use std::default::Default;
+use std::fmt::{self, Formatter, Display};
+use std::hash::Hash;
+
+use chrono::DateTime;
+use chrono::Utc;
+{{#models}}{{#model}}
+
+{{#description}}/// {{{description}}}
+{{/description}}{{#vendorExtensions.is-enum}}/// Enumeration of values.
+/// Since this enum's variants do not hold data, we can easily define them them as `#[repr(C)]`
+/// which helps with FFI.
+#[allow(non_camel_case_types)]
+#[repr(C)]
+{{#vendorExtensions.x-rustgen-is-untagged-enum}}
+#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize, Deserialize, Eq, Ord)]
+#[serde(untagged)]
+pub enum {{classname}} { {{#allowableValues}}{{#enumVars}}
+    {{name}}({{value}}),{{/enumVars}}{{/allowableValues}}
+}
+
+impl Display for {{classname}} {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        match self { {{#allowableValues}}{{#enumVars}}
+            {{classname}}::{{name}}(value) => write!(f, "{}", value),{{/enumVars}}{{/allowableValues}}
+        }
+    }
+}
+{{/vendorExtensions.x-rustgen-is-untagged-enum}}{{^vendorExtensions.x-rustgen-is-untagged-enum}}
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Serialize, Deserialize, Eq, Ord)]
+pub enum {{classname}} { {{#allowableValues}}{{#enumVars}}
+    #[serde(rename = {{{value}}})]
+    {{name}},{{/enumVars}}{{/allowableValues}}
+}
+
+impl Display for {{classname}} {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        match *self { {{#allowableValues}}{{#enumVars}}
+            {{classname}}::{{name}} => write!(f, "{}", {{{value}}}),{{/enumVars}}{{/allowableValues}}
+        }
+    }
+}
+
+impl std::str::FromStr for {{classname}} {
+    type Err = ();
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+{{#allowableValues}}{{#enumVars}}            {{{value}}} => Ok({{classname}}::{{name}}),
+{{/enumVars}}{{/allowableValues}}            _ => Err(()),
+        }
+    }
+}
+{{/vendorExtensions.x-rustgen-is-untagged-enum}}{{/vendorExtensions.is-enum}}{{^vendorExtensions.is-enum}}{{#vendorExtensions.x-rustgen-is-bool}}
+pub type {{classname}} = bool;
+{{/vendorExtensions.x-rustgen-is-bool}}{{#vendorExtensions.x-rustgen-is-integer}}
+pub type {{classname}} = i32;
+{{/vendorExtensions.x-rustgen-is-integer}}{{#vendorExtensions.x-rustgen-is-string}}
+pub type {{classname}} = String;
+{{/vendorExtensions.x-rustgen-is-string}}{{#vendorExtensions.x-rustgen-is-datetime}}
+pub type {{classname}} = DateTime<Utc>;
+{{/vendorExtensions.x-rustgen-is-datetime}}{{^vendorExtensions.has-vars}}{{! general struct}}#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]{{#xmlName}}
+#[serde(rename = "{{xmlName}}")]{{/xmlName}}
+pub struct {{classname}} {
+{{#vars}}{{#description}}    /// {{{.}}}
+{{/description}}{{^vendorExtensions.x-rustgen-serde-no-rename}}    #[serde(rename = "{{baseName}}")]
+{{/vendorExtensions.x-rustgen-serde-no-rename}}
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub {{name}}: Option<{{#vendorExtensions.is-enum}}{{classname}}{{enumName}}{{/vendorExtensions.is-enum}}{{^vendorExtensions.is-enum}}{{#vendorExtensions.x-is-list-container}}Vec<{{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-list-container}}{{#vendorExtensions.x-is-map-container}}HashMap<String, {{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-map-container}}{{^vendorExtensions.x-is-container}}{{{datatype}}}{{/vendorExtensions.x-is-container}}{{/vendorExtensions.is-enum}}>,
+{{/vars}}
+}
+{{#vars}}{{#vendorExtensions.is-enum}}
+#[allow(non_camel_case_types)]
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Serialize, Deserialize, Eq, Ord)]{{#xmlName}}
+#[serde(rename = "{{xmlName}}")]{{/xmlName}}
+pub enum {{classname}}{{enumName}} { {{#vendorExtensions}}{{^x-rustgen-has-empty-enum}}
+    #[serde(rename = "")]
+    EMPTY,{{/x-rustgen-has-empty-enum}}{{/vendorExtensions}}{{#allowableValues}}{{#enumVars}}
+    #[serde(rename = {{{value}}})]
+    {{name}},{{/enumVars}}{{/allowableValues}}{{#vendorExtensions}}{{#x-rustgen-additional-enum-values}}
+    #[serde(rename = {{{value}}})]
+    {{name}},{{/x-rustgen-additional-enum-values}}{{/vendorExtensions}}
+}
+
+impl ::std::fmt::Display for {{classname}}{{enumName}} {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match *self { {{#vendorExtensions}}{{^x-rustgen-has-empty-enum}}
+            {{classname}}{{enumName}}::EMPTY => write!(f, ""),{{/x-rustgen-has-empty-enum}}{{/vendorExtensions}}{{#allowableValues}}{{#enumVars}}
+            {{classname}}{{enumName}}::{{name}} => write!(f, "{}", {{{value}}}),{{/enumVars}}{{/allowableValues}}{{#vendorExtensions}}{{#x-rustgen-additional-enum-values}}
+            {{classname}}{{enumName}}::{{name}} => write!(f, "{}", {{{value}}}),{{/x-rustgen-additional-enum-values}}{{/vendorExtensions}}
+
+        }
+    }
+}
+
+impl ::std::str::FromStr for {{classname}}{{enumName}} {
+    type Err = String;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s { {{#vendorExtensions}}{{^x-rustgen-has-empty-enum}}
+            "" => Ok({{classname}}{{enumName}}::EMPTY),{{/x-rustgen-has-empty-enum}}{{/vendorExtensions}}
+{{#allowableValues}}{{#enumVars}}            {{{value}}} => Ok({{classname}}{{enumName}}::{{name}}),
+{{/enumVars}}{{/allowableValues}}{{#vendorExtensions}}{{#x-rustgen-additional-enum-values}}            {{{value}}} => Ok({{classname}}{{enumName}}::{{name}}),
+{{/x-rustgen-additional-enum-values}}{{/vendorExtensions}}            x => Err(format!("Invalid enum type: {}", x)),
+        }
+    }
+}
+
+impl ::std::convert::AsRef<str> for {{classname}}{{enumName}} {
+    fn as_ref(&self) -> &str {
+        match self { {{#vendorExtensions}}{{^x-rustgen-has-empty-enum}}
+            {{classname}}{{enumName}}::EMPTY => "",{{/x-rustgen-has-empty-enum}}{{/vendorExtensions}}{{#allowableValues}}{{#enumVars}}
+            {{classname}}{{enumName}}::{{name}} => {{{value}}},{{/enumVars}}{{/allowableValues}}{{#vendorExtensions}}{{#x-rustgen-additional-enum-values}}
+            {{classname}}{{enumName}}::{{name}} => {{{value}}},{{/x-rustgen-additional-enum-values}}{{/vendorExtensions}}
+        }
+    }
+}
+{{/vendorExtensions.is-enum}}{{/vars}}{{/vendorExtensions.has-vars}}{{/vendorExtensions.is-enum}}{{/model}}{{/models}}

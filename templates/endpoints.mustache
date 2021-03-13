@@ -1,0 +1,30 @@
+//! Endpoints module and `PerPage` struct/impl
+{{>partial_header}}
+
+pub const GITHUB_BASE_API_URL: &str = "https://api.github.com";
+
+{{#tags}}
+pub mod {{baseName}};
+{{/tags}}
+
+pub struct PerPage {
+    per_page: u16,
+    page: u16,
+}
+
+impl PerPage {
+    pub fn new(per_page: u16) -> Self {
+        PerPage { per_page, page: 0 }
+    }
+
+    pub fn page(&mut self, page: u16) -> &mut Self {
+        self.page = page;
+        self
+    }
+}
+
+impl std::convert::AsRef<PerPage> for PerPage {
+    fn as_ref(&self) -> &PerPage {
+        self
+    }
+}
