@@ -1,8 +1,12 @@
+//! Method, error and parameter types for the {{classname}} endpoint.
+#![allow(
+    unused_imports,
+)]
 {{>partial_header}}
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, Json, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -91,10 +95,14 @@ impl<'api> {{classname}}<'api> {
     /// # {{.}}
     {{/summary}}{{#unescapedNotes}}///
     /// {{{.}}}
-    {{/unescapedNotes}}{{#externalDocs.url}}
-    /// 
-    /// [GitHub API docs for {{operationId}}]({{.}}){{/externalDocs.url}}
-    pub async fn {{operationId}}_async(&self, {{#pathParams}}{{paramName}}: {{#nullable}}Option<{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/nullable}}{{^nullable}}{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/nullable}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}query_params: {{#vendorExtensions.x-codegen-has-optional-query-params}}Option<{{/vendorExtensions.x-codegen-has-optional-query-params}}impl Into<{{classname}}{{operationIdCamelCase}}Params{{#vendorExtensions.x-codegen-has-string-params}}<'api>{{/vendorExtensions.x-codegen-has-string-params}}>{{#vendorExtensions.x-codegen-has-optional-query-params}}>{{/vendorExtensions.x-codegen-has-optional-query-params}}{{#hasBodyParam}}, {{/hasBodyParam}}{{/hasQueryParams}}{{#hasBodyParam}}{{^hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}{{/hasQueryParams}}body: {{#bodyParam}}{{{dataType}}}{{/bodyParam}}{{/hasBodyParam}}) -> Result<{{#responses}}{{#vendorExtensions.x-is-default}}{{{dataType}}}{{/vendorExtensions.x-is-default}}{{/responses}}{{#vendorExtensions.x-codegen-response-empty-default}}(){{/vendorExtensions.x-codegen-response-empty-default}}, {{classname}}{{operationIdCamelCase}}Error> {
+    {{/unescapedNotes}}{{#externalDocs.url}}/// 
+    /// [GitHub API docs for {{operationId}}]({{.}}){{/externalDocs.url ~}}
+    {{#vendorExtensions.x-codegen-has-previews}}///
+    {{/vendorExtensions.x-codegen-has-previews}}
+    {{#vendorExtensions.x-github.previews}}/// The `{{operationId}}_async` endpoint is enabled with the `{{name}}` cargo feature.{{/vendorExtensions.x-github.previews}}
+    /// ---
+    {{#vendorExtensions.x-github.previews}}#[cfg(feature = "{{name}}")]
+    {{/vendorExtensions.x-github.previews}}pub async fn {{operationId}}_async(&self{{#hasParams}}, {{/hasParams}}{{#pathParams}}{{paramName}}: {{#nullable}}Option<{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/nullable}}{{^nullable}}{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/nullable}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}query_params: {{#vendorExtensions.x-codegen-has-optional-query-params}}Option<{{/vendorExtensions.x-codegen-has-optional-query-params}}impl Into<{{classname}}{{operationIdCamelCase}}Params{{#vendorExtensions.x-codegen-has-string-params}}<'api>{{/vendorExtensions.x-codegen-has-string-params}}>{{#vendorExtensions.x-codegen-has-optional-query-params}}>{{/vendorExtensions.x-codegen-has-optional-query-params}}{{#hasBodyParam}}, {{/hasBodyParam}}{{/hasQueryParams}}{{#hasBodyParam}}{{^hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}{{/hasQueryParams}}body: {{#bodyParam}}{{{dataType}}}{{/bodyParam}}{{/hasBodyParam}}) -> Result<{{#responses}}{{#vendorExtensions.x-is-default}}{{{dataType}}}{{/vendorExtensions.x-is-default}}{{/responses}}{{#vendorExtensions.x-codegen-response-empty-default}}(){{/vendorExtensions.x-codegen-response-empty-default}}, {{classname}}{{operationIdCamelCase}}Error> {
 
         let {{#hasQueryParams}}mut {{/hasQueryParams}}request_uri = format!("{}{{path}}", super::GITHUB_BASE_API_URL{{#hasPathParams}}, {{/hasPathParams}}{{#pathParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}});
 
@@ -114,7 +122,8 @@ impl<'api> {{classname}}<'api> {
         let req = GitHubRequest {
             uri: request_uri,
             body: {{#hasBodyParam}}Some({{#bodyParam}}{{{dataType}}}{{/bodyParam}}::from_json(body)?){{/hasBodyParam}}{{^hasBodyParam}}None{{/hasBodyParam}},
-            method: "{{httpMethod}}"
+            method: "{{httpMethod}}",
+            headers: vec![{{#vendorExtensions.x-github.previews}}("Accept", "application/vnd.github.{{name}}-preview+json"){{/vendorExtensions.x-github.previews}}]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -137,12 +146,21 @@ impl<'api> {{classname}}<'api> {
         }
     }
 
+    /// ---
+    ///
     {{#summary}}
-    /// {{.}}{{/summary}}{{#externalDocs.url}}{{#summary}}
-    /// {{/summary}}
-    /// API docs: {{.}}{{/externalDocs.url}}
+    /// # {{.}}
+    {{/summary}}{{#unescapedNotes}}///
+    /// {{{.}}}
+    {{/unescapedNotes}}{{#externalDocs.url}}/// 
+    /// [GitHub API docs for {{operationId}}]({{.}}){{/externalDocs.url ~}}
+    {{#vendorExtensions.x-codegen-has-previews}}///
+    {{/vendorExtensions.x-codegen-has-previews}}
+    {{#vendorExtensions.x-github.previews}}/// The `{{operationId}}` endpoint is enabled with the `{{name}}` cargo feature.{{/vendorExtensions.x-github.previews}}
+    /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn {{operationId}}(&self, {{#pathParams}}{{paramName}}: {{#nullable}}Option<{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/nullable}}{{^nullable}}{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/nullable}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}query_params: {{#vendorExtensions.x-codegen-has-optional-query-params}}Option<{{/vendorExtensions.x-codegen-has-optional-query-params}}impl Into<{{classname}}{{operationIdCamelCase}}Params{{#vendorExtensions.x-codegen-has-string-params}}<'api>{{/vendorExtensions.x-codegen-has-string-params}}>{{#vendorExtensions.x-codegen-has-optional-query-params}}>{{/vendorExtensions.x-codegen-has-optional-query-params}}{{#hasBodyParam}}, {{/hasBodyParam}}{{/hasQueryParams}}{{#hasBodyParam}}{{^hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}{{/hasQueryParams}}body: {{#bodyParam}}{{{dataType}}}{{/bodyParam}}{{/hasBodyParam}}) -> Result<{{#responses}}{{#vendorExtensions.x-is-default}}{{{dataType}}}{{/vendorExtensions.x-is-default}}{{/responses}}{{#vendorExtensions.x-codegen-response-empty-default}}(){{/vendorExtensions.x-codegen-response-empty-default}}, {{classname}}{{operationIdCamelCase}}Error> {
+    {{#vendorExtensions.x-github.previews}}#[cfg(feature = "{{name}}")]
+    {{/vendorExtensions.x-github.previews}}pub fn {{operationId}}(&self{{#hasParams}}, {{/hasParams}}{{#pathParams}}{{paramName}}: {{#nullable}}Option<{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/nullable}}{{^nullable}}{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/nullable}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}query_params: {{#vendorExtensions.x-codegen-has-optional-query-params}}Option<{{/vendorExtensions.x-codegen-has-optional-query-params}}impl Into<{{classname}}{{operationIdCamelCase}}Params{{#vendorExtensions.x-codegen-has-string-params}}<'api>{{/vendorExtensions.x-codegen-has-string-params}}>{{#vendorExtensions.x-codegen-has-optional-query-params}}>{{/vendorExtensions.x-codegen-has-optional-query-params}}{{#hasBodyParam}}, {{/hasBodyParam}}{{/hasQueryParams}}{{#hasBodyParam}}{{^hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}{{/hasQueryParams}}body: {{#bodyParam}}{{{dataType}}}{{/bodyParam}}{{/hasBodyParam}}) -> Result<{{#responses}}{{#vendorExtensions.x-is-default}}{{{dataType}}}{{/vendorExtensions.x-is-default}}{{/responses}}{{#vendorExtensions.x-codegen-response-empty-default}}(){{/vendorExtensions.x-codegen-response-empty-default}}, {{classname}}{{operationIdCamelCase}}Error> {
 
         let {{#hasQueryParams}}mut {{/hasQueryParams}}request_uri = format!("{}{{path}}", super::GITHUB_BASE_API_URL{{#hasPathParams}}, {{/hasPathParams}}{{#pathParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}});
 
@@ -164,7 +182,8 @@ impl<'api> {{classname}}<'api> {
         let req = GitHubRequest {
             uri: request_uri,
             body: {{#hasBodyParam}}Some({{#bodyParam}}{{{dataType}}}{{/bodyParam}}::from_json(body)?){{/hasBodyParam}}{{^hasBodyParam}}None{{/hasBodyParam}},
-            method: "{{httpMethod}}"
+            method: "{{httpMethod}}",
+            headers: vec![{{#vendorExtensions.x-github.previews}}("Accept", "application/vnd.github.{{name}}-preview+json"){{/vendorExtensions.x-github.previews}}]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;

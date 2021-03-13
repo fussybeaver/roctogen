@@ -8,7 +8,7 @@ use isahc::Body;
 use isahc::RequestExt;
 
 use crate::auth::Auth;
-use super::{Json, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use super::{FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
 
 use serde::{ser, Deserialize};
 
@@ -24,7 +24,7 @@ pub(crate) fn fetch(request: Request<Body>) -> Result<Response<Body>, AdapterErr
     Ok(request.send()?)
 }
 
-pub(crate) async fn fetch_async(request: Request<Body>) -> Result<Response<Body>, AdapterError> {
+pub(crate) async fn fetch_async(_request: Request<Body>) -> Result<Response<Body>, AdapterError> {
     unimplemented!()
 }
 
@@ -38,7 +38,7 @@ impl<T: std::io::Read> GitHubResponseExt for Response<T> {
     }
 }
 
-impl<T, E> Json<E> for Response<T>
+impl<T, E> ToJson<E> for Response<T>
 where
     T: std::io::Read,
     E: for<'de> Deserialize<'de>,
@@ -69,6 +69,10 @@ impl GitHubRequestBuilder for Request<Body>
             .uri(req.uri)
             .header(ACCEPT, "application/vnd.github.v3+json")
             .header(CONTENT_TYPE, "application/json");
+
+        for header in req.headers.iter() {
+            builder = builder.header(header.0, header.1);
+        }
 
         builder = match auth {
             Auth::Basic { user, pass } => {

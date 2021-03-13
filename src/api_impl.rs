@@ -1,7 +1,7 @@
 use serde::Deserialize;
 
 use crate::adapters::{
-    AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, Json,
+    AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson,
 };
 use crate::auth::Auth;
 use crate::models::*;

@@ -3730,6 +3730,8 @@ impl std::str::FromStr for CodeScanningAlertSetState {
 pub enum CodeScanningAlertState { 
     #[serde(rename = "open")]
     OPEN,
+    #[serde(rename = "closed")]
+    CLOSED,
     #[serde(rename = "dismissed")]
     DISMISSED,
     #[serde(rename = "fixed")]
@@ -3740,6 +3742,7 @@ impl Display for CodeScanningAlertState {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match *self { 
             CodeScanningAlertState::OPEN => write!(f, "{}", "open"),
+            CodeScanningAlertState::CLOSED => write!(f, "{}", "closed"),
             CodeScanningAlertState::DISMISSED => write!(f, "{}", "dismissed"),
             CodeScanningAlertState::FIXED => write!(f, "{}", "fixed"),
         }
@@ -3751,6 +3754,7 @@ impl std::str::FromStr for CodeScanningAlertState {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "open" => Ok(CodeScanningAlertState::OPEN),
+            "closed" => Ok(CodeScanningAlertState::CLOSED),
             "dismissed" => Ok(CodeScanningAlertState::DISMISSED),
             "fixed" => Ok(CodeScanningAlertState::FIXED),
             _ => Err(()),
@@ -3861,7 +3865,7 @@ pub struct CodeScanningAnalysisToolVersion {
 pub struct CodeScanningAnalysisUrl {
 }
 
-/// The full Git reference, formatted as `refs/heads/<branch name>`.
+/// The full Git reference, formatted as `refs/heads/<branch name>`, `refs/pull/<number>/merge`, or `refs/pull/<number>/head`.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningRef {
 }

@@ -258,8 +258,8 @@ public class GitHubCodegen extends RustServerCodegen {
             List<CodegenOperation> ops = (List<CodegenOperation>) operations.get("operation");
             for (final CodegenOperation operation : ops) {
                 if (operation.notes != null) {
-                    operation.unescapedNotes = operation.unescapedNotes.replaceAll("```(.+)\\n(.+)\\n", "```$1,ignore\n$2\n");
-                    operation.unescapedNotes = operation.unescapedNotes.replaceAll("```\\n(.+)\\n", "```ignore\n$1\n");
+                    operation.unescapedNotes = operation.unescapedNotes.replaceAll("```(.+)\\n(.+)\\n", "```$1,nocompile\n$2\n");
+                    operation.unescapedNotes = operation.unescapedNotes.replaceAll("```\\n(.+)\\n", "```nocompile\n$1\n");
                     operation.unescapedNotes = operation.unescapedNotes.replaceAll("\\n", "\n    /// ");
 
                 }
@@ -296,10 +296,12 @@ public class GitHubCodegen extends RustServerCodegen {
                     if (param.getParamName().equals("per_page")) {
                         hasPerPage = true;
                         param.dataType = "u16";
+                        param.getVendorExtensions().put("x-is-string", "false");
                     }
                     if (param.getParamName().equals("page")) {
                         hasPage = true;
                         param.dataType = "u16";
+                        param.getVendorExtensions().put("x-is-string", "false");
                     }
                     if (param.getRequired()) {
                         hasOptionalQueryParams = false;
@@ -316,6 +318,19 @@ public class GitHubCodegen extends RustServerCodegen {
                 }
                 if (hasStringParams) {
                     operation.getVendorExtensions().put("x-codegen-has-string-params", "true");
+                }
+
+                if (operation.getVendorExtensions().get("x-github") != null) {
+                    Map<String, Object> xgh = (Map<String, Object>) operation.getVendorExtensions().get("x-github");
+                    if (xgh.get("previews") != null) {
+                        List<Map<String, String>> previews = (List<Map<String, String>>) xgh.get("previews");
+                        if (!previews.isEmpty()) {
+                            operation.getVendorExtensions().put("x-codegen-has-previews", "true");
+                        }
+                        for (final Map<String, String> pre : previews) {
+                            LOGGER.debug("GitHub Preview token: " + pre.get("name"));
+                        }
+                    }
                 }
             }
         }

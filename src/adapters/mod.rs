@@ -1,4 +1,3 @@
-use serde::de::DeserializeOwned;
 use serde::{Deserialize, ser};
 
 use crate::auth::Auth;
@@ -28,7 +27,24 @@ pub(crate) use {
 #[cfg(target_arch = "wasm32")]
 pub use wasm::AdapterError;
 
-pub(crate) trait Json<A>
+#[cfg(all(not(feature = "isahc"), not(target_arch = "wasm32")))]
+#[derive(thiserror::Error, Debug)]
+pub enum AdapterError {}
+
+#[cfg(all(not(feature = "isahc"), not(target_arch = "wasm32")))]
+pub(crate) fn fetch<T, Y>(request: http::Request<T>) -> Result<http::Response<Y>, AdapterError> {
+    unimplemented!();
+}
+
+#[cfg(all(not(feature = "isahc"), not(target_arch = "wasm32")))]
+pub(crate) async fn fetch_async<T, Y>(request: http::Request<T>) -> Result<http::Response<Y>, AdapterError> {
+    unimplemented!();
+}
+
+#[cfg(all(not(feature = "isahc"), not(target_arch = "wasm32")))]
+pub(crate) type FromJsonType = Vec<u8>;
+
+pub(crate) trait ToJson<A>
 where
     A: for<'de> Deserialize<'de>,
 {
@@ -46,6 +62,7 @@ pub(crate) struct GitHubRequest {
     pub uri: String,
     pub method: &'static str,
     pub body: Option<FromJsonType>,
+    pub headers: Vec<(&'static str, &'static str)>,
 }
 
 pub(crate) trait GitHubRequestBuilder

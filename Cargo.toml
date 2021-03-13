@@ -8,9 +8,33 @@ edition = "2018"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"
 
-# [features]
-# default = ["isahc"]
+[features]
+
+# Optional GitHub specific endpoints
+ant-man = []
+baptiste = []
+cloak = []
+comfort-fade = []
+corsair = []
+dorian = []
+flash = []
+groot = []
+inertia = []
+london = []
+luke-cage = []
+lydian = []
+mercy = []
+mockingbird = []
+nebula = []
+scarlet-witch = []
+squirrel-girl = []
+starfox = []
+surtur = []
+switcheroo = []
+wyandotte = []
+zzzax = []
 
 [dependencies]
 base64 = "0.13"
