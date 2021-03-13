@@ -32,17 +32,58 @@ pub use wasm::AdapterError;
 pub enum AdapterError {}
 
 #[cfg(all(not(feature = "isahc"), not(target_arch = "wasm32")))]
-pub(crate) fn fetch<T, Y>(request: http::Request<T>) -> Result<http::Response<Y>, AdapterError> {
-    unimplemented!();
+pub(crate) fn fetch(_request: http::Request<Vec<u8>>) -> Result<http::Response<Vec<u8>>, AdapterError> {
+    unimplemented!("Use a client adapter feature, or target wasm");
 }
 
 #[cfg(all(not(feature = "isahc"), not(target_arch = "wasm32")))]
-pub(crate) async fn fetch_async<T, Y>(request: http::Request<T>) -> Result<http::Response<Y>, AdapterError> {
-    unimplemented!();
+pub(crate) async fn fetch_async(_request: http::Request<Vec<u8>>) -> Result<http::Response<Vec<u8>>, AdapterError> {
+    unimplemented!("Use a client adapter feature, or target wasm");
 }
 
 #[cfg(all(not(feature = "isahc"), not(target_arch = "wasm32")))]
 pub(crate) type FromJsonType = Vec<u8>;
+
+#[cfg(all(not(feature = "isahc"), not(target_arch = "wasm32")))]
+impl GitHubResponseExt for http::Response<Vec<u8>> {
+    fn is_success(&self) -> bool {
+        unimplemented!("Use a client adapter feature, or target wasm");
+    }
+
+    fn status_code(&self) -> u16 {
+        unimplemented!("Use a client adapter feature, or target wasm");
+    }
+}
+
+#[cfg(all(not(feature = "isahc"), not(target_arch = "wasm32")))]
+impl<E> ToJson<E> for http::Response<Vec<u8>>
+where
+    E: for<'de> Deserialize<'de>,
+{
+    fn to_json(self) -> Result<E, serde_json::Error> {
+        unimplemented!("Use a client adapter feature, or target wasm");
+    }
+}
+
+#[cfg(all(not(feature = "isahc"), not(target_arch = "wasm32")))]
+impl GitHubRequestBuilder for http::Request<Vec<u8>> 
+{
+    fn build(_req: GitHubRequest, _auth: &Auth) -> Result<Self, AdapterError> {
+        unimplemented!("Use a client adapter feature, or target wasm");
+    }
+}
+
+#[cfg(all(not(feature = "isahc"), not(target_arch = "wasm32")))]
+impl<E> FromJson<E> for E
+where
+    E: ser::Serialize + std::fmt::Debug,
+{
+    fn from_json(_model: E) -> Result<FromJsonType, serde_json::Error> {
+
+        unimplemented!("Use a client adapter feature, or target wasm");
+    }
+}
+
 
 pub(crate) trait ToJson<A>
 where
