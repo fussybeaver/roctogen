@@ -84,6 +84,17 @@
 //! $ cargo build --features squirrel-girl
 //! ```
 //!
+//! # Generate the API
+//!
+//! The majority of code is generated through the [Swagger OpenAPI
+//! generator](https://github.com/swagger-api/swagger-codegen) (version 3).  Building requires the
+//! [`mvn`](https://maven.apache.org/install.html) Java build tool, pegged at Java version 8 (so
+//! you'll need an appropriate JDK).
+//!
+//! ```nocompile
+//! $ mvn -D org.slf4j.simpleLogger.defaultLogLevel=info clean compiler:compile generate-resources
+//! ```
+//!
 //! # Tests 
 //!
 //! Beware, tests are currently still doing real HTTP requests to the GitHub API.
