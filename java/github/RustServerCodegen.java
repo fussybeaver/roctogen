@@ -115,7 +115,6 @@ public class RustServerCodegen extends DefaultCodegenConfig {
         typeMapping.put("long", "i64");
         typeMapping.put("float", "f32");
         typeMapping.put("double", "f64");
-        // typeMapping.put("number", "f64");
         typeMapping.put("BigDecimal", "f64");
         typeMapping.put("string", "String");
         typeMapping.put("UUID", "uuid::Uuid");
@@ -706,7 +705,6 @@ public class RustServerCodegen extends DefaultCodegenConfig {
                 }
             } catch (Exception e) {
                 LOGGER.warn("Error obtaining the datatype from RefProperty:" + p + ". Datatype default to Object");
-                //datatype = "Object";
                 datatype = super.getTypeDeclaration(p);
                 LOGGER.error(e.getMessage(), e);
             }
@@ -1039,11 +1037,8 @@ public class RustServerCodegen extends DefaultCodegenConfig {
         }
         if (parameterSchema != null) {
             String collectionFormat = null;
-            if (parameterSchema instanceof ArraySchema) { // for array parameter
-            } else if (parameterSchema instanceof MapSchema) { // for map
-            } else if (parameterSchema instanceof FileSchema || parameterSchema instanceof BinarySchema) {
-            } else if (parameterSchema instanceof IntegerSchema) {
-            } else {
+            if (!(parameterSchema instanceof ArraySchema) && !(parameterSchema instanceof MapSchema) 
+                && !(parameterSchema instanceof FileSchema) && !(parameterSchema instanceof BinarySchema) && !(parameterSchema instanceof IntegerSchema)) {
                 codegenParameter.dataType = camelize(codegenParameter.dataType);
             }
         }
