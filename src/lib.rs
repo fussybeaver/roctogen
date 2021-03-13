@@ -13,13 +13,13 @@
 //!
 //! ```nocompile
 //! [dependencies]
-//! roctogen = "0.1"
+//! roctogen = "0.1.0"
 //! ```
 //!
 //! # API
 //! ## Documentation
 //!
-//! [API docs](crate).
+//! [API docs](https://docs.rs/roctogen/latest).
 //!
 //! # Usage
 //!
