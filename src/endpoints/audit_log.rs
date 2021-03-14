@@ -185,6 +185,7 @@ impl<'api> AuditLog<'api> {
     /// Gets the audit log for an enterprise. To use this endpoint, you must be an enterprise admin, and you must use an access token with the `admin:enterprise` scope.
     /// 
     /// [GitHub API docs for get_audit_log](https://docs.github.com/rest/reference/enterprise-admin#get-the-audit-log-for-an-enterprise)    
+    ///
     /// ---
     pub async fn get_audit_log_async(&self, enterprise: &str, query_params: Option<impl Into<AuditLogGetAuditLogParams<'api>>>) -> Result<Vec<AuditLogEvent>, AuditLogGetAuditLogError> {
 
@@ -228,6 +229,7 @@ impl<'api> AuditLog<'api> {
     /// Gets the audit log for an enterprise. To use this endpoint, you must be an enterprise admin, and you must use an access token with the `admin:enterprise` scope.
     /// 
     /// [GitHub API docs for get_audit_log](https://docs.github.com/rest/reference/enterprise-admin#get-the-audit-log-for-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_audit_log(&self, enterprise: &str, query_params: Option<impl Into<AuditLogGetAuditLogParams<'api>>>) -> Result<Vec<AuditLogEvent>, AuditLogGetAuditLogError> {

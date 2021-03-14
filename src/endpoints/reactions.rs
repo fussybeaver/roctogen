@@ -907,6 +907,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_commit_comment](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-commit-comment)///
     /// The `create_for_commit_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn create_for_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i32, body: PostReactionsCreateForCommitComment) -> Result<Reaction, ReactionsCreateForCommitCommentError> {
@@ -949,6 +950,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_commit_comment](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-commit-comment)///
     /// The `create_for_commit_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -992,6 +994,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_issue](https://docs.github.com/rest/reference/reactions/#create-reaction-for-an-issue)///
     /// The `create_for_issue_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn create_for_issue_async(&self, owner: &str, repo: &str, issue_number: i32, body: PostReactionsCreateForIssue) -> Result<Reaction, ReactionsCreateForIssueError> {
@@ -1033,6 +1036,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_issue](https://docs.github.com/rest/reference/reactions/#create-reaction-for-an-issue)///
     /// The `create_for_issue` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -1075,6 +1079,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_issue_comment](https://docs.github.com/rest/reference/reactions/#create-reaction-for-an-issue-comment)///
     /// The `create_for_issue_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn create_for_issue_comment_async(&self, owner: &str, repo: &str, comment_id: i32, body: PostReactionsCreateForIssueComment) -> Result<Reaction, ReactionsCreateForIssueCommentError> {
@@ -1117,6 +1122,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_issue_comment](https://docs.github.com/rest/reference/reactions/#create-reaction-for-an-issue-comment)///
     /// The `create_for_issue_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -1160,6 +1166,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_pull_request_review_comment](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-pull-request-review-comment)///
     /// The `create_for_pull_request_review_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn create_for_pull_request_review_comment_async(&self, owner: &str, repo: &str, comment_id: i32, body: PostReactionsCreateForPullRequestReviewComment) -> Result<Reaction, ReactionsCreateForPullRequestReviewCommentError> {
@@ -1202,6 +1209,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_pull_request_review_comment](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-pull-request-review-comment)///
     /// The `create_for_pull_request_review_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -1247,6 +1255,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_team_discussion_comment_in_org](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion-comment)///
     /// The `create_for_team_discussion_comment_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn create_for_team_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, body: PostReactionsCreateForTeamDiscussionCommentInOrg) -> Result<Reaction, ReactionsCreateForTeamDiscussionCommentInOrgError> {
@@ -1288,6 +1297,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_team_discussion_comment_in_org](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion-comment)///
     /// The `create_for_team_discussion_comment_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -1330,6 +1340,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_team_discussion_comment_legacy](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion-comment-legacy)///
     /// The `create_for_team_discussion_comment_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn create_for_team_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, comment_number: i32, body: PostReactionsCreateForTeamDiscussionCommentLegacy) -> Result<Reaction, ReactionsCreateForTeamDiscussionCommentLegacyError> {
@@ -1371,6 +1382,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_team_discussion_comment_legacy](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion-comment-legacy)///
     /// The `create_for_team_discussion_comment_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -1413,6 +1425,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_team_discussion_in_org](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion)///
     /// The `create_for_team_discussion_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn create_for_team_discussion_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, body: PostReactionsCreateForTeamDiscussionInOrg) -> Result<Reaction, ReactionsCreateForTeamDiscussionInOrgError> {
@@ -1454,6 +1467,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_team_discussion_in_org](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion)///
     /// The `create_for_team_discussion_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -1496,6 +1510,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_team_discussion_legacy](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion-legacy)///
     /// The `create_for_team_discussion_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn create_for_team_discussion_legacy_async(&self, team_id: i32, discussion_number: i32, body: PostReactionsCreateForTeamDiscussionLegacy) -> Result<Reaction, ReactionsCreateForTeamDiscussionLegacyError> {
@@ -1537,6 +1552,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_team_discussion_legacy](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion-legacy)///
     /// The `create_for_team_discussion_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -1579,6 +1595,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_commit_comment](https://docs.github.com/rest/reference/reactions/#delete-a-commit-comment-reaction)///
     /// The `delete_for_commit_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn delete_for_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForCommitCommentError> {
@@ -1620,6 +1637,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_commit_comment](https://docs.github.com/rest/reference/reactions/#delete-a-commit-comment-reaction)///
     /// The `delete_for_commit_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -1662,6 +1680,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_issue](https://docs.github.com/rest/reference/reactions/#delete-an-issue-reaction)///
     /// The `delete_for_issue_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn delete_for_issue_async(&self, owner: &str, repo: &str, issue_number: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForIssueError> {
@@ -1703,6 +1722,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_issue](https://docs.github.com/rest/reference/reactions/#delete-an-issue-reaction)///
     /// The `delete_for_issue` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -1745,6 +1765,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_issue_comment](https://docs.github.com/rest/reference/reactions/#delete-an-issue-comment-reaction)///
     /// The `delete_for_issue_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn delete_for_issue_comment_async(&self, owner: &str, repo: &str, comment_id: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForIssueCommentError> {
@@ -1786,6 +1807,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_issue_comment](https://docs.github.com/rest/reference/reactions/#delete-an-issue-comment-reaction)///
     /// The `delete_for_issue_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -1828,6 +1850,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_pull_request_comment](https://docs.github.com/rest/reference/reactions/#delete-a-pull-request-comment-reaction)///
     /// The `delete_for_pull_request_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn delete_for_pull_request_comment_async(&self, owner: &str, repo: &str, comment_id: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForPullRequestCommentError> {
@@ -1869,6 +1892,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_pull_request_comment](https://docs.github.com/rest/reference/reactions/#delete-a-pull-request-comment-reaction)///
     /// The `delete_for_pull_request_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -1911,6 +1935,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_team_discussion](https://docs.github.com/rest/reference/reactions/#delete-team-discussion-reaction)///
     /// The `delete_for_team_discussion_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn delete_for_team_discussion_async(&self, org: &str, team_slug: &str, discussion_number: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForTeamDiscussionError> {
@@ -1952,6 +1977,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_team_discussion](https://docs.github.com/rest/reference/reactions/#delete-team-discussion-reaction)///
     /// The `delete_for_team_discussion` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -1994,6 +2020,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_team_discussion_comment](https://docs.github.com/rest/reference/reactions/#delete-team-discussion-comment-reaction)///
     /// The `delete_for_team_discussion_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn delete_for_team_discussion_comment_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForTeamDiscussionCommentError> {
@@ -2035,6 +2062,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_team_discussion_comment](https://docs.github.com/rest/reference/reactions/#delete-team-discussion-comment-reaction)///
     /// The `delete_for_team_discussion_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -2077,6 +2105,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_legacy](https://docs.github.com/rest/reference/reactions/#delete-a-reaction-legacy)///
     /// The `delete_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn delete_legacy_async(&self, reaction_id: i32) -> Result<(), ReactionsDeleteLegacyError> {
@@ -2123,6 +2152,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_legacy](https://docs.github.com/rest/reference/reactions/#delete-a-reaction-legacy)///
     /// The `delete_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -2168,6 +2198,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_commit_comment](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-commit-comment)///
     /// The `list_for_commit_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn list_for_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i32, query_params: Option<impl Into<ReactionsListForCommitCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForCommitCommentError> {
@@ -2213,6 +2244,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_commit_comment](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-commit-comment)///
     /// The `list_for_commit_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -2260,6 +2292,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_issue](https://docs.github.com/rest/reference/reactions/#list-reactions-for-an-issue)///
     /// The `list_for_issue_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn list_for_issue_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<ReactionsListForIssueParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForIssueError> {
@@ -2306,6 +2339,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_issue](https://docs.github.com/rest/reference/reactions/#list-reactions-for-an-issue)///
     /// The `list_for_issue` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -2354,6 +2388,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_issue_comment](https://docs.github.com/rest/reference/reactions/#list-reactions-for-an-issue-comment)///
     /// The `list_for_issue_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn list_for_issue_comment_async(&self, owner: &str, repo: &str, comment_id: i32, query_params: Option<impl Into<ReactionsListForIssueCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForIssueCommentError> {
@@ -2399,6 +2434,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_issue_comment](https://docs.github.com/rest/reference/reactions/#list-reactions-for-an-issue-comment)///
     /// The `list_for_issue_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -2446,6 +2482,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_pull_request_review_comment](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-pull-request-review-comment)///
     /// The `list_for_pull_request_review_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn list_for_pull_request_review_comment_async(&self, owner: &str, repo: &str, comment_id: i32, query_params: Option<impl Into<ReactionsListForPullRequestReviewCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForPullRequestReviewCommentError> {
@@ -2491,6 +2528,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_pull_request_review_comment](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-pull-request-review-comment)///
     /// The `list_for_pull_request_review_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -2540,6 +2578,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_team_discussion_comment_in_org](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-team-discussion-comment)///
     /// The `list_for_team_discussion_comment_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn list_for_team_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionCommentInOrgParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionCommentInOrgError> {
@@ -2585,6 +2624,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_team_discussion_comment_in_org](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-team-discussion-comment)///
     /// The `list_for_team_discussion_comment_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -2632,6 +2672,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_team_discussion_comment_legacy](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-team-discussion-comment-legacy)///
     /// The `list_for_team_discussion_comment_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn list_for_team_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, comment_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionCommentLegacyParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionCommentLegacyError> {
@@ -2677,6 +2718,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_team_discussion_comment_legacy](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-team-discussion-comment-legacy)///
     /// The `list_for_team_discussion_comment_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -2724,6 +2766,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_team_discussion_in_org](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-team-discussion)///
     /// The `list_for_team_discussion_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn list_for_team_discussion_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionInOrgParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionInOrgError> {
@@ -2769,6 +2812,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_team_discussion_in_org](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-team-discussion)///
     /// The `list_for_team_discussion_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -2816,6 +2860,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_team_discussion_legacy](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-team-discussion-legacy)///
     /// The `list_for_team_discussion_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn list_for_team_discussion_legacy_async(&self, team_id: i32, discussion_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionLegacyParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionLegacyError> {
@@ -2861,6 +2906,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_team_discussion_legacy](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-team-discussion-legacy)///
     /// The `list_for_team_discussion_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]

@@ -151,6 +151,7 @@ impl<'api> Licenses<'api> {
     /// # Get a license
     /// 
     /// [GitHub API docs for get](https://docs.github.com/rest/reference/licenses/#get-a-license)    
+    ///
     /// ---
     pub async fn get_async(&self, license: &str) -> Result<License, LicensesGetError> {
 
@@ -189,6 +190,7 @@ impl<'api> Licenses<'api> {
     /// # Get a license
     /// 
     /// [GitHub API docs for get](https://docs.github.com/rest/reference/licenses/#get-a-license)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get(&self, license: &str) -> Result<License, LicensesGetError> {
@@ -228,6 +230,7 @@ impl<'api> Licenses<'api> {
     /// # Get all commonly used licenses
     /// 
     /// [GitHub API docs for get_all_commonly_used](https://docs.github.com/rest/reference/licenses/#get-all-commonly-used-licenses)    
+    ///
     /// ---
     pub async fn get_all_commonly_used_async(&self, query_params: Option<impl Into<LicensesGetAllCommonlyUsedParams>>) -> Result<Vec<LicenseSimple>, LicensesGetAllCommonlyUsedError> {
 
@@ -268,6 +271,7 @@ impl<'api> Licenses<'api> {
     /// # Get all commonly used licenses
     /// 
     /// [GitHub API docs for get_all_commonly_used](https://docs.github.com/rest/reference/licenses/#get-all-commonly-used-licenses)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_all_commonly_used(&self, query_params: Option<impl Into<LicensesGetAllCommonlyUsedParams>>) -> Result<Vec<LicenseSimple>, LicensesGetAllCommonlyUsedError> {
@@ -314,6 +318,7 @@ impl<'api> Licenses<'api> {
     /// Similar to [Get repository content](https://docs.github.com/rest/reference/repos#get-repository-content), this method also supports [custom media types](https://docs.github.com/rest/overview/media-types) for retrieving the raw license content or rendered license HTML.
     /// 
     /// [GitHub API docs for get_for_repo](https://docs.github.com/rest/reference/licenses/#get-the-license-for-a-repository)    
+    ///
     /// ---
     pub async fn get_for_repo_async(&self, owner: &str, repo: &str) -> Result<LicenseContent, LicensesGetForRepoError> {
 
@@ -353,6 +358,7 @@ impl<'api> Licenses<'api> {
     /// Similar to [Get repository content](https://docs.github.com/rest/reference/repos#get-repository-content), this method also supports [custom media types](https://docs.github.com/rest/overview/media-types) for retrieving the raw license content or rendered license HTML.
     /// 
     /// [GitHub API docs for get_for_repo](https://docs.github.com/rest/reference/licenses/#get-the-license-for-a-repository)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_for_repo(&self, owner: &str, repo: &str) -> Result<LicenseContent, LicensesGetForRepoError> {

@@ -64,6 +64,7 @@ impl<'api> RateLimit<'api> {
     /// **Note:** The `rate` object is deprecated. If you're writing new API client code or updating existing code, you should use the `core` object instead of the `rate` object. The `core` object contains the same information that is present in the `rate` object.
     /// 
     /// [GitHub API docs for get](https://docs.github.com/rest/reference/rate_limit/#get-rate-limit-status-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn get_async(&self) -> Result<RateLimitOverview, RateLimitGetError> {
 
@@ -105,6 +106,7 @@ impl<'api> RateLimit<'api> {
     /// **Note:** The `rate` object is deprecated. If you're writing new API client code or updating existing code, you should use the `core` object instead of the `rate` object. The `core` object contains the same information that is present in the `rate` object.
     /// 
     /// [GitHub API docs for get](https://docs.github.com/rest/reference/rate_limit/#get-rate-limit-status-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get(&self) -> Result<RateLimitOverview, RateLimitGetError> {

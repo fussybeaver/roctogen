@@ -1261,6 +1261,7 @@ impl<'api> Users<'api> {
     /// This endpoint is accessible with the `user` scope.
     /// 
     /// [GitHub API docs for add_email_for_authenticated](https://docs.github.com/rest/reference/users#add-an-email-address-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn add_email_for_authenticated_async(&self, body: PostUsersAddEmailForAuthenticated) -> Result<Vec<Email>, UsersAddEmailForAuthenticatedError> {
 
@@ -1303,6 +1304,7 @@ impl<'api> Users<'api> {
     /// This endpoint is accessible with the `user` scope.
     /// 
     /// [GitHub API docs for add_email_for_authenticated](https://docs.github.com/rest/reference/users#add-an-email-address-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn add_email_for_authenticated(&self, body: PostUsersAddEmailForAuthenticated) -> Result<Vec<Email>, UsersAddEmailForAuthenticatedError> {
@@ -1344,6 +1346,7 @@ impl<'api> Users<'api> {
     /// # Block a user
     /// 
     /// [GitHub API docs for block](https://docs.github.com/rest/reference/users#block-a-user)    
+    ///
     /// ---
     pub async fn block_async(&self, username: &str) -> Result<(), UsersBlockError> {
 
@@ -1384,6 +1387,7 @@ impl<'api> Users<'api> {
     /// # Block a user
     /// 
     /// [GitHub API docs for block](https://docs.github.com/rest/reference/users#block-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn block(&self, username: &str) -> Result<(), UsersBlockError> {
@@ -1425,6 +1429,7 @@ impl<'api> Users<'api> {
     /// # Check if a user is blocked by the authenticated user
     /// 
     /// [GitHub API docs for check_blocked](https://docs.github.com/rest/reference/users#check-if-a-user-is-blocked-by-the-authenticated-user)    
+    ///
     /// ---
     pub async fn check_blocked_async(&self, username: &str) -> Result<(), UsersCheckBlockedError> {
 
@@ -1464,6 +1469,7 @@ impl<'api> Users<'api> {
     /// # Check if a user is blocked by the authenticated user
     /// 
     /// [GitHub API docs for check_blocked](https://docs.github.com/rest/reference/users#check-if-a-user-is-blocked-by-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn check_blocked(&self, username: &str) -> Result<(), UsersCheckBlockedError> {
@@ -1504,6 +1510,7 @@ impl<'api> Users<'api> {
     /// # Check if a user follows another user
     /// 
     /// [GitHub API docs for check_following_for_user](https://docs.github.com/rest/reference/users#check-if-a-user-follows-another-user)    
+    ///
     /// ---
     pub async fn check_following_for_user_async(&self, username: &str, target_user: &str) -> Result<(), UsersCheckFollowingForUserError> {
 
@@ -1540,6 +1547,7 @@ impl<'api> Users<'api> {
     /// # Check if a user follows another user
     /// 
     /// [GitHub API docs for check_following_for_user](https://docs.github.com/rest/reference/users#check-if-a-user-follows-another-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn check_following_for_user(&self, username: &str, target_user: &str) -> Result<(), UsersCheckFollowingForUserError> {
@@ -1577,6 +1585,7 @@ impl<'api> Users<'api> {
     /// # Check if a person is followed by the authenticated user
     /// 
     /// [GitHub API docs for check_person_is_followed_by_authenticated](https://docs.github.com/rest/reference/users#check-if-a-person-is-followed-by-the-authenticated-user)    
+    ///
     /// ---
     pub async fn check_person_is_followed_by_authenticated_async(&self, username: &str) -> Result<(), UsersCheckPersonIsFollowedByAuthenticatedError> {
 
@@ -1616,6 +1625,7 @@ impl<'api> Users<'api> {
     /// # Check if a person is followed by the authenticated user
     /// 
     /// [GitHub API docs for check_person_is_followed_by_authenticated](https://docs.github.com/rest/reference/users#check-if-a-person-is-followed-by-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn check_person_is_followed_by_authenticated(&self, username: &str) -> Result<(), UsersCheckPersonIsFollowedByAuthenticatedError> {
@@ -1658,6 +1668,7 @@ impl<'api> Users<'api> {
     /// Adds a GPG key to the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth, or OAuth with at least `write:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
     /// [GitHub API docs for create_gpg_key_for_authenticated](https://docs.github.com/rest/reference/users#create-a-gpg-key-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn create_gpg_key_for_authenticated_async(&self, body: PostUsersCreateGpgKeyForAuthenticated) -> Result<GpgKey, UsersCreateGpgKeyForAuthenticatedError> {
 
@@ -1700,6 +1711,7 @@ impl<'api> Users<'api> {
     /// Adds a GPG key to the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth, or OAuth with at least `write:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
     /// [GitHub API docs for create_gpg_key_for_authenticated](https://docs.github.com/rest/reference/users#create-a-gpg-key-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_gpg_key_for_authenticated(&self, body: PostUsersCreateGpgKeyForAuthenticated) -> Result<GpgKey, UsersCreateGpgKeyForAuthenticatedError> {
@@ -1743,6 +1755,7 @@ impl<'api> Users<'api> {
     /// Adds a public SSH key to the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth, or OAuth with at least `write:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
     /// [GitHub API docs for create_public_ssh_key_for_authenticated](https://docs.github.com/rest/reference/users#create-a-public-ssh-key-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn create_public_ssh_key_for_authenticated_async(&self, body: PostUsersCreatePublicSshKeyForAuthenticated) -> Result<Key, UsersCreatePublicSshKeyForAuthenticatedError> {
 
@@ -1785,6 +1798,7 @@ impl<'api> Users<'api> {
     /// Adds a public SSH key to the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth, or OAuth with at least `write:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
     /// [GitHub API docs for create_public_ssh_key_for_authenticated](https://docs.github.com/rest/reference/users#create-a-public-ssh-key-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_public_ssh_key_for_authenticated(&self, body: PostUsersCreatePublicSshKeyForAuthenticated) -> Result<Key, UsersCreatePublicSshKeyForAuthenticatedError> {
@@ -1828,6 +1842,7 @@ impl<'api> Users<'api> {
     /// This endpoint is accessible with the `user` scope.
     /// 
     /// [GitHub API docs for delete_email_for_authenticated](https://docs.github.com/rest/reference/users#delete-an-email-address-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn delete_email_for_authenticated_async(&self, body: DeleteUsersDeleteEmailForAuthenticated) -> Result<(), UsersDeleteEmailForAuthenticatedError> {
 
@@ -1870,6 +1885,7 @@ impl<'api> Users<'api> {
     /// This endpoint is accessible with the `user` scope.
     /// 
     /// [GitHub API docs for delete_email_for_authenticated](https://docs.github.com/rest/reference/users#delete-an-email-address-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_email_for_authenticated(&self, body: DeleteUsersDeleteEmailForAuthenticated) -> Result<(), UsersDeleteEmailForAuthenticatedError> {
@@ -1913,6 +1929,7 @@ impl<'api> Users<'api> {
     /// Removes a GPG key from the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth or via OAuth with at least `admin:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
     /// [GitHub API docs for delete_gpg_key_for_authenticated](https://docs.github.com/rest/reference/users#delete-a-gpg-key-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn delete_gpg_key_for_authenticated_async(&self, gpg_key_id: i32) -> Result<(), UsersDeleteGpgKeyForAuthenticatedError> {
 
@@ -1955,6 +1972,7 @@ impl<'api> Users<'api> {
     /// Removes a GPG key from the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth or via OAuth with at least `admin:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
     /// [GitHub API docs for delete_gpg_key_for_authenticated](https://docs.github.com/rest/reference/users#delete-a-gpg-key-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_gpg_key_for_authenticated(&self, gpg_key_id: i32) -> Result<(), UsersDeleteGpgKeyForAuthenticatedError> {
@@ -1998,6 +2016,7 @@ impl<'api> Users<'api> {
     /// Removes a public SSH key from the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth or via OAuth with at least `admin:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
     /// [GitHub API docs for delete_public_ssh_key_for_authenticated](https://docs.github.com/rest/reference/users#delete-a-public-ssh-key-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn delete_public_ssh_key_for_authenticated_async(&self, key_id: i32) -> Result<(), UsersDeletePublicSshKeyForAuthenticatedError> {
 
@@ -2039,6 +2058,7 @@ impl<'api> Users<'api> {
     /// Removes a public SSH key from the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth or via OAuth with at least `admin:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
     /// [GitHub API docs for delete_public_ssh_key_for_authenticated](https://docs.github.com/rest/reference/users#delete-a-public-ssh-key-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_public_ssh_key_for_authenticated(&self, key_id: i32) -> Result<(), UsersDeletePublicSshKeyForAuthenticatedError> {
@@ -2083,6 +2103,7 @@ impl<'api> Users<'api> {
     /// Following a user requires the user to be logged in and authenticated with basic auth or OAuth with the `user:follow` scope.
     /// 
     /// [GitHub API docs for follow](https://docs.github.com/rest/reference/users#follow-a-user)    
+    ///
     /// ---
     pub async fn follow_async(&self, username: &str) -> Result<(), UsersFollowError> {
 
@@ -2126,6 +2147,7 @@ impl<'api> Users<'api> {
     /// Following a user requires the user to be logged in and authenticated with basic auth or OAuth with the `user:follow` scope.
     /// 
     /// [GitHub API docs for follow](https://docs.github.com/rest/reference/users#follow-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn follow(&self, username: &str) -> Result<(), UsersFollowError> {
@@ -2170,6 +2192,7 @@ impl<'api> Users<'api> {
     /// If the authenticated user is authenticated through OAuth without the `user` scope, then the response lists only public profile information.
     /// 
     /// [GitHub API docs for get_authenticated](https://docs.github.com/rest/reference/users/#get-the-authenticated-user)    
+    ///
     /// ---
     pub async fn get_authenticated_async(&self) -> Result<GetUsersGetByUsernameResponse200, UsersGetAuthenticatedError> {
 
@@ -2212,6 +2235,7 @@ impl<'api> Users<'api> {
     /// If the authenticated user is authenticated through OAuth without the `user` scope, then the response lists only public profile information.
     /// 
     /// [GitHub API docs for get_authenticated](https://docs.github.com/rest/reference/users/#get-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_authenticated(&self) -> Result<GetUsersGetByUsernameResponse200, UsersGetAuthenticatedError> {
@@ -2259,6 +2283,7 @@ impl<'api> Users<'api> {
     /// The Emails API enables you to list all of your email addresses, and toggle a primary email to be visible publicly. For more information, see "[Emails API](https://docs.github.com/rest/reference/users#emails)".
     /// 
     /// [GitHub API docs for get_by_username](https://docs.github.com/rest/reference/users/#get-a-user)    
+    ///
     /// ---
     pub async fn get_by_username_async(&self, username: &str) -> Result<GetUsersGetByUsernameResponse200, UsersGetByUsernameError> {
 
@@ -2303,6 +2328,7 @@ impl<'api> Users<'api> {
     /// The Emails API enables you to list all of your email addresses, and toggle a primary email to be visible publicly. For more information, see "[Emails API](https://docs.github.com/rest/reference/users#emails)".
     /// 
     /// [GitHub API docs for get_by_username](https://docs.github.com/rest/reference/users/#get-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_by_username(&self, username: &str) -> Result<GetUsersGetByUsernameResponse200, UsersGetByUsernameError> {
@@ -2349,6 +2375,7 @@ impl<'api> Users<'api> {
     /// ```
     /// 
     /// [GitHub API docs for get_context_for_user](https://docs.github.com/rest/reference/users/#get-contextual-information-for-a-user)    
+    ///
     /// ---
     pub async fn get_context_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersGetContextForUserParams<'api>>>) -> Result<Hovercard, UsersGetContextForUserError> {
 
@@ -2399,6 +2426,7 @@ impl<'api> Users<'api> {
     /// ```
     /// 
     /// [GitHub API docs for get_context_for_user](https://docs.github.com/rest/reference/users/#get-contextual-information-for-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_context_for_user(&self, username: &str, query_params: Option<impl Into<UsersGetContextForUserParams<'api>>>) -> Result<Hovercard, UsersGetContextForUserError> {
@@ -2444,6 +2472,7 @@ impl<'api> Users<'api> {
     /// View extended details for a single GPG key. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
     /// [GitHub API docs for get_gpg_key_for_authenticated](https://docs.github.com/rest/reference/users#get-a-gpg-key-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn get_gpg_key_for_authenticated_async(&self, gpg_key_id: i32) -> Result<GpgKey, UsersGetGpgKeyForAuthenticatedError> {
 
@@ -2485,6 +2514,7 @@ impl<'api> Users<'api> {
     /// View extended details for a single GPG key. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
     /// [GitHub API docs for get_gpg_key_for_authenticated](https://docs.github.com/rest/reference/users#get-a-gpg-key-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_gpg_key_for_authenticated(&self, gpg_key_id: i32) -> Result<GpgKey, UsersGetGpgKeyForAuthenticatedError> {
@@ -2527,6 +2557,7 @@ impl<'api> Users<'api> {
     /// View extended details for a single public SSH key. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
     /// [GitHub API docs for get_public_ssh_key_for_authenticated](https://docs.github.com/rest/reference/users#get-a-public-ssh-key-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn get_public_ssh_key_for_authenticated_async(&self, key_id: i32) -> Result<Key, UsersGetPublicSshKeyForAuthenticatedError> {
 
@@ -2568,6 +2599,7 @@ impl<'api> Users<'api> {
     /// View extended details for a single public SSH key. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
     /// [GitHub API docs for get_public_ssh_key_for_authenticated](https://docs.github.com/rest/reference/users#get-a-public-ssh-key-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_public_ssh_key_for_authenticated(&self, key_id: i32) -> Result<Key, UsersGetPublicSshKeyForAuthenticatedError> {
@@ -2612,6 +2644,7 @@ impl<'api> Users<'api> {
     /// Note: Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header) to get the URL for the next page of users.
     /// 
     /// [GitHub API docs for list](https://docs.github.com/rest/reference/users/#list-users)    
+    ///
     /// ---
     pub async fn list_async(&self, query_params: Option<impl Into<UsersListParams>>) -> Result<Vec<SimpleUser>, UsersListError> {
 
@@ -2656,6 +2689,7 @@ impl<'api> Users<'api> {
     /// Note: Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header) to get the URL for the next page of users.
     /// 
     /// [GitHub API docs for list](https://docs.github.com/rest/reference/users/#list-users)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list(&self, query_params: Option<impl Into<UsersListParams>>) -> Result<Vec<SimpleUser>, UsersListError> {
@@ -2700,6 +2734,7 @@ impl<'api> Users<'api> {
     /// List the users you've blocked on your personal account.
     /// 
     /// [GitHub API docs for list_blocked_by_authenticated](https://docs.github.com/rest/reference/users#list-users-blocked-by-the-authenticated-user)    
+    ///
     /// ---
     pub async fn list_blocked_by_authenticated_async(&self) -> Result<Vec<SimpleUser>, UsersListBlockedByAuthenticatedError> {
 
@@ -2742,6 +2777,7 @@ impl<'api> Users<'api> {
     /// List the users you've blocked on your personal account.
     /// 
     /// [GitHub API docs for list_blocked_by_authenticated](https://docs.github.com/rest/reference/users#list-users-blocked-by-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_blocked_by_authenticated(&self) -> Result<Vec<SimpleUser>, UsersListBlockedByAuthenticatedError> {
@@ -2785,6 +2821,7 @@ impl<'api> Users<'api> {
     /// Lists all of your email addresses, and specifies which one is visible to the public. This endpoint is accessible with the `user:email` scope.
     /// 
     /// [GitHub API docs for list_emails_for_authenticated](https://docs.github.com/rest/reference/users#list-email-addresses-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn list_emails_for_authenticated_async(&self, query_params: Option<impl Into<UsersListEmailsForAuthenticatedParams>>) -> Result<Vec<Email>, UsersListEmailsForAuthenticatedError> {
 
@@ -2830,6 +2867,7 @@ impl<'api> Users<'api> {
     /// Lists all of your email addresses, and specifies which one is visible to the public. This endpoint is accessible with the `user:email` scope.
     /// 
     /// [GitHub API docs for list_emails_for_authenticated](https://docs.github.com/rest/reference/users#list-email-addresses-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_emails_for_authenticated(&self, query_params: Option<impl Into<UsersListEmailsForAuthenticatedParams>>) -> Result<Vec<Email>, UsersListEmailsForAuthenticatedError> {
@@ -2877,6 +2915,7 @@ impl<'api> Users<'api> {
     /// Lists the people who the authenticated user follows.
     /// 
     /// [GitHub API docs for list_followed_by_authenticated](https://docs.github.com/rest/reference/users#list-the-people-the-authenticated-user-follows)    
+    ///
     /// ---
     pub async fn list_followed_by_authenticated_async(&self, query_params: Option<impl Into<UsersListFollowedByAuthenticatedParams>>) -> Result<Vec<SimpleUser>, UsersListFollowedByAuthenticatedError> {
 
@@ -2921,6 +2960,7 @@ impl<'api> Users<'api> {
     /// Lists the people who the authenticated user follows.
     /// 
     /// [GitHub API docs for list_followed_by_authenticated](https://docs.github.com/rest/reference/users#list-the-people-the-authenticated-user-follows)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_followed_by_authenticated(&self, query_params: Option<impl Into<UsersListFollowedByAuthenticatedParams>>) -> Result<Vec<SimpleUser>, UsersListFollowedByAuthenticatedError> {
@@ -2967,6 +3007,7 @@ impl<'api> Users<'api> {
     /// Lists the people following the authenticated user.
     /// 
     /// [GitHub API docs for list_followers_for_authenticated_user](https://docs.github.com/rest/reference/users#list-followers-of-the-authenticated-user)    
+    ///
     /// ---
     pub async fn list_followers_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListFollowersForAuthenticatedUserParams>>) -> Result<Vec<SimpleUser>, UsersListFollowersForAuthenticatedUserError> {
 
@@ -3011,6 +3052,7 @@ impl<'api> Users<'api> {
     /// Lists the people following the authenticated user.
     /// 
     /// [GitHub API docs for list_followers_for_authenticated_user](https://docs.github.com/rest/reference/users#list-followers-of-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_followers_for_authenticated_user(&self, query_params: Option<impl Into<UsersListFollowersForAuthenticatedUserParams>>) -> Result<Vec<SimpleUser>, UsersListFollowersForAuthenticatedUserError> {
@@ -3057,6 +3099,7 @@ impl<'api> Users<'api> {
     /// Lists the people following the specified user.
     /// 
     /// [GitHub API docs for list_followers_for_user](https://docs.github.com/rest/reference/users#list-followers-of-a-user)    
+    ///
     /// ---
     pub async fn list_followers_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersListFollowersForUserParams>>) -> Result<Vec<SimpleUser>, UsersListFollowersForUserError> {
 
@@ -3098,6 +3141,7 @@ impl<'api> Users<'api> {
     /// Lists the people following the specified user.
     /// 
     /// [GitHub API docs for list_followers_for_user](https://docs.github.com/rest/reference/users#list-followers-of-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_followers_for_user(&self, username: &str, query_params: Option<impl Into<UsersListFollowersForUserParams>>) -> Result<Vec<SimpleUser>, UsersListFollowersForUserError> {
@@ -3141,6 +3185,7 @@ impl<'api> Users<'api> {
     /// Lists the people who the specified user follows.
     /// 
     /// [GitHub API docs for list_following_for_user](https://docs.github.com/rest/reference/users#list-the-people-a-user-follows)    
+    ///
     /// ---
     pub async fn list_following_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersListFollowingForUserParams>>) -> Result<Vec<SimpleUser>, UsersListFollowingForUserError> {
 
@@ -3182,6 +3227,7 @@ impl<'api> Users<'api> {
     /// Lists the people who the specified user follows.
     /// 
     /// [GitHub API docs for list_following_for_user](https://docs.github.com/rest/reference/users#list-the-people-a-user-follows)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_following_for_user(&self, username: &str, query_params: Option<impl Into<UsersListFollowingForUserParams>>) -> Result<Vec<SimpleUser>, UsersListFollowingForUserError> {
@@ -3225,6 +3271,7 @@ impl<'api> Users<'api> {
     /// Lists the current user's GPG keys. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
     /// [GitHub API docs for list_gpg_keys_for_authenticated](https://docs.github.com/rest/reference/users#list-gpg-keys-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn list_gpg_keys_for_authenticated_async(&self, query_params: Option<impl Into<UsersListGpgKeysForAuthenticatedParams>>) -> Result<Vec<GpgKey>, UsersListGpgKeysForAuthenticatedError> {
 
@@ -3270,6 +3317,7 @@ impl<'api> Users<'api> {
     /// Lists the current user's GPG keys. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
     /// [GitHub API docs for list_gpg_keys_for_authenticated](https://docs.github.com/rest/reference/users#list-gpg-keys-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_gpg_keys_for_authenticated(&self, query_params: Option<impl Into<UsersListGpgKeysForAuthenticatedParams>>) -> Result<Vec<GpgKey>, UsersListGpgKeysForAuthenticatedError> {
@@ -3317,6 +3365,7 @@ impl<'api> Users<'api> {
     /// Lists the GPG keys for a user. This information is accessible by anyone.
     /// 
     /// [GitHub API docs for list_gpg_keys_for_user](https://docs.github.com/rest/reference/users#list-gpg-keys-for-a-user)    
+    ///
     /// ---
     pub async fn list_gpg_keys_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersListGpgKeysForUserParams>>) -> Result<Vec<GpgKey>, UsersListGpgKeysForUserError> {
 
@@ -3358,6 +3407,7 @@ impl<'api> Users<'api> {
     /// Lists the GPG keys for a user. This information is accessible by anyone.
     /// 
     /// [GitHub API docs for list_gpg_keys_for_user](https://docs.github.com/rest/reference/users#list-gpg-keys-for-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_gpg_keys_for_user(&self, username: &str, query_params: Option<impl Into<UsersListGpgKeysForUserParams>>) -> Result<Vec<GpgKey>, UsersListGpgKeysForUserError> {
@@ -3401,6 +3451,7 @@ impl<'api> Users<'api> {
     /// Lists your publicly visible email address, which you can set with the [Set primary email visibility for the authenticated user](https://docs.github.com/rest/reference/users#set-primary-email-visibility-for-the-authenticated-user) endpoint. This endpoint is accessible with the `user:email` scope.
     /// 
     /// [GitHub API docs for list_public_emails_for_authenticated](https://docs.github.com/rest/reference/users#list-public-email-addresses-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn list_public_emails_for_authenticated_async(&self, query_params: Option<impl Into<UsersListPublicEmailsForAuthenticatedParams>>) -> Result<Vec<Email>, UsersListPublicEmailsForAuthenticatedError> {
 
@@ -3446,6 +3497,7 @@ impl<'api> Users<'api> {
     /// Lists your publicly visible email address, which you can set with the [Set primary email visibility for the authenticated user](https://docs.github.com/rest/reference/users#set-primary-email-visibility-for-the-authenticated-user) endpoint. This endpoint is accessible with the `user:email` scope.
     /// 
     /// [GitHub API docs for list_public_emails_for_authenticated](https://docs.github.com/rest/reference/users#list-public-email-addresses-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_public_emails_for_authenticated(&self, query_params: Option<impl Into<UsersListPublicEmailsForAuthenticatedParams>>) -> Result<Vec<Email>, UsersListPublicEmailsForAuthenticatedError> {
@@ -3493,6 +3545,7 @@ impl<'api> Users<'api> {
     /// Lists the _verified_ public SSH keys for a user. This is accessible by anyone.
     /// 
     /// [GitHub API docs for list_public_keys_for_user](https://docs.github.com/rest/reference/users#list-public-keys-for-a-user)    
+    ///
     /// ---
     pub async fn list_public_keys_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersListPublicKeysForUserParams>>) -> Result<Vec<KeySimple>, UsersListPublicKeysForUserError> {
 
@@ -3534,6 +3587,7 @@ impl<'api> Users<'api> {
     /// Lists the _verified_ public SSH keys for a user. This is accessible by anyone.
     /// 
     /// [GitHub API docs for list_public_keys_for_user](https://docs.github.com/rest/reference/users#list-public-keys-for-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_public_keys_for_user(&self, username: &str, query_params: Option<impl Into<UsersListPublicKeysForUserParams>>) -> Result<Vec<KeySimple>, UsersListPublicKeysForUserError> {
@@ -3577,6 +3631,7 @@ impl<'api> Users<'api> {
     /// Lists the public SSH keys for the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
     /// [GitHub API docs for list_public_ssh_keys_for_authenticated](https://docs.github.com/rest/reference/users#list-public-ssh-keys-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn list_public_ssh_keys_for_authenticated_async(&self, query_params: Option<impl Into<UsersListPublicSshKeysForAuthenticatedParams>>) -> Result<Vec<Key>, UsersListPublicSshKeysForAuthenticatedError> {
 
@@ -3622,6 +3677,7 @@ impl<'api> Users<'api> {
     /// Lists the public SSH keys for the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
     /// [GitHub API docs for list_public_ssh_keys_for_authenticated](https://docs.github.com/rest/reference/users#list-public-ssh-keys-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_public_ssh_keys_for_authenticated(&self, query_params: Option<impl Into<UsersListPublicSshKeysForAuthenticatedParams>>) -> Result<Vec<Key>, UsersListPublicSshKeysForAuthenticatedError> {
@@ -3669,6 +3725,7 @@ impl<'api> Users<'api> {
     /// Sets the visibility for your primary email addresses.
     /// 
     /// [GitHub API docs for set_primary_email_visibility_for_authenticated](https://docs.github.com/rest/reference/users#set-primary-email-visibility-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn set_primary_email_visibility_for_authenticated_async(&self, body: PatchUsersSetPrimaryEmailVisibilityForAuthenticated) -> Result<Vec<Email>, UsersSetPrimaryEmailVisibilityForAuthenticatedError> {
 
@@ -3711,6 +3768,7 @@ impl<'api> Users<'api> {
     /// Sets the visibility for your primary email addresses.
     /// 
     /// [GitHub API docs for set_primary_email_visibility_for_authenticated](https://docs.github.com/rest/reference/users#set-primary-email-visibility-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_primary_email_visibility_for_authenticated(&self, body: PatchUsersSetPrimaryEmailVisibilityForAuthenticated) -> Result<Vec<Email>, UsersSetPrimaryEmailVisibilityForAuthenticatedError> {
@@ -3752,6 +3810,7 @@ impl<'api> Users<'api> {
     /// # Unblock a user
     /// 
     /// [GitHub API docs for unblock](https://docs.github.com/rest/reference/users#unblock-a-user)    
+    ///
     /// ---
     pub async fn unblock_async(&self, username: &str) -> Result<(), UsersUnblockError> {
 
@@ -3791,6 +3850,7 @@ impl<'api> Users<'api> {
     /// # Unblock a user
     /// 
     /// [GitHub API docs for unblock](https://docs.github.com/rest/reference/users#unblock-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn unblock(&self, username: &str) -> Result<(), UsersUnblockError> {
@@ -3833,6 +3893,7 @@ impl<'api> Users<'api> {
     /// Unfollowing a user requires the user to be logged in and authenticated with basic auth or OAuth with the `user:follow` scope.
     /// 
     /// [GitHub API docs for unfollow](https://docs.github.com/rest/reference/users#unfollow-a-user)    
+    ///
     /// ---
     pub async fn unfollow_async(&self, username: &str) -> Result<(), UsersUnfollowError> {
 
@@ -3874,6 +3935,7 @@ impl<'api> Users<'api> {
     /// Unfollowing a user requires the user to be logged in and authenticated with basic auth or OAuth with the `user:follow` scope.
     /// 
     /// [GitHub API docs for unfollow](https://docs.github.com/rest/reference/users#unfollow-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn unfollow(&self, username: &str) -> Result<(), UsersUnfollowError> {
@@ -3916,6 +3978,7 @@ impl<'api> Users<'api> {
     /// **Note:** If your email is set to private and you send an `email` parameter as part of this request to update your profile, your privacy settings are still enforced: the email address will not be displayed on your public profile or via the API.
     /// 
     /// [GitHub API docs for update_authenticated](https://docs.github.com/rest/reference/users/#update-the-authenticated-user)    
+    ///
     /// ---
     pub async fn update_authenticated_async(&self, body: PatchUsersUpdateAuthenticated) -> Result<PrivateUser, UsersUpdateAuthenticatedError> {
 
@@ -3958,6 +4021,7 @@ impl<'api> Users<'api> {
     /// **Note:** If your email is set to private and you send an `email` parameter as part of this request to update your profile, your privacy settings are still enforced: the email address will not be displayed on your public profile or via the API.
     /// 
     /// [GitHub API docs for update_authenticated](https://docs.github.com/rest/reference/users/#update-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn update_authenticated(&self, body: PatchUsersUpdateAuthenticated) -> Result<PrivateUser, UsersUpdateAuthenticatedError> {

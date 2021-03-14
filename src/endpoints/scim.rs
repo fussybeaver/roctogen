@@ -233,6 +233,7 @@ impl<'api> Scim<'api> {
     /// # Delete a SCIM user from an organization
     /// 
     /// [GitHub API docs for delete_user_from_org](https://docs.github.com/rest/reference/scim/#delete-a-scim-user-from-an-organization)    
+    ///
     /// ---
     pub async fn delete_user_from_org_async(&self, org: &str, scim_user_id: &str) -> Result<(), ScimDeleteUserFromOrgError> {
 
@@ -271,6 +272,7 @@ impl<'api> Scim<'api> {
     /// # Delete a SCIM user from an organization
     /// 
     /// [GitHub API docs for delete_user_from_org](https://docs.github.com/rest/reference/scim/#delete-a-scim-user-from-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_user_from_org(&self, org: &str, scim_user_id: &str) -> Result<(), ScimDeleteUserFromOrgError> {
@@ -310,6 +312,7 @@ impl<'api> Scim<'api> {
     /// # Get SCIM provisioning information for a user
     /// 
     /// [GitHub API docs for get_provisioning_information_for_user](https://docs.github.com/rest/reference/scim/#get-scim-provisioning-information-for-a-user)    
+    ///
     /// ---
     pub async fn get_provisioning_information_for_user_async(&self, org: &str, scim_user_id: &str) -> Result<ScimUser, ScimGetProvisioningInformationForUserError> {
 
@@ -348,6 +351,7 @@ impl<'api> Scim<'api> {
     /// # Get SCIM provisioning information for a user
     /// 
     /// [GitHub API docs for get_provisioning_information_for_user](https://docs.github.com/rest/reference/scim/#get-scim-provisioning-information-for-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_provisioning_information_for_user(&self, org: &str, scim_user_id: &str) -> Result<ScimUser, ScimGetProvisioningInformationForUserError> {
@@ -404,6 +408,7 @@ impl<'api> Scim<'api> {
     ///    - If the user does not sign in (or does not create a new account when prompted), they are not added to the GitHub organization, and the external identity `null` entry remains in place.
     /// 
     /// [GitHub API docs for list_provisioned_identities](https://docs.github.com/rest/reference/scim/#list-scim-provisioned-identities)    
+    ///
     /// ---
     pub async fn list_provisioned_identities_async(&self, org: &str, query_params: Option<impl Into<ScimListProvisionedIdentitiesParams<'api>>>) -> Result<ScimUserList, ScimListProvisionedIdentitiesError> {
 
@@ -464,6 +469,7 @@ impl<'api> Scim<'api> {
     ///    - If the user does not sign in (or does not create a new account when prompted), they are not added to the GitHub organization, and the external identity `null` entry remains in place.
     /// 
     /// [GitHub API docs for list_provisioned_identities](https://docs.github.com/rest/reference/scim/#list-scim-provisioned-identities)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_provisioned_identities(&self, org: &str, query_params: Option<impl Into<ScimListProvisionedIdentitiesParams<'api>>>) -> Result<ScimUserList, ScimListProvisionedIdentitiesError> {
@@ -511,6 +517,7 @@ impl<'api> Scim<'api> {
     /// Provision organization membership for a user, and send an activation email to the email address.
     /// 
     /// [GitHub API docs for provision_and_invite_user](https://docs.github.com/rest/reference/scim/#provision-and-invite-a-scim-user)    
+    ///
     /// ---
     pub async fn provision_and_invite_user_async(&self, org: &str, body: PostScimProvisionAndInviteUser) -> Result<ScimUser, ScimProvisionAndInviteUserError> {
 
@@ -554,6 +561,7 @@ impl<'api> Scim<'api> {
     /// Provision organization membership for a user, and send an activation email to the email address.
     /// 
     /// [GitHub API docs for provision_and_invite_user](https://docs.github.com/rest/reference/scim/#provision-and-invite-a-scim-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn provision_and_invite_user(&self, org: &str, body: PostScimProvisionAndInviteUser) -> Result<ScimUser, ScimProvisionAndInviteUserError> {
@@ -602,6 +610,7 @@ impl<'api> Scim<'api> {
     /// **Warning:** Setting `active: false` removes the user from the organization, deletes the external identity, and deletes the associated `{scim_user_id}`.
     /// 
     /// [GitHub API docs for set_information_for_provisioned_user](https://docs.github.com/rest/reference/scim/#set-scim-information-for-a-provisioned-user)    
+    ///
     /// ---
     pub async fn set_information_for_provisioned_user_async(&self, org: &str, scim_user_id: &str, body: PutScimSetInformationForProvisionedUser) -> Result<ScimUser, ScimSetInformationForProvisionedUserError> {
 
@@ -646,6 +655,7 @@ impl<'api> Scim<'api> {
     /// **Warning:** Setting `active: false` removes the user from the organization, deletes the external identity, and deletes the associated `{scim_user_id}`.
     /// 
     /// [GitHub API docs for set_information_for_provisioned_user](https://docs.github.com/rest/reference/scim/#set-scim-information-for-a-provisioned-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_information_for_provisioned_user(&self, org: &str, scim_user_id: &str, body: PutScimSetInformationForProvisionedUser) -> Result<ScimUser, ScimSetInformationForProvisionedUserError> {
@@ -702,6 +712,7 @@ impl<'api> Scim<'api> {
     /// ```
     /// 
     /// [GitHub API docs for update_attribute_for_user](https://docs.github.com/rest/reference/scim/#update-an-attribute-for-a-scim-user)    
+    ///
     /// ---
     pub async fn update_attribute_for_user_async(&self, org: &str, scim_user_id: &str, body: PatchScimUpdateAttributeForUser) -> Result<ScimUser, ScimUpdateAttributeForUserError> {
 
@@ -759,6 +770,7 @@ impl<'api> Scim<'api> {
     /// ```
     /// 
     /// [GitHub API docs for update_attribute_for_user](https://docs.github.com/rest/reference/scim/#update-an-attribute-for-a-scim-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn update_attribute_for_user(&self, org: &str, scim_user_id: &str, body: PatchScimUpdateAttributeForUser) -> Result<ScimUser, ScimUpdateAttributeForUserError> {

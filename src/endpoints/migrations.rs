@@ -726,6 +726,7 @@ impl<'api> Migrations<'api> {
     /// Stop an import for a repository.
     /// 
     /// [GitHub API docs for cancel_import](https://docs.github.com/rest/reference/migrations#cancel-an-import)    
+    ///
     /// ---
     pub async fn cancel_import_async(&self, owner: &str, repo: &str) -> Result<(), MigrationsCancelImportError> {
 
@@ -763,6 +764,7 @@ impl<'api> Migrations<'api> {
     /// Stop an import for a repository.
     /// 
     /// [GitHub API docs for cancel_import](https://docs.github.com/rest/reference/migrations#cancel-an-import)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn cancel_import(&self, owner: &str, repo: &str) -> Result<(), MigrationsCancelImportError> {
@@ -802,6 +804,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for delete_archive_for_authenticated_user](https://docs.github.com/rest/reference/migrations#delete-a-user-migration-archive)///
     /// The `delete_archive_for_authenticated_user_async` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "wyandotte")]
     pub async fn delete_archive_for_authenticated_user_async(&self, migration_id: i32) -> Result<(), MigrationsDeleteArchiveForAuthenticatedUserError> {
@@ -845,6 +848,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for delete_archive_for_authenticated_user](https://docs.github.com/rest/reference/migrations#delete-a-user-migration-archive)///
     /// The `delete_archive_for_authenticated_user` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "wyandotte")]
@@ -889,6 +893,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for delete_archive_for_org](https://docs.github.com/rest/reference/migrations#delete-an-organization-migration-archive)///
     /// The `delete_archive_for_org_async` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "wyandotte")]
     pub async fn delete_archive_for_org_async(&self, org: &str, migration_id: i32) -> Result<(), MigrationsDeleteArchiveForOrgError> {
@@ -929,6 +934,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for delete_archive_for_org](https://docs.github.com/rest/reference/migrations#delete-an-organization-migration-archive)///
     /// The `delete_archive_for_org` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "wyandotte")]
@@ -970,6 +976,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for download_archive_for_org](https://docs.github.com/rest/reference/migrations#download-an-organization-migration-archive)///
     /// The `download_archive_for_org_async` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "wyandotte")]
     pub async fn download_archive_for_org_async(&self, org: &str, migration_id: i32) -> Result<(), MigrationsDownloadArchiveForOrgError> {
@@ -1011,6 +1018,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for download_archive_for_org](https://docs.github.com/rest/reference/migrations#download-an-organization-migration-archive)///
     /// The `download_archive_for_org` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "wyandotte")]
@@ -1073,6 +1081,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for get_archive_for_authenticated_user](https://docs.github.com/rest/reference/migrations#download-a-user-migration-archive)///
     /// The `get_archive_for_authenticated_user_async` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "wyandotte")]
     pub async fn get_archive_for_authenticated_user_async(&self, migration_id: i32) -> Result<(), MigrationsGetArchiveForAuthenticatedUserError> {
@@ -1136,6 +1145,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for get_archive_for_authenticated_user](https://docs.github.com/rest/reference/migrations#download-a-user-migration-archive)///
     /// The `get_archive_for_authenticated_user` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "wyandotte")]
@@ -1181,6 +1191,7 @@ impl<'api> Migrations<'api> {
     /// This endpoint and the [Map a commit author](https://docs.github.com/rest/reference/migrations#map-a-commit-author) endpoint allow you to provide correct Git author information.
     /// 
     /// [GitHub API docs for get_commit_authors](https://docs.github.com/rest/reference/migrations#get-commit-authors)    
+    ///
     /// ---
     pub async fn get_commit_authors_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<MigrationsGetCommitAuthorsParams>>) -> Result<Vec<PorterAuthor>, MigrationsGetCommitAuthorsError> {
 
@@ -1225,6 +1236,7 @@ impl<'api> Migrations<'api> {
     /// This endpoint and the [Map a commit author](https://docs.github.com/rest/reference/migrations#map-a-commit-author) endpoint allow you to provide correct Git author information.
     /// 
     /// [GitHub API docs for get_commit_authors](https://docs.github.com/rest/reference/migrations#get-commit-authors)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_commit_authors(&self, owner: &str, repo: &str, query_params: Option<impl Into<MigrationsGetCommitAuthorsParams>>) -> Result<Vec<PorterAuthor>, MigrationsGetCommitAuthorsError> {
@@ -1302,6 +1314,7 @@ impl<'api> Migrations<'api> {
     /// *   `large_files_count` - the total number of files larger than 100MB found in the originating repository. To see a list of these files, make a "Get Large Files" request.
     /// 
     /// [GitHub API docs for get_import_status](https://docs.github.com/rest/reference/migrations#get-an-import-status)    
+    ///
     /// ---
     pub async fn get_import_status_async(&self, owner: &str, repo: &str) -> Result<Import, MigrationsGetImportStatusError> {
 
@@ -1373,6 +1386,7 @@ impl<'api> Migrations<'api> {
     /// *   `large_files_count` - the total number of files larger than 100MB found in the originating repository. To see a list of these files, make a "Get Large Files" request.
     /// 
     /// [GitHub API docs for get_import_status](https://docs.github.com/rest/reference/migrations#get-an-import-status)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_import_status(&self, owner: &str, repo: &str) -> Result<Import, MigrationsGetImportStatusError> {
@@ -1412,6 +1426,7 @@ impl<'api> Migrations<'api> {
     /// List files larger than 100MB found during the import
     /// 
     /// [GitHub API docs for get_large_files](https://docs.github.com/rest/reference/migrations#get-large-files)    
+    ///
     /// ---
     pub async fn get_large_files_async(&self, owner: &str, repo: &str) -> Result<Vec<PorterLargeFile>, MigrationsGetLargeFilesError> {
 
@@ -1449,6 +1464,7 @@ impl<'api> Migrations<'api> {
     /// List files larger than 100MB found during the import
     /// 
     /// [GitHub API docs for get_large_files](https://docs.github.com/rest/reference/migrations#get-large-files)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_large_files(&self, owner: &str, repo: &str) -> Result<Vec<PorterLargeFile>, MigrationsGetLargeFilesError> {
@@ -1495,6 +1511,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for get_status_for_authenticated_user](https://docs.github.com/rest/reference/migrations#get-a-user-migration-status)///
     /// The `get_status_for_authenticated_user_async` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "wyandotte")]
     pub async fn get_status_for_authenticated_user_async(&self, migration_id: i32, query_params: Option<impl Into<MigrationsGetStatusForAuthenticatedUserParams>>) -> Result<Migration, MigrationsGetStatusForAuthenticatedUserError> {
@@ -1549,6 +1566,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for get_status_for_authenticated_user](https://docs.github.com/rest/reference/migrations#get-a-user-migration-status)///
     /// The `get_status_for_authenticated_user` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "wyandotte")]
@@ -1605,6 +1623,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for get_status_for_org](https://docs.github.com/rest/reference/migrations#get-an-organization-migration-status)///
     /// The `get_status_for_org_async` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "wyandotte")]
     pub async fn get_status_for_org_async(&self, org: &str, migration_id: i32, query_params: Option<impl Into<MigrationsGetStatusForOrgParams>>) -> Result<Migration, MigrationsGetStatusForOrgError> {
@@ -1656,6 +1675,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for get_status_for_org](https://docs.github.com/rest/reference/migrations#get-an-organization-migration-status)///
     /// The `get_status_for_org` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "wyandotte")]
@@ -1702,6 +1722,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/migrations#list-user-migrations)///
     /// The `list_for_authenticated_user_async` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "wyandotte")]
     pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<MigrationsListForAuthenticatedUserParams>>) -> Result<Vec<Migration>, MigrationsListForAuthenticatedUserError> {
@@ -1748,6 +1769,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/migrations#list-user-migrations)///
     /// The `list_for_authenticated_user` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "wyandotte")]
@@ -1796,6 +1818,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/migrations#list-organization-migrations)///
     /// The `list_for_org_async` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "wyandotte")]
     pub async fn list_for_org_async(&self, org: &str, query_params: Option<impl Into<MigrationsListForOrgParams>>) -> Result<Vec<Migration>, MigrationsListForOrgError> {
@@ -1839,6 +1862,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/migrations#list-organization-migrations)///
     /// The `list_for_org` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "wyandotte")]
@@ -1884,6 +1908,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for list_repos_for_org](https://docs.github.com/rest/reference/migrations#list-repositories-in-an-organization-migration)///
     /// The `list_repos_for_org_async` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "wyandotte")]
     pub async fn list_repos_for_org_async(&self, org: &str, migration_id: i32, query_params: Option<impl Into<MigrationsListReposForOrgParams>>) -> Result<Vec<MinimalRepository>, MigrationsListReposForOrgError> {
@@ -1928,6 +1953,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for list_repos_for_org](https://docs.github.com/rest/reference/migrations#list-repositories-in-an-organization-migration)///
     /// The `list_repos_for_org` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "wyandotte")]
@@ -1974,6 +2000,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for list_repos_for_user](https://docs.github.com/rest/reference/migrations#list-repositories-for-a-user-migration)///
     /// The `list_repos_for_user_async` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "wyandotte")]
     pub async fn list_repos_for_user_async(&self, migration_id: i32, query_params: Option<impl Into<MigrationsListReposForUserParams>>) -> Result<Vec<MinimalRepository>, MigrationsListReposForUserError> {
@@ -2018,6 +2045,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for list_repos_for_user](https://docs.github.com/rest/reference/migrations#list-repositories-for-a-user-migration)///
     /// The `list_repos_for_user` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "wyandotte")]
@@ -2063,6 +2091,7 @@ impl<'api> Migrations<'api> {
     /// Update an author's identity for the import. Your application can continue updating authors any time before you push new commits to the repository.
     /// 
     /// [GitHub API docs for map_commit_author](https://docs.github.com/rest/reference/migrations#map-a-commit-author)    
+    ///
     /// ---
     pub async fn map_commit_author_async(&self, owner: &str, repo: &str, author_id: i32, body: PatchMigrationsMapCommitAuthor) -> Result<PorterAuthor, MigrationsMapCommitAuthorError> {
 
@@ -2102,6 +2131,7 @@ impl<'api> Migrations<'api> {
     /// Update an author's identity for the import. Your application can continue updating authors any time before you push new commits to the repository.
     /// 
     /// [GitHub API docs for map_commit_author](https://docs.github.com/rest/reference/migrations#map-a-commit-author)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn map_commit_author(&self, owner: &str, repo: &str, author_id: i32, body: PatchMigrationsMapCommitAuthor) -> Result<PorterAuthor, MigrationsMapCommitAuthorError> {
@@ -2142,6 +2172,7 @@ impl<'api> Migrations<'api> {
     /// You can import repositories from Subversion, Mercurial, and TFS that include files larger than 100MB. This ability is powered by [Git LFS](https://git-lfs.github.com). You can learn more about our LFS feature and working with large files [on our help site](https://help.github.com/articles/versioning-large-files/).
     /// 
     /// [GitHub API docs for set_lfs_preference](https://docs.github.com/rest/reference/migrations#update-git-lfs-preference)    
+    ///
     /// ---
     pub async fn set_lfs_preference_async(&self, owner: &str, repo: &str, body: PatchMigrationsSetLfsPreference) -> Result<Import, MigrationsSetLfsPreferenceError> {
 
@@ -2180,6 +2211,7 @@ impl<'api> Migrations<'api> {
     /// You can import repositories from Subversion, Mercurial, and TFS that include files larger than 100MB. This ability is powered by [Git LFS](https://git-lfs.github.com). You can learn more about our LFS feature and working with large files [on our help site](https://help.github.com/articles/versioning-large-files/).
     /// 
     /// [GitHub API docs for set_lfs_preference](https://docs.github.com/rest/reference/migrations#update-git-lfs-preference)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_lfs_preference(&self, owner: &str, repo: &str, body: PatchMigrationsSetLfsPreference) -> Result<Import, MigrationsSetLfsPreferenceError> {
@@ -2219,6 +2251,7 @@ impl<'api> Migrations<'api> {
     /// Initiates the generation of a user migration archive.
     /// 
     /// [GitHub API docs for start_for_authenticated_user](https://docs.github.com/rest/reference/migrations#start-a-user-migration)    
+    ///
     /// ---
     pub async fn start_for_authenticated_user_async(&self, body: PostMigrationsStartForAuthenticatedUser) -> Result<Migration, MigrationsStartForAuthenticatedUserError> {
 
@@ -2260,6 +2293,7 @@ impl<'api> Migrations<'api> {
     /// Initiates the generation of a user migration archive.
     /// 
     /// [GitHub API docs for start_for_authenticated_user](https://docs.github.com/rest/reference/migrations#start-a-user-migration)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn start_for_authenticated_user(&self, body: PostMigrationsStartForAuthenticatedUser) -> Result<Migration, MigrationsStartForAuthenticatedUserError> {
@@ -2302,6 +2336,7 @@ impl<'api> Migrations<'api> {
     /// Initiates the generation of a migration archive.
     /// 
     /// [GitHub API docs for start_for_org](https://docs.github.com/rest/reference/migrations#start-an-organization-migration)    
+    ///
     /// ---
     pub async fn start_for_org_async(&self, org: &str, body: PostMigrationsStartForOrg) -> Result<Migration, MigrationsStartForOrgError> {
 
@@ -2341,6 +2376,7 @@ impl<'api> Migrations<'api> {
     /// Initiates the generation of a migration archive.
     /// 
     /// [GitHub API docs for start_for_org](https://docs.github.com/rest/reference/migrations#start-an-organization-migration)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn start_for_org(&self, org: &str, body: PostMigrationsStartForOrg) -> Result<Migration, MigrationsStartForOrgError> {
@@ -2381,6 +2417,7 @@ impl<'api> Migrations<'api> {
     /// Start a source import to a GitHub repository using GitHub Importer.
     /// 
     /// [GitHub API docs for start_import](https://docs.github.com/rest/reference/migrations#start-an-import)    
+    ///
     /// ---
     pub async fn start_import_async(&self, owner: &str, repo: &str, body: PutMigrationsStartImport) -> Result<Import, MigrationsStartImportError> {
 
@@ -2420,6 +2457,7 @@ impl<'api> Migrations<'api> {
     /// Start a source import to a GitHub repository using GitHub Importer.
     /// 
     /// [GitHub API docs for start_import](https://docs.github.com/rest/reference/migrations#start-an-import)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn start_import(&self, owner: &str, repo: &str, body: PutMigrationsStartImport) -> Result<Import, MigrationsStartImportError> {
@@ -2461,6 +2499,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for unlock_repo_for_authenticated_user](https://docs.github.com/rest/reference/migrations#unlock-a-user-repository)///
     /// The `unlock_repo_for_authenticated_user_async` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "wyandotte")]
     pub async fn unlock_repo_for_authenticated_user_async(&self, migration_id: i32, repo_name: &str) -> Result<(), MigrationsUnlockRepoForAuthenticatedUserError> {
@@ -2504,6 +2543,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for unlock_repo_for_authenticated_user](https://docs.github.com/rest/reference/migrations#unlock-a-user-repository)///
     /// The `unlock_repo_for_authenticated_user` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "wyandotte")]
@@ -2548,6 +2588,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for unlock_repo_for_org](https://docs.github.com/rest/reference/migrations#unlock-an-organization-repository)///
     /// The `unlock_repo_for_org_async` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "wyandotte")]
     pub async fn unlock_repo_for_org_async(&self, org: &str, migration_id: i32, repo_name: &str) -> Result<(), MigrationsUnlockRepoForOrgError> {
@@ -2588,6 +2629,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for unlock_repo_for_org](https://docs.github.com/rest/reference/migrations#unlock-an-organization-repository)///
     /// The `unlock_repo_for_org` endpoint is enabled with the `wyandotte` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "wyandotte")]
@@ -2629,6 +2671,7 @@ impl<'api> Migrations<'api> {
     /// request. If no parameters are provided, the import will be restarted.
     /// 
     /// [GitHub API docs for update_import](https://docs.github.com/rest/reference/migrations#update-an-import)    
+    ///
     /// ---
     pub async fn update_import_async(&self, owner: &str, repo: &str, body: PatchMigrationsUpdateImport) -> Result<Import, MigrationsUpdateImportError> {
 
@@ -2667,6 +2710,7 @@ impl<'api> Migrations<'api> {
     /// request. If no parameters are provided, the import will be restarted.
     /// 
     /// [GitHub API docs for update_import](https://docs.github.com/rest/reference/migrations#update-an-import)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn update_import(&self, owner: &str, repo: &str, body: PatchMigrationsUpdateImport) -> Result<Import, MigrationsUpdateImportError> {

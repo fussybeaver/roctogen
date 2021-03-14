@@ -362,6 +362,7 @@ impl<'api> Git<'api> {
     /// # Create a blob
     /// 
     /// [GitHub API docs for create_blob](https://docs.github.com/rest/reference/git#create-a-blob)    
+    ///
     /// ---
     pub async fn create_blob_async(&self, owner: &str, repo: &str, body: PostGitCreateBlob) -> Result<ShortBlob, GitCreateBlobError> {
 
@@ -401,6 +402,7 @@ impl<'api> Git<'api> {
     /// # Create a blob
     /// 
     /// [GitHub API docs for create_blob](https://docs.github.com/rest/reference/git#create-a-blob)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_blob(&self, owner: &str, repo: &str, body: PostGitCreateBlob) -> Result<ShortBlob, GitCreateBlobError> {
@@ -472,6 +474,7 @@ impl<'api> Git<'api> {
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
     /// 
     /// [GitHub API docs for create_commit](https://docs.github.com/rest/reference/git#create-a-commit)    
+    ///
     /// ---
     pub async fn create_commit_async(&self, owner: &str, repo: &str, body: PostGitCreateCommit) -> Result<GitCommit, GitCreateCommitError> {
 
@@ -540,6 +543,7 @@ impl<'api> Git<'api> {
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
     /// 
     /// [GitHub API docs for create_commit](https://docs.github.com/rest/reference/git#create-a-commit)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_commit(&self, owner: &str, repo: &str, body: PostGitCreateCommit) -> Result<GitCommit, GitCreateCommitError> {
@@ -580,6 +584,7 @@ impl<'api> Git<'api> {
     /// Creates a reference for your repository. You are unable to create new references for empty repositories, even if the commit SHA-1 hash used exists. Empty repositories are repositories without branches.
     /// 
     /// [GitHub API docs for create_ref](https://docs.github.com/rest/reference/git#create-a-reference)    
+    ///
     /// ---
     pub async fn create_ref_async(&self, owner: &str, repo: &str, body: PostGitCreateRef) -> Result<GitRef, GitCreateRefError> {
 
@@ -618,6 +623,7 @@ impl<'api> Git<'api> {
     /// Creates a reference for your repository. You are unable to create new references for empty repositories, even if the commit SHA-1 hash used exists. Empty repositories are repositories without branches.
     /// 
     /// [GitHub API docs for create_ref](https://docs.github.com/rest/reference/git#create-a-reference)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_ref(&self, owner: &str, repo: &str, body: PostGitCreateRef) -> Result<GitRef, GitCreateRefError> {
@@ -686,6 +692,7 @@ impl<'api> Git<'api> {
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
     /// 
     /// [GitHub API docs for create_tag](https://docs.github.com/rest/reference/git#create-a-tag-object)    
+    ///
     /// ---
     pub async fn create_tag_async(&self, owner: &str, repo: &str, body: PostGitCreateTag) -> Result<GitTag, GitCreateTagError> {
 
@@ -753,6 +760,7 @@ impl<'api> Git<'api> {
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
     /// 
     /// [GitHub API docs for create_tag](https://docs.github.com/rest/reference/git#create-a-tag-object)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_tag(&self, owner: &str, repo: &str, body: PostGitCreateTag) -> Result<GitTag, GitCreateTagError> {
@@ -794,6 +802,7 @@ impl<'api> Git<'api> {
     /// If you use this endpoint to add, delete, or modify the file contents in a tree, you will need to commit the tree and then update a branch to point to the commit. For more information see "[Create a commit](https://docs.github.com/rest/reference/git#create-a-commit)" and "[Update a reference](https://docs.github.com/rest/reference/git#update-a-reference)."
     /// 
     /// [GitHub API docs for create_tree](https://docs.github.com/rest/reference/git#create-a-tree)    
+    ///
     /// ---
     pub async fn create_tree_async(&self, owner: &str, repo: &str, body: PostGitCreateTree) -> Result<GitTree, GitCreateTreeError> {
 
@@ -836,6 +845,7 @@ impl<'api> Git<'api> {
     /// If you use this endpoint to add, delete, or modify the file contents in a tree, you will need to commit the tree and then update a branch to point to the commit. For more information see "[Create a commit](https://docs.github.com/rest/reference/git#create-a-commit)" and "[Update a reference](https://docs.github.com/rest/reference/git#update-a-reference)."
     /// 
     /// [GitHub API docs for create_tree](https://docs.github.com/rest/reference/git#create-a-tree)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_tree(&self, owner: &str, repo: &str, body: PostGitCreateTree) -> Result<GitTree, GitCreateTreeError> {
@@ -875,6 +885,7 @@ impl<'api> Git<'api> {
     /// # Delete a reference
     /// 
     /// [GitHub API docs for delete_ref](https://docs.github.com/rest/reference/git#delete-a-reference)    
+    ///
     /// ---
     pub async fn delete_ref_async(&self, owner: &str, repo: &str, git_ref: &str) -> Result<(), GitDeleteRefError> {
 
@@ -911,6 +922,7 @@ impl<'api> Git<'api> {
     /// # Delete a reference
     /// 
     /// [GitHub API docs for delete_ref](https://docs.github.com/rest/reference/git#delete-a-reference)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_ref(&self, owner: &str, repo: &str, git_ref: &str) -> Result<(), GitDeleteRefError> {
@@ -952,6 +964,7 @@ impl<'api> Git<'api> {
     /// _Note_: This API supports blobs up to 100 megabytes in size.
     /// 
     /// [GitHub API docs for get_blob](https://docs.github.com/rest/reference/git#get-a-blob)    
+    ///
     /// ---
     pub async fn get_blob_async(&self, owner: &str, repo: &str, file_sha: &str) -> Result<Blob, GitGetBlobError> {
 
@@ -994,6 +1007,7 @@ impl<'api> Git<'api> {
     /// _Note_: This API supports blobs up to 100 megabytes in size.
     /// 
     /// [GitHub API docs for get_blob](https://docs.github.com/rest/reference/git#get-a-blob)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_blob(&self, owner: &str, repo: &str, file_sha: &str) -> Result<Blob, GitGetBlobError> {
@@ -1064,6 +1078,7 @@ impl<'api> Git<'api> {
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
     /// 
     /// [GitHub API docs for get_commit](https://docs.github.com/rest/reference/git#get-a-commit)    
+    ///
     /// ---
     pub async fn get_commit_async(&self, owner: &str, repo: &str, commit_sha: &str) -> Result<GitCommit, GitGetCommitError> {
 
@@ -1131,6 +1146,7 @@ impl<'api> Git<'api> {
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
     /// 
     /// [GitHub API docs for get_commit](https://docs.github.com/rest/reference/git#get-a-commit)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_commit(&self, owner: &str, repo: &str, commit_sha: &str) -> Result<GitCommit, GitGetCommitError> {
@@ -1172,6 +1188,7 @@ impl<'api> Git<'api> {
     /// **Note:** You need to explicitly [request a pull request](https://docs.github.com/rest/reference/pulls#get-a-pull-request) to trigger a test merge commit, which checks the mergeability of pull requests. For more information, see "[Checking mergeability of pull requests](https://docs.github.com/rest/guides/getting-started-with-the-git-database-api#checking-mergeability-of-pull-requests)".
     /// 
     /// [GitHub API docs for get_ref](https://docs.github.com/rest/reference/git#get-a-reference)    
+    ///
     /// ---
     pub async fn get_ref_async(&self, owner: &str, repo: &str, git_ref: &str) -> Result<GitRef, GitGetRefError> {
 
@@ -1212,6 +1229,7 @@ impl<'api> Git<'api> {
     /// **Note:** You need to explicitly [request a pull request](https://docs.github.com/rest/reference/pulls#get-a-pull-request) to trigger a test merge commit, which checks the mergeability of pull requests. For more information, see "[Checking mergeability of pull requests](https://docs.github.com/rest/guides/getting-started-with-the-git-database-api#checking-mergeability-of-pull-requests)".
     /// 
     /// [GitHub API docs for get_ref](https://docs.github.com/rest/reference/git#get-a-reference)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_ref(&self, owner: &str, repo: &str, git_ref: &str) -> Result<GitRef, GitGetRefError> {
@@ -1278,6 +1296,7 @@ impl<'api> Git<'api> {
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
     /// 
     /// [GitHub API docs for get_tag](https://docs.github.com/rest/reference/git#get-a-tag)    
+    ///
     /// ---
     pub async fn get_tag_async(&self, owner: &str, repo: &str, tag_sha: &str) -> Result<GitTag, GitGetTagError> {
 
@@ -1343,6 +1362,7 @@ impl<'api> Git<'api> {
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
     /// 
     /// [GitHub API docs for get_tag](https://docs.github.com/rest/reference/git#get-a-tag)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_tag(&self, owner: &str, repo: &str, tag_sha: &str) -> Result<GitTag, GitGetTagError> {
@@ -1384,6 +1404,7 @@ impl<'api> Git<'api> {
     /// If `truncated` is `true` in the response then the number of items in the `tree` array exceeded our maximum limit. If you need to fetch more items, use the non-recursive method of fetching trees, and fetch one sub-tree at a time.
     /// 
     /// [GitHub API docs for get_tree](https://docs.github.com/rest/reference/git#get-a-tree)    
+    ///
     /// ---
     pub async fn get_tree_async(&self, owner: &str, repo: &str, tree_sha: &str, query_params: Option<impl Into<GitGetTreeParams<'api>>>) -> Result<GitTree, GitGetTreeError> {
 
@@ -1429,6 +1450,7 @@ impl<'api> Git<'api> {
     /// If `truncated` is `true` in the response then the number of items in the `tree` array exceeded our maximum limit. If you need to fetch more items, use the non-recursive method of fetching trees, and fetch one sub-tree at a time.
     /// 
     /// [GitHub API docs for get_tree](https://docs.github.com/rest/reference/git#get-a-tree)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_tree(&self, owner: &str, repo: &str, tree_sha: &str, query_params: Option<impl Into<GitGetTreeParams<'api>>>) -> Result<GitTree, GitGetTreeError> {
@@ -1480,6 +1502,7 @@ impl<'api> Git<'api> {
     /// If you request matching references for a branch named `feature` but the branch `feature` doesn't exist, the response can still include other matching head refs that start with the word `feature`, such as `featureA` and `featureB`.
     /// 
     /// [GitHub API docs for list_matching_refs](https://docs.github.com/rest/reference/git#list-matching-references)    
+    ///
     /// ---
     pub async fn list_matching_refs_async(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<GitListMatchingRefsParams>>) -> Result<Vec<GitRef>, GitListMatchingRefsError> {
 
@@ -1527,6 +1550,7 @@ impl<'api> Git<'api> {
     /// If you request matching references for a branch named `feature` but the branch `feature` doesn't exist, the response can still include other matching head refs that start with the word `feature`, such as `featureA` and `featureB`.
     /// 
     /// [GitHub API docs for list_matching_refs](https://docs.github.com/rest/reference/git#list-matching-references)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_matching_refs(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<GitListMatchingRefsParams>>) -> Result<Vec<GitRef>, GitListMatchingRefsError> {
@@ -1568,6 +1592,7 @@ impl<'api> Git<'api> {
     /// # Update a reference
     /// 
     /// [GitHub API docs for update_ref](https://docs.github.com/rest/reference/git#update-a-reference)    
+    ///
     /// ---
     pub async fn update_ref_async(&self, owner: &str, repo: &str, git_ref: &str, body: PatchGitUpdateRef) -> Result<GitRef, GitUpdateRefError> {
 
@@ -1604,6 +1629,7 @@ impl<'api> Git<'api> {
     /// # Update a reference
     /// 
     /// [GitHub API docs for update_ref](https://docs.github.com/rest/reference/git#update-a-reference)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn update_ref(&self, owner: &str, repo: &str, git_ref: &str, body: PatchGitUpdateRef) -> Result<GitRef, GitUpdateRefError> {

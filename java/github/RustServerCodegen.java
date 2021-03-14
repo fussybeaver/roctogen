@@ -1038,7 +1038,8 @@ public class RustServerCodegen extends DefaultCodegenConfig {
         if (parameterSchema != null) {
             String collectionFormat = null;
             if (!(parameterSchema instanceof ArraySchema) && !(parameterSchema instanceof MapSchema) 
-                && !(parameterSchema instanceof FileSchema) && !(parameterSchema instanceof BinarySchema) && !(parameterSchema instanceof IntegerSchema)) {
+                && !(parameterSchema instanceof FileSchema) && !(parameterSchema instanceof BinarySchema) 
+                && !(parameterSchema instanceof IntegerSchema)) {
                 codegenParameter.dataType = camelize(codegenParameter.dataType);
             }
         }

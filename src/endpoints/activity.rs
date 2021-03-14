@@ -1530,6 +1530,7 @@ impl<'api> Activity<'api> {
     /// # Check if a repository is starred by the authenticated user
     /// 
     /// [GitHub API docs for check_repo_is_starred_by_authenticated_user](https://docs.github.com/rest/reference/activity#check-if-a-repository-is-starred-by-the-authenticated-user)    
+    ///
     /// ---
     pub async fn check_repo_is_starred_by_authenticated_user_async(&self, owner: &str, repo: &str) -> Result<(), ActivityCheckRepoIsStarredByAuthenticatedUserError> {
 
@@ -1569,6 +1570,7 @@ impl<'api> Activity<'api> {
     /// # Check if a repository is starred by the authenticated user
     /// 
     /// [GitHub API docs for check_repo_is_starred_by_authenticated_user](https://docs.github.com/rest/reference/activity#check-if-a-repository-is-starred-by-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn check_repo_is_starred_by_authenticated_user(&self, owner: &str, repo: &str) -> Result<(), ActivityCheckRepoIsStarredByAuthenticatedUserError> {
@@ -1611,6 +1613,7 @@ impl<'api> Activity<'api> {
     /// This endpoint should only be used to stop watching a repository. To control whether or not you wish to receive notifications from a repository, [set the repository's subscription manually](https://docs.github.com/rest/reference/activity#set-a-repository-subscription).
     /// 
     /// [GitHub API docs for delete_repo_subscription](https://docs.github.com/rest/reference/activity#delete-a-repository-subscription)    
+    ///
     /// ---
     pub async fn delete_repo_subscription_async(&self, owner: &str, repo: &str) -> Result<(), ActivityDeleteRepoSubscriptionError> {
 
@@ -1648,6 +1651,7 @@ impl<'api> Activity<'api> {
     /// This endpoint should only be used to stop watching a repository. To control whether or not you wish to receive notifications from a repository, [set the repository's subscription manually](https://docs.github.com/rest/reference/activity#set-a-repository-subscription).
     /// 
     /// [GitHub API docs for delete_repo_subscription](https://docs.github.com/rest/reference/activity#delete-a-repository-subscription)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_repo_subscription(&self, owner: &str, repo: &str) -> Result<(), ActivityDeleteRepoSubscriptionError> {
@@ -1686,6 +1690,7 @@ impl<'api> Activity<'api> {
     /// Mutes all future notifications for a conversation until you comment on the thread or get an **@mention**. If you are watching the repository of the thread, you will still receive notifications. To ignore future notifications for a repository you are watching, use the [Set a thread subscription](https://docs.github.com/rest/reference/activity#set-a-thread-subscription) endpoint and set `ignore` to `true`.
     /// 
     /// [GitHub API docs for delete_thread_subscription](https://docs.github.com/rest/reference/activity#delete-a-thread-subscription)    
+    ///
     /// ---
     pub async fn delete_thread_subscription_async(&self, thread_id: i32) -> Result<(), ActivityDeleteThreadSubscriptionError> {
 
@@ -1726,6 +1731,7 @@ impl<'api> Activity<'api> {
     /// Mutes all future notifications for a conversation until you comment on the thread or get an **@mention**. If you are watching the repository of the thread, you will still receive notifications. To ignore future notifications for a repository you are watching, use the [Set a thread subscription](https://docs.github.com/rest/reference/activity#set-a-thread-subscription) endpoint and set `ignore` to `true`.
     /// 
     /// [GitHub API docs for delete_thread_subscription](https://docs.github.com/rest/reference/activity#delete-a-thread-subscription)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_thread_subscription(&self, thread_id: i32) -> Result<(), ActivityDeleteThreadSubscriptionError> {
@@ -1777,6 +1783,7 @@ impl<'api> Activity<'api> {
     /// **Note**: Private feeds are only returned when [authenticating via Basic Auth](https://docs.github.com/rest/overview/other-authentication-methods#basic-authentication) since current feed URIs use the older, non revocable auth tokens.
     /// 
     /// [GitHub API docs for get_feeds](https://docs.github.com/rest/reference/activity#get-feeds)    
+    ///
     /// ---
     pub async fn get_feeds_async(&self) -> Result<Feed, ActivityGetFeedsError> {
 
@@ -1824,6 +1831,7 @@ impl<'api> Activity<'api> {
     /// **Note**: Private feeds are only returned when [authenticating via Basic Auth](https://docs.github.com/rest/overview/other-authentication-methods#basic-authentication) since current feed URIs use the older, non revocable auth tokens.
     /// 
     /// [GitHub API docs for get_feeds](https://docs.github.com/rest/reference/activity#get-feeds)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_feeds(&self) -> Result<Feed, ActivityGetFeedsError> {
@@ -1860,6 +1868,7 @@ impl<'api> Activity<'api> {
     /// # Get a repository subscription
     /// 
     /// [GitHub API docs for get_repo_subscription](https://docs.github.com/rest/reference/activity#get-a-repository-subscription)    
+    ///
     /// ---
     pub async fn get_repo_subscription_async(&self, owner: &str, repo: &str) -> Result<RepositorySubscription, ActivityGetRepoSubscriptionError> {
 
@@ -1897,6 +1906,7 @@ impl<'api> Activity<'api> {
     /// # Get a repository subscription
     /// 
     /// [GitHub API docs for get_repo_subscription](https://docs.github.com/rest/reference/activity#get-a-repository-subscription)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_repo_subscription(&self, owner: &str, repo: &str) -> Result<RepositorySubscription, ActivityGetRepoSubscriptionError> {
@@ -1935,6 +1945,7 @@ impl<'api> Activity<'api> {
     /// # Get a thread
     /// 
     /// [GitHub API docs for get_thread](https://docs.github.com/rest/reference/activity#get-a-thread)    
+    ///
     /// ---
     pub async fn get_thread_async(&self, thread_id: i32) -> Result<Thread, ActivityGetThreadError> {
 
@@ -1973,6 +1984,7 @@ impl<'api> Activity<'api> {
     /// # Get a thread
     /// 
     /// [GitHub API docs for get_thread](https://docs.github.com/rest/reference/activity#get-a-thread)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_thread(&self, thread_id: i32) -> Result<Thread, ActivityGetThreadError> {
@@ -2016,6 +2028,7 @@ impl<'api> Activity<'api> {
     /// Note that subscriptions are only generated if a user is participating in a conversation--for example, they've replied to the thread, were **@mentioned**, or manually subscribe to a thread.
     /// 
     /// [GitHub API docs for get_thread_subscription_for_authenticated_user](https://docs.github.com/rest/reference/activity#get-a-thread-subscription-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn get_thread_subscription_for_authenticated_user_async(&self, thread_id: i32) -> Result<ThreadSubscription, ActivityGetThreadSubscriptionForAuthenticatedUserError> {
 
@@ -2058,6 +2071,7 @@ impl<'api> Activity<'api> {
     /// Note that subscriptions are only generated if a user is participating in a conversation--for example, they've replied to the thread, were **@mentioned**, or manually subscribe to a thread.
     /// 
     /// [GitHub API docs for get_thread_subscription_for_authenticated_user](https://docs.github.com/rest/reference/activity#get-a-thread-subscription-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_thread_subscription_for_authenticated_user(&self, thread_id: i32) -> Result<ThreadSubscription, ActivityGetThreadSubscriptionForAuthenticatedUserError> {
@@ -2099,6 +2113,7 @@ impl<'api> Activity<'api> {
     /// If you are authenticated as the given user, you will see your private events. Otherwise, you'll only see public events.
     /// 
     /// [GitHub API docs for list_events_for_authenticated_user](https://docs.github.com/rest/reference/activity#list-events-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn list_events_for_authenticated_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListEventsForAuthenticatedUserParams>>) -> Result<Vec<Event>, ActivityListEventsForAuthenticatedUserError> {
 
@@ -2140,6 +2155,7 @@ impl<'api> Activity<'api> {
     /// If you are authenticated as the given user, you will see your private events. Otherwise, you'll only see public events.
     /// 
     /// [GitHub API docs for list_events_for_authenticated_user](https://docs.github.com/rest/reference/activity#list-events-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_events_for_authenticated_user(&self, username: &str, query_params: Option<impl Into<ActivityListEventsForAuthenticatedUserParams>>) -> Result<Vec<Event>, ActivityListEventsForAuthenticatedUserError> {
@@ -2183,6 +2199,7 @@ impl<'api> Activity<'api> {
     /// List all notifications for the current user, sorted by most recently updated.
     /// 
     /// [GitHub API docs for list_notifications_for_authenticated_user](https://docs.github.com/rest/reference/activity#list-notifications-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn list_notifications_for_authenticated_user_async(&self, query_params: Option<impl Into<ActivityListNotificationsForAuthenticatedUserParams<'api>>>) -> Result<Vec<Thread>, ActivityListNotificationsForAuthenticatedUserError> {
 
@@ -2228,6 +2245,7 @@ impl<'api> Activity<'api> {
     /// List all notifications for the current user, sorted by most recently updated.
     /// 
     /// [GitHub API docs for list_notifications_for_authenticated_user](https://docs.github.com/rest/reference/activity#list-notifications-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_notifications_for_authenticated_user(&self, query_params: Option<impl Into<ActivityListNotificationsForAuthenticatedUserParams<'api>>>) -> Result<Vec<Thread>, ActivityListNotificationsForAuthenticatedUserError> {
@@ -2275,6 +2293,7 @@ impl<'api> Activity<'api> {
     /// This is the user's organization dashboard. You must be authenticated as the user to view this.
     /// 
     /// [GitHub API docs for list_org_events_for_authenticated_user](https://docs.github.com/rest/reference/activity#list-organization-events-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn list_org_events_for_authenticated_user_async(&self, username: &str, org: &str, query_params: Option<impl Into<ActivityListOrgEventsForAuthenticatedUserParams>>) -> Result<Vec<Event>, ActivityListOrgEventsForAuthenticatedUserError> {
 
@@ -2316,6 +2335,7 @@ impl<'api> Activity<'api> {
     /// This is the user's organization dashboard. You must be authenticated as the user to view this.
     /// 
     /// [GitHub API docs for list_org_events_for_authenticated_user](https://docs.github.com/rest/reference/activity#list-organization-events-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_org_events_for_authenticated_user(&self, username: &str, org: &str, query_params: Option<impl Into<ActivityListOrgEventsForAuthenticatedUserParams>>) -> Result<Vec<Event>, ActivityListOrgEventsForAuthenticatedUserError> {
@@ -2359,6 +2379,7 @@ impl<'api> Activity<'api> {
     /// We delay the public events feed by five minutes, which means the most recent event returned by the public events API actually occurred at least five minutes ago.
     /// 
     /// [GitHub API docs for list_public_events](https://docs.github.com/rest/reference/activity#list-public-events)    
+    ///
     /// ---
     pub async fn list_public_events_async(&self, query_params: Option<impl Into<ActivityListPublicEventsParams>>) -> Result<Vec<Event>, ActivityListPublicEventsError> {
 
@@ -2403,6 +2424,7 @@ impl<'api> Activity<'api> {
     /// We delay the public events feed by five minutes, which means the most recent event returned by the public events API actually occurred at least five minutes ago.
     /// 
     /// [GitHub API docs for list_public_events](https://docs.github.com/rest/reference/activity#list-public-events)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_public_events(&self, query_params: Option<impl Into<ActivityListPublicEventsParams>>) -> Result<Vec<Event>, ActivityListPublicEventsError> {
@@ -2447,6 +2469,7 @@ impl<'api> Activity<'api> {
     /// # List public events for a network of repositories
     /// 
     /// [GitHub API docs for list_public_events_for_repo_network](https://docs.github.com/rest/reference/activity#list-public-events-for-a-network-of-repositories)    
+    ///
     /// ---
     pub async fn list_public_events_for_repo_network_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListPublicEventsForRepoNetworkParams>>) -> Result<Vec<Event>, ActivityListPublicEventsForRepoNetworkError> {
 
@@ -2490,6 +2513,7 @@ impl<'api> Activity<'api> {
     /// # List public events for a network of repositories
     /// 
     /// [GitHub API docs for list_public_events_for_repo_network](https://docs.github.com/rest/reference/activity#list-public-events-for-a-network-of-repositories)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_public_events_for_repo_network(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListPublicEventsForRepoNetworkParams>>) -> Result<Vec<Event>, ActivityListPublicEventsForRepoNetworkError> {
@@ -2535,6 +2559,7 @@ impl<'api> Activity<'api> {
     /// # List public events for a user
     /// 
     /// [GitHub API docs for list_public_events_for_user](https://docs.github.com/rest/reference/activity#list-public-events-for-a-user)    
+    ///
     /// ---
     pub async fn list_public_events_for_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListPublicEventsForUserParams>>) -> Result<Vec<Event>, ActivityListPublicEventsForUserError> {
 
@@ -2574,6 +2599,7 @@ impl<'api> Activity<'api> {
     /// # List public events for a user
     /// 
     /// [GitHub API docs for list_public_events_for_user](https://docs.github.com/rest/reference/activity#list-public-events-for-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_public_events_for_user(&self, username: &str, query_params: Option<impl Into<ActivityListPublicEventsForUserParams>>) -> Result<Vec<Event>, ActivityListPublicEventsForUserError> {
@@ -2615,6 +2641,7 @@ impl<'api> Activity<'api> {
     /// # List public organization events
     /// 
     /// [GitHub API docs for list_public_org_events](https://docs.github.com/rest/reference/activity#list-public-organization-events)    
+    ///
     /// ---
     pub async fn list_public_org_events_async(&self, org: &str, query_params: Option<impl Into<ActivityListPublicOrgEventsParams>>) -> Result<Vec<Event>, ActivityListPublicOrgEventsError> {
 
@@ -2654,6 +2681,7 @@ impl<'api> Activity<'api> {
     /// # List public organization events
     /// 
     /// [GitHub API docs for list_public_org_events](https://docs.github.com/rest/reference/activity#list-public-organization-events)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_public_org_events(&self, org: &str, query_params: Option<impl Into<ActivityListPublicOrgEventsParams>>) -> Result<Vec<Event>, ActivityListPublicOrgEventsError> {
@@ -2697,6 +2725,7 @@ impl<'api> Activity<'api> {
     /// These are events that you've received by watching repos and following users. If you are authenticated as the given user, you will see private events. Otherwise, you'll only see public events.
     /// 
     /// [GitHub API docs for list_received_events_for_user](https://docs.github.com/rest/reference/activity#list-events-received-by-the-authenticated-user)    
+    ///
     /// ---
     pub async fn list_received_events_for_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListReceivedEventsForUserParams>>) -> Result<Vec<Event>, ActivityListReceivedEventsForUserError> {
 
@@ -2738,6 +2767,7 @@ impl<'api> Activity<'api> {
     /// These are events that you've received by watching repos and following users. If you are authenticated as the given user, you will see private events. Otherwise, you'll only see public events.
     /// 
     /// [GitHub API docs for list_received_events_for_user](https://docs.github.com/rest/reference/activity#list-events-received-by-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_received_events_for_user(&self, username: &str, query_params: Option<impl Into<ActivityListReceivedEventsForUserParams>>) -> Result<Vec<Event>, ActivityListReceivedEventsForUserError> {
@@ -2779,6 +2809,7 @@ impl<'api> Activity<'api> {
     /// # List public events received by a user
     /// 
     /// [GitHub API docs for list_received_public_events_for_user](https://docs.github.com/rest/reference/activity#list-public-events-received-by-a-user)    
+    ///
     /// ---
     pub async fn list_received_public_events_for_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListReceivedPublicEventsForUserParams>>) -> Result<Vec<Event>, ActivityListReceivedPublicEventsForUserError> {
 
@@ -2818,6 +2849,7 @@ impl<'api> Activity<'api> {
     /// # List public events received by a user
     /// 
     /// [GitHub API docs for list_received_public_events_for_user](https://docs.github.com/rest/reference/activity#list-public-events-received-by-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_received_public_events_for_user(&self, username: &str, query_params: Option<impl Into<ActivityListReceivedPublicEventsForUserParams>>) -> Result<Vec<Event>, ActivityListReceivedPublicEventsForUserError> {
@@ -2859,6 +2891,7 @@ impl<'api> Activity<'api> {
     /// # List repository events
     /// 
     /// [GitHub API docs for list_repo_events](https://docs.github.com/rest/reference/activity#list-repository-events)    
+    ///
     /// ---
     pub async fn list_repo_events_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListRepoEventsParams>>) -> Result<Vec<Event>, ActivityListRepoEventsError> {
 
@@ -2898,6 +2931,7 @@ impl<'api> Activity<'api> {
     /// # List repository events
     /// 
     /// [GitHub API docs for list_repo_events](https://docs.github.com/rest/reference/activity#list-repository-events)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_repo_events(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListRepoEventsParams>>) -> Result<Vec<Event>, ActivityListRepoEventsError> {
@@ -2941,6 +2975,7 @@ impl<'api> Activity<'api> {
     /// List all notifications for the current user.
     /// 
     /// [GitHub API docs for list_repo_notifications_for_authenticated_user](https://docs.github.com/rest/reference/activity#list-repository-notifications-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn list_repo_notifications_for_authenticated_user_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListRepoNotificationsForAuthenticatedUserParams<'api>>>) -> Result<Vec<Thread>, ActivityListRepoNotificationsForAuthenticatedUserError> {
 
@@ -2982,6 +3017,7 @@ impl<'api> Activity<'api> {
     /// List all notifications for the current user.
     /// 
     /// [GitHub API docs for list_repo_notifications_for_authenticated_user](https://docs.github.com/rest/reference/activity#list-repository-notifications-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_repo_notifications_for_authenticated_user(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListRepoNotificationsForAuthenticatedUserParams<'api>>>) -> Result<Vec<Thread>, ActivityListRepoNotificationsForAuthenticatedUserError> {
@@ -3027,6 +3063,7 @@ impl<'api> Activity<'api> {
     /// You can also find out _when_ stars were created by passing the following custom [media type](https://docs.github.com/rest/overview/media-types/) via the `Accept` header:
     /// 
     /// [GitHub API docs for list_repos_starred_by_authenticated_user](https://docs.github.com/rest/reference/activity#list-repositories-starred-by-the-authenticated-user)    
+    ///
     /// ---
     pub async fn list_repos_starred_by_authenticated_user_async(&self, query_params: Option<impl Into<ActivityListReposStarredByAuthenticatedUserParams<'api>>>) -> Result<Vec<Repository>, ActivityListReposStarredByAuthenticatedUserError> {
 
@@ -3073,6 +3110,7 @@ impl<'api> Activity<'api> {
     /// You can also find out _when_ stars were created by passing the following custom [media type](https://docs.github.com/rest/overview/media-types/) via the `Accept` header:
     /// 
     /// [GitHub API docs for list_repos_starred_by_authenticated_user](https://docs.github.com/rest/reference/activity#list-repositories-starred-by-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_repos_starred_by_authenticated_user(&self, query_params: Option<impl Into<ActivityListReposStarredByAuthenticatedUserParams<'api>>>) -> Result<Vec<Repository>, ActivityListReposStarredByAuthenticatedUserError> {
@@ -3121,6 +3159,7 @@ impl<'api> Activity<'api> {
     /// You can also find out _when_ stars were created by passing the following custom [media type](https://docs.github.com/rest/overview/media-types/) via the `Accept` header:
     /// 
     /// [GitHub API docs for list_repos_starred_by_user](https://docs.github.com/rest/reference/activity#list-repositories-starred-by-a-user)    
+    ///
     /// ---
     pub async fn list_repos_starred_by_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListReposStarredByUserParams<'api>>>) -> Result<Vec<Repository>, ActivityListReposStarredByUserError> {
 
@@ -3164,6 +3203,7 @@ impl<'api> Activity<'api> {
     /// You can also find out _when_ stars were created by passing the following custom [media type](https://docs.github.com/rest/overview/media-types/) via the `Accept` header:
     /// 
     /// [GitHub API docs for list_repos_starred_by_user](https://docs.github.com/rest/reference/activity#list-repositories-starred-by-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_repos_starred_by_user(&self, username: &str, query_params: Option<impl Into<ActivityListReposStarredByUserParams<'api>>>) -> Result<Vec<Repository>, ActivityListReposStarredByUserError> {
@@ -3207,6 +3247,7 @@ impl<'api> Activity<'api> {
     /// Lists repositories a user is watching.
     /// 
     /// [GitHub API docs for list_repos_watched_by_user](https://docs.github.com/rest/reference/activity#list-repositories-watched-by-a-user)    
+    ///
     /// ---
     pub async fn list_repos_watched_by_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListReposWatchedByUserParams>>) -> Result<Vec<MinimalRepository>, ActivityListReposWatchedByUserError> {
 
@@ -3248,6 +3289,7 @@ impl<'api> Activity<'api> {
     /// Lists repositories a user is watching.
     /// 
     /// [GitHub API docs for list_repos_watched_by_user](https://docs.github.com/rest/reference/activity#list-repositories-watched-by-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_repos_watched_by_user(&self, username: &str, query_params: Option<impl Into<ActivityListReposWatchedByUserParams>>) -> Result<Vec<MinimalRepository>, ActivityListReposWatchedByUserError> {
@@ -3293,6 +3335,7 @@ impl<'api> Activity<'api> {
     /// You can also find out _when_ stars were created by passing the following custom [media type](https://docs.github.com/rest/overview/media-types/) via the `Accept` header:
     /// 
     /// [GitHub API docs for list_stargazers_for_repo](https://docs.github.com/rest/reference/activity#list-stargazers)    
+    ///
     /// ---
     pub async fn list_stargazers_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListStargazersForRepoParams>>) -> Result<Vec<SimpleUser>, ActivityListStargazersForRepoError> {
 
@@ -3337,6 +3380,7 @@ impl<'api> Activity<'api> {
     /// You can also find out _when_ stars were created by passing the following custom [media type](https://docs.github.com/rest/overview/media-types/) via the `Accept` header:
     /// 
     /// [GitHub API docs for list_stargazers_for_repo](https://docs.github.com/rest/reference/activity#list-stargazers)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_stargazers_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListStargazersForRepoParams>>) -> Result<Vec<SimpleUser>, ActivityListStargazersForRepoError> {
@@ -3381,6 +3425,7 @@ impl<'api> Activity<'api> {
     /// Lists repositories the authenticated user is watching.
     /// 
     /// [GitHub API docs for list_watched_repos_for_authenticated_user](https://docs.github.com/rest/reference/activity#list-repositories-watched-by-the-authenticated-user)    
+    ///
     /// ---
     pub async fn list_watched_repos_for_authenticated_user_async(&self, query_params: Option<impl Into<ActivityListWatchedReposForAuthenticatedUserParams>>) -> Result<Vec<MinimalRepository>, ActivityListWatchedReposForAuthenticatedUserError> {
 
@@ -3425,6 +3470,7 @@ impl<'api> Activity<'api> {
     /// Lists repositories the authenticated user is watching.
     /// 
     /// [GitHub API docs for list_watched_repos_for_authenticated_user](https://docs.github.com/rest/reference/activity#list-repositories-watched-by-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_watched_repos_for_authenticated_user(&self, query_params: Option<impl Into<ActivityListWatchedReposForAuthenticatedUserParams>>) -> Result<Vec<MinimalRepository>, ActivityListWatchedReposForAuthenticatedUserError> {
@@ -3471,6 +3517,7 @@ impl<'api> Activity<'api> {
     /// Lists the people watching the specified repository.
     /// 
     /// [GitHub API docs for list_watchers_for_repo](https://docs.github.com/rest/reference/activity#list-watchers)    
+    ///
     /// ---
     pub async fn list_watchers_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListWatchersForRepoParams>>) -> Result<Vec<SimpleUser>, ActivityListWatchersForRepoError> {
 
@@ -3512,6 +3559,7 @@ impl<'api> Activity<'api> {
     /// Lists the people watching the specified repository.
     /// 
     /// [GitHub API docs for list_watchers_for_repo](https://docs.github.com/rest/reference/activity#list-watchers)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_watchers_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListWatchersForRepoParams>>) -> Result<Vec<SimpleUser>, ActivityListWatchersForRepoError> {
@@ -3555,6 +3603,7 @@ impl<'api> Activity<'api> {
     /// Marks all notifications as "read" removes it from the [default view on GitHub](https://github.com/notifications). If the number of notifications is too large to complete in one request, you will receive a `202 Accepted` status and GitHub will run an asynchronous process to mark notifications as "read." To check whether any "unread" notifications remain, you can use the [List notifications for the authenticated user](https://docs.github.com/rest/reference/activity#list-notifications-for-the-authenticated-user) endpoint and pass the query parameter `all=false`.
     /// 
     /// [GitHub API docs for mark_notifications_as_read](https://docs.github.com/rest/reference/activity#mark-notifications-as-read)    
+    ///
     /// ---
     pub async fn mark_notifications_as_read_async(&self, body: PutActivityMarkNotificationsAsRead) -> Result<PostReposCreateDeploymentResponse202, ActivityMarkNotificationsAsReadError> {
 
@@ -3596,6 +3645,7 @@ impl<'api> Activity<'api> {
     /// Marks all notifications as "read" removes it from the [default view on GitHub](https://github.com/notifications). If the number of notifications is too large to complete in one request, you will receive a `202 Accepted` status and GitHub will run an asynchronous process to mark notifications as "read." To check whether any "unread" notifications remain, you can use the [List notifications for the authenticated user](https://docs.github.com/rest/reference/activity#list-notifications-for-the-authenticated-user) endpoint and pass the query parameter `all=false`.
     /// 
     /// [GitHub API docs for mark_notifications_as_read](https://docs.github.com/rest/reference/activity#mark-notifications-as-read)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn mark_notifications_as_read(&self, body: PutActivityMarkNotificationsAsRead) -> Result<PostReposCreateDeploymentResponse202, ActivityMarkNotificationsAsReadError> {
@@ -3638,6 +3688,7 @@ impl<'api> Activity<'api> {
     /// Marks all notifications in a repository as "read" removes them from the [default view on GitHub](https://github.com/notifications). If the number of notifications is too large to complete in one request, you will receive a `202 Accepted` status and GitHub will run an asynchronous process to mark notifications as "read." To check whether any "unread" notifications remain, you can use the [List repository notifications for the authenticated user](https://docs.github.com/rest/reference/activity#list-repository-notifications-for-the-authenticated-user) endpoint and pass the query parameter `all=false`.
     /// 
     /// [GitHub API docs for mark_repo_notifications_as_read](https://docs.github.com/rest/reference/activity#mark-repository-notifications-as-read)    
+    ///
     /// ---
     pub async fn mark_repo_notifications_as_read_async(&self, owner: &str, repo: &str, body: PutActivityMarkRepoNotificationsAsRead) -> Result<(), ActivityMarkRepoNotificationsAsReadError> {
 
@@ -3675,6 +3726,7 @@ impl<'api> Activity<'api> {
     /// Marks all notifications in a repository as "read" removes them from the [default view on GitHub](https://github.com/notifications). If the number of notifications is too large to complete in one request, you will receive a `202 Accepted` status and GitHub will run an asynchronous process to mark notifications as "read." To check whether any "unread" notifications remain, you can use the [List repository notifications for the authenticated user](https://docs.github.com/rest/reference/activity#list-repository-notifications-for-the-authenticated-user) endpoint and pass the query parameter `all=false`.
     /// 
     /// [GitHub API docs for mark_repo_notifications_as_read](https://docs.github.com/rest/reference/activity#mark-repository-notifications-as-read)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn mark_repo_notifications_as_read(&self, owner: &str, repo: &str, body: PutActivityMarkRepoNotificationsAsRead) -> Result<(), ActivityMarkRepoNotificationsAsReadError> {
@@ -3711,6 +3763,7 @@ impl<'api> Activity<'api> {
     /// # Mark a thread as read
     /// 
     /// [GitHub API docs for mark_thread_as_read](https://docs.github.com/rest/reference/activity#mark-a-thread-as-read)    
+    ///
     /// ---
     pub async fn mark_thread_as_read_async(&self, thread_id: i32) -> Result<(), ActivityMarkThreadAsReadError> {
 
@@ -3748,6 +3801,7 @@ impl<'api> Activity<'api> {
     /// # Mark a thread as read
     /// 
     /// [GitHub API docs for mark_thread_as_read](https://docs.github.com/rest/reference/activity#mark-a-thread-as-read)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn mark_thread_as_read(&self, thread_id: i32) -> Result<(), ActivityMarkThreadAsReadError> {
@@ -3788,6 +3842,7 @@ impl<'api> Activity<'api> {
     /// If you would like to watch a repository, set `subscribed` to `true`. If you would like to ignore notifications made within a repository, set `ignored` to `true`. If you would like to stop watching a repository, [delete the repository's subscription](https://docs.github.com/rest/reference/activity#delete-a-repository-subscription) completely.
     /// 
     /// [GitHub API docs for set_repo_subscription](https://docs.github.com/rest/reference/activity#set-a-repository-subscription)    
+    ///
     /// ---
     pub async fn set_repo_subscription_async(&self, owner: &str, repo: &str, body: PutActivitySetRepoSubscription) -> Result<RepositorySubscription, ActivitySetRepoSubscriptionError> {
 
@@ -3825,6 +3880,7 @@ impl<'api> Activity<'api> {
     /// If you would like to watch a repository, set `subscribed` to `true`. If you would like to ignore notifications made within a repository, set `ignored` to `true`. If you would like to stop watching a repository, [delete the repository's subscription](https://docs.github.com/rest/reference/activity#delete-a-repository-subscription) completely.
     /// 
     /// [GitHub API docs for set_repo_subscription](https://docs.github.com/rest/reference/activity#set-a-repository-subscription)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_repo_subscription(&self, owner: &str, repo: &str, body: PutActivitySetRepoSubscription) -> Result<RepositorySubscription, ActivitySetRepoSubscriptionError> {
@@ -3867,6 +3923,7 @@ impl<'api> Activity<'api> {
     /// Unsubscribing from a conversation in a repository that you are not watching is functionally equivalent to the [Delete a thread subscription](https://docs.github.com/rest/reference/activity#delete-a-thread-subscription) endpoint.
     /// 
     /// [GitHub API docs for set_thread_subscription](https://docs.github.com/rest/reference/activity#set-a-thread-subscription)    
+    ///
     /// ---
     pub async fn set_thread_subscription_async(&self, thread_id: i32, body: PutActivitySetThreadSubscription) -> Result<ThreadSubscription, ActivitySetThreadSubscriptionError> {
 
@@ -3911,6 +3968,7 @@ impl<'api> Activity<'api> {
     /// Unsubscribing from a conversation in a repository that you are not watching is functionally equivalent to the [Delete a thread subscription](https://docs.github.com/rest/reference/activity#delete-a-thread-subscription) endpoint.
     /// 
     /// [GitHub API docs for set_thread_subscription](https://docs.github.com/rest/reference/activity#set-a-thread-subscription)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_thread_subscription(&self, thread_id: i32, body: PutActivitySetThreadSubscription) -> Result<ThreadSubscription, ActivitySetThreadSubscriptionError> {
@@ -3952,6 +4010,7 @@ impl<'api> Activity<'api> {
     /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
     /// 
     /// [GitHub API docs for star_repo_for_authenticated_user](https://docs.github.com/rest/reference/activity#star-a-repository-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn star_repo_for_authenticated_user_async(&self, owner: &str, repo: &str) -> Result<(), ActivityStarRepoForAuthenticatedUserError> {
 
@@ -3993,6 +4052,7 @@ impl<'api> Activity<'api> {
     /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
     /// 
     /// [GitHub API docs for star_repo_for_authenticated_user](https://docs.github.com/rest/reference/activity#star-a-repository-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn star_repo_for_authenticated_user(&self, owner: &str, repo: &str) -> Result<(), ActivityStarRepoForAuthenticatedUserError> {
@@ -4033,6 +4093,7 @@ impl<'api> Activity<'api> {
     /// # Unstar a repository for the authenticated user
     /// 
     /// [GitHub API docs for unstar_repo_for_authenticated_user](https://docs.github.com/rest/reference/activity#unstar-a-repository-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn unstar_repo_for_authenticated_user_async(&self, owner: &str, repo: &str) -> Result<(), ActivityUnstarRepoForAuthenticatedUserError> {
 
@@ -4072,6 +4133,7 @@ impl<'api> Activity<'api> {
     /// # Unstar a repository for the authenticated user
     /// 
     /// [GitHub API docs for unstar_repo_for_authenticated_user](https://docs.github.com/rest/reference/activity#unstar-a-repository-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn unstar_repo_for_authenticated_user(&self, owner: &str, repo: &str) -> Result<(), ActivityUnstarRepoForAuthenticatedUserError> {

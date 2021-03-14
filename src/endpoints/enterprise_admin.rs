@@ -1029,6 +1029,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for add_org_access_to_self_hosted_runner_group_in_enterprise](https://docs.github.com/rest/reference/enterprise-admin#add-organization-access-to-a-self-hosted-runner-group-in-an-enterprise)    
+    ///
     /// ---
     pub async fn add_org_access_to_self_hosted_runner_group_in_enterprise_async(&self, enterprise: &str, runner_group_id: i32, org_id: i32) -> Result<(), EnterpriseAdminAddOrgAccessToSelfHostedRunnerGroupInEnterpriseError> {
 
@@ -1068,6 +1069,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for add_org_access_to_self_hosted_runner_group_in_enterprise](https://docs.github.com/rest/reference/enterprise-admin#add-organization-access-to-a-self-hosted-runner-group-in-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn add_org_access_to_self_hosted_runner_group_in_enterprise(&self, enterprise: &str, runner_group_id: i32, org_id: i32) -> Result<(), EnterpriseAdminAddOrgAccessToSelfHostedRunnerGroupInEnterpriseError> {
@@ -1109,6 +1111,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// scope to use this endpoint.
     /// 
     /// [GitHub API docs for add_self_hosted_runner_to_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#add-a-self-hosted-runner-to-a-group-for-an-enterprise)    
+    ///
     /// ---
     pub async fn add_self_hosted_runner_to_group_for_enterprise_async(&self, enterprise: &str, runner_group_id: i32, runner_id: i32) -> Result<(), EnterpriseAdminAddSelfHostedRunnerToGroupForEnterpriseError> {
 
@@ -1149,6 +1152,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// scope to use this endpoint.
     /// 
     /// [GitHub API docs for add_self_hosted_runner_to_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#add-a-self-hosted-runner-to-a-group-for-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn add_self_hosted_runner_to_group_for_enterprise(&self, enterprise: &str, runner_group_id: i32, runner_id: i32) -> Result<(), EnterpriseAdminAddSelfHostedRunnerToGroupForEnterpriseError> {
@@ -1197,6 +1201,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// ```
     /// 
     /// [GitHub API docs for create_registration_token_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#create-a-registration-token-for-an-enterprise)    
+    ///
     /// ---
     pub async fn create_registration_token_for_enterprise_async(&self, enterprise: &str) -> Result<AuthenticationToken, EnterpriseAdminCreateRegistrationTokenForEnterpriseError> {
 
@@ -1244,6 +1249,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// ```
     /// 
     /// [GitHub API docs for create_registration_token_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#create-a-registration-token-for-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_registration_token_for_enterprise(&self, enterprise: &str) -> Result<AuthenticationToken, EnterpriseAdminCreateRegistrationTokenForEnterpriseError> {
@@ -1293,6 +1299,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// ```
     /// 
     /// [GitHub API docs for create_remove_token_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#create-a-remove-token-for-an-enterprise)    
+    ///
     /// ---
     pub async fn create_remove_token_for_enterprise_async(&self, enterprise: &str) -> Result<AuthenticationToken, EnterpriseAdminCreateRemoveTokenForEnterpriseError> {
 
@@ -1341,6 +1348,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// ```
     /// 
     /// [GitHub API docs for create_remove_token_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#create-a-remove-token-for-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_remove_token_for_enterprise(&self, enterprise: &str) -> Result<AuthenticationToken, EnterpriseAdminCreateRemoveTokenForEnterpriseError> {
@@ -1381,6 +1389,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for create_self_hosted_runner_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#create-self-hosted-runner-group-for-an-enterprise)    
+    ///
     /// ---
     pub async fn create_self_hosted_runner_group_for_enterprise_async(&self, enterprise: &str, body: PostEnterpriseAdminCreateSelfHostedRunnerGroupForEnterprise) -> Result<RunnerGroupsEnterprise, EnterpriseAdminCreateSelfHostedRunnerGroupForEnterpriseError> {
 
@@ -1420,6 +1429,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for create_self_hosted_runner_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#create-self-hosted-runner-group-for-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_self_hosted_runner_group_for_enterprise(&self, enterprise: &str, body: PostEnterpriseAdminCreateSelfHostedRunnerGroupForEnterprise) -> Result<RunnerGroupsEnterprise, EnterpriseAdminCreateSelfHostedRunnerGroupForEnterpriseError> {
@@ -1458,6 +1468,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// **Note:** The SCIM API endpoints for enterprise accounts are currently in beta and are subject to change.
     /// 
     /// [GitHub API docs for delete_scim_group_from_enterprise](https://docs.github.com/rest/reference/enterprise-admin#delete-a-scim-group-from-an-enterprise)    
+    ///
     /// ---
     pub async fn delete_scim_group_from_enterprise_async(&self, enterprise: &str, scim_group_id: &str) -> Result<(), EnterpriseAdminDeleteScimGroupFromEnterpriseError> {
 
@@ -1495,6 +1506,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// **Note:** The SCIM API endpoints for enterprise accounts are currently in beta and are subject to change.
     /// 
     /// [GitHub API docs for delete_scim_group_from_enterprise](https://docs.github.com/rest/reference/enterprise-admin#delete-a-scim-group-from-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_scim_group_from_enterprise(&self, enterprise: &str, scim_group_id: &str) -> Result<(), EnterpriseAdminDeleteScimGroupFromEnterpriseError> {
@@ -1535,6 +1547,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for delete_self_hosted_runner_from_enterprise](https://docs.github.com/rest/reference/enterprise-admin#delete-self-hosted-runner-from-an-enterprise)    
+    ///
     /// ---
     pub async fn delete_self_hosted_runner_from_enterprise_async(&self, enterprise: &str, runner_id: i32) -> Result<(), EnterpriseAdminDeleteSelfHostedRunnerFromEnterpriseError> {
 
@@ -1574,6 +1587,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for delete_self_hosted_runner_from_enterprise](https://docs.github.com/rest/reference/enterprise-admin#delete-self-hosted-runner-from-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_self_hosted_runner_from_enterprise(&self, enterprise: &str, runner_id: i32) -> Result<(), EnterpriseAdminDeleteSelfHostedRunnerFromEnterpriseError> {
@@ -1614,6 +1628,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for delete_self_hosted_runner_group_from_enterprise](https://docs.github.com/rest/reference/enterprise-admin#delete-a-self-hosted-runner-group-from-an-enterprise)    
+    ///
     /// ---
     pub async fn delete_self_hosted_runner_group_from_enterprise_async(&self, enterprise: &str, runner_group_id: i32) -> Result<(), EnterpriseAdminDeleteSelfHostedRunnerGroupFromEnterpriseError> {
 
@@ -1653,6 +1668,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for delete_self_hosted_runner_group_from_enterprise](https://docs.github.com/rest/reference/enterprise-admin#delete-a-self-hosted-runner-group-from-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_self_hosted_runner_group_from_enterprise(&self, enterprise: &str, runner_group_id: i32) -> Result<(), EnterpriseAdminDeleteSelfHostedRunnerGroupFromEnterpriseError> {
@@ -1691,6 +1707,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// **Note:** The SCIM API endpoints for enterprise accounts are currently in beta and are subject to change.
     /// 
     /// [GitHub API docs for delete_user_from_enterprise](https://docs.github.com/rest/reference/enterprise-admin#delete-a-scim-user-from-an-enterprise)    
+    ///
     /// ---
     pub async fn delete_user_from_enterprise_async(&self, enterprise: &str, scim_user_id: &str) -> Result<(), EnterpriseAdminDeleteUserFromEnterpriseError> {
 
@@ -1728,6 +1745,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// **Note:** The SCIM API endpoints for enterprise accounts are currently in beta and are subject to change.
     /// 
     /// [GitHub API docs for delete_user_from_enterprise](https://docs.github.com/rest/reference/enterprise-admin#delete-a-scim-user-from-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_user_from_enterprise(&self, enterprise: &str, scim_user_id: &str) -> Result<(), EnterpriseAdminDeleteUserFromEnterpriseError> {
@@ -1768,6 +1786,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for disable_selected_organization_github_actions_enterprise](https://docs.github.com/rest/reference/enterprise-admin#disable-a-selected-organization-for-github-actions-in-an-enterprise)    
+    ///
     /// ---
     pub async fn disable_selected_organization_github_actions_enterprise_async(&self, enterprise: &str, org_id: i32) -> Result<(), EnterpriseAdminDisableSelectedOrganizationGithubActionsEnterpriseError> {
 
@@ -1807,6 +1826,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for disable_selected_organization_github_actions_enterprise](https://docs.github.com/rest/reference/enterprise-admin#disable-a-selected-organization-for-github-actions-in-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn disable_selected_organization_github_actions_enterprise(&self, enterprise: &str, org_id: i32) -> Result<(), EnterpriseAdminDisableSelectedOrganizationGithubActionsEnterpriseError> {
@@ -1847,6 +1867,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for enable_selected_organization_github_actions_enterprise](https://docs.github.com/rest/reference/enterprise-admin#enable-a-selected-organization-for-github-actions-in-an-enterprise)    
+    ///
     /// ---
     pub async fn enable_selected_organization_github_actions_enterprise_async(&self, enterprise: &str, org_id: i32) -> Result<(), EnterpriseAdminEnableSelectedOrganizationGithubActionsEnterpriseError> {
 
@@ -1886,6 +1907,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for enable_selected_organization_github_actions_enterprise](https://docs.github.com/rest/reference/enterprise-admin#enable-a-selected-organization-for-github-actions-in-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn enable_selected_organization_github_actions_enterprise(&self, enterprise: &str, org_id: i32) -> Result<(), EnterpriseAdminEnableSelectedOrganizationGithubActionsEnterpriseError> {
@@ -1926,6 +1948,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for get_allowed_actions_enterprise](https://docs.github.com/rest/reference/enterprise-admin#get-allowed-actions-for-an-enterprise)    
+    ///
     /// ---
     pub async fn get_allowed_actions_enterprise_async(&self, enterprise: &str) -> Result<PutActionsSetAllowedActionsRepository, EnterpriseAdminGetAllowedActionsEnterpriseError> {
 
@@ -1965,6 +1988,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for get_allowed_actions_enterprise](https://docs.github.com/rest/reference/enterprise-admin#get-allowed-actions-for-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_allowed_actions_enterprise(&self, enterprise: &str) -> Result<PutActionsSetAllowedActionsRepository, EnterpriseAdminGetAllowedActionsEnterpriseError> {
@@ -2005,6 +2029,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for get_github_actions_permissions_enterprise](https://docs.github.com/rest/reference/enterprise-admin#get-github-actions-permissions-for-an-enterprise)    
+    ///
     /// ---
     pub async fn get_github_actions_permissions_enterprise_async(&self, enterprise: &str) -> Result<ActionsEnterprisePermissions, EnterpriseAdminGetGithubActionsPermissionsEnterpriseError> {
 
@@ -2044,6 +2069,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for get_github_actions_permissions_enterprise](https://docs.github.com/rest/reference/enterprise-admin#get-github-actions-permissions-for-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_github_actions_permissions_enterprise(&self, enterprise: &str) -> Result<ActionsEnterprisePermissions, EnterpriseAdminGetGithubActionsPermissionsEnterpriseError> {
@@ -2082,6 +2108,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// **Note:** The SCIM API endpoints for enterprise accounts are currently in beta and are subject to change.
     /// 
     /// [GitHub API docs for get_provisioning_information_for_enterprise_group](https://docs.github.com/rest/reference/enterprise-admin#get-scim-provisioning-information-for-an-enterprise-group)    
+    ///
     /// ---
     pub async fn get_provisioning_information_for_enterprise_group_async(&self, enterprise: &str, scim_group_id: &str, query_params: Option<impl Into<EnterpriseAdminGetProvisioningInformationForEnterpriseGroupParams<'api>>>) -> Result<ScimEnterpriseGroup, EnterpriseAdminGetProvisioningInformationForEnterpriseGroupError> {
 
@@ -2123,6 +2150,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// **Note:** The SCIM API endpoints for enterprise accounts are currently in beta and are subject to change.
     /// 
     /// [GitHub API docs for get_provisioning_information_for_enterprise_group](https://docs.github.com/rest/reference/enterprise-admin#get-scim-provisioning-information-for-an-enterprise-group)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_provisioning_information_for_enterprise_group(&self, enterprise: &str, scim_group_id: &str, query_params: Option<impl Into<EnterpriseAdminGetProvisioningInformationForEnterpriseGroupParams<'api>>>) -> Result<ScimEnterpriseGroup, EnterpriseAdminGetProvisioningInformationForEnterpriseGroupError> {
@@ -2166,6 +2194,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// **Note:** The SCIM API endpoints for enterprise accounts are currently in beta and are subject to change.
     /// 
     /// [GitHub API docs for get_provisioning_information_for_enterprise_user](https://docs.github.com/rest/reference/enterprise-admin#get-scim-provisioning-information-for-an-enterprise-user)    
+    ///
     /// ---
     pub async fn get_provisioning_information_for_enterprise_user_async(&self, enterprise: &str, scim_user_id: &str) -> Result<ScimEnterpriseUser, EnterpriseAdminGetProvisioningInformationForEnterpriseUserError> {
 
@@ -2203,6 +2232,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// **Note:** The SCIM API endpoints for enterprise accounts are currently in beta and are subject to change.
     /// 
     /// [GitHub API docs for get_provisioning_information_for_enterprise_user](https://docs.github.com/rest/reference/enterprise-admin#get-scim-provisioning-information-for-an-enterprise-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_provisioning_information_for_enterprise_user(&self, enterprise: &str, scim_user_id: &str) -> Result<ScimEnterpriseUser, EnterpriseAdminGetProvisioningInformationForEnterpriseUserError> {
@@ -2243,6 +2273,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for get_self_hosted_runner_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#get-a-self-hosted-runner-for-an-enterprise)    
+    ///
     /// ---
     pub async fn get_self_hosted_runner_for_enterprise_async(&self, enterprise: &str, runner_id: i32) -> Result<Runner, EnterpriseAdminGetSelfHostedRunnerForEnterpriseError> {
 
@@ -2282,6 +2313,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for get_self_hosted_runner_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#get-a-self-hosted-runner-for-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_self_hosted_runner_for_enterprise(&self, enterprise: &str, runner_id: i32) -> Result<Runner, EnterpriseAdminGetSelfHostedRunnerForEnterpriseError> {
@@ -2322,6 +2354,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for get_self_hosted_runner_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#get-a-self-hosted-runner-group-for-an-enterprise)    
+    ///
     /// ---
     pub async fn get_self_hosted_runner_group_for_enterprise_async(&self, enterprise: &str, runner_group_id: i32) -> Result<RunnerGroupsEnterprise, EnterpriseAdminGetSelfHostedRunnerGroupForEnterpriseError> {
 
@@ -2361,6 +2394,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for get_self_hosted_runner_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#get-a-self-hosted-runner-group-for-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_self_hosted_runner_group_for_enterprise(&self, enterprise: &str, runner_group_id: i32) -> Result<RunnerGroupsEnterprise, EnterpriseAdminGetSelfHostedRunnerGroupForEnterpriseError> {
@@ -2401,6 +2435,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_org_access_to_self_hosted_runner_group_in_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-organization-access-to-a-self-hosted-runner-group-in-a-enterprise)    
+    ///
     /// ---
     pub async fn list_org_access_to_self_hosted_runner_group_in_enterprise_async(&self, enterprise: &str, runner_group_id: i32, query_params: Option<impl Into<EnterpriseAdminListOrgAccessToSelfHostedRunnerGroupInEnterpriseParams>>) -> Result<GetEnterpriseAdminListOrgAccessToSelfHostedRunnerGroupInEnterpriseResponse200, EnterpriseAdminListOrgAccessToSelfHostedRunnerGroupInEnterpriseError> {
 
@@ -2444,6 +2479,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_org_access_to_self_hosted_runner_group_in_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-organization-access-to-a-self-hosted-runner-group-in-a-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_org_access_to_self_hosted_runner_group_in_enterprise(&self, enterprise: &str, runner_group_id: i32, query_params: Option<impl Into<EnterpriseAdminListOrgAccessToSelfHostedRunnerGroupInEnterpriseParams>>) -> Result<GetEnterpriseAdminListOrgAccessToSelfHostedRunnerGroupInEnterpriseResponse200, EnterpriseAdminListOrgAccessToSelfHostedRunnerGroupInEnterpriseError> {
@@ -2487,6 +2523,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// **Note:** The SCIM API endpoints for enterprise accounts are currently in beta and are subject to change.
     /// 
     /// [GitHub API docs for list_provisioned_groups_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-provisioned-scim-groups-for-an-enterprise)    
+    ///
     /// ---
     pub async fn list_provisioned_groups_enterprise_async(&self, enterprise: &str, query_params: Option<impl Into<EnterpriseAdminListProvisionedGroupsEnterpriseParams<'api>>>) -> Result<ScimGroupListEnterprise, EnterpriseAdminListProvisionedGroupsEnterpriseError> {
 
@@ -2528,6 +2565,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// **Note:** The SCIM API endpoints for enterprise accounts are currently in beta and are subject to change.
     /// 
     /// [GitHub API docs for list_provisioned_groups_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-provisioned-scim-groups-for-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_provisioned_groups_enterprise(&self, enterprise: &str, query_params: Option<impl Into<EnterpriseAdminListProvisionedGroupsEnterpriseParams<'api>>>) -> Result<ScimGroupListEnterprise, EnterpriseAdminListProvisionedGroupsEnterpriseError> {
@@ -2588,6 +2626,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///    - If the user does not sign in (or does not create a new account when prompted), they are not added to the GitHub enterprise, and the external identity `null` entry remains in place.
     /// 
     /// [GitHub API docs for list_provisioned_identities_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-scim-provisioned-identities-for-an-enterprise)    
+    ///
     /// ---
     pub async fn list_provisioned_identities_enterprise_async(&self, enterprise: &str, query_params: Option<impl Into<EnterpriseAdminListProvisionedIdentitiesEnterpriseParams<'api>>>) -> Result<ScimUserListEnterprise, EnterpriseAdminListProvisionedIdentitiesEnterpriseError> {
 
@@ -2646,6 +2685,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///    - If the user does not sign in (or does not create a new account when prompted), they are not added to the GitHub enterprise, and the external identity `null` entry remains in place.
     /// 
     /// [GitHub API docs for list_provisioned_identities_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-scim-provisioned-identities-for-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_provisioned_identities_enterprise(&self, enterprise: &str, query_params: Option<impl Into<EnterpriseAdminListProvisionedIdentitiesEnterpriseParams<'api>>>) -> Result<ScimUserListEnterprise, EnterpriseAdminListProvisionedIdentitiesEnterpriseError> {
@@ -2691,6 +2731,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_runner_applications_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-runner-applications-for-an-enterprise)    
+    ///
     /// ---
     pub async fn list_runner_applications_for_enterprise_async(&self, enterprise: &str) -> Result<Vec<RunnerApplication>, EnterpriseAdminListRunnerApplicationsForEnterpriseError> {
 
@@ -2730,6 +2771,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_runner_applications_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-runner-applications-for-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_runner_applications_for_enterprise(&self, enterprise: &str) -> Result<Vec<RunnerApplication>, EnterpriseAdminListRunnerApplicationsForEnterpriseError> {
@@ -2770,6 +2812,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_selected_organizations_enabled_github_actions_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-selected-organizations-enabled-for-github-actions-in-an-enterprise)    
+    ///
     /// ---
     pub async fn list_selected_organizations_enabled_github_actions_enterprise_async(&self, enterprise: &str, query_params: Option<impl Into<EnterpriseAdminListSelectedOrganizationsEnabledGithubActionsEnterpriseParams>>) -> Result<GetEnterpriseAdminListOrgAccessToSelfHostedRunnerGroupInEnterpriseResponse200, EnterpriseAdminListSelectedOrganizationsEnabledGithubActionsEnterpriseError> {
 
@@ -2813,6 +2856,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_selected_organizations_enabled_github_actions_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-selected-organizations-enabled-for-github-actions-in-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_selected_organizations_enabled_github_actions_enterprise(&self, enterprise: &str, query_params: Option<impl Into<EnterpriseAdminListSelectedOrganizationsEnabledGithubActionsEnterpriseParams>>) -> Result<GetEnterpriseAdminListOrgAccessToSelfHostedRunnerGroupInEnterpriseResponse200, EnterpriseAdminListSelectedOrganizationsEnabledGithubActionsEnterpriseError> {
@@ -2858,6 +2902,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_self_hosted_runner_groups_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-self-hosted-runner-groups-for-an-enterprise)    
+    ///
     /// ---
     pub async fn list_self_hosted_runner_groups_for_enterprise_async(&self, enterprise: &str, query_params: Option<impl Into<EnterpriseAdminListSelfHostedRunnerGroupsForEnterpriseParams>>) -> Result<GetEnterpriseAdminListSelfHostedRunnerGroupsForEnterpriseResponse200, EnterpriseAdminListSelfHostedRunnerGroupsForEnterpriseError> {
 
@@ -2901,6 +2946,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_self_hosted_runner_groups_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-self-hosted-runner-groups-for-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_self_hosted_runner_groups_for_enterprise(&self, enterprise: &str, query_params: Option<impl Into<EnterpriseAdminListSelfHostedRunnerGroupsForEnterpriseParams>>) -> Result<GetEnterpriseAdminListSelfHostedRunnerGroupsForEnterpriseResponse200, EnterpriseAdminListSelfHostedRunnerGroupsForEnterpriseError> {
@@ -2946,6 +2992,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_self_hosted_runners_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-self-hosted-runners-for-an-enterprise)    
+    ///
     /// ---
     pub async fn list_self_hosted_runners_for_enterprise_async(&self, enterprise: &str, query_params: Option<impl Into<EnterpriseAdminListSelfHostedRunnersForEnterpriseParams>>) -> Result<GetEnterpriseAdminListSelfHostedRunnersForEnterpriseResponse200, EnterpriseAdminListSelfHostedRunnersForEnterpriseError> {
 
@@ -2989,6 +3036,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_self_hosted_runners_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-self-hosted-runners-for-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_self_hosted_runners_for_enterprise(&self, enterprise: &str, query_params: Option<impl Into<EnterpriseAdminListSelfHostedRunnersForEnterpriseParams>>) -> Result<GetEnterpriseAdminListSelfHostedRunnersForEnterpriseResponse200, EnterpriseAdminListSelfHostedRunnersForEnterpriseError> {
@@ -3034,6 +3082,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_self_hosted_runners_in_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-self-hosted-runners-in-a-group-for-an-enterprise)    
+    ///
     /// ---
     pub async fn list_self_hosted_runners_in_group_for_enterprise_async(&self, enterprise: &str, runner_group_id: i32, query_params: Option<impl Into<EnterpriseAdminListSelfHostedRunnersInGroupForEnterpriseParams>>) -> Result<GetActionsListSelfHostedRunnersInGroupForOrgResponse200, EnterpriseAdminListSelfHostedRunnersInGroupForEnterpriseError> {
 
@@ -3077,6 +3126,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_self_hosted_runners_in_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-self-hosted-runners-in-a-group-for-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_self_hosted_runners_in_group_for_enterprise(&self, enterprise: &str, runner_group_id: i32, query_params: Option<impl Into<EnterpriseAdminListSelfHostedRunnersInGroupForEnterpriseParams>>) -> Result<GetActionsListSelfHostedRunnersInGroupForOrgResponse200, EnterpriseAdminListSelfHostedRunnersInGroupForEnterpriseError> {
@@ -3122,6 +3172,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// Provision an enterprise group, and invite users to the group. This sends invitation emails to the email address of the invited users to join the GitHub organization that the SCIM group corresponds to.
     /// 
     /// [GitHub API docs for provision_and_invite_enterprise_group](https://docs.github.com/rest/reference/enterprise-admin#provision-a-scim-enterprise-group-and-invite-users)    
+    ///
     /// ---
     pub async fn provision_and_invite_enterprise_group_async(&self, enterprise: &str, body: PostEnterpriseAdminProvisionAndInviteEnterpriseGroup) -> Result<ScimEnterpriseGroup, EnterpriseAdminProvisionAndInviteEnterpriseGroupError> {
 
@@ -3161,6 +3212,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// Provision an enterprise group, and invite users to the group. This sends invitation emails to the email address of the invited users to join the GitHub organization that the SCIM group corresponds to.
     /// 
     /// [GitHub API docs for provision_and_invite_enterprise_group](https://docs.github.com/rest/reference/enterprise-admin#provision-a-scim-enterprise-group-and-invite-users)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn provision_and_invite_enterprise_group(&self, enterprise: &str, body: PostEnterpriseAdminProvisionAndInviteEnterpriseGroup) -> Result<ScimEnterpriseGroup, EnterpriseAdminProvisionAndInviteEnterpriseGroupError> {
@@ -3203,6 +3255,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You can optionally include the groups a user will be invited to join. If you do not provide a list of `groups`, the user is provisioned for the enterprise, but no organization invitation emails will be sent.
     /// 
     /// [GitHub API docs for provision_and_invite_enterprise_user](https://docs.github.com/rest/reference/enterprise-admin#provision-and-invite-a-scim-enterprise-user)    
+    ///
     /// ---
     pub async fn provision_and_invite_enterprise_user_async(&self, enterprise: &str, body: PostEnterpriseAdminProvisionAndInviteEnterpriseUser) -> Result<ScimEnterpriseUser, EnterpriseAdminProvisionAndInviteEnterpriseUserError> {
 
@@ -3244,6 +3297,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You can optionally include the groups a user will be invited to join. If you do not provide a list of `groups`, the user is provisioned for the enterprise, but no organization invitation emails will be sent.
     /// 
     /// [GitHub API docs for provision_and_invite_enterprise_user](https://docs.github.com/rest/reference/enterprise-admin#provision-and-invite-a-scim-enterprise-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn provision_and_invite_enterprise_user(&self, enterprise: &str, body: PostEnterpriseAdminProvisionAndInviteEnterpriseUser) -> Result<ScimEnterpriseUser, EnterpriseAdminProvisionAndInviteEnterpriseUserError> {
@@ -3284,6 +3338,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for remove_org_access_to_self_hosted_runner_group_in_enterprise](https://docs.github.com/rest/reference/enterprise-admin#remove-organization-access-to-a-self-hosted-runner-group-in-an-enterprise)    
+    ///
     /// ---
     pub async fn remove_org_access_to_self_hosted_runner_group_in_enterprise_async(&self, enterprise: &str, runner_group_id: i32, org_id: i32) -> Result<(), EnterpriseAdminRemoveOrgAccessToSelfHostedRunnerGroupInEnterpriseError> {
 
@@ -3323,6 +3378,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for remove_org_access_to_self_hosted_runner_group_in_enterprise](https://docs.github.com/rest/reference/enterprise-admin#remove-organization-access-to-a-self-hosted-runner-group-in-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn remove_org_access_to_self_hosted_runner_group_in_enterprise(&self, enterprise: &str, runner_group_id: i32, org_id: i32) -> Result<(), EnterpriseAdminRemoveOrgAccessToSelfHostedRunnerGroupInEnterpriseError> {
@@ -3363,6 +3419,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for remove_self_hosted_runner_from_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#remove-a-self-hosted-runner-from-a-group-for-an-enterprise)    
+    ///
     /// ---
     pub async fn remove_self_hosted_runner_from_group_for_enterprise_async(&self, enterprise: &str, runner_group_id: i32, runner_id: i32) -> Result<(), EnterpriseAdminRemoveSelfHostedRunnerFromGroupForEnterpriseError> {
 
@@ -3402,6 +3459,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for remove_self_hosted_runner_from_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#remove-a-self-hosted-runner-from-a-group-for-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn remove_self_hosted_runner_from_group_for_enterprise(&self, enterprise: &str, runner_group_id: i32, runner_id: i32) -> Result<(), EnterpriseAdminRemoveSelfHostedRunnerFromGroupForEnterpriseError> {
@@ -3442,6 +3500,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for set_allowed_actions_enterprise](https://docs.github.com/rest/reference/enterprise-admin#set-allowed-actions-for-an-enterprise)    
+    ///
     /// ---
     pub async fn set_allowed_actions_enterprise_async(&self, enterprise: &str, body: PutActionsSetAllowedActionsRepository) -> Result<(), EnterpriseAdminSetAllowedActionsEnterpriseError> {
 
@@ -3481,6 +3540,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for set_allowed_actions_enterprise](https://docs.github.com/rest/reference/enterprise-admin#set-allowed-actions-for-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_allowed_actions_enterprise(&self, enterprise: &str, body: PutActionsSetAllowedActionsRepository) -> Result<(), EnterpriseAdminSetAllowedActionsEnterpriseError> {
@@ -3521,6 +3581,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for set_github_actions_permissions_enterprise](https://docs.github.com/rest/reference/enterprise-admin#set-github-actions-permissions-for-an-enterprise)    
+    ///
     /// ---
     pub async fn set_github_actions_permissions_enterprise_async(&self, enterprise: &str, body: PutEnterpriseAdminSetGithubActionsPermissionsEnterprise) -> Result<(), EnterpriseAdminSetGithubActionsPermissionsEnterpriseError> {
 
@@ -3560,6 +3621,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for set_github_actions_permissions_enterprise](https://docs.github.com/rest/reference/enterprise-admin#set-github-actions-permissions-for-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_github_actions_permissions_enterprise(&self, enterprise: &str, body: PutEnterpriseAdminSetGithubActionsPermissionsEnterprise) -> Result<(), EnterpriseAdminSetGithubActionsPermissionsEnterpriseError> {
@@ -3600,6 +3662,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// Replaces an existing provisioned group’s information. You must provide all the information required for the group as if you were provisioning it for the first time. Any existing group information that you don't provide will be removed, including group membership. If you want to only update a specific attribute, use the [Update an attribute for a SCIM enterprise group](#update-an-attribute-for-a-scim-enterprise-group) endpoint instead.
     /// 
     /// [GitHub API docs for set_information_for_provisioned_enterprise_group](https://docs.github.com/rest/reference/enterprise-admin#set-scim-information-for-a-provisioned-enterprise-group)    
+    ///
     /// ---
     pub async fn set_information_for_provisioned_enterprise_group_async(&self, enterprise: &str, scim_group_id: &str, body: PutEnterpriseAdminSetInformationForProvisionedEnterpriseGroup) -> Result<ScimEnterpriseGroup, EnterpriseAdminSetInformationForProvisionedEnterpriseGroupError> {
 
@@ -3639,6 +3702,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// Replaces an existing provisioned group’s information. You must provide all the information required for the group as if you were provisioning it for the first time. Any existing group information that you don't provide will be removed, including group membership. If you want to only update a specific attribute, use the [Update an attribute for a SCIM enterprise group](#update-an-attribute-for-a-scim-enterprise-group) endpoint instead.
     /// 
     /// [GitHub API docs for set_information_for_provisioned_enterprise_group](https://docs.github.com/rest/reference/enterprise-admin#set-scim-information-for-a-provisioned-enterprise-group)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_information_for_provisioned_enterprise_group(&self, enterprise: &str, scim_group_id: &str, body: PutEnterpriseAdminSetInformationForProvisionedEnterpriseGroup) -> Result<ScimEnterpriseGroup, EnterpriseAdminSetInformationForProvisionedEnterpriseGroupError> {
@@ -3683,6 +3747,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// **Warning:** Setting `active: false` removes the user from the enterprise, deletes the external identity, and deletes the associated `{scim_user_id}`.
     /// 
     /// [GitHub API docs for set_information_for_provisioned_enterprise_user](https://docs.github.com/rest/reference/enterprise-admin#set-scim-information-for-a-provisioned-enterprise-user)    
+    ///
     /// ---
     pub async fn set_information_for_provisioned_enterprise_user_async(&self, enterprise: &str, scim_user_id: &str, body: PutEnterpriseAdminSetInformationForProvisionedEnterpriseUser) -> Result<ScimEnterpriseUser, EnterpriseAdminSetInformationForProvisionedEnterpriseUserError> {
 
@@ -3726,6 +3791,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// **Warning:** Setting `active: false` removes the user from the enterprise, deletes the external identity, and deletes the associated `{scim_user_id}`.
     /// 
     /// [GitHub API docs for set_information_for_provisioned_enterprise_user](https://docs.github.com/rest/reference/enterprise-admin#set-scim-information-for-a-provisioned-enterprise-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_information_for_provisioned_enterprise_user(&self, enterprise: &str, scim_user_id: &str, body: PutEnterpriseAdminSetInformationForProvisionedEnterpriseUser) -> Result<ScimEnterpriseUser, EnterpriseAdminSetInformationForProvisionedEnterpriseUserError> {
@@ -3766,6 +3832,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for set_org_access_to_self_hosted_runner_group_in_enterprise](https://docs.github.com/rest/reference/enterprise-admin#set-organization-access-to-a-self-hosted-runner-group-in-an-enterprise)    
+    ///
     /// ---
     pub async fn set_org_access_to_self_hosted_runner_group_in_enterprise_async(&self, enterprise: &str, runner_group_id: i32, body: PutEnterpriseAdminSetOrgAccessToSelfHostedRunnerGroupInEnterprise) -> Result<(), EnterpriseAdminSetOrgAccessToSelfHostedRunnerGroupInEnterpriseError> {
 
@@ -3805,6 +3872,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for set_org_access_to_self_hosted_runner_group_in_enterprise](https://docs.github.com/rest/reference/enterprise-admin#set-organization-access-to-a-self-hosted-runner-group-in-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_org_access_to_self_hosted_runner_group_in_enterprise(&self, enterprise: &str, runner_group_id: i32, body: PutEnterpriseAdminSetOrgAccessToSelfHostedRunnerGroupInEnterprise) -> Result<(), EnterpriseAdminSetOrgAccessToSelfHostedRunnerGroupInEnterpriseError> {
@@ -3845,6 +3913,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for set_selected_organizations_enabled_github_actions_enterprise](https://docs.github.com/rest/reference/enterprise-admin#set-selected-organizations-enabled-for-github-actions-in-an-enterprise)    
+    ///
     /// ---
     pub async fn set_selected_organizations_enabled_github_actions_enterprise_async(&self, enterprise: &str, body: PutEnterpriseAdminSetSelectedOrganizationsEnabledGithubActionsEnterprise) -> Result<(), EnterpriseAdminSetSelectedOrganizationsEnabledGithubActionsEnterpriseError> {
 
@@ -3884,6 +3953,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for set_selected_organizations_enabled_github_actions_enterprise](https://docs.github.com/rest/reference/enterprise-admin#set-selected-organizations-enabled-for-github-actions-in-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_selected_organizations_enabled_github_actions_enterprise(&self, enterprise: &str, body: PutEnterpriseAdminSetSelectedOrganizationsEnabledGithubActionsEnterprise) -> Result<(), EnterpriseAdminSetSelectedOrganizationsEnabledGithubActionsEnterpriseError> {
@@ -3924,6 +3994,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for set_self_hosted_runners_in_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#set-self-hosted-runners-in-a-group-for-an-enterprise)    
+    ///
     /// ---
     pub async fn set_self_hosted_runners_in_group_for_enterprise_async(&self, enterprise: &str, runner_group_id: i32, body: PutEnterpriseAdminSetSelfHostedRunnersInGroupForEnterprise) -> Result<(), EnterpriseAdminSetSelfHostedRunnersInGroupForEnterpriseError> {
 
@@ -3963,6 +4034,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for set_self_hosted_runners_in_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#set-self-hosted-runners-in-a-group-for-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_self_hosted_runners_in_group_for_enterprise(&self, enterprise: &str, runner_group_id: i32, body: PutEnterpriseAdminSetSelfHostedRunnersInGroupForEnterprise) -> Result<(), EnterpriseAdminSetSelfHostedRunnersInGroupForEnterpriseError> {
@@ -4003,6 +4075,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// Allows you to change a provisioned group’s individual attributes. To change a group’s values, you must provide a specific Operations JSON format that contains at least one of the add, remove, or replace operations. For examples and more information on the SCIM operations format, see the [SCIM specification](https://tools.ietf.org/html/rfc7644#section-3.5.2).
     /// 
     /// [GitHub API docs for update_attribute_for_enterprise_group](https://docs.github.com/rest/reference/enterprise-admin#update-an-attribute-for-a-scim-enterprise-group)    
+    ///
     /// ---
     pub async fn update_attribute_for_enterprise_group_async(&self, enterprise: &str, scim_group_id: &str, body: PatchEnterpriseAdminUpdateAttributeForEnterpriseGroup) -> Result<ScimEnterpriseGroup, EnterpriseAdminUpdateAttributeForEnterpriseGroupError> {
 
@@ -4042,6 +4115,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// Allows you to change a provisioned group’s individual attributes. To change a group’s values, you must provide a specific Operations JSON format that contains at least one of the add, remove, or replace operations. For examples and more information on the SCIM operations format, see the [SCIM specification](https://tools.ietf.org/html/rfc7644#section-3.5.2).
     /// 
     /// [GitHub API docs for update_attribute_for_enterprise_group](https://docs.github.com/rest/reference/enterprise-admin#update-an-attribute-for-a-scim-enterprise-group)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn update_attribute_for_enterprise_group(&self, enterprise: &str, scim_group_id: &str, body: PatchEnterpriseAdminUpdateAttributeForEnterpriseGroup) -> Result<ScimEnterpriseGroup, EnterpriseAdminUpdateAttributeForEnterpriseGroupError> {
@@ -4097,6 +4171,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// ```
     /// 
     /// [GitHub API docs for update_attribute_for_enterprise_user](https://docs.github.com/rest/reference/enterprise-admin#update-an-attribute-for-a-scim-enterprise-user)    
+    ///
     /// ---
     pub async fn update_attribute_for_enterprise_user_async(&self, enterprise: &str, scim_user_id: &str, body: PatchEnterpriseAdminUpdateAttributeForEnterpriseUser) -> Result<ScimEnterpriseUser, EnterpriseAdminUpdateAttributeForEnterpriseUserError> {
 
@@ -4151,6 +4226,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// ```
     /// 
     /// [GitHub API docs for update_attribute_for_enterprise_user](https://docs.github.com/rest/reference/enterprise-admin#update-an-attribute-for-a-scim-enterprise-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn update_attribute_for_enterprise_user(&self, enterprise: &str, scim_user_id: &str, body: PatchEnterpriseAdminUpdateAttributeForEnterpriseUser) -> Result<ScimEnterpriseUser, EnterpriseAdminUpdateAttributeForEnterpriseUserError> {
@@ -4191,6 +4267,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for update_self_hosted_runner_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#update-a-self-hosted-runner-group-for-an-enterprise)    
+    ///
     /// ---
     pub async fn update_self_hosted_runner_group_for_enterprise_async(&self, enterprise: &str, runner_group_id: i32, body: PatchEnterpriseAdminUpdateSelfHostedRunnerGroupForEnterprise) -> Result<RunnerGroupsEnterprise, EnterpriseAdminUpdateSelfHostedRunnerGroupForEnterpriseError> {
 
@@ -4230,6 +4307,7 @@ impl<'api> EnterpriseAdmin<'api> {
     /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for update_self_hosted_runner_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#update-a-self-hosted-runner-group-for-an-enterprise)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn update_self_hosted_runner_group_for_enterprise(&self, enterprise: &str, runner_group_id: i32, body: PatchEnterpriseAdminUpdateSelfHostedRunnerGroupForEnterprise) -> Result<RunnerGroupsEnterprise, EnterpriseAdminUpdateSelfHostedRunnerGroupForEnterpriseError> {

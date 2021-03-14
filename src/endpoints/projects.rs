@@ -988,6 +988,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for add_collaborator](https://docs.github.com/rest/reference/projects#add-project-collaborator)///
     /// The `add_collaborator_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn add_collaborator_async(&self, project_id: i32, username: &str, body: PutProjectsAddCollaborator) -> Result<(), ProjectsAddCollaboratorError> {
@@ -1033,6 +1034,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for add_collaborator](https://docs.github.com/rest/reference/projects#add-project-collaborator)///
     /// The `add_collaborator` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -1081,6 +1083,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for create_card](https://docs.github.com/rest/reference/projects#create-a-project-card)///
     /// The `create_card_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn create_card_async(&self, column_id: i32, body: PostProjectsCreateCard) -> Result<ProjectCard, ProjectsCreateCardError> {
@@ -1127,6 +1130,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for create_card](https://docs.github.com/rest/reference/projects#create-a-project-card)///
     /// The `create_card` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -1170,6 +1174,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for create_column](https://docs.github.com/rest/reference/projects#create-a-project-column)///
     /// The `create_column_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn create_column_async(&self, project_id: i32, body: PostProjectsCreateColumn) -> Result<ProjectColumn, ProjectsCreateColumnError> {
@@ -1211,6 +1216,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for create_column](https://docs.github.com/rest/reference/projects#create-a-project-column)///
     /// The `create_column` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -1253,6 +1259,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/reference/projects/#create-a-user-project)///
     /// The `create_for_authenticated_user_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn create_for_authenticated_user_async(&self, body: PostProjectsCreateForAuthenticatedUser) -> Result<Project, ProjectsCreateForAuthenticatedUserError> {
@@ -1295,6 +1302,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/reference/projects/#create-a-user-project)///
     /// The `create_for_authenticated_user` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -1340,6 +1348,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for create_for_org](https://docs.github.com/rest/reference/projects/#create-an-organization-project)///
     /// The `create_for_org_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn create_for_org_async(&self, org: &str, body: PostProjectsCreateForOrg) -> Result<Project, ProjectsCreateForOrgError> {
@@ -1384,6 +1393,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for create_for_org](https://docs.github.com/rest/reference/projects/#create-an-organization-project)///
     /// The `create_for_org` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -1429,6 +1439,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for create_for_repo](https://docs.github.com/rest/reference/projects/#create-a-repository-project)///
     /// The `create_for_repo_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn create_for_repo_async(&self, owner: &str, repo: &str, body: PostProjectsCreateForRepo) -> Result<Project, ProjectsCreateForRepoError> {
@@ -1473,6 +1484,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for create_for_repo](https://docs.github.com/rest/reference/projects/#create-a-repository-project)///
     /// The `create_for_repo` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -1518,6 +1530,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for delete](https://docs.github.com/rest/reference/projects/#delete-a-project)///
     /// The `delete_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn delete_async(&self, project_id: i32) -> Result<(), ProjectsDeleteError> {
@@ -1562,6 +1575,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for delete](https://docs.github.com/rest/reference/projects/#delete-a-project)///
     /// The `delete` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -1605,6 +1619,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for delete_card](https://docs.github.com/rest/reference/projects#delete-a-project-card)///
     /// The `delete_card_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn delete_card_async(&self, card_id: i32) -> Result<(), ProjectsDeleteCardError> {
@@ -1646,6 +1661,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for delete_card](https://docs.github.com/rest/reference/projects#delete-a-project-card)///
     /// The `delete_card` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -1688,6 +1704,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for delete_column](https://docs.github.com/rest/reference/projects#delete-a-project-column)///
     /// The `delete_column_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn delete_column_async(&self, column_id: i32) -> Result<(), ProjectsDeleteColumnError> {
@@ -1728,6 +1745,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for delete_column](https://docs.github.com/rest/reference/projects#delete-a-project-column)///
     /// The `delete_column` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -1771,6 +1789,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for get](https://docs.github.com/rest/reference/projects/#get-a-project)///
     /// The `get_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn get_async(&self, project_id: i32) -> Result<Project, ProjectsGetError> {
@@ -1813,6 +1832,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for get](https://docs.github.com/rest/reference/projects/#get-a-project)///
     /// The `get` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -1854,6 +1874,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for get_card](https://docs.github.com/rest/reference/projects#get-a-project-card)///
     /// The `get_card_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn get_card_async(&self, card_id: i32) -> Result<ProjectCard, ProjectsGetCardError> {
@@ -1895,6 +1916,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for get_card](https://docs.github.com/rest/reference/projects#get-a-project-card)///
     /// The `get_card` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -1937,6 +1959,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for get_column](https://docs.github.com/rest/reference/projects#get-a-project-column)///
     /// The `get_column_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn get_column_async(&self, column_id: i32) -> Result<ProjectColumn, ProjectsGetColumnError> {
@@ -1978,6 +2001,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for get_column](https://docs.github.com/rest/reference/projects#get-a-project-column)///
     /// The `get_column` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -2022,6 +2046,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for get_permission_for_user](https://docs.github.com/rest/reference/projects#get-project-permission-for-a-user)///
     /// The `get_permission_for_user_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn get_permission_for_user_async(&self, project_id: i32, username: &str) -> Result<RepositoryCollaboratorPermission, ProjectsGetPermissionForUserError> {
@@ -2067,6 +2092,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for get_permission_for_user](https://docs.github.com/rest/reference/projects#get-project-permission-for-a-user)///
     /// The `get_permission_for_user` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -2111,6 +2137,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_cards](https://docs.github.com/rest/reference/projects#list-project-cards)///
     /// The `list_cards_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn list_cards_async(&self, column_id: i32, query_params: Option<impl Into<ProjectsListCardsParams<'api>>>) -> Result<Vec<ProjectCard>, ProjectsListCardsError> {
@@ -2155,6 +2182,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_cards](https://docs.github.com/rest/reference/projects#list-project-cards)///
     /// The `list_cards` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -2203,6 +2231,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_collaborators](https://docs.github.com/rest/reference/projects#list-project-collaborators)///
     /// The `list_collaborators_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn list_collaborators_async(&self, project_id: i32, query_params: Option<impl Into<ProjectsListCollaboratorsParams<'api>>>) -> Result<Vec<SimpleUser>, ProjectsListCollaboratorsError> {
@@ -2252,6 +2281,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_collaborators](https://docs.github.com/rest/reference/projects#list-project-collaborators)///
     /// The `list_collaborators` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -2301,6 +2331,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_columns](https://docs.github.com/rest/reference/projects#list-project-columns)///
     /// The `list_columns_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn list_columns_async(&self, project_id: i32, query_params: Option<impl Into<ProjectsListColumnsParams>>) -> Result<Vec<ProjectColumn>, ProjectsListColumnsError> {
@@ -2345,6 +2376,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_columns](https://docs.github.com/rest/reference/projects#list-project-columns)///
     /// The `list_columns` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -2393,6 +2425,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/projects/#list-organization-projects)///
     /// The `list_for_org_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn list_for_org_async(&self, org: &str, query_params: Option<impl Into<ProjectsListForOrgParams<'api>>>) -> Result<Vec<Project>, ProjectsListForOrgError> {
@@ -2437,6 +2470,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/projects/#list-organization-projects)///
     /// The `list_for_org` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -2483,6 +2517,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/reference/projects/#list-repository-projects)///
     /// The `list_for_repo_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn list_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ProjectsListForRepoParams<'api>>>) -> Result<Vec<Project>, ProjectsListForRepoError> {
@@ -2531,6 +2566,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/reference/projects/#list-repository-projects)///
     /// The `list_for_repo` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -2579,6 +2615,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/projects/#list-user-projects)///
     /// The `list_for_user_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn list_for_user_async(&self, username: &str, query_params: Option<impl Into<ProjectsListForUserParams<'api>>>) -> Result<Vec<Project>, ProjectsListForUserError> {
@@ -2622,6 +2659,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/projects/#list-user-projects)///
     /// The `list_for_user` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -2667,6 +2705,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for move_card](https://docs.github.com/rest/reference/projects#move-a-project-card)///
     /// The `move_card_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn move_card_async(&self, card_id: i32, body: PostProjectsMoveCard) -> Result<HashMap<(), ()>, ProjectsMoveCardError> {
@@ -2709,6 +2748,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for move_card](https://docs.github.com/rest/reference/projects#move-a-project-card)///
     /// The `move_card` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -2752,6 +2792,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for move_column](https://docs.github.com/rest/reference/projects#move-a-project-column)///
     /// The `move_column_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn move_column_async(&self, column_id: i32, body: PostProjectsMoveColumn) -> Result<HashMap<(), ()>, ProjectsMoveColumnError> {
@@ -2793,6 +2834,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for move_column](https://docs.github.com/rest/reference/projects#move-a-project-column)///
     /// The `move_column` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -2837,6 +2879,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for remove_collaborator](https://docs.github.com/rest/reference/projects#remove-project-collaborator)///
     /// The `remove_collaborator_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn remove_collaborator_async(&self, project_id: i32, username: &str) -> Result<(), ProjectsRemoveCollaboratorError> {
@@ -2882,6 +2925,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for remove_collaborator](https://docs.github.com/rest/reference/projects#remove-project-collaborator)///
     /// The `remove_collaborator` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -2928,6 +2972,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for update](https://docs.github.com/rest/reference/projects/#update-a-project)///
     /// The `update_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn update_async(&self, project_id: i32, body: PatchProjectsUpdate) -> Result<Project, ProjectsUpdateError> {
@@ -2973,6 +3018,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for update](https://docs.github.com/rest/reference/projects/#update-a-project)///
     /// The `update` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -3017,6 +3063,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for update_card](https://docs.github.com/rest/reference/projects#update-a-project-card)///
     /// The `update_card_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn update_card_async(&self, card_id: i32, body: PatchProjectsUpdateCard) -> Result<ProjectCard, ProjectsUpdateCardError> {
@@ -3059,6 +3106,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for update_card](https://docs.github.com/rest/reference/projects#update-a-project-card)///
     /// The `update_card` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -3102,6 +3150,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for update_column](https://docs.github.com/rest/reference/projects#update-a-project-column)///
     /// The `update_column_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn update_column_async(&self, column_id: i32, body: PatchProjectsUpdateColumn) -> Result<ProjectColumn, ProjectsUpdateColumnError> {
@@ -3142,6 +3191,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for update_column](https://docs.github.com/rest/reference/projects#update-a-project-column)///
     /// The `update_column` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]

@@ -823,6 +823,7 @@ impl<'api> Gists<'api> {
     /// # Check if a gist is starred
     /// 
     /// [GitHub API docs for check_is_starred](https://docs.github.com/rest/reference/gists/#check-if-a-gist-is-starred)    
+    ///
     /// ---
     pub async fn check_is_starred_async(&self, gist_id: &str) -> Result<(), GistsCheckIsStarredError> {
 
@@ -861,6 +862,7 @@ impl<'api> Gists<'api> {
     /// # Check if a gist is starred
     /// 
     /// [GitHub API docs for check_is_starred](https://docs.github.com/rest/reference/gists/#check-if-a-gist-is-starred)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn check_is_starred(&self, gist_id: &str) -> Result<(), GistsCheckIsStarredError> {
@@ -904,6 +906,7 @@ impl<'api> Gists<'api> {
     /// **Note:** Don't name your files "gistfile" with a numerical suffix. This is the format of the automatic naming scheme that Gist uses internally.
     /// 
     /// [GitHub API docs for create](https://docs.github.com/rest/reference/gists/#create-a-gist)    
+    ///
     /// ---
     pub async fn create_async(&self, body: PostGistsCreate) -> Result<GistSimple, GistsCreateError> {
 
@@ -947,6 +950,7 @@ impl<'api> Gists<'api> {
     /// **Note:** Don't name your files "gistfile" with a numerical suffix. This is the format of the automatic naming scheme that Gist uses internally.
     /// 
     /// [GitHub API docs for create](https://docs.github.com/rest/reference/gists/#create-a-gist)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create(&self, body: PostGistsCreate) -> Result<GistSimple, GistsCreateError> {
@@ -987,6 +991,7 @@ impl<'api> Gists<'api> {
     /// # Create a gist comment
     /// 
     /// [GitHub API docs for create_comment](https://docs.github.com/rest/reference/gists#create-a-gist-comment)    
+    ///
     /// ---
     pub async fn create_comment_async(&self, gist_id: &str, body: PostGistsCreateComment) -> Result<GistComment, GistsCreateCommentError> {
 
@@ -1025,6 +1030,7 @@ impl<'api> Gists<'api> {
     /// # Create a gist comment
     /// 
     /// [GitHub API docs for create_comment](https://docs.github.com/rest/reference/gists#create-a-gist-comment)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_comment(&self, gist_id: &str, body: PostGistsCreateComment) -> Result<GistComment, GistsCreateCommentError> {
@@ -1064,6 +1070,7 @@ impl<'api> Gists<'api> {
     /// # Delete a gist
     /// 
     /// [GitHub API docs for delete](https://docs.github.com/rest/reference/gists/#delete-a-gist)    
+    ///
     /// ---
     pub async fn delete_async(&self, gist_id: &str) -> Result<(), GistsDeleteError> {
 
@@ -1102,6 +1109,7 @@ impl<'api> Gists<'api> {
     /// # Delete a gist
     /// 
     /// [GitHub API docs for delete](https://docs.github.com/rest/reference/gists/#delete-a-gist)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete(&self, gist_id: &str) -> Result<(), GistsDeleteError> {
@@ -1141,6 +1149,7 @@ impl<'api> Gists<'api> {
     /// # Delete a gist comment
     /// 
     /// [GitHub API docs for delete_comment](https://docs.github.com/rest/reference/gists#delete-a-gist-comment)    
+    ///
     /// ---
     pub async fn delete_comment_async(&self, gist_id: &str, comment_id: i32) -> Result<(), GistsDeleteCommentError> {
 
@@ -1179,6 +1188,7 @@ impl<'api> Gists<'api> {
     /// # Delete a gist comment
     /// 
     /// [GitHub API docs for delete_comment](https://docs.github.com/rest/reference/gists#delete-a-gist-comment)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_comment(&self, gist_id: &str, comment_id: i32) -> Result<(), GistsDeleteCommentError> {
@@ -1220,6 +1230,7 @@ impl<'api> Gists<'api> {
     /// **Note**: This was previously `/gists/:gist_id/fork`.
     /// 
     /// [GitHub API docs for fork](https://docs.github.com/rest/reference/gists/#fork-a-gist)    
+    ///
     /// ---
     pub async fn fork_async(&self, gist_id: &str) -> Result<BaseGist, GistsForkError> {
 
@@ -1261,6 +1272,7 @@ impl<'api> Gists<'api> {
     /// **Note**: This was previously `/gists/:gist_id/fork`.
     /// 
     /// [GitHub API docs for fork](https://docs.github.com/rest/reference/gists/#fork-a-gist)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn fork(&self, gist_id: &str) -> Result<BaseGist, GistsForkError> {
@@ -1301,6 +1313,7 @@ impl<'api> Gists<'api> {
     /// # Get a gist
     /// 
     /// [GitHub API docs for get](https://docs.github.com/rest/reference/gists/#get-a-gist)    
+    ///
     /// ---
     pub async fn get_async(&self, gist_id: &str) -> Result<GistSimple, GistsGetError> {
 
@@ -1339,6 +1352,7 @@ impl<'api> Gists<'api> {
     /// # Get a gist
     /// 
     /// [GitHub API docs for get](https://docs.github.com/rest/reference/gists/#get-a-gist)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get(&self, gist_id: &str) -> Result<GistSimple, GistsGetError> {
@@ -1378,6 +1392,7 @@ impl<'api> Gists<'api> {
     /// # Get a gist comment
     /// 
     /// [GitHub API docs for get_comment](https://docs.github.com/rest/reference/gists#get-a-gist-comment)    
+    ///
     /// ---
     pub async fn get_comment_async(&self, gist_id: &str, comment_id: i32) -> Result<GistComment, GistsGetCommentError> {
 
@@ -1416,6 +1431,7 @@ impl<'api> Gists<'api> {
     /// # Get a gist comment
     /// 
     /// [GitHub API docs for get_comment](https://docs.github.com/rest/reference/gists#get-a-gist-comment)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_comment(&self, gist_id: &str, comment_id: i32) -> Result<GistComment, GistsGetCommentError> {
@@ -1455,6 +1471,7 @@ impl<'api> Gists<'api> {
     /// # Get a gist revision
     /// 
     /// [GitHub API docs for get_revision](https://docs.github.com/rest/reference/gists/#get-a-gist-revision)    
+    ///
     /// ---
     pub async fn get_revision_async(&self, gist_id: &str, sha: &str) -> Result<GistSimple, GistsGetRevisionError> {
 
@@ -1493,6 +1510,7 @@ impl<'api> Gists<'api> {
     /// # Get a gist revision
     /// 
     /// [GitHub API docs for get_revision](https://docs.github.com/rest/reference/gists/#get-a-gist-revision)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_revision(&self, gist_id: &str, sha: &str) -> Result<GistSimple, GistsGetRevisionError> {
@@ -1534,6 +1552,7 @@ impl<'api> Gists<'api> {
     /// Lists the authenticated user's gists or if called anonymously, this endpoint returns all public gists:
     /// 
     /// [GitHub API docs for list](https://docs.github.com/rest/reference/gists/#list-gists-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn list_async(&self, query_params: Option<impl Into<GistsListParams<'api>>>) -> Result<Vec<BaseGist>, GistsListError> {
 
@@ -1577,6 +1596,7 @@ impl<'api> Gists<'api> {
     /// Lists the authenticated user's gists or if called anonymously, this endpoint returns all public gists:
     /// 
     /// [GitHub API docs for list](https://docs.github.com/rest/reference/gists/#list-gists-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list(&self, query_params: Option<impl Into<GistsListParams<'api>>>) -> Result<Vec<BaseGist>, GistsListError> {
@@ -1620,6 +1640,7 @@ impl<'api> Gists<'api> {
     /// # List gist comments
     /// 
     /// [GitHub API docs for list_comments](https://docs.github.com/rest/reference/gists#list-gist-comments)    
+    ///
     /// ---
     pub async fn list_comments_async(&self, gist_id: &str, query_params: Option<impl Into<GistsListCommentsParams>>) -> Result<Vec<GistComment>, GistsListCommentsError> {
 
@@ -1662,6 +1683,7 @@ impl<'api> Gists<'api> {
     /// # List gist comments
     /// 
     /// [GitHub API docs for list_comments](https://docs.github.com/rest/reference/gists#list-gist-comments)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_comments(&self, gist_id: &str, query_params: Option<impl Into<GistsListCommentsParams>>) -> Result<Vec<GistComment>, GistsListCommentsError> {
@@ -1706,6 +1728,7 @@ impl<'api> Gists<'api> {
     /// # List gist commits
     /// 
     /// [GitHub API docs for list_commits](https://docs.github.com/rest/reference/gists/#list-gist-commits)    
+    ///
     /// ---
     pub async fn list_commits_async(&self, gist_id: &str, query_params: Option<impl Into<GistsListCommitsParams>>) -> Result<Vec<GistCommit>, GistsListCommitsError> {
 
@@ -1748,6 +1771,7 @@ impl<'api> Gists<'api> {
     /// # List gist commits
     /// 
     /// [GitHub API docs for list_commits](https://docs.github.com/rest/reference/gists/#list-gist-commits)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_commits(&self, gist_id: &str, query_params: Option<impl Into<GistsListCommitsParams>>) -> Result<Vec<GistCommit>, GistsListCommitsError> {
@@ -1794,6 +1818,7 @@ impl<'api> Gists<'api> {
     /// Lists public gists for the specified user:
     /// 
     /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/gists/#list-gists-for-a-user)    
+    ///
     /// ---
     pub async fn list_for_user_async(&self, username: &str, query_params: Option<impl Into<GistsListForUserParams<'api>>>) -> Result<Vec<BaseGist>, GistsListForUserError> {
 
@@ -1836,6 +1861,7 @@ impl<'api> Gists<'api> {
     /// Lists public gists for the specified user:
     /// 
     /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/gists/#list-gists-for-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_for_user(&self, username: &str, query_params: Option<impl Into<GistsListForUserParams<'api>>>) -> Result<Vec<BaseGist>, GistsListForUserError> {
@@ -1878,6 +1904,7 @@ impl<'api> Gists<'api> {
     /// # List gist forks
     /// 
     /// [GitHub API docs for list_forks](https://docs.github.com/rest/reference/gists/#list-gist-forks)    
+    ///
     /// ---
     pub async fn list_forks_async(&self, gist_id: &str, query_params: Option<impl Into<GistsListForksParams>>) -> Result<Vec<GistSimple>, GistsListForksError> {
 
@@ -1920,6 +1947,7 @@ impl<'api> Gists<'api> {
     /// # List gist forks
     /// 
     /// [GitHub API docs for list_forks](https://docs.github.com/rest/reference/gists/#list-gist-forks)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_forks(&self, gist_id: &str, query_params: Option<impl Into<GistsListForksParams>>) -> Result<Vec<GistSimple>, GistsListForksError> {
@@ -1968,6 +1996,7 @@ impl<'api> Gists<'api> {
     /// Note: With [pagination](https://docs.github.com/rest/overview/resources-in-the-rest-api#pagination), you can fetch up to 3000 gists. For example, you can fetch 100 pages with 30 gists per page or 30 pages with 100 gists per page.
     /// 
     /// [GitHub API docs for list_public](https://docs.github.com/rest/reference/gists/#list-public-gists)    
+    ///
     /// ---
     pub async fn list_public_async(&self, query_params: Option<impl Into<GistsListPublicParams<'api>>>) -> Result<Vec<BaseGist>, GistsListPublicError> {
 
@@ -2014,6 +2043,7 @@ impl<'api> Gists<'api> {
     /// Note: With [pagination](https://docs.github.com/rest/overview/resources-in-the-rest-api#pagination), you can fetch up to 3000 gists. For example, you can fetch 100 pages with 30 gists per page or 30 pages with 100 gists per page.
     /// 
     /// [GitHub API docs for list_public](https://docs.github.com/rest/reference/gists/#list-public-gists)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_public(&self, query_params: Option<impl Into<GistsListPublicParams<'api>>>) -> Result<Vec<BaseGist>, GistsListPublicError> {
@@ -2060,6 +2090,7 @@ impl<'api> Gists<'api> {
     /// List the authenticated user's starred gists:
     /// 
     /// [GitHub API docs for list_starred](https://docs.github.com/rest/reference/gists/#list-starred-gists)    
+    ///
     /// ---
     pub async fn list_starred_async(&self, query_params: Option<impl Into<GistsListStarredParams<'api>>>) -> Result<Vec<BaseGist>, GistsListStarredError> {
 
@@ -2104,6 +2135,7 @@ impl<'api> Gists<'api> {
     /// List the authenticated user's starred gists:
     /// 
     /// [GitHub API docs for list_starred](https://docs.github.com/rest/reference/gists/#list-starred-gists)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_starred(&self, query_params: Option<impl Into<GistsListStarredParams<'api>>>) -> Result<Vec<BaseGist>, GistsListStarredError> {
@@ -2150,6 +2182,7 @@ impl<'api> Gists<'api> {
     /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
     /// 
     /// [GitHub API docs for star](https://docs.github.com/rest/reference/gists/#star-a-gist)    
+    ///
     /// ---
     pub async fn star_async(&self, gist_id: &str) -> Result<(), GistsStarError> {
 
@@ -2190,6 +2223,7 @@ impl<'api> Gists<'api> {
     /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
     /// 
     /// [GitHub API docs for star](https://docs.github.com/rest/reference/gists/#star-a-gist)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn star(&self, gist_id: &str) -> Result<(), GistsStarError> {
@@ -2229,6 +2263,7 @@ impl<'api> Gists<'api> {
     /// # Unstar a gist
     /// 
     /// [GitHub API docs for unstar](https://docs.github.com/rest/reference/gists/#unstar-a-gist)    
+    ///
     /// ---
     pub async fn unstar_async(&self, gist_id: &str) -> Result<(), GistsUnstarError> {
 
@@ -2267,6 +2302,7 @@ impl<'api> Gists<'api> {
     /// # Unstar a gist
     /// 
     /// [GitHub API docs for unstar](https://docs.github.com/rest/reference/gists/#unstar-a-gist)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn unstar(&self, gist_id: &str) -> Result<(), GistsUnstarError> {
@@ -2308,6 +2344,7 @@ impl<'api> Gists<'api> {
     /// Allows you to update or delete a gist file and rename gist files. Files from the previous version of the gist that aren't explicitly changed during an edit are unchanged.
     /// 
     /// [GitHub API docs for update](https://docs.github.com/rest/reference/gists/#update-a-gist)    
+    ///
     /// ---
     pub async fn update_async(&self, gist_id: &str, body: PatchGistsUpdate) -> Result<GistSimple, GistsUpdateError> {
 
@@ -2347,6 +2384,7 @@ impl<'api> Gists<'api> {
     /// Allows you to update or delete a gist file and rename gist files. Files from the previous version of the gist that aren't explicitly changed during an edit are unchanged.
     /// 
     /// [GitHub API docs for update](https://docs.github.com/rest/reference/gists/#update-a-gist)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn update(&self, gist_id: &str, body: PatchGistsUpdate) -> Result<GistSimple, GistsUpdateError> {
@@ -2385,6 +2423,7 @@ impl<'api> Gists<'api> {
     /// # Update a gist comment
     /// 
     /// [GitHub API docs for update_comment](https://docs.github.com/rest/reference/gists#update-a-gist-comment)    
+    ///
     /// ---
     pub async fn update_comment_async(&self, gist_id: &str, comment_id: i32, body: PatchGistsUpdateComment) -> Result<GistComment, GistsUpdateCommentError> {
 
@@ -2421,6 +2460,7 @@ impl<'api> Gists<'api> {
     /// # Update a gist comment
     /// 
     /// [GitHub API docs for update_comment](https://docs.github.com/rest/reference/gists#update-a-gist-comment)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn update_comment(&self, gist_id: &str, comment_id: i32, body: PatchGistsUpdateComment) -> Result<GistComment, GistsUpdateCommentError> {

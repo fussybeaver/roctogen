@@ -100,6 +100,7 @@ impl<'api> {{classname}}<'api> {
     {{#vendorExtensions.x-codegen-has-previews}}///
     {{/vendorExtensions.x-codegen-has-previews}}
     {{#vendorExtensions.x-github.previews}}/// The `{{operationId}}_async` endpoint is enabled with the `{{name}}` cargo feature.{{/vendorExtensions.x-github.previews}}
+    ///
     /// ---
     {{#vendorExtensions.x-github.previews}}#[cfg(feature = "{{name}}")]
     {{/vendorExtensions.x-github.previews}}pub async fn {{operationId}}_async(&self{{#hasParams}}, {{/hasParams}}{{#pathParams}}{{paramName}}: {{#nullable}}Option<{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/nullable}}{{^nullable}}{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/nullable}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}query_params: {{#vendorExtensions.x-codegen-has-optional-query-params}}Option<{{/vendorExtensions.x-codegen-has-optional-query-params}}impl Into<{{classname}}{{operationIdCamelCase}}Params{{#vendorExtensions.x-codegen-has-string-params}}<'api>{{/vendorExtensions.x-codegen-has-string-params}}>{{#vendorExtensions.x-codegen-has-optional-query-params}}>{{/vendorExtensions.x-codegen-has-optional-query-params}}{{#hasBodyParam}}, {{/hasBodyParam}}{{/hasQueryParams}}{{#hasBodyParam}}{{^hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}{{/hasQueryParams}}body: {{#bodyParam}}{{{dataType}}}{{/bodyParam}}{{/hasBodyParam}}) -> Result<{{#responses}}{{#vendorExtensions.x-is-default}}{{{dataType}}}{{/vendorExtensions.x-is-default}}{{/responses}}{{#vendorExtensions.x-codegen-response-empty-default}}(){{/vendorExtensions.x-codegen-response-empty-default}}, {{classname}}{{operationIdCamelCase}}Error> {
@@ -157,6 +158,7 @@ impl<'api> {{classname}}<'api> {
     {{#vendorExtensions.x-codegen-has-previews}}///
     {{/vendorExtensions.x-codegen-has-previews}}
     {{#vendorExtensions.x-github.previews}}/// The `{{operationId}}` endpoint is enabled with the `{{name}}` cargo feature.{{/vendorExtensions.x-github.previews}}
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     {{#vendorExtensions.x-github.previews}}#[cfg(feature = "{{name}}")]

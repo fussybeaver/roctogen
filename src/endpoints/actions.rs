@@ -2238,6 +2238,7 @@ impl<'api> Actions<'api> {
     /// scope to use this endpoint.
     /// 
     /// [GitHub API docs for add_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/reference/actions#add-repository-acess-to-a-self-hosted-runner-group-in-an-organization)    
+    ///
     /// ---
     pub async fn add_repo_access_to_self_hosted_runner_group_in_org_async(&self, org: &str, runner_group_id: i32, repository_id: i32) -> Result<(), ActionsAddRepoAccessToSelfHostedRunnerGroupInOrgError> {
 
@@ -2281,6 +2282,7 @@ impl<'api> Actions<'api> {
     /// scope to use this endpoint.
     /// 
     /// [GitHub API docs for add_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/reference/actions#add-repository-acess-to-a-self-hosted-runner-group-in-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn add_repo_access_to_self_hosted_runner_group_in_org(&self, org: &str, runner_group_id: i32, repository_id: i32) -> Result<(), ActionsAddRepoAccessToSelfHostedRunnerGroupInOrgError> {
@@ -2319,6 +2321,7 @@ impl<'api> Actions<'api> {
     /// Adds a repository to an organization secret when the `visibility` for repository access is set to `selected`. The visibility is set when you [Create or update an organization secret](https://docs.github.com/rest/reference/actions#create-or-update-an-organization-secret). You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
     /// 
     /// [GitHub API docs for add_selected_repo_to_org_secret](https://docs.github.com/rest/reference/actions#add-selected-repository-to-an-organization-secret)    
+    ///
     /// ---
     pub async fn add_selected_repo_to_org_secret_async(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), ActionsAddSelectedRepoToOrgSecretError> {
 
@@ -2357,6 +2360,7 @@ impl<'api> Actions<'api> {
     /// Adds a repository to an organization secret when the `visibility` for repository access is set to `selected`. The visibility is set when you [Create or update an organization secret](https://docs.github.com/rest/reference/actions#create-or-update-an-organization-secret). You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
     /// 
     /// [GitHub API docs for add_selected_repo_to_org_secret](https://docs.github.com/rest/reference/actions#add-selected-repository-to-an-organization-secret)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn add_selected_repo_to_org_secret(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), ActionsAddSelectedRepoToOrgSecretError> {
@@ -2402,6 +2406,7 @@ impl<'api> Actions<'api> {
     /// scope to use this endpoint.
     /// 
     /// [GitHub API docs for add_self_hosted_runner_to_group_for_org](https://docs.github.com/rest/reference/actions#add-a-self-hosted-runner-to-a-group-for-an-organization)    
+    ///
     /// ---
     pub async fn add_self_hosted_runner_to_group_for_org_async(&self, org: &str, runner_group_id: i32, runner_id: i32) -> Result<(), ActionsAddSelfHostedRunnerToGroupForOrgError> {
 
@@ -2445,6 +2450,7 @@ impl<'api> Actions<'api> {
     /// scope to use this endpoint.
     /// 
     /// [GitHub API docs for add_self_hosted_runner_to_group_for_org](https://docs.github.com/rest/reference/actions#add-a-self-hosted-runner-to-a-group-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn add_self_hosted_runner_to_group_for_org(&self, org: &str, runner_group_id: i32, runner_id: i32) -> Result<(), ActionsAddSelfHostedRunnerToGroupForOrgError> {
@@ -2483,6 +2489,7 @@ impl<'api> Actions<'api> {
     /// Cancels a workflow run using its `id`. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
     /// 
     /// [GitHub API docs for cancel_workflow_run](https://docs.github.com/rest/reference/actions#cancel-a-workflow-run)    
+    ///
     /// ---
     pub async fn cancel_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), ActionsCancelWorkflowRunError> {
 
@@ -2520,6 +2527,7 @@ impl<'api> Actions<'api> {
     /// Cancels a workflow run using its `id`. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
     /// 
     /// [GitHub API docs for cancel_workflow_run](https://docs.github.com/rest/reference/actions#cancel-a-workflow-run)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn cancel_workflow_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), ActionsCancelWorkflowRunError> {
@@ -2632,6 +2640,7 @@ impl<'api> Actions<'api> {
     /// ```
     /// 
     /// [GitHub API docs for create_or_update_environment_secret](https://docs.github.com/rest/reference/actions#create-or-update-an-environment-secret)    
+    ///
     /// ---
     pub async fn create_or_update_environment_secret_async(&self, repository_id: i32, environment_name: &str, secret_name: &str, body: PutActionsCreateOrUpdateEnvironmentSecret) -> Result<(), ActionsCreateOrUpdateEnvironmentSecretError> {
 
@@ -2744,6 +2753,7 @@ impl<'api> Actions<'api> {
     /// ```
     /// 
     /// [GitHub API docs for create_or_update_environment_secret](https://docs.github.com/rest/reference/actions#create-or-update-an-environment-secret)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_or_update_environment_secret(&self, repository_id: i32, environment_name: &str, secret_name: &str, body: PutActionsCreateOrUpdateEnvironmentSecret) -> Result<(), ActionsCreateOrUpdateEnvironmentSecretError> {
@@ -2857,6 +2867,7 @@ impl<'api> Actions<'api> {
     /// ```
     /// 
     /// [GitHub API docs for create_or_update_org_secret](https://docs.github.com/rest/reference/actions#create-or-update-an-organization-secret)    
+    ///
     /// ---
     pub async fn create_or_update_org_secret_async(&self, org: &str, secret_name: &str, body: PutActionsCreateOrUpdateOrgSecret) -> Result<(), ActionsCreateOrUpdateOrgSecretError> {
 
@@ -2969,6 +2980,7 @@ impl<'api> Actions<'api> {
     /// ```
     /// 
     /// [GitHub API docs for create_or_update_org_secret](https://docs.github.com/rest/reference/actions#create-or-update-an-organization-secret)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_or_update_org_secret(&self, org: &str, secret_name: &str, body: PutActionsCreateOrUpdateOrgSecret) -> Result<(), ActionsCreateOrUpdateOrgSecretError> {
@@ -3082,6 +3094,7 @@ impl<'api> Actions<'api> {
     /// ```
     /// 
     /// [GitHub API docs for create_or_update_repo_secret](https://docs.github.com/rest/reference/actions#create-or-update-a-repository-secret)    
+    ///
     /// ---
     pub async fn create_or_update_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str, body: PutActionsCreateOrUpdateRepoSecret) -> Result<(), ActionsCreateOrUpdateRepoSecretError> {
 
@@ -3194,6 +3207,7 @@ impl<'api> Actions<'api> {
     /// ```
     /// 
     /// [GitHub API docs for create_or_update_repo_secret](https://docs.github.com/rest/reference/actions#create-or-update-a-repository-secret)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_or_update_repo_secret(&self, owner: &str, repo: &str, secret_name: &str, body: PutActionsCreateOrUpdateRepoSecret) -> Result<(), ActionsCreateOrUpdateRepoSecretError> {
@@ -3243,6 +3257,7 @@ impl<'api> Actions<'api> {
     /// ```
     /// 
     /// [GitHub API docs for create_registration_token_for_org](https://docs.github.com/rest/reference/actions#create-a-registration-token-for-an-organization)    
+    ///
     /// ---
     pub async fn create_registration_token_for_org_async(&self, org: &str) -> Result<AuthenticationToken, ActionsCreateRegistrationTokenForOrgError> {
 
@@ -3290,6 +3305,7 @@ impl<'api> Actions<'api> {
     /// ```
     /// 
     /// [GitHub API docs for create_registration_token_for_org](https://docs.github.com/rest/reference/actions#create-a-registration-token-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_registration_token_for_org(&self, org: &str) -> Result<AuthenticationToken, ActionsCreateRegistrationTokenForOrgError> {
@@ -3337,6 +3353,7 @@ impl<'api> Actions<'api> {
     /// ```
     /// 
     /// [GitHub API docs for create_registration_token_for_repo](https://docs.github.com/rest/reference/actions#create-a-registration-token-for-a-repository)    
+    ///
     /// ---
     pub async fn create_registration_token_for_repo_async(&self, owner: &str, repo: &str) -> Result<AuthenticationToken, ActionsCreateRegistrationTokenForRepoError> {
 
@@ -3383,6 +3400,7 @@ impl<'api> Actions<'api> {
     /// ```
     /// 
     /// [GitHub API docs for create_registration_token_for_repo](https://docs.github.com/rest/reference/actions#create-a-registration-token-for-a-repository)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_registration_token_for_repo(&self, owner: &str, repo: &str) -> Result<AuthenticationToken, ActionsCreateRegistrationTokenForRepoError> {
@@ -3432,6 +3450,7 @@ impl<'api> Actions<'api> {
     /// ```
     /// 
     /// [GitHub API docs for create_remove_token_for_org](https://docs.github.com/rest/reference/actions#create-a-remove-token-for-an-organization)    
+    ///
     /// ---
     pub async fn create_remove_token_for_org_async(&self, org: &str) -> Result<AuthenticationToken, ActionsCreateRemoveTokenForOrgError> {
 
@@ -3480,6 +3499,7 @@ impl<'api> Actions<'api> {
     /// ```
     /// 
     /// [GitHub API docs for create_remove_token_for_org](https://docs.github.com/rest/reference/actions#create-a-remove-token-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_remove_token_for_org(&self, org: &str) -> Result<AuthenticationToken, ActionsCreateRemoveTokenForOrgError> {
@@ -3527,6 +3547,7 @@ impl<'api> Actions<'api> {
     /// ```
     /// 
     /// [GitHub API docs for create_remove_token_for_repo](https://docs.github.com/rest/reference/actions#create-a-remove-token-for-a-repository)    
+    ///
     /// ---
     pub async fn create_remove_token_for_repo_async(&self, owner: &str, repo: &str) -> Result<AuthenticationToken, ActionsCreateRemoveTokenForRepoError> {
 
@@ -3573,6 +3594,7 @@ impl<'api> Actions<'api> {
     /// ```
     /// 
     /// [GitHub API docs for create_remove_token_for_repo](https://docs.github.com/rest/reference/actions#create-a-remove-token-for-a-repository)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_remove_token_for_repo(&self, owner: &str, repo: &str) -> Result<AuthenticationToken, ActionsCreateRemoveTokenForRepoError> {
@@ -3615,6 +3637,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for create_self_hosted_runner_group_for_org](https://docs.github.com/rest/reference/actions#create-a-self-hosted-runner-group-for-an-organization)    
+    ///
     /// ---
     pub async fn create_self_hosted_runner_group_for_org_async(&self, org: &str, body: PostActionsCreateSelfHostedRunnerGroupForOrg) -> Result<RunnerGroupsOrg, ActionsCreateSelfHostedRunnerGroupForOrgError> {
 
@@ -3656,6 +3679,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for create_self_hosted_runner_group_for_org](https://docs.github.com/rest/reference/actions#create-a-self-hosted-runner-group-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_self_hosted_runner_group_for_org(&self, org: &str, body: PostActionsCreateSelfHostedRunnerGroupForOrg) -> Result<RunnerGroupsOrg, ActionsCreateSelfHostedRunnerGroupForOrgError> {
@@ -3698,6 +3722,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint. For more information, see "[Creating a personal access token for the command line](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line)."
     /// 
     /// [GitHub API docs for create_workflow_dispatch](https://docs.github.com/rest/reference/actions#create-a-workflow-dispatch-event)    
+    ///
     /// ---
     pub async fn create_workflow_dispatch_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId, body: PostActionsCreateWorkflowDispatch) -> Result<(), ActionsCreateWorkflowDispatchError> {
 
@@ -3739,6 +3764,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint. For more information, see "[Creating a personal access token for the command line](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line)."
     /// 
     /// [GitHub API docs for create_workflow_dispatch](https://docs.github.com/rest/reference/actions#create-a-workflow-dispatch-event)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_workflow_dispatch(&self, owner: &str, repo: &str, workflow_id: WorkflowId, body: PostActionsCreateWorkflowDispatch) -> Result<(), ActionsCreateWorkflowDispatchError> {
@@ -3777,6 +3803,7 @@ impl<'api> Actions<'api> {
     /// Deletes an artifact for a workflow run. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
     /// 
     /// [GitHub API docs for delete_artifact](https://docs.github.com/rest/reference/actions#delete-an-artifact)    
+    ///
     /// ---
     pub async fn delete_artifact_async(&self, owner: &str, repo: &str, artifact_id: i32) -> Result<(), ActionsDeleteArtifactError> {
 
@@ -3814,6 +3841,7 @@ impl<'api> Actions<'api> {
     /// Deletes an artifact for a workflow run. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
     /// 
     /// [GitHub API docs for delete_artifact](https://docs.github.com/rest/reference/actions#delete-an-artifact)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_artifact(&self, owner: &str, repo: &str, artifact_id: i32) -> Result<(), ActionsDeleteArtifactError> {
@@ -3852,6 +3880,7 @@ impl<'api> Actions<'api> {
     /// Deletes a secret in an environment using the secret name. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
     /// 
     /// [GitHub API docs for delete_environment_secret](https://docs.github.com/rest/reference/actions#delete-an-environment-secret)    
+    ///
     /// ---
     pub async fn delete_environment_secret_async(&self, repository_id: i32, environment_name: &str, secret_name: &str) -> Result<(), ActionsDeleteEnvironmentSecretError> {
 
@@ -3889,6 +3918,7 @@ impl<'api> Actions<'api> {
     /// Deletes a secret in an environment using the secret name. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
     /// 
     /// [GitHub API docs for delete_environment_secret](https://docs.github.com/rest/reference/actions#delete-an-environment-secret)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_environment_secret(&self, repository_id: i32, environment_name: &str, secret_name: &str) -> Result<(), ActionsDeleteEnvironmentSecretError> {
@@ -3927,6 +3957,7 @@ impl<'api> Actions<'api> {
     /// Deletes a secret in an organization using the secret name. You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
     /// 
     /// [GitHub API docs for delete_org_secret](https://docs.github.com/rest/reference/actions#delete-an-organization-secret)    
+    ///
     /// ---
     pub async fn delete_org_secret_async(&self, org: &str, secret_name: &str) -> Result<(), ActionsDeleteOrgSecretError> {
 
@@ -3964,6 +3995,7 @@ impl<'api> Actions<'api> {
     /// Deletes a secret in an organization using the secret name. You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
     /// 
     /// [GitHub API docs for delete_org_secret](https://docs.github.com/rest/reference/actions#delete-an-organization-secret)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_org_secret(&self, org: &str, secret_name: &str) -> Result<(), ActionsDeleteOrgSecretError> {
@@ -4002,6 +4034,7 @@ impl<'api> Actions<'api> {
     /// Deletes a secret in a repository using the secret name. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
     /// 
     /// [GitHub API docs for delete_repo_secret](https://docs.github.com/rest/reference/actions#delete-a-repository-secret)    
+    ///
     /// ---
     pub async fn delete_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str) -> Result<(), ActionsDeleteRepoSecretError> {
 
@@ -4039,6 +4072,7 @@ impl<'api> Actions<'api> {
     /// Deletes a secret in a repository using the secret name. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
     /// 
     /// [GitHub API docs for delete_repo_secret](https://docs.github.com/rest/reference/actions#delete-a-repository-secret)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_repo_secret(&self, owner: &str, repo: &str, secret_name: &str) -> Result<(), ActionsDeleteRepoSecretError> {
@@ -4079,6 +4113,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for delete_self_hosted_runner_from_org](https://docs.github.com/rest/reference/actions#delete-a-self-hosted-runner-from-an-organization)    
+    ///
     /// ---
     pub async fn delete_self_hosted_runner_from_org_async(&self, org: &str, runner_id: i32) -> Result<(), ActionsDeleteSelfHostedRunnerFromOrgError> {
 
@@ -4118,6 +4153,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for delete_self_hosted_runner_from_org](https://docs.github.com/rest/reference/actions#delete-a-self-hosted-runner-from-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_self_hosted_runner_from_org(&self, org: &str, runner_id: i32) -> Result<(), ActionsDeleteSelfHostedRunnerFromOrgError> {
@@ -4159,6 +4195,7 @@ impl<'api> Actions<'api> {
     /// scope to use this endpoint.
     /// 
     /// [GitHub API docs for delete_self_hosted_runner_from_repo](https://docs.github.com/rest/reference/actions#delete-a-self-hosted-runner-from-a-repository)    
+    ///
     /// ---
     pub async fn delete_self_hosted_runner_from_repo_async(&self, owner: &str, repo: &str, runner_id: i32) -> Result<(), ActionsDeleteSelfHostedRunnerFromRepoError> {
 
@@ -4199,6 +4236,7 @@ impl<'api> Actions<'api> {
     /// scope to use this endpoint.
     /// 
     /// [GitHub API docs for delete_self_hosted_runner_from_repo](https://docs.github.com/rest/reference/actions#delete-a-self-hosted-runner-from-a-repository)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_self_hosted_runner_from_repo(&self, owner: &str, repo: &str, runner_id: i32) -> Result<(), ActionsDeleteSelfHostedRunnerFromRepoError> {
@@ -4241,6 +4279,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for delete_self_hosted_runner_group_from_org](https://docs.github.com/rest/reference/actions#delete-a-self-hosted-runner-group-from-an-organization)    
+    ///
     /// ---
     pub async fn delete_self_hosted_runner_group_from_org_async(&self, org: &str, runner_group_id: i32) -> Result<(), ActionsDeleteSelfHostedRunnerGroupFromOrgError> {
 
@@ -4282,6 +4321,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for delete_self_hosted_runner_group_from_org](https://docs.github.com/rest/reference/actions#delete-a-self-hosted-runner-group-from-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_self_hosted_runner_group_from_org(&self, org: &str, runner_group_id: i32) -> Result<(), ActionsDeleteSelfHostedRunnerGroupFromOrgError> {
@@ -4322,6 +4362,7 @@ impl<'api> Actions<'api> {
     /// this endpoint.
     /// 
     /// [GitHub API docs for delete_workflow_run](https://docs.github.com/rest/reference/actions#delete-a-workflow-run)    
+    ///
     /// ---
     pub async fn delete_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), ActionsDeleteWorkflowRunError> {
 
@@ -4361,6 +4402,7 @@ impl<'api> Actions<'api> {
     /// this endpoint.
     /// 
     /// [GitHub API docs for delete_workflow_run](https://docs.github.com/rest/reference/actions#delete-a-workflow-run)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_workflow_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), ActionsDeleteWorkflowRunError> {
@@ -4399,6 +4441,7 @@ impl<'api> Actions<'api> {
     /// Deletes all logs for a workflow run. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
     /// 
     /// [GitHub API docs for delete_workflow_run_logs](https://docs.github.com/rest/reference/actions#delete-workflow-run-logs)    
+    ///
     /// ---
     pub async fn delete_workflow_run_logs_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), ActionsDeleteWorkflowRunLogsError> {
 
@@ -4436,6 +4479,7 @@ impl<'api> Actions<'api> {
     /// Deletes all logs for a workflow run. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
     /// 
     /// [GitHub API docs for delete_workflow_run_logs](https://docs.github.com/rest/reference/actions#delete-workflow-run-logs)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_workflow_run_logs(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), ActionsDeleteWorkflowRunLogsError> {
@@ -4476,6 +4520,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
     /// 
     /// [GitHub API docs for disable_selected_repository_github_actions_organization](https://docs.github.com/rest/reference/actions#disable-a-selected-repository-for-github-actions-in-an-organization)    
+    ///
     /// ---
     pub async fn disable_selected_repository_github_actions_organization_async(&self, org: &str, repository_id: i32) -> Result<(), ActionsDisableSelectedRepositoryGithubActionsOrganizationError> {
 
@@ -4515,6 +4560,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
     /// 
     /// [GitHub API docs for disable_selected_repository_github_actions_organization](https://docs.github.com/rest/reference/actions#disable-a-selected-repository-for-github-actions-in-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn disable_selected_repository_github_actions_organization(&self, org: &str, repository_id: i32) -> Result<(), ActionsDisableSelectedRepositoryGithubActionsOrganizationError> {
@@ -4555,6 +4601,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
     /// 
     /// [GitHub API docs for disable_workflow](https://docs.github.com/rest/reference/actions#disable-a-workflow)    
+    ///
     /// ---
     pub async fn disable_workflow_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<(), ActionsDisableWorkflowError> {
 
@@ -4594,6 +4641,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
     /// 
     /// [GitHub API docs for disable_workflow](https://docs.github.com/rest/reference/actions#disable-a-workflow)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn disable_workflow(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<(), ActionsDisableWorkflowError> {
@@ -4635,6 +4683,7 @@ impl<'api> Actions<'api> {
     /// GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for download_artifact](https://docs.github.com/rest/reference/actions#download-an-artifact)    
+    ///
     /// ---
     pub async fn download_artifact_async(&self, owner: &str, repo: &str, artifact_id: i32, archive_format: &str) -> Result<(), ActionsDownloadArtifactError> {
 
@@ -4676,6 +4725,7 @@ impl<'api> Actions<'api> {
     /// GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for download_artifact](https://docs.github.com/rest/reference/actions#download-an-artifact)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn download_artifact(&self, owner: &str, repo: &str, artifact_id: i32, archive_format: &str) -> Result<(), ActionsDownloadArtifactError> {
@@ -4718,6 +4768,7 @@ impl<'api> Actions<'api> {
     /// have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for download_job_logs_for_workflow_run](https://docs.github.com/rest/reference/actions#download-job-logs-for-a-workflow-run)    
+    ///
     /// ---
     pub async fn download_job_logs_for_workflow_run_async(&self, owner: &str, repo: &str, job_id: i32) -> Result<(), ActionsDownloadJobLogsForWorkflowRunError> {
 
@@ -4759,6 +4810,7 @@ impl<'api> Actions<'api> {
     /// have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for download_job_logs_for_workflow_run](https://docs.github.com/rest/reference/actions#download-job-logs-for-a-workflow-run)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn download_job_logs_for_workflow_run(&self, owner: &str, repo: &str, job_id: i32) -> Result<(), ActionsDownloadJobLogsForWorkflowRunError> {
@@ -4801,6 +4853,7 @@ impl<'api> Actions<'api> {
     /// the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for download_workflow_run_logs](https://docs.github.com/rest/reference/actions#download-workflow-run-logs)    
+    ///
     /// ---
     pub async fn download_workflow_run_logs_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), ActionsDownloadWorkflowRunLogsError> {
 
@@ -4842,6 +4895,7 @@ impl<'api> Actions<'api> {
     /// the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for download_workflow_run_logs](https://docs.github.com/rest/reference/actions#download-workflow-run-logs)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn download_workflow_run_logs(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), ActionsDownloadWorkflowRunLogsError> {
@@ -4883,6 +4937,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
     /// 
     /// [GitHub API docs for enable_selected_repository_github_actions_organization](https://docs.github.com/rest/reference/actions#enable-a-selected-repository-for-github-actions-in-an-organization)    
+    ///
     /// ---
     pub async fn enable_selected_repository_github_actions_organization_async(&self, org: &str, repository_id: i32) -> Result<(), ActionsEnableSelectedRepositoryGithubActionsOrganizationError> {
 
@@ -4922,6 +4977,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
     /// 
     /// [GitHub API docs for enable_selected_repository_github_actions_organization](https://docs.github.com/rest/reference/actions#enable-a-selected-repository-for-github-actions-in-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn enable_selected_repository_github_actions_organization(&self, org: &str, repository_id: i32) -> Result<(), ActionsEnableSelectedRepositoryGithubActionsOrganizationError> {
@@ -4962,6 +5018,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
     /// 
     /// [GitHub API docs for enable_workflow](https://docs.github.com/rest/reference/actions#enable-a-workflow)    
+    ///
     /// ---
     pub async fn enable_workflow_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<(), ActionsEnableWorkflowError> {
 
@@ -5001,6 +5058,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
     /// 
     /// [GitHub API docs for enable_workflow](https://docs.github.com/rest/reference/actions#enable-a-workflow)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn enable_workflow(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<(), ActionsEnableWorkflowError> {
@@ -5041,6 +5099,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
     /// 
     /// [GitHub API docs for get_allowed_actions_organization](https://docs.github.com/rest/reference/actions#get-allowed-actions-for-an-organization)    
+    ///
     /// ---
     pub async fn get_allowed_actions_organization_async(&self, org: &str) -> Result<PutActionsSetAllowedActionsRepository, ActionsGetAllowedActionsOrganizationError> {
 
@@ -5080,6 +5139,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
     /// 
     /// [GitHub API docs for get_allowed_actions_organization](https://docs.github.com/rest/reference/actions#get-allowed-actions-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_allowed_actions_organization(&self, org: &str) -> Result<PutActionsSetAllowedActionsRepository, ActionsGetAllowedActionsOrganizationError> {
@@ -5120,6 +5180,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `administration` repository permission to use this API.
     /// 
     /// [GitHub API docs for get_allowed_actions_repository](https://docs.github.com/rest/reference/actions#get-allowed-actions-for-a-repository)    
+    ///
     /// ---
     pub async fn get_allowed_actions_repository_async(&self, owner: &str, repo: &str) -> Result<PutActionsSetAllowedActionsRepository, ActionsGetAllowedActionsRepositoryError> {
 
@@ -5159,6 +5220,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `administration` repository permission to use this API.
     /// 
     /// [GitHub API docs for get_allowed_actions_repository](https://docs.github.com/rest/reference/actions#get-allowed-actions-for-a-repository)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_allowed_actions_repository(&self, owner: &str, repo: &str) -> Result<PutActionsSetAllowedActionsRepository, ActionsGetAllowedActionsRepositoryError> {
@@ -5197,6 +5259,7 @@ impl<'api> Actions<'api> {
     /// Gets a specific artifact for a workflow run. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_artifact](https://docs.github.com/rest/reference/actions#get-an-artifact)    
+    ///
     /// ---
     pub async fn get_artifact_async(&self, owner: &str, repo: &str, artifact_id: i32) -> Result<Artifact, ActionsGetArtifactError> {
 
@@ -5234,6 +5297,7 @@ impl<'api> Actions<'api> {
     /// Gets a specific artifact for a workflow run. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_artifact](https://docs.github.com/rest/reference/actions#get-an-artifact)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_artifact(&self, owner: &str, repo: &str, artifact_id: i32) -> Result<Artifact, ActionsGetArtifactError> {
@@ -5272,6 +5336,7 @@ impl<'api> Actions<'api> {
     /// Get the public key for an environment, which you need to encrypt environment secrets. You need to encrypt a secret before you can create or update secrets. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `secrets` repository permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_environment_public_key](https://docs.github.com/rest/reference/actions#get-an-environment-public-key)    
+    ///
     /// ---
     pub async fn get_environment_public_key_async(&self, repository_id: i32, environment_name: &str) -> Result<ActionsPublicKey, ActionsGetEnvironmentPublicKeyError> {
 
@@ -5309,6 +5374,7 @@ impl<'api> Actions<'api> {
     /// Get the public key for an environment, which you need to encrypt environment secrets. You need to encrypt a secret before you can create or update secrets. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `secrets` repository permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_environment_public_key](https://docs.github.com/rest/reference/actions#get-an-environment-public-key)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_environment_public_key(&self, repository_id: i32, environment_name: &str) -> Result<ActionsPublicKey, ActionsGetEnvironmentPublicKeyError> {
@@ -5347,6 +5413,7 @@ impl<'api> Actions<'api> {
     /// Gets a single environment secret without revealing its encrypted value. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_environment_secret](https://docs.github.com/rest/reference/actions#get-an-environment-secret)    
+    ///
     /// ---
     pub async fn get_environment_secret_async(&self, repository_id: i32, environment_name: &str, secret_name: &str) -> Result<ActionsSecret, ActionsGetEnvironmentSecretError> {
 
@@ -5384,6 +5451,7 @@ impl<'api> Actions<'api> {
     /// Gets a single environment secret without revealing its encrypted value. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_environment_secret](https://docs.github.com/rest/reference/actions#get-an-environment-secret)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_environment_secret(&self, repository_id: i32, environment_name: &str, secret_name: &str) -> Result<ActionsSecret, ActionsGetEnvironmentSecretError> {
@@ -5424,6 +5492,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
     /// 
     /// [GitHub API docs for get_github_actions_permissions_organization](https://docs.github.com/rest/reference/actions#get-github-actions-permissions-for-an-organization)    
+    ///
     /// ---
     pub async fn get_github_actions_permissions_organization_async(&self, org: &str) -> Result<ActionsOrganizationPermissions, ActionsGetGithubActionsPermissionsOrganizationError> {
 
@@ -5463,6 +5532,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
     /// 
     /// [GitHub API docs for get_github_actions_permissions_organization](https://docs.github.com/rest/reference/actions#get-github-actions-permissions-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_github_actions_permissions_organization(&self, org: &str) -> Result<ActionsOrganizationPermissions, ActionsGetGithubActionsPermissionsOrganizationError> {
@@ -5504,6 +5574,7 @@ impl<'api> Actions<'api> {
     /// endpoint. GitHub Apps must have the `administration` repository permission to use this API.
     /// 
     /// [GitHub API docs for get_github_actions_permissions_repository](https://docs.github.com/rest/reference/actions#get-github-actions-permissions-for-a-repository)    
+    ///
     /// ---
     pub async fn get_github_actions_permissions_repository_async(&self, owner: &str, repo: &str) -> Result<ActionsRepositoryPermissions, ActionsGetGithubActionsPermissionsRepositoryError> {
 
@@ -5544,6 +5615,7 @@ impl<'api> Actions<'api> {
     /// endpoint. GitHub Apps must have the `administration` repository permission to use this API.
     /// 
     /// [GitHub API docs for get_github_actions_permissions_repository](https://docs.github.com/rest/reference/actions#get-github-actions-permissions-for-a-repository)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_github_actions_permissions_repository(&self, owner: &str, repo: &str) -> Result<ActionsRepositoryPermissions, ActionsGetGithubActionsPermissionsRepositoryError> {
@@ -5582,6 +5654,7 @@ impl<'api> Actions<'api> {
     /// Gets a specific job in a workflow run. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_job_for_workflow_run](https://docs.github.com/rest/reference/actions#get-a-job-for-a-workflow-run)    
+    ///
     /// ---
     pub async fn get_job_for_workflow_run_async(&self, owner: &str, repo: &str, job_id: i32) -> Result<Job, ActionsGetJobForWorkflowRunError> {
 
@@ -5619,6 +5692,7 @@ impl<'api> Actions<'api> {
     /// Gets a specific job in a workflow run. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_job_for_workflow_run](https://docs.github.com/rest/reference/actions#get-a-job-for-a-workflow-run)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_job_for_workflow_run(&self, owner: &str, repo: &str, job_id: i32) -> Result<Job, ActionsGetJobForWorkflowRunError> {
@@ -5657,6 +5731,7 @@ impl<'api> Actions<'api> {
     /// Gets your public key, which you need to encrypt secrets. You need to encrypt a secret before you can create or update secrets. You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_org_public_key](https://docs.github.com/rest/reference/actions#get-an-organization-public-key)    
+    ///
     /// ---
     pub async fn get_org_public_key_async(&self, org: &str) -> Result<ActionsPublicKey, ActionsGetOrgPublicKeyError> {
 
@@ -5694,6 +5769,7 @@ impl<'api> Actions<'api> {
     /// Gets your public key, which you need to encrypt secrets. You need to encrypt a secret before you can create or update secrets. You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_org_public_key](https://docs.github.com/rest/reference/actions#get-an-organization-public-key)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_org_public_key(&self, org: &str) -> Result<ActionsPublicKey, ActionsGetOrgPublicKeyError> {
@@ -5732,6 +5808,7 @@ impl<'api> Actions<'api> {
     /// Gets a single organization secret without revealing its encrypted value. You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_org_secret](https://docs.github.com/rest/reference/actions#get-an-organization-secret)    
+    ///
     /// ---
     pub async fn get_org_secret_async(&self, org: &str, secret_name: &str) -> Result<OrganizationActionsSecret, ActionsGetOrgSecretError> {
 
@@ -5769,6 +5846,7 @@ impl<'api> Actions<'api> {
     /// Gets a single organization secret without revealing its encrypted value. You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_org_secret](https://docs.github.com/rest/reference/actions#get-an-organization-secret)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_org_secret(&self, org: &str, secret_name: &str) -> Result<OrganizationActionsSecret, ActionsGetOrgSecretError> {
@@ -5809,6 +5887,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint. If the repository is private, you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_pending_deployments_for_run](https://docs.github.com/rest/reference/actions#get-pending-deployments-for-a-workflow-run)    
+    ///
     /// ---
     pub async fn get_pending_deployments_for_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<Vec<PendingDeployment>, ActionsGetPendingDeploymentsForRunError> {
 
@@ -5848,6 +5927,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint. If the repository is private, you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_pending_deployments_for_run](https://docs.github.com/rest/reference/actions#get-pending-deployments-for-a-workflow-run)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_pending_deployments_for_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<Vec<PendingDeployment>, ActionsGetPendingDeploymentsForRunError> {
@@ -5886,6 +5966,7 @@ impl<'api> Actions<'api> {
     /// Gets your public key, which you need to encrypt secrets. You need to encrypt a secret before you can create or update secrets. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `secrets` repository permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_repo_public_key](https://docs.github.com/rest/reference/actions#get-a-repository-public-key)    
+    ///
     /// ---
     pub async fn get_repo_public_key_async(&self, owner: &str, repo: &str) -> Result<ActionsPublicKey, ActionsGetRepoPublicKeyError> {
 
@@ -5923,6 +6004,7 @@ impl<'api> Actions<'api> {
     /// Gets your public key, which you need to encrypt secrets. You need to encrypt a secret before you can create or update secrets. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `secrets` repository permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_repo_public_key](https://docs.github.com/rest/reference/actions#get-a-repository-public-key)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_repo_public_key(&self, owner: &str, repo: &str) -> Result<ActionsPublicKey, ActionsGetRepoPublicKeyError> {
@@ -5961,6 +6043,7 @@ impl<'api> Actions<'api> {
     /// Gets a single repository secret without revealing its encrypted value. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_repo_secret](https://docs.github.com/rest/reference/actions#get-a-repository-secret)    
+    ///
     /// ---
     pub async fn get_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str) -> Result<ActionsSecret, ActionsGetRepoSecretError> {
 
@@ -5998,6 +6081,7 @@ impl<'api> Actions<'api> {
     /// Gets a single repository secret without revealing its encrypted value. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_repo_secret](https://docs.github.com/rest/reference/actions#get-a-repository-secret)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_repo_secret(&self, owner: &str, repo: &str, secret_name: &str) -> Result<ActionsSecret, ActionsGetRepoSecretError> {
@@ -6036,6 +6120,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint. If the repository is private, you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_reviews_for_run](https://docs.github.com/rest/reference/actions#get-the-review-history-for-a-workflow-run)    
+    ///
     /// ---
     pub async fn get_reviews_for_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<Vec<EnvironmentApprovals>, ActionsGetReviewsForRunError> {
 
@@ -6073,6 +6158,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint. If the repository is private, you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_reviews_for_run](https://docs.github.com/rest/reference/actions#get-the-review-history-for-a-workflow-run)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_reviews_for_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<Vec<EnvironmentApprovals>, ActionsGetReviewsForRunError> {
@@ -6113,6 +6199,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for get_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#get-a-self-hosted-runner-for-an-organization)    
+    ///
     /// ---
     pub async fn get_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32) -> Result<Runner, ActionsGetSelfHostedRunnerForOrgError> {
 
@@ -6152,6 +6239,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for get_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#get-a-self-hosted-runner-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_self_hosted_runner_for_org(&self, org: &str, runner_id: i32) -> Result<Runner, ActionsGetSelfHostedRunnerForOrgError> {
@@ -6193,6 +6281,7 @@ impl<'api> Actions<'api> {
     /// endpoint.
     /// 
     /// [GitHub API docs for get_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#get-a-self-hosted-runner-for-a-repository)    
+    ///
     /// ---
     pub async fn get_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32) -> Result<Runner, ActionsGetSelfHostedRunnerForRepoError> {
 
@@ -6233,6 +6322,7 @@ impl<'api> Actions<'api> {
     /// endpoint.
     /// 
     /// [GitHub API docs for get_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#get-a-self-hosted-runner-for-a-repository)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_self_hosted_runner_for_repo(&self, owner: &str, repo: &str, runner_id: i32) -> Result<Runner, ActionsGetSelfHostedRunnerForRepoError> {
@@ -6275,6 +6365,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for get_self_hosted_runner_group_for_org](https://docs.github.com/rest/reference/actions#get-a-self-hosted-runner-group-for-an-organization)    
+    ///
     /// ---
     pub async fn get_self_hosted_runner_group_for_org_async(&self, org: &str, runner_group_id: i32) -> Result<RunnerGroupsOrg, ActionsGetSelfHostedRunnerGroupForOrgError> {
 
@@ -6316,6 +6407,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for get_self_hosted_runner_group_for_org](https://docs.github.com/rest/reference/actions#get-a-self-hosted-runner-group-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_self_hosted_runner_group_for_org(&self, org: &str, runner_group_id: i32) -> Result<RunnerGroupsOrg, ActionsGetSelfHostedRunnerGroupForOrgError> {
@@ -6354,6 +6446,7 @@ impl<'api> Actions<'api> {
     /// Gets a specific workflow. You can replace `workflow_id` with the workflow file name. For example, you could use `main.yaml`. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_workflow](https://docs.github.com/rest/reference/actions#get-a-workflow)    
+    ///
     /// ---
     pub async fn get_workflow_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<Workflow, ActionsGetWorkflowError> {
 
@@ -6391,6 +6484,7 @@ impl<'api> Actions<'api> {
     /// Gets a specific workflow. You can replace `workflow_id` with the workflow file name. For example, you could use `main.yaml`. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_workflow](https://docs.github.com/rest/reference/actions#get-a-workflow)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_workflow(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<Workflow, ActionsGetWorkflowError> {
@@ -6429,6 +6523,7 @@ impl<'api> Actions<'api> {
     /// Gets a specific workflow run. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_workflow_run](https://docs.github.com/rest/reference/actions#get-a-workflow-run)    
+    ///
     /// ---
     pub async fn get_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<WorkflowRun, ActionsGetWorkflowRunError> {
 
@@ -6466,6 +6561,7 @@ impl<'api> Actions<'api> {
     /// Gets a specific workflow run. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_workflow_run](https://docs.github.com/rest/reference/actions#get-a-workflow-run)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_workflow_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<WorkflowRun, ActionsGetWorkflowRunError> {
@@ -6506,6 +6602,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_workflow_run_usage](https://docs.github.com/rest/reference/actions#get-workflow-run-usage)    
+    ///
     /// ---
     pub async fn get_workflow_run_usage_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<WorkflowRunUsage, ActionsGetWorkflowRunUsageError> {
 
@@ -6545,6 +6642,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_workflow_run_usage](https://docs.github.com/rest/reference/actions#get-workflow-run-usage)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_workflow_run_usage(&self, owner: &str, repo: &str, run_id: i32) -> Result<WorkflowRunUsage, ActionsGetWorkflowRunUsageError> {
@@ -6585,6 +6683,7 @@ impl<'api> Actions<'api> {
     /// You can replace `workflow_id` with the workflow file name. For example, you could use `main.yaml`. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_workflow_usage](https://docs.github.com/rest/reference/actions#get-workflow-usage)    
+    ///
     /// ---
     pub async fn get_workflow_usage_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<WorkflowUsage, ActionsGetWorkflowUsageError> {
 
@@ -6624,6 +6723,7 @@ impl<'api> Actions<'api> {
     /// You can replace `workflow_id` with the workflow file name. For example, you could use `main.yaml`. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_workflow_usage](https://docs.github.com/rest/reference/actions#get-workflow-usage)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_workflow_usage(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<WorkflowUsage, ActionsGetWorkflowUsageError> {
@@ -6662,6 +6762,7 @@ impl<'api> Actions<'api> {
     /// Lists all artifacts for a repository. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for list_artifacts_for_repo](https://docs.github.com/rest/reference/actions#list-artifacts-for-a-repository)    
+    ///
     /// ---
     pub async fn list_artifacts_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListArtifactsForRepoParams>>) -> Result<GetActionsListWorkflowRunArtifactsResponse200, ActionsListArtifactsForRepoError> {
 
@@ -6703,6 +6804,7 @@ impl<'api> Actions<'api> {
     /// Lists all artifacts for a repository. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for list_artifacts_for_repo](https://docs.github.com/rest/reference/actions#list-artifacts-for-a-repository)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_artifacts_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListArtifactsForRepoParams>>) -> Result<GetActionsListWorkflowRunArtifactsResponse200, ActionsListArtifactsForRepoError> {
@@ -6746,6 +6848,7 @@ impl<'api> Actions<'api> {
     /// Lists all secrets available in an environment without revealing their encrypted values. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
     /// 
     /// [GitHub API docs for list_environment_secrets](https://docs.github.com/rest/reference/actions#list-environment-secrets)    
+    ///
     /// ---
     pub async fn list_environment_secrets_async(&self, repository_id: i32, environment_name: &str, query_params: Option<impl Into<ActionsListEnvironmentSecretsParams>>) -> Result<GetActionsListEnvironmentSecretsResponse200, ActionsListEnvironmentSecretsError> {
 
@@ -6787,6 +6890,7 @@ impl<'api> Actions<'api> {
     /// Lists all secrets available in an environment without revealing their encrypted values. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
     /// 
     /// [GitHub API docs for list_environment_secrets](https://docs.github.com/rest/reference/actions#list-environment-secrets)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_environment_secrets(&self, repository_id: i32, environment_name: &str, query_params: Option<impl Into<ActionsListEnvironmentSecretsParams>>) -> Result<GetActionsListEnvironmentSecretsResponse200, ActionsListEnvironmentSecretsError> {
@@ -6830,6 +6934,7 @@ impl<'api> Actions<'api> {
     /// Lists jobs for a workflow run. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint. You can use parameters to narrow the list of results. For more information about using parameters, see [Parameters](https://docs.github.com/rest/overview/resources-in-the-rest-api#parameters).
     /// 
     /// [GitHub API docs for list_jobs_for_workflow_run](https://docs.github.com/rest/reference/actions#list-jobs-for-a-workflow-run)    
+    ///
     /// ---
     pub async fn list_jobs_for_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsListJobsForWorkflowRunParams<'api>>>) -> Result<GetActionsListJobsForWorkflowRunResponse200, ActionsListJobsForWorkflowRunError> {
 
@@ -6871,6 +6976,7 @@ impl<'api> Actions<'api> {
     /// Lists jobs for a workflow run. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint. You can use parameters to narrow the list of results. For more information about using parameters, see [Parameters](https://docs.github.com/rest/overview/resources-in-the-rest-api#parameters).
     /// 
     /// [GitHub API docs for list_jobs_for_workflow_run](https://docs.github.com/rest/reference/actions#list-jobs-for-a-workflow-run)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_jobs_for_workflow_run(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsListJobsForWorkflowRunParams<'api>>>) -> Result<GetActionsListJobsForWorkflowRunResponse200, ActionsListJobsForWorkflowRunError> {
@@ -6914,6 +7020,7 @@ impl<'api> Actions<'api> {
     /// Lists all secrets available in an organization without revealing their encrypted values. You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
     /// 
     /// [GitHub API docs for list_org_secrets](https://docs.github.com/rest/reference/actions#list-organization-secrets)    
+    ///
     /// ---
     pub async fn list_org_secrets_async(&self, org: &str, query_params: Option<impl Into<ActionsListOrgSecretsParams>>) -> Result<GetActionsListOrgSecretsResponse200, ActionsListOrgSecretsError> {
 
@@ -6955,6 +7062,7 @@ impl<'api> Actions<'api> {
     /// Lists all secrets available in an organization without revealing their encrypted values. You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
     /// 
     /// [GitHub API docs for list_org_secrets](https://docs.github.com/rest/reference/actions#list-organization-secrets)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_org_secrets(&self, org: &str, query_params: Option<impl Into<ActionsListOrgSecretsParams>>) -> Result<GetActionsListOrgSecretsResponse200, ActionsListOrgSecretsError> {
@@ -7002,6 +7110,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/reference/actions#list-repository-access-to-a-self-hosted-runner-group-in-an-organization)    
+    ///
     /// ---
     pub async fn list_repo_access_to_self_hosted_runner_group_in_org_async(&self, org: &str, runner_group_id: i32, query_params: Option<impl Into<ActionsListRepoAccessToSelfHostedRunnerGroupInOrgParams>>) -> Result<GetActionsListRepoAccessToSelfHostedRunnerGroupInOrgResponse200, ActionsListRepoAccessToSelfHostedRunnerGroupInOrgError> {
 
@@ -7047,6 +7156,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/reference/actions#list-repository-access-to-a-self-hosted-runner-group-in-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_repo_access_to_self_hosted_runner_group_in_org(&self, org: &str, runner_group_id: i32, query_params: Option<impl Into<ActionsListRepoAccessToSelfHostedRunnerGroupInOrgParams>>) -> Result<GetActionsListRepoAccessToSelfHostedRunnerGroupInOrgResponse200, ActionsListRepoAccessToSelfHostedRunnerGroupInOrgError> {
@@ -7090,6 +7200,7 @@ impl<'api> Actions<'api> {
     /// Lists all secrets available in a repository without revealing their encrypted values. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
     /// 
     /// [GitHub API docs for list_repo_secrets](https://docs.github.com/rest/reference/actions#list-repository-secrets)    
+    ///
     /// ---
     pub async fn list_repo_secrets_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoSecretsParams>>) -> Result<GetActionsListEnvironmentSecretsResponse200, ActionsListRepoSecretsError> {
 
@@ -7131,6 +7242,7 @@ impl<'api> Actions<'api> {
     /// Lists all secrets available in a repository without revealing their encrypted values. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
     /// 
     /// [GitHub API docs for list_repo_secrets](https://docs.github.com/rest/reference/actions#list-repository-secrets)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_repo_secrets(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoSecretsParams>>) -> Result<GetActionsListEnvironmentSecretsResponse200, ActionsListRepoSecretsError> {
@@ -7174,6 +7286,7 @@ impl<'api> Actions<'api> {
     /// Lists the workflows in a repository. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for list_repo_workflows](https://docs.github.com/rest/reference/actions#list-repository-workflows)    
+    ///
     /// ---
     pub async fn list_repo_workflows_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoWorkflowsParams>>) -> Result<GetActionsListRepoWorkflowsResponse200, ActionsListRepoWorkflowsError> {
 
@@ -7215,6 +7328,7 @@ impl<'api> Actions<'api> {
     /// Lists the workflows in a repository. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for list_repo_workflows](https://docs.github.com/rest/reference/actions#list-repository-workflows)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_repo_workflows(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoWorkflowsParams>>) -> Result<GetActionsListRepoWorkflowsResponse200, ActionsListRepoWorkflowsError> {
@@ -7260,6 +7374,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_runner_applications_for_org](https://docs.github.com/rest/reference/actions#list-runner-applications-for-an-organization)    
+    ///
     /// ---
     pub async fn list_runner_applications_for_org_async(&self, org: &str) -> Result<Vec<RunnerApplication>, ActionsListRunnerApplicationsForOrgError> {
 
@@ -7299,6 +7414,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_runner_applications_for_org](https://docs.github.com/rest/reference/actions#list-runner-applications-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_runner_applications_for_org(&self, org: &str) -> Result<Vec<RunnerApplication>, ActionsListRunnerApplicationsForOrgError> {
@@ -7339,6 +7455,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `repo` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_runner_applications_for_repo](https://docs.github.com/rest/reference/actions#list-runner-applications-for-a-repository)    
+    ///
     /// ---
     pub async fn list_runner_applications_for_repo_async(&self, owner: &str, repo: &str) -> Result<Vec<RunnerApplication>, ActionsListRunnerApplicationsForRepoError> {
 
@@ -7378,6 +7495,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `repo` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_runner_applications_for_repo](https://docs.github.com/rest/reference/actions#list-runner-applications-for-a-repository)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_runner_applications_for_repo(&self, owner: &str, repo: &str) -> Result<Vec<RunnerApplication>, ActionsListRunnerApplicationsForRepoError> {
@@ -7416,6 +7534,7 @@ impl<'api> Actions<'api> {
     /// Lists all repositories that have been selected when the `visibility` for repository access to a secret is set to `selected`. You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
     /// 
     /// [GitHub API docs for list_selected_repos_for_org_secret](https://docs.github.com/rest/reference/actions#list-selected-repositories-for-an-organization-secret)    
+    ///
     /// ---
     pub async fn list_selected_repos_for_org_secret_async(&self, org: &str, secret_name: &str, query_params: Option<impl Into<ActionsListSelectedReposForOrgSecretParams>>) -> Result<GetActionsListSelectedReposForOrgSecretResponse200, ActionsListSelectedReposForOrgSecretError> {
 
@@ -7457,6 +7576,7 @@ impl<'api> Actions<'api> {
     /// Lists all repositories that have been selected when the `visibility` for repository access to a secret is set to `selected`. You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
     /// 
     /// [GitHub API docs for list_selected_repos_for_org_secret](https://docs.github.com/rest/reference/actions#list-selected-repositories-for-an-organization-secret)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_selected_repos_for_org_secret(&self, org: &str, secret_name: &str, query_params: Option<impl Into<ActionsListSelectedReposForOrgSecretParams>>) -> Result<GetActionsListSelectedReposForOrgSecretResponse200, ActionsListSelectedReposForOrgSecretError> {
@@ -7502,6 +7622,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
     /// 
     /// [GitHub API docs for list_selected_repositories_enabled_github_actions_organization](https://docs.github.com/rest/reference/actions#list-selected-repositories-enabled-for-github-actions-in-an-organization)    
+    ///
     /// ---
     pub async fn list_selected_repositories_enabled_github_actions_organization_async(&self, org: &str, query_params: Option<impl Into<ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationParams>>) -> Result<GetActionsListRepoAccessToSelfHostedRunnerGroupInOrgResponse200, ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationError> {
 
@@ -7545,6 +7666,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
     /// 
     /// [GitHub API docs for list_selected_repositories_enabled_github_actions_organization](https://docs.github.com/rest/reference/actions#list-selected-repositories-enabled-for-github-actions-in-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_selected_repositories_enabled_github_actions_organization(&self, org: &str, query_params: Option<impl Into<ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationParams>>) -> Result<GetActionsListRepoAccessToSelfHostedRunnerGroupInOrgResponse200, ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationError> {
@@ -7592,6 +7714,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_self_hosted_runner_groups_for_org](https://docs.github.com/rest/reference/actions#list-self-hosted-runner-groups-for-an-organization)    
+    ///
     /// ---
     pub async fn list_self_hosted_runner_groups_for_org_async(&self, org: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnerGroupsForOrgParams>>) -> Result<GetActionsListSelfHostedRunnerGroupsForOrgResponse200, ActionsListSelfHostedRunnerGroupsForOrgError> {
 
@@ -7637,6 +7760,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_self_hosted_runner_groups_for_org](https://docs.github.com/rest/reference/actions#list-self-hosted-runner-groups-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_self_hosted_runner_groups_for_org(&self, org: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnerGroupsForOrgParams>>) -> Result<GetActionsListSelfHostedRunnerGroupsForOrgResponse200, ActionsListSelfHostedRunnerGroupsForOrgError> {
@@ -7682,6 +7806,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_self_hosted_runners_for_org](https://docs.github.com/rest/reference/actions#list-self-hosted-runners-for-an-organization)    
+    ///
     /// ---
     pub async fn list_self_hosted_runners_for_org_async(&self, org: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnersForOrgParams>>) -> Result<GetActionsListSelfHostedRunnersForRepoResponse200, ActionsListSelfHostedRunnersForOrgError> {
 
@@ -7725,6 +7850,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_self_hosted_runners_for_org](https://docs.github.com/rest/reference/actions#list-self-hosted-runners-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_self_hosted_runners_for_org(&self, org: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnersForOrgParams>>) -> Result<GetActionsListSelfHostedRunnersForRepoResponse200, ActionsListSelfHostedRunnersForOrgError> {
@@ -7768,6 +7894,7 @@ impl<'api> Actions<'api> {
     /// Lists all self-hosted runners configured in a repository. You must authenticate using an access token with the `repo` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_self_hosted_runners_for_repo](https://docs.github.com/rest/reference/actions#list-self-hosted-runners-for-a-repository)    
+    ///
     /// ---
     pub async fn list_self_hosted_runners_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnersForRepoParams>>) -> Result<GetActionsListSelfHostedRunnersForRepoResponse200, ActionsListSelfHostedRunnersForRepoError> {
 
@@ -7809,6 +7936,7 @@ impl<'api> Actions<'api> {
     /// Lists all self-hosted runners configured in a repository. You must authenticate using an access token with the `repo` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_self_hosted_runners_for_repo](https://docs.github.com/rest/reference/actions#list-self-hosted-runners-for-a-repository)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_self_hosted_runners_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnersForRepoParams>>) -> Result<GetActionsListSelfHostedRunnersForRepoResponse200, ActionsListSelfHostedRunnersForRepoError> {
@@ -7856,6 +7984,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_self_hosted_runners_in_group_for_org](https://docs.github.com/rest/reference/actions#list-self-hosted-runners-in-a-group-for-an-organization)    
+    ///
     /// ---
     pub async fn list_self_hosted_runners_in_group_for_org_async(&self, org: &str, runner_group_id: i32, query_params: Option<impl Into<ActionsListSelfHostedRunnersInGroupForOrgParams>>) -> Result<GetActionsListSelfHostedRunnersInGroupForOrgResponse200, ActionsListSelfHostedRunnersInGroupForOrgError> {
 
@@ -7901,6 +8030,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_self_hosted_runners_in_group_for_org](https://docs.github.com/rest/reference/actions#list-self-hosted-runners-in-a-group-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_self_hosted_runners_in_group_for_org(&self, org: &str, runner_group_id: i32, query_params: Option<impl Into<ActionsListSelfHostedRunnersInGroupForOrgParams>>) -> Result<GetActionsListSelfHostedRunnersInGroupForOrgResponse200, ActionsListSelfHostedRunnersInGroupForOrgError> {
@@ -7944,6 +8074,7 @@ impl<'api> Actions<'api> {
     /// Lists artifacts for a workflow run. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for list_workflow_run_artifacts](https://docs.github.com/rest/reference/actions#list-workflow-run-artifacts)    
+    ///
     /// ---
     pub async fn list_workflow_run_artifacts_async(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsListWorkflowRunArtifactsParams>>) -> Result<GetActionsListWorkflowRunArtifactsResponse200, ActionsListWorkflowRunArtifactsError> {
 
@@ -7985,6 +8116,7 @@ impl<'api> Actions<'api> {
     /// Lists artifacts for a workflow run. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for list_workflow_run_artifacts](https://docs.github.com/rest/reference/actions#list-workflow-run-artifacts)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_workflow_run_artifacts(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsListWorkflowRunArtifactsParams>>) -> Result<GetActionsListWorkflowRunArtifactsResponse200, ActionsListWorkflowRunArtifactsError> {
@@ -8030,6 +8162,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope.
     /// 
     /// [GitHub API docs for list_workflow_runs](https://docs.github.com/rest/reference/actions#list-workflow-runs)    
+    ///
     /// ---
     pub async fn list_workflow_runs_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId, query_params: Option<impl Into<ActionsListWorkflowRunsParams<'api>>>) -> Result<GetActionsListWorkflowRunsResponse200, ActionsListWorkflowRunsError> {
 
@@ -8073,6 +8206,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope.
     /// 
     /// [GitHub API docs for list_workflow_runs](https://docs.github.com/rest/reference/actions#list-workflow-runs)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_workflow_runs(&self, owner: &str, repo: &str, workflow_id: WorkflowId, query_params: Option<impl Into<ActionsListWorkflowRunsParams<'api>>>) -> Result<GetActionsListWorkflowRunsResponse200, ActionsListWorkflowRunsError> {
@@ -8118,6 +8252,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for list_workflow_runs_for_repo](https://docs.github.com/rest/reference/actions#list-workflow-runs-for-a-repository)    
+    ///
     /// ---
     pub async fn list_workflow_runs_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListWorkflowRunsForRepoParams<'api>>>) -> Result<GetActionsListWorkflowRunsResponse200, ActionsListWorkflowRunsForRepoError> {
 
@@ -8161,6 +8296,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
     /// [GitHub API docs for list_workflow_runs_for_repo](https://docs.github.com/rest/reference/actions#list-workflow-runs-for-a-repository)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_workflow_runs_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListWorkflowRunsForRepoParams<'api>>>) -> Result<GetActionsListWorkflowRunsResponse200, ActionsListWorkflowRunsForRepoError> {
@@ -8204,6 +8340,7 @@ impl<'api> Actions<'api> {
     /// Re-runs your workflow run using its `id`. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
     /// 
     /// [GitHub API docs for re_run_workflow](https://docs.github.com/rest/reference/actions#re-run-a-workflow)    
+    ///
     /// ---
     pub async fn re_run_workflow_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), ActionsReRunWorkflowError> {
 
@@ -8241,6 +8378,7 @@ impl<'api> Actions<'api> {
     /// Re-runs your workflow run using its `id`. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
     /// 
     /// [GitHub API docs for re_run_workflow](https://docs.github.com/rest/reference/actions#re-run-a-workflow)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn re_run_workflow(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), ActionsReRunWorkflowError> {
@@ -8284,6 +8422,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for remove_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/reference/actions#remove-repository-access-to-a-self-hosted-runner-group-in-an-organization)    
+    ///
     /// ---
     pub async fn remove_repo_access_to_self_hosted_runner_group_in_org_async(&self, org: &str, runner_group_id: i32, repository_id: i32) -> Result<(), ActionsRemoveRepoAccessToSelfHostedRunnerGroupInOrgError> {
 
@@ -8326,6 +8465,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for remove_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/reference/actions#remove-repository-access-to-a-self-hosted-runner-group-in-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn remove_repo_access_to_self_hosted_runner_group_in_org(&self, org: &str, runner_group_id: i32, repository_id: i32) -> Result<(), ActionsRemoveRepoAccessToSelfHostedRunnerGroupInOrgError> {
@@ -8364,6 +8504,7 @@ impl<'api> Actions<'api> {
     /// Removes a repository from an organization secret when the `visibility` for repository access is set to `selected`. The visibility is set when you [Create or update an organization secret](https://docs.github.com/rest/reference/actions#create-or-update-an-organization-secret). You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
     /// 
     /// [GitHub API docs for remove_selected_repo_from_org_secret](https://docs.github.com/rest/reference/actions#remove-selected-repository-from-an-organization-secret)    
+    ///
     /// ---
     pub async fn remove_selected_repo_from_org_secret_async(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), ActionsRemoveSelectedRepoFromOrgSecretError> {
 
@@ -8402,6 +8543,7 @@ impl<'api> Actions<'api> {
     /// Removes a repository from an organization secret when the `visibility` for repository access is set to `selected`. The visibility is set when you [Create or update an organization secret](https://docs.github.com/rest/reference/actions#create-or-update-an-organization-secret). You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
     /// 
     /// [GitHub API docs for remove_selected_repo_from_org_secret](https://docs.github.com/rest/reference/actions#remove-selected-repository-from-an-organization-secret)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn remove_selected_repo_from_org_secret(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), ActionsRemoveSelectedRepoFromOrgSecretError> {
@@ -8446,6 +8588,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for remove_self_hosted_runner_from_group_for_org](https://docs.github.com/rest/reference/actions#remove-a-self-hosted-runner-from-a-group-for-an-organization)    
+    ///
     /// ---
     pub async fn remove_self_hosted_runner_from_group_for_org_async(&self, org: &str, runner_group_id: i32, runner_id: i32) -> Result<(), ActionsRemoveSelfHostedRunnerFromGroupForOrgError> {
 
@@ -8488,6 +8631,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for remove_self_hosted_runner_from_group_for_org](https://docs.github.com/rest/reference/actions#remove-a-self-hosted-runner-from-a-group-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn remove_self_hosted_runner_from_group_for_org(&self, org: &str, runner_group_id: i32, runner_id: i32) -> Result<(), ActionsRemoveSelfHostedRunnerFromGroupForOrgError> {
@@ -8528,6 +8672,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository contents and deployments can use this endpoint.
     /// 
     /// [GitHub API docs for review_pending_deployments_for_run](https://docs.github.com/rest/reference/actions#review-pending-deployments-for-a-workflow-run)    
+    ///
     /// ---
     pub async fn review_pending_deployments_for_run_async(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReviewPendingDeploymentsForRun) -> Result<Vec<Deployment>, ActionsReviewPendingDeploymentsForRunError> {
 
@@ -8567,6 +8712,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository contents and deployments can use this endpoint.
     /// 
     /// [GitHub API docs for review_pending_deployments_for_run](https://docs.github.com/rest/reference/actions#review-pending-deployments-for-a-workflow-run)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn review_pending_deployments_for_run(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReviewPendingDeploymentsForRun) -> Result<Vec<Deployment>, ActionsReviewPendingDeploymentsForRunError> {
@@ -8611,6 +8757,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
     /// 
     /// [GitHub API docs for set_allowed_actions_organization](https://docs.github.com/rest/reference/actions#set-allowed-actions-for-an-organization)    
+    ///
     /// ---
     pub async fn set_allowed_actions_organization_async(&self, org: &str, body: PutActionsSetAllowedActionsRepository) -> Result<(), ActionsSetAllowedActionsOrganizationError> {
 
@@ -8654,6 +8801,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
     /// 
     /// [GitHub API docs for set_allowed_actions_organization](https://docs.github.com/rest/reference/actions#set-allowed-actions-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_allowed_actions_organization(&self, org: &str, body: PutActionsSetAllowedActionsRepository) -> Result<(), ActionsSetAllowedActionsOrganizationError> {
@@ -8698,6 +8846,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `administration` repository permission to use this API.
     /// 
     /// [GitHub API docs for set_allowed_actions_repository](https://docs.github.com/rest/reference/actions#set-allowed-actions-for-a-repository)    
+    ///
     /// ---
     pub async fn set_allowed_actions_repository_async(&self, owner: &str, repo: &str, body: PutActionsSetAllowedActionsRepository) -> Result<(), ActionsSetAllowedActionsRepositoryError> {
 
@@ -8741,6 +8890,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `administration` repository permission to use this API.
     /// 
     /// [GitHub API docs for set_allowed_actions_repository](https://docs.github.com/rest/reference/actions#set-allowed-actions-for-a-repository)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_allowed_actions_repository(&self, owner: &str, repo: &str, body: PutActionsSetAllowedActionsRepository) -> Result<(), ActionsSetAllowedActionsRepositoryError> {
@@ -8783,6 +8933,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
     /// 
     /// [GitHub API docs for set_github_actions_permissions_organization](https://docs.github.com/rest/reference/actions#set-github-actions-permissions-for-an-organization)    
+    ///
     /// ---
     pub async fn set_github_actions_permissions_organization_async(&self, org: &str, body: PutActionsSetGithubActionsPermissionsOrganization) -> Result<(), ActionsSetGithubActionsPermissionsOrganizationError> {
 
@@ -8824,6 +8975,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
     /// 
     /// [GitHub API docs for set_github_actions_permissions_organization](https://docs.github.com/rest/reference/actions#set-github-actions-permissions-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_github_actions_permissions_organization(&self, org: &str, body: PutActionsSetGithubActionsPermissionsOrganization) -> Result<(), ActionsSetGithubActionsPermissionsOrganizationError> {
@@ -8866,6 +9018,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `administration` repository permission to use this API.
     /// 
     /// [GitHub API docs for set_github_actions_permissions_repository](https://docs.github.com/rest/reference/actions#set-github-actions-permissions-for-a-repository)    
+    ///
     /// ---
     pub async fn set_github_actions_permissions_repository_async(&self, owner: &str, repo: &str, body: PutActionsSetGithubActionsPermissionsRepository) -> Result<(), ActionsSetGithubActionsPermissionsRepositoryError> {
 
@@ -8907,6 +9060,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `administration` repository permission to use this API.
     /// 
     /// [GitHub API docs for set_github_actions_permissions_repository](https://docs.github.com/rest/reference/actions#set-github-actions-permissions-for-a-repository)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_github_actions_permissions_repository(&self, owner: &str, repo: &str, body: PutActionsSetGithubActionsPermissionsRepository) -> Result<(), ActionsSetGithubActionsPermissionsRepositoryError> {
@@ -8949,6 +9103,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for set_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/reference/actions#set-repository-access-to-a-self-hosted-runner-group-in-an-organization)    
+    ///
     /// ---
     pub async fn set_repo_access_to_self_hosted_runner_group_in_org_async(&self, org: &str, runner_group_id: i32, body: PutActionsSetRepoAccessToSelfHostedRunnerGroupInOrg) -> Result<(), ActionsSetRepoAccessToSelfHostedRunnerGroupInOrgError> {
 
@@ -8990,6 +9145,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for set_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/reference/actions#set-repository-access-to-a-self-hosted-runner-group-in-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_repo_access_to_self_hosted_runner_group_in_org(&self, org: &str, runner_group_id: i32, body: PutActionsSetRepoAccessToSelfHostedRunnerGroupInOrg) -> Result<(), ActionsSetRepoAccessToSelfHostedRunnerGroupInOrgError> {
@@ -9028,6 +9184,7 @@ impl<'api> Actions<'api> {
     /// Replaces all repositories for an organization secret when the `visibility` for repository access is set to `selected`. The visibility is set when you [Create or update an organization secret](https://docs.github.com/rest/reference/actions#create-or-update-an-organization-secret). You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
     /// 
     /// [GitHub API docs for set_selected_repos_for_org_secret](https://docs.github.com/rest/reference/actions#set-selected-repositories-for-an-organization-secret)    
+    ///
     /// ---
     pub async fn set_selected_repos_for_org_secret_async(&self, org: &str, secret_name: &str, body: PutActionsSetSelectedReposForOrgSecret) -> Result<(), ActionsSetSelectedReposForOrgSecretError> {
 
@@ -9065,6 +9222,7 @@ impl<'api> Actions<'api> {
     /// Replaces all repositories for an organization secret when the `visibility` for repository access is set to `selected`. The visibility is set when you [Create or update an organization secret](https://docs.github.com/rest/reference/actions#create-or-update-an-organization-secret). You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
     /// 
     /// [GitHub API docs for set_selected_repos_for_org_secret](https://docs.github.com/rest/reference/actions#set-selected-repositories-for-an-organization-secret)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_selected_repos_for_org_secret(&self, org: &str, secret_name: &str, body: PutActionsSetSelectedReposForOrgSecret) -> Result<(), ActionsSetSelectedReposForOrgSecretError> {
@@ -9105,6 +9263,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
     /// 
     /// [GitHub API docs for set_selected_repositories_enabled_github_actions_organization](https://docs.github.com/rest/reference/actions#set-selected-repositories-enabled-for-github-actions-in-an-organization)    
+    ///
     /// ---
     pub async fn set_selected_repositories_enabled_github_actions_organization_async(&self, org: &str, body: PutActionsSetSelectedRepositoriesEnabledGithubActionsOrganization) -> Result<(), ActionsSetSelectedRepositoriesEnabledGithubActionsOrganizationError> {
 
@@ -9144,6 +9303,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
     /// 
     /// [GitHub API docs for set_selected_repositories_enabled_github_actions_organization](https://docs.github.com/rest/reference/actions#set-selected-repositories-enabled-for-github-actions-in-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_selected_repositories_enabled_github_actions_organization(&self, org: &str, body: PutActionsSetSelectedRepositoriesEnabledGithubActionsOrganization) -> Result<(), ActionsSetSelectedRepositoriesEnabledGithubActionsOrganizationError> {
@@ -9186,6 +9346,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for set_self_hosted_runners_in_group_for_org](https://docs.github.com/rest/reference/actions#set-self-hosted-runners-in-a-group-for-an-organization)    
+    ///
     /// ---
     pub async fn set_self_hosted_runners_in_group_for_org_async(&self, org: &str, runner_group_id: i32, body: PutActionsSetSelfHostedRunnersInGroupForOrg) -> Result<(), ActionsSetSelfHostedRunnersInGroupForOrgError> {
 
@@ -9227,6 +9388,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for set_self_hosted_runners_in_group_for_org](https://docs.github.com/rest/reference/actions#set-self-hosted-runners-in-a-group-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_self_hosted_runners_in_group_for_org(&self, org: &str, runner_group_id: i32, body: PutActionsSetSelfHostedRunnersInGroupForOrg) -> Result<(), ActionsSetSelfHostedRunnersInGroupForOrgError> {
@@ -9269,6 +9431,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for update_self_hosted_runner_group_for_org](https://docs.github.com/rest/reference/actions#update-a-self-hosted-runner-group-for-an-organization)    
+    ///
     /// ---
     pub async fn update_self_hosted_runner_group_for_org_async(&self, org: &str, runner_group_id: i32, body: PatchActionsUpdateSelfHostedRunnerGroupForOrg) -> Result<RunnerGroupsOrg, ActionsUpdateSelfHostedRunnerGroupForOrgError> {
 
@@ -9310,6 +9473,7 @@ impl<'api> Actions<'api> {
     /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
     /// 
     /// [GitHub API docs for update_self_hosted_runner_group_for_org](https://docs.github.com/rest/reference/actions#update-a-self-hosted-runner-group-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn update_self_hosted_runner_group_for_org(&self, org: &str, runner_group_id: i32, body: PatchActionsUpdateSelfHostedRunnerGroupForOrg) -> Result<RunnerGroupsOrg, ActionsUpdateSelfHostedRunnerGroupForOrgError> {
