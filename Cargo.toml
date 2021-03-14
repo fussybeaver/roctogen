@@ -1,9 +1,14 @@
 [package]
 name = "roctogen"
-version = "0.1.0"
+version = "0.1.1"
 authors = [ "Roctogen contributors" ]
 description = "Github API and models generated from the official swagger OpenAPI specification"
 license = "Apache-2.0"
+homepage = "https://github.com/fussybeaver/roctogen"
+repository = "https://github.com/fussybeaver/roctogen"
+documentation = "https://docs.rs/roctogen"
+readme = "README.md"
+keywords = ["github"]
 edition = "2018"
 
 [lib]
@@ -75,4 +80,28 @@ features = [
 wasm-bindgen-test = "0.3.0"
 
 [package.metadata.docs.rs]
-features = ["isahc"]
+features = [
+  "isahc",
+  "ant-man",
+  "baptiste",
+  "cloak",
+  "comfort-fade",
+  "corsair",
+  "dorian",
+  "flash",
+  "groot",
+  "inertia",
+  "london",
+  "luke-cage",
+  "lydian",
+  "mercy",
+  "mockingbird",
+  "nebula",
+  "scarlet-witch",
+  "squirrel-girl",
+  "starfox",
+  "surtur",
+  "switcheroo",
+  "wyandotte",
+  "zzzax"
+]
