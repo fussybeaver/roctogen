@@ -545,6 +545,7 @@ impl<'api> Packages<'api> {
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for delete_package_for_authenticated_user](https://docs.github.com/rest/reference/packages#delete-a-package-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn delete_package_for_authenticated_user_async(&self, package_type: &str, package_name: &str) -> Result<(), PackagesDeletePackageForAuthenticatedUserError> {
 
@@ -588,6 +589,7 @@ impl<'api> Packages<'api> {
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for delete_package_for_authenticated_user](https://docs.github.com/rest/reference/packages#delete-a-package-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_package_for_authenticated_user(&self, package_type: &str, package_name: &str) -> Result<(), PackagesDeletePackageForAuthenticatedUserError> {
@@ -633,6 +635,7 @@ impl<'api> Packages<'api> {
     /// - If `package_type` is `container`, you must also have admin permissions to the container you want to delete.
     /// 
     /// [GitHub API docs for delete_package_for_org](https://docs.github.com/rest/reference/packages#delete-a-package-for-an-organization)    
+    ///
     /// ---
     pub async fn delete_package_for_org_async(&self, package_type: &str, package_name: &str, org: &str) -> Result<(), PackagesDeletePackageForOrgError> {
 
@@ -677,6 +680,7 @@ impl<'api> Packages<'api> {
     /// - If `package_type` is `container`, you must also have admin permissions to the container you want to delete.
     /// 
     /// [GitHub API docs for delete_package_for_org](https://docs.github.com/rest/reference/packages#delete-a-package-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_package_for_org(&self, package_type: &str, package_name: &str, org: &str) -> Result<(), PackagesDeletePackageForOrgError> {
@@ -721,6 +725,7 @@ impl<'api> Packages<'api> {
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for delete_package_version_for_authenticated_user](https://docs.github.com/rest/reference/packages#delete-a-package-version-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn delete_package_version_for_authenticated_user_async(&self, package_type: &str, package_name: &str, package_version_id: i32) -> Result<(), PackagesDeletePackageVersionForAuthenticatedUserError> {
 
@@ -764,6 +769,7 @@ impl<'api> Packages<'api> {
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for delete_package_version_for_authenticated_user](https://docs.github.com/rest/reference/packages#delete-a-package-version-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_package_version_for_authenticated_user(&self, package_type: &str, package_name: &str, package_version_id: i32) -> Result<(), PackagesDeletePackageVersionForAuthenticatedUserError> {
@@ -809,6 +815,7 @@ impl<'api> Packages<'api> {
     /// - If `package_type` is `container`, you must also have admin permissions to the container you want to delete.
     /// 
     /// [GitHub API docs for delete_package_version_for_org](https://docs.github.com/rest/reference/packages#delete-a-package-version-for-an-organization)    
+    ///
     /// ---
     pub async fn delete_package_version_for_org_async(&self, package_type: &str, package_name: &str, org: &str, package_version_id: i32) -> Result<(), PackagesDeletePackageVersionForOrgError> {
 
@@ -853,6 +860,7 @@ impl<'api> Packages<'api> {
     /// - If `package_type` is `container`, you must also have admin permissions to the container you want to delete.
     /// 
     /// [GitHub API docs for delete_package_version_for_org](https://docs.github.com/rest/reference/packages#delete-a-package-version-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_package_version_for_org(&self, package_type: &str, package_name: &str, org: &str, package_version_id: i32) -> Result<(), PackagesDeletePackageVersionForOrgError> {
@@ -897,6 +905,7 @@ impl<'api> Packages<'api> {
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for get_all_package_versions_for_package_owned_by_authenticated_user](https://docs.github.com/rest/reference/packages#get-all-package-versions-for-a-package-owned-by-the-authenticated-user)    
+    ///
     /// ---
     pub async fn get_all_package_versions_for_package_owned_by_authenticated_user_async(&self, package_type: &str, package_name: &str, query_params: Option<impl Into<PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserParams<'api>>>) -> Result<Vec<PackageVersion>, PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError> {
 
@@ -944,6 +953,7 @@ impl<'api> Packages<'api> {
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for get_all_package_versions_for_package_owned_by_authenticated_user](https://docs.github.com/rest/reference/packages#get-all-package-versions-for-a-package-owned-by-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_all_package_versions_for_package_owned_by_authenticated_user(&self, package_type: &str, package_name: &str, query_params: Option<impl Into<PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserParams<'api>>>) -> Result<Vec<PackageVersion>, PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError> {
@@ -993,6 +1003,7 @@ impl<'api> Packages<'api> {
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for get_all_package_versions_for_package_owned_by_org](https://docs.github.com/rest/reference/packages#get-all-package-versions-for-a-package-owned-by-the-authenticated-user)    
+    ///
     /// ---
     pub async fn get_all_package_versions_for_package_owned_by_org_async(&self, package_type: &str, package_name: &str, org: &str, query_params: Option<impl Into<PackagesGetAllPackageVersionsForPackageOwnedByOrgParams<'api>>>) -> Result<Vec<PackageVersion>, PackagesGetAllPackageVersionsForPackageOwnedByOrgError> {
 
@@ -1040,6 +1051,7 @@ impl<'api> Packages<'api> {
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for get_all_package_versions_for_package_owned_by_org](https://docs.github.com/rest/reference/packages#get-all-package-versions-for-a-package-owned-by-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_all_package_versions_for_package_owned_by_org(&self, package_type: &str, package_name: &str, org: &str, query_params: Option<impl Into<PackagesGetAllPackageVersionsForPackageOwnedByOrgParams<'api>>>) -> Result<Vec<PackageVersion>, PackagesGetAllPackageVersionsForPackageOwnedByOrgError> {
@@ -1089,6 +1101,7 @@ impl<'api> Packages<'api> {
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for get_all_package_versions_for_package_owned_by_user](https://docs.github.com/rest/reference/packages#get-all-package-versions-for-a-package-owned-by-a-user)    
+    ///
     /// ---
     pub async fn get_all_package_versions_for_package_owned_by_user_async(&self, package_type: &str, package_name: &str, username: &str) -> Result<Vec<PackageVersion>, PackagesGetAllPackageVersionsForPackageOwnedByUserError> {
 
@@ -1132,6 +1145,7 @@ impl<'api> Packages<'api> {
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for get_all_package_versions_for_package_owned_by_user](https://docs.github.com/rest/reference/packages#get-all-package-versions-for-a-package-owned-by-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_all_package_versions_for_package_owned_by_user(&self, package_type: &str, package_name: &str, username: &str) -> Result<Vec<PackageVersion>, PackagesGetAllPackageVersionsForPackageOwnedByUserError> {
@@ -1176,6 +1190,7 @@ impl<'api> Packages<'api> {
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for get_package_for_authenticated_user](https://docs.github.com/rest/reference/packages#get-a-package-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn get_package_for_authenticated_user_async(&self, package_type: &str, package_name: &str) -> Result<Package, PackagesGetPackageForAuthenticatedUserError> {
 
@@ -1216,6 +1231,7 @@ impl<'api> Packages<'api> {
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for get_package_for_authenticated_user](https://docs.github.com/rest/reference/packages#get-a-package-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_package_for_authenticated_user(&self, package_type: &str, package_name: &str) -> Result<Package, PackagesGetPackageForAuthenticatedUserError> {
@@ -1257,6 +1273,7 @@ impl<'api> Packages<'api> {
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for get_package_for_organization](https://docs.github.com/rest/reference/packages#get-a-package-for-an-organization)    
+    ///
     /// ---
     pub async fn get_package_for_organization_async(&self, package_type: &str, package_name: &str, org: &str) -> Result<Package, PackagesGetPackageForOrganizationError> {
 
@@ -1297,6 +1314,7 @@ impl<'api> Packages<'api> {
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for get_package_for_organization](https://docs.github.com/rest/reference/packages#get-a-package-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_package_for_organization(&self, package_type: &str, package_name: &str, org: &str) -> Result<Package, PackagesGetPackageForOrganizationError> {
@@ -1338,6 +1356,7 @@ impl<'api> Packages<'api> {
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for get_package_for_user](https://docs.github.com/rest/reference/packages#get-a-package-for-a-user)    
+    ///
     /// ---
     pub async fn get_package_for_user_async(&self, package_type: &str, package_name: &str, username: &str) -> Result<Package, PackagesGetPackageForUserError> {
 
@@ -1378,6 +1397,7 @@ impl<'api> Packages<'api> {
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for get_package_for_user](https://docs.github.com/rest/reference/packages#get-a-package-for-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_package_for_user(&self, package_type: &str, package_name: &str, username: &str) -> Result<Package, PackagesGetPackageForUserError> {
@@ -1419,6 +1439,7 @@ impl<'api> Packages<'api> {
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for get_package_version_for_authenticated_user](https://docs.github.com/rest/reference/packages#get-a-package-version-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn get_package_version_for_authenticated_user_async(&self, package_type: &str, package_name: &str, package_version_id: i32) -> Result<PackageVersion, PackagesGetPackageVersionForAuthenticatedUserError> {
 
@@ -1459,6 +1480,7 @@ impl<'api> Packages<'api> {
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for get_package_version_for_authenticated_user](https://docs.github.com/rest/reference/packages#get-a-package-version-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_package_version_for_authenticated_user(&self, package_type: &str, package_name: &str, package_version_id: i32) -> Result<PackageVersion, PackagesGetPackageVersionForAuthenticatedUserError> {
@@ -1500,6 +1522,7 @@ impl<'api> Packages<'api> {
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for get_package_version_for_organization](https://docs.github.com/rest/reference/packages#get-a-package-version-for-an-organization)    
+    ///
     /// ---
     pub async fn get_package_version_for_organization_async(&self, package_type: &str, package_name: &str, org: &str, package_version_id: i32) -> Result<PackageVersion, PackagesGetPackageVersionForOrganizationError> {
 
@@ -1540,6 +1563,7 @@ impl<'api> Packages<'api> {
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for get_package_version_for_organization](https://docs.github.com/rest/reference/packages#get-a-package-version-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_package_version_for_organization(&self, package_type: &str, package_name: &str, org: &str, package_version_id: i32) -> Result<PackageVersion, PackagesGetPackageVersionForOrganizationError> {
@@ -1581,6 +1605,7 @@ impl<'api> Packages<'api> {
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for get_package_version_for_user](https://docs.github.com/rest/reference/packages#get-a-package-version-for-a-user)    
+    ///
     /// ---
     pub async fn get_package_version_for_user_async(&self, package_type: &str, package_name: &str, package_version_id: i32, username: &str) -> Result<PackageVersion, PackagesGetPackageVersionForUserError> {
 
@@ -1621,6 +1646,7 @@ impl<'api> Packages<'api> {
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for get_package_version_for_user](https://docs.github.com/rest/reference/packages#get-a-package-version-for-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_package_version_for_user(&self, package_type: &str, package_name: &str, package_version_id: i32, username: &str) -> Result<PackageVersion, PackagesGetPackageVersionForUserError> {
@@ -1665,6 +1691,7 @@ impl<'api> Packages<'api> {
     /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scope. If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for restore_package_for_authenticated_user](https://docs.github.com/rest/reference/packages#restore-a-package-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn restore_package_for_authenticated_user_async(&self, package_type: &str, package_name: &str, query_params: Option<impl Into<PackagesRestorePackageForAuthenticatedUserParams<'api>>>) -> Result<(), PackagesRestorePackageForAuthenticatedUserError> {
 
@@ -1715,6 +1742,7 @@ impl<'api> Packages<'api> {
     /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scope. If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for restore_package_for_authenticated_user](https://docs.github.com/rest/reference/packages#restore-a-package-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn restore_package_for_authenticated_user(&self, package_type: &str, package_name: &str, query_params: Option<impl Into<PackagesRestorePackageForAuthenticatedUserParams<'api>>>) -> Result<(), PackagesRestorePackageForAuthenticatedUserError> {
@@ -1769,6 +1797,7 @@ impl<'api> Packages<'api> {
     /// - If `package_type` is `container`, you must also have admin permissions to the container that you want to restore.
     /// 
     /// [GitHub API docs for restore_package_for_org](https://docs.github.com/rest/reference/packages#restore-a-package-for-an-organization)    
+    ///
     /// ---
     pub async fn restore_package_for_org_async(&self, package_type: &str, package_name: &str, org: &str, query_params: Option<impl Into<PackagesRestorePackageForOrgParams<'api>>>) -> Result<(), PackagesRestorePackageForOrgError> {
 
@@ -1821,6 +1850,7 @@ impl<'api> Packages<'api> {
     /// - If `package_type` is `container`, you must also have admin permissions to the container that you want to restore.
     /// 
     /// [GitHub API docs for restore_package_for_org](https://docs.github.com/rest/reference/packages#restore-a-package-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn restore_package_for_org(&self, package_type: &str, package_name: &str, org: &str, query_params: Option<impl Into<PackagesRestorePackageForOrgParams<'api>>>) -> Result<(), PackagesRestorePackageForOrgError> {
@@ -1873,6 +1903,7 @@ impl<'api> Packages<'api> {
     /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scope. If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for restore_package_version_for_authenticated_user](https://docs.github.com/rest/reference/packages#restore-a-package-version-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn restore_package_version_for_authenticated_user_async(&self, package_type: &str, package_name: &str, package_version_id: i32) -> Result<(), PackagesRestorePackageVersionForAuthenticatedUserError> {
 
@@ -1919,6 +1950,7 @@ impl<'api> Packages<'api> {
     /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scope. If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for restore_package_version_for_authenticated_user](https://docs.github.com/rest/reference/packages#restore-a-package-version-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn restore_package_version_for_authenticated_user(&self, package_type: &str, package_name: &str, package_version_id: i32) -> Result<(), PackagesRestorePackageVersionForAuthenticatedUserError> {
@@ -1968,6 +2000,7 @@ impl<'api> Packages<'api> {
     /// - If `package_type` is `container`, you must also have admin permissions to the container that you want to restore.
     /// 
     /// [GitHub API docs for restore_package_version_for_org](https://docs.github.com/rest/reference/packages#restore-a-package-version-for-an-organization)    
+    ///
     /// ---
     pub async fn restore_package_version_for_org_async(&self, package_type: &str, package_name: &str, org: &str, package_version_id: i32) -> Result<(), PackagesRestorePackageVersionForOrgError> {
 
@@ -2016,6 +2049,7 @@ impl<'api> Packages<'api> {
     /// - If `package_type` is `container`, you must also have admin permissions to the container that you want to restore.
     /// 
     /// [GitHub API docs for restore_package_version_for_org](https://docs.github.com/rest/reference/packages#restore-a-package-version-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn restore_package_version_for_org(&self, package_type: &str, package_name: &str, org: &str, package_version_id: i32) -> Result<(), PackagesRestorePackageVersionForOrgError> {

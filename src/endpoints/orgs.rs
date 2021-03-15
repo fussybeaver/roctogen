@@ -1509,6 +1509,7 @@ impl<'api> Orgs<'api> {
     /// # Block a user from an organization
     /// 
     /// [GitHub API docs for block_user](https://docs.github.com/rest/reference/orgs#block-a-user-from-an-organization)    
+    ///
     /// ---
     pub async fn block_user_async(&self, org: &str, username: &str) -> Result<(), OrgsBlockUserError> {
 
@@ -1545,6 +1546,7 @@ impl<'api> Orgs<'api> {
     /// # Block a user from an organization
     /// 
     /// [GitHub API docs for block_user](https://docs.github.com/rest/reference/orgs#block-a-user-from-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn block_user(&self, org: &str, username: &str) -> Result<(), OrgsBlockUserError> {
@@ -1586,6 +1588,7 @@ impl<'api> Orgs<'api> {
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications).
     /// 
     /// [GitHub API docs for cancel_invitation](https://docs.github.com/rest/reference/orgs#cancel-an-organization-invitation)    
+    ///
     /// ---
     pub async fn cancel_invitation_async(&self, org: &str, invitation_id: i32) -> Result<(), OrgsCancelInvitationError> {
 
@@ -1627,6 +1630,7 @@ impl<'api> Orgs<'api> {
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications).
     /// 
     /// [GitHub API docs for cancel_invitation](https://docs.github.com/rest/reference/orgs#cancel-an-organization-invitation)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn cancel_invitation(&self, org: &str, invitation_id: i32) -> Result<(), OrgsCancelInvitationError> {
@@ -1665,6 +1669,7 @@ impl<'api> Orgs<'api> {
     /// # Check if a user is blocked by an organization
     /// 
     /// [GitHub API docs for check_blocked_user](https://docs.github.com/rest/reference/orgs#check-if-a-user-is-blocked-by-an-organization)    
+    ///
     /// ---
     pub async fn check_blocked_user_async(&self, org: &str, username: &str) -> Result<(), OrgsCheckBlockedUserError> {
 
@@ -1701,6 +1706,7 @@ impl<'api> Orgs<'api> {
     /// # Check if a user is blocked by an organization
     /// 
     /// [GitHub API docs for check_blocked_user](https://docs.github.com/rest/reference/orgs#check-if-a-user-is-blocked-by-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn check_blocked_user(&self, org: &str, username: &str) -> Result<(), OrgsCheckBlockedUserError> {
@@ -1740,6 +1746,7 @@ impl<'api> Orgs<'api> {
     /// Check if a user is, publicly or privately, a member of the organization.
     /// 
     /// [GitHub API docs for check_membership_for_user](https://docs.github.com/rest/reference/orgs#check-organization-membership-for-a-user)    
+    ///
     /// ---
     pub async fn check_membership_for_user_async(&self, org: &str, username: &str) -> Result<(), OrgsCheckMembershipForUserError> {
 
@@ -1779,6 +1786,7 @@ impl<'api> Orgs<'api> {
     /// Check if a user is, publicly or privately, a member of the organization.
     /// 
     /// [GitHub API docs for check_membership_for_user](https://docs.github.com/rest/reference/orgs#check-organization-membership-for-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn check_membership_for_user(&self, org: &str, username: &str) -> Result<(), OrgsCheckMembershipForUserError> {
@@ -1817,6 +1825,7 @@ impl<'api> Orgs<'api> {
     /// # Check public organization membership for a user
     /// 
     /// [GitHub API docs for check_public_membership_for_user](https://docs.github.com/rest/reference/orgs#check-public-organization-membership-for-a-user)    
+    ///
     /// ---
     pub async fn check_public_membership_for_user_async(&self, org: &str, username: &str) -> Result<(), OrgsCheckPublicMembershipForUserError> {
 
@@ -1853,6 +1862,7 @@ impl<'api> Orgs<'api> {
     /// # Check public organization membership for a user
     /// 
     /// [GitHub API docs for check_public_membership_for_user](https://docs.github.com/rest/reference/orgs#check-public-organization-membership-for-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn check_public_membership_for_user(&self, org: &str, username: &str) -> Result<(), OrgsCheckPublicMembershipForUserError> {
@@ -1892,6 +1902,7 @@ impl<'api> Orgs<'api> {
     /// When an organization member is converted to an outside collaborator, they'll only have access to the repositories that their current team membership allows. The user will no longer be a member of the organization. For more information, see "[Converting an organization member to an outside collaborator](https://help.github.com/articles/converting-an-organization-member-to-an-outside-collaborator/)".
     /// 
     /// [GitHub API docs for convert_member_to_outside_collaborator](https://docs.github.com/rest/reference/orgs#convert-an-organization-member-to-outside-collaborator)    
+    ///
     /// ---
     pub async fn convert_member_to_outside_collaborator_async(&self, org: &str, username: &str) -> Result<(), OrgsConvertMemberToOutsideCollaboratorError> {
 
@@ -1932,6 +1943,7 @@ impl<'api> Orgs<'api> {
     /// When an organization member is converted to an outside collaborator, they'll only have access to the repositories that their current team membership allows. The user will no longer be a member of the organization. For more information, see "[Converting an organization member to an outside collaborator](https://help.github.com/articles/converting-an-organization-member-to-an-outside-collaborator/)".
     /// 
     /// [GitHub API docs for convert_member_to_outside_collaborator](https://docs.github.com/rest/reference/orgs#convert-an-organization-member-to-outside-collaborator)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn convert_member_to_outside_collaborator(&self, org: &str, username: &str) -> Result<(), OrgsConvertMemberToOutsideCollaboratorError> {
@@ -1975,6 +1987,7 @@ impl<'api> Orgs<'api> {
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-rate-limits)" for details.
     /// 
     /// [GitHub API docs for create_invitation](https://docs.github.com/rest/reference/orgs#create-an-organization-invitation)    
+    ///
     /// ---
     pub async fn create_invitation_async(&self, org: &str, body: PostOrgsCreateInvitation) -> Result<OrganizationInvitation, OrgsCreateInvitationError> {
 
@@ -2016,6 +2029,7 @@ impl<'api> Orgs<'api> {
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-rate-limits)" for details.
     /// 
     /// [GitHub API docs for create_invitation](https://docs.github.com/rest/reference/orgs#create-an-organization-invitation)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_invitation(&self, org: &str, body: PostOrgsCreateInvitation) -> Result<OrganizationInvitation, OrgsCreateInvitationError> {
@@ -2056,6 +2070,7 @@ impl<'api> Orgs<'api> {
     /// Here's how you can create a hook that posts payloads in JSON format:
     /// 
     /// [GitHub API docs for create_webhook](https://docs.github.com/rest/reference/orgs#create-an-organization-webhook)    
+    ///
     /// ---
     pub async fn create_webhook_async(&self, org: &str, body: PostOrgsCreateWebhook) -> Result<OrgHook, OrgsCreateWebhookError> {
 
@@ -2095,6 +2110,7 @@ impl<'api> Orgs<'api> {
     /// Here's how you can create a hook that posts payloads in JSON format:
     /// 
     /// [GitHub API docs for create_webhook](https://docs.github.com/rest/reference/orgs#create-an-organization-webhook)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_webhook(&self, org: &str, body: PostOrgsCreateWebhook) -> Result<OrgHook, OrgsCreateWebhookError> {
@@ -2133,6 +2149,7 @@ impl<'api> Orgs<'api> {
     /// # Delete an organization webhook
     /// 
     /// [GitHub API docs for delete_webhook](https://docs.github.com/rest/reference/orgs#delete-an-organization-webhook)    
+    ///
     /// ---
     pub async fn delete_webhook_async(&self, org: &str, hook_id: i32) -> Result<(), OrgsDeleteWebhookError> {
 
@@ -2169,6 +2186,7 @@ impl<'api> Orgs<'api> {
     /// # Delete an organization webhook
     /// 
     /// [GitHub API docs for delete_webhook](https://docs.github.com/rest/reference/orgs#delete-an-organization-webhook)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_webhook(&self, org: &str, hook_id: i32) -> Result<(), OrgsDeleteWebhookError> {
@@ -2211,6 +2229,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// [GitHub API docs for get](https://docs.github.com/rest/reference/orgs/#get-an-organization)///
     /// The `get_async` endpoint is enabled with the `surtur` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "surtur")]
     pub async fn get_async(&self, org: &str) -> Result<OrganizationFull, OrgsGetError> {
@@ -2253,6 +2272,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// [GitHub API docs for get](https://docs.github.com/rest/reference/orgs/#get-an-organization)///
     /// The `get` endpoint is enabled with the `surtur` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "surtur")]
@@ -2297,6 +2317,7 @@ impl<'api> Orgs<'api> {
     /// To use this endpoint, you must be an organization owner, and you must use an access token with the `admin:org` scope. GitHub Apps must have the `organization_administration` read permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_audit_log](https://docs.github.com/rest/reference/orgs#get-the-audit-log-for-an-organization)    
+    ///
     /// ---
     pub async fn get_audit_log_async(&self, org: &str, query_params: Option<impl Into<OrgsGetAuditLogParams<'api>>>) -> Result<Vec<AuditLogEvent>, OrgsGetAuditLogError> {
 
@@ -2342,6 +2363,7 @@ impl<'api> Orgs<'api> {
     /// To use this endpoint, you must be an organization owner, and you must use an access token with the `admin:org` scope. GitHub Apps must have the `organization_administration` read permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_audit_log](https://docs.github.com/rest/reference/orgs#get-the-audit-log-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_audit_log(&self, org: &str, query_params: Option<impl Into<OrgsGetAuditLogParams<'api>>>) -> Result<Vec<AuditLogEvent>, OrgsGetAuditLogError> {
@@ -2383,6 +2405,7 @@ impl<'api> Orgs<'api> {
     /// # Get an organization membership for the authenticated user
     /// 
     /// [GitHub API docs for get_membership_for_authenticated_user](https://docs.github.com/rest/reference/orgs#get-an-organization-membership-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn get_membership_for_authenticated_user_async(&self, org: &str) -> Result<OrgMembership, OrgsGetMembershipForAuthenticatedUserError> {
 
@@ -2420,6 +2443,7 @@ impl<'api> Orgs<'api> {
     /// # Get an organization membership for the authenticated user
     /// 
     /// [GitHub API docs for get_membership_for_authenticated_user](https://docs.github.com/rest/reference/orgs#get-an-organization-membership-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_membership_for_authenticated_user(&self, org: &str) -> Result<OrgMembership, OrgsGetMembershipForAuthenticatedUserError> {
@@ -2460,6 +2484,7 @@ impl<'api> Orgs<'api> {
     /// In order to get a user's membership with an organization, the authenticated user must be an organization member.
     /// 
     /// [GitHub API docs for get_membership_for_user](https://docs.github.com/rest/reference/orgs#get-organization-membership-for-a-user)    
+    ///
     /// ---
     pub async fn get_membership_for_user_async(&self, org: &str, username: &str) -> Result<OrgMembership, OrgsGetMembershipForUserError> {
 
@@ -2499,6 +2524,7 @@ impl<'api> Orgs<'api> {
     /// In order to get a user's membership with an organization, the authenticated user must be an organization member.
     /// 
     /// [GitHub API docs for get_membership_for_user](https://docs.github.com/rest/reference/orgs#get-organization-membership-for-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_membership_for_user(&self, org: &str, username: &str) -> Result<OrgMembership, OrgsGetMembershipForUserError> {
@@ -2539,6 +2565,7 @@ impl<'api> Orgs<'api> {
     /// Returns a webhook configured in an organization. To get only the webhook `config` properties, see "[Get a webhook configuration for an organization](/rest/reference/orgs#get-a-webhook-configuration-for-an-organization)."
     /// 
     /// [GitHub API docs for get_webhook](https://docs.github.com/rest/reference/orgs#get-an-organization-webhook)    
+    ///
     /// ---
     pub async fn get_webhook_async(&self, org: &str, hook_id: i32) -> Result<OrgHook, OrgsGetWebhookError> {
 
@@ -2577,6 +2604,7 @@ impl<'api> Orgs<'api> {
     /// Returns a webhook configured in an organization. To get only the webhook `config` properties, see "[Get a webhook configuration for an organization](/rest/reference/orgs#get-a-webhook-configuration-for-an-organization)."
     /// 
     /// [GitHub API docs for get_webhook](https://docs.github.com/rest/reference/orgs#get-an-organization-webhook)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_webhook(&self, org: &str, hook_id: i32) -> Result<OrgHook, OrgsGetWebhookError> {
@@ -2618,6 +2646,7 @@ impl<'api> Orgs<'api> {
     /// Access tokens must have the `admin:org_hook` scope, and GitHub Apps must have the `organization_hooks:read` permission.
     /// 
     /// [GitHub API docs for get_webhook_config_for_org](https://docs.github.com/rest/reference/orgs#get-a-webhook-configuration-for-an-organization)    
+    ///
     /// ---
     pub async fn get_webhook_config_for_org_async(&self, org: &str, hook_id: i32) -> Result<WebhookConfig, OrgsGetWebhookConfigForOrgError> {
 
@@ -2657,6 +2686,7 @@ impl<'api> Orgs<'api> {
     /// Access tokens must have the `admin:org_hook` scope, and GitHub Apps must have the `organization_hooks:read` permission.
     /// 
     /// [GitHub API docs for get_webhook_config_for_org](https://docs.github.com/rest/reference/orgs#get-a-webhook-configuration-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_webhook_config_for_org(&self, org: &str, hook_id: i32) -> Result<WebhookConfig, OrgsGetWebhookConfigForOrgError> {
@@ -2697,6 +2727,7 @@ impl<'api> Orgs<'api> {
     /// **Note:** Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header) to get the URL for the next page of organizations.
     /// 
     /// [GitHub API docs for list](https://docs.github.com/rest/reference/orgs/#list-organizations)    
+    ///
     /// ---
     pub async fn list_async(&self, query_params: Option<impl Into<OrgsListParams>>) -> Result<Vec<OrganizationSimple>, OrgsListError> {
 
@@ -2741,6 +2772,7 @@ impl<'api> Orgs<'api> {
     /// **Note:** Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header) to get the URL for the next page of organizations.
     /// 
     /// [GitHub API docs for list](https://docs.github.com/rest/reference/orgs/#list-organizations)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list(&self, query_params: Option<impl Into<OrgsListParams>>) -> Result<Vec<OrganizationSimple>, OrgsListError> {
@@ -2785,6 +2817,7 @@ impl<'api> Orgs<'api> {
     /// Lists all GitHub Apps in an organization. The installation count includes all GitHub Apps installed on repositories in the organization. You must be an organization owner with `admin:read` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_app_installations](https://docs.github.com/rest/reference/orgs/#list-app-installations-for-an-organization)    
+    ///
     /// ---
     pub async fn list_app_installations_async(&self, org: &str, query_params: Option<impl Into<OrgsListAppInstallationsParams>>) -> Result<GetAppsListInstallationsForAuthenticatedUserResponse200, OrgsListAppInstallationsError> {
 
@@ -2826,6 +2859,7 @@ impl<'api> Orgs<'api> {
     /// Lists all GitHub Apps in an organization. The installation count includes all GitHub Apps installed on repositories in the organization. You must be an organization owner with `admin:read` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_app_installations](https://docs.github.com/rest/reference/orgs/#list-app-installations-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_app_installations(&self, org: &str, query_params: Option<impl Into<OrgsListAppInstallationsParams>>) -> Result<GetAppsListInstallationsForAuthenticatedUserResponse200, OrgsListAppInstallationsError> {
@@ -2869,6 +2903,7 @@ impl<'api> Orgs<'api> {
     /// List the users blocked by an organization.
     /// 
     /// [GitHub API docs for list_blocked_users](https://docs.github.com/rest/reference/orgs#list-users-blocked-by-an-organization)    
+    ///
     /// ---
     pub async fn list_blocked_users_async(&self, org: &str) -> Result<Vec<SimpleUser>, OrgsListBlockedUsersError> {
 
@@ -2907,6 +2942,7 @@ impl<'api> Orgs<'api> {
     /// List the users blocked by an organization.
     /// 
     /// [GitHub API docs for list_blocked_users](https://docs.github.com/rest/reference/orgs#list-users-blocked-by-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_blocked_users(&self, org: &str) -> Result<Vec<SimpleUser>, OrgsListBlockedUsersError> {
@@ -2946,6 +2982,7 @@ impl<'api> Orgs<'api> {
     /// The return hash contains `failed_at` and `failed_reason` fields which represent the time at which the invitation failed and the reason for the failure.
     /// 
     /// [GitHub API docs for list_failed_invitations](https://docs.github.com/rest/reference/orgs#list-failed-organization-invitations)    
+    ///
     /// ---
     pub async fn list_failed_invitations_async(&self, org: &str, query_params: Option<impl Into<OrgsListFailedInvitationsParams>>) -> Result<Vec<OrganizationInvitation>, OrgsListFailedInvitationsError> {
 
@@ -2988,6 +3025,7 @@ impl<'api> Orgs<'api> {
     /// The return hash contains `failed_at` and `failed_reason` fields which represent the time at which the invitation failed and the reason for the failure.
     /// 
     /// [GitHub API docs for list_failed_invitations](https://docs.github.com/rest/reference/orgs#list-failed-organization-invitations)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_failed_invitations(&self, org: &str, query_params: Option<impl Into<OrgsListFailedInvitationsParams>>) -> Result<Vec<OrganizationInvitation>, OrgsListFailedInvitationsError> {
@@ -3036,6 +3074,7 @@ impl<'api> Orgs<'api> {
     /// This only lists organizations that your authorization allows you to operate on in some way (e.g., you can list teams with `read:org` scope, you can publicize your organization membership with `user` scope, etc.). Therefore, this API requires at least `user` or `read:org` scope. OAuth requests with insufficient scope receive a `403 Forbidden` response.
     /// 
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/orgs/#list-organizations-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<OrgsListForAuthenticatedUserParams>>) -> Result<Vec<OrganizationSimple>, OrgsListForAuthenticatedUserError> {
 
@@ -3084,6 +3123,7 @@ impl<'api> Orgs<'api> {
     /// This only lists organizations that your authorization allows you to operate on in some way (e.g., you can list teams with `read:org` scope, you can publicize your organization membership with `user` scope, etc.). Therefore, this API requires at least `user` or `read:org` scope. OAuth requests with insufficient scope receive a `403 Forbidden` response.
     /// 
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/orgs/#list-organizations-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_for_authenticated_user(&self, query_params: Option<impl Into<OrgsListForAuthenticatedUserParams>>) -> Result<Vec<OrganizationSimple>, OrgsListForAuthenticatedUserError> {
@@ -3132,6 +3172,7 @@ impl<'api> Orgs<'api> {
     /// This method only lists _public_ memberships, regardless of authentication. If you need to fetch all of the organization memberships (public and private) for the authenticated user, use the [List organizations for the authenticated user](https://docs.github.com/rest/reference/orgs#list-organizations-for-the-authenticated-user) API instead.
     /// 
     /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/orgs/#list-organizations-for-a-user)    
+    ///
     /// ---
     pub async fn list_for_user_async(&self, username: &str, query_params: Option<impl Into<OrgsListForUserParams>>) -> Result<Vec<OrganizationSimple>, OrgsListForUserError> {
 
@@ -3175,6 +3216,7 @@ impl<'api> Orgs<'api> {
     /// This method only lists _public_ memberships, regardless of authentication. If you need to fetch all of the organization memberships (public and private) for the authenticated user, use the [List organizations for the authenticated user](https://docs.github.com/rest/reference/orgs#list-organizations-for-the-authenticated-user) API instead.
     /// 
     /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/orgs/#list-organizations-for-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_for_user(&self, username: &str, query_params: Option<impl Into<OrgsListForUserParams>>) -> Result<Vec<OrganizationSimple>, OrgsListForUserError> {
@@ -3218,6 +3260,7 @@ impl<'api> Orgs<'api> {
     /// List all teams associated with an invitation. In order to see invitations in an organization, the authenticated user must be an organization owner.
     /// 
     /// [GitHub API docs for list_invitation_teams](https://docs.github.com/rest/reference/orgs#list-organization-invitation-teams)    
+    ///
     /// ---
     pub async fn list_invitation_teams_async(&self, org: &str, invitation_id: i32, query_params: Option<impl Into<OrgsListInvitationTeamsParams>>) -> Result<Vec<Team>, OrgsListInvitationTeamsError> {
 
@@ -3260,6 +3303,7 @@ impl<'api> Orgs<'api> {
     /// List all teams associated with an invitation. In order to see invitations in an organization, the authenticated user must be an organization owner.
     /// 
     /// [GitHub API docs for list_invitation_teams](https://docs.github.com/rest/reference/orgs#list-organization-invitation-teams)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_invitation_teams(&self, org: &str, invitation_id: i32, query_params: Option<impl Into<OrgsListInvitationTeamsParams>>) -> Result<Vec<Team>, OrgsListInvitationTeamsError> {
@@ -3304,6 +3348,7 @@ impl<'api> Orgs<'api> {
     /// List all users who are members of an organization. If the authenticated user is also a member of this organization then both concealed and public members will be returned.
     /// 
     /// [GitHub API docs for list_members](https://docs.github.com/rest/reference/orgs#list-organization-members)    
+    ///
     /// ---
     pub async fn list_members_async(&self, org: &str, query_params: Option<impl Into<OrgsListMembersParams<'api>>>) -> Result<Vec<SimpleUser>, OrgsListMembersError> {
 
@@ -3347,6 +3392,7 @@ impl<'api> Orgs<'api> {
     /// List all users who are members of an organization. If the authenticated user is also a member of this organization then both concealed and public members will be returned.
     /// 
     /// [GitHub API docs for list_members](https://docs.github.com/rest/reference/orgs#list-organization-members)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_members(&self, org: &str, query_params: Option<impl Into<OrgsListMembersParams<'api>>>) -> Result<Vec<SimpleUser>, OrgsListMembersError> {
@@ -3390,6 +3436,7 @@ impl<'api> Orgs<'api> {
     /// # List organization memberships for the authenticated user
     /// 
     /// [GitHub API docs for list_memberships_for_authenticated_user](https://docs.github.com/rest/reference/orgs#list-organization-memberships-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn list_memberships_for_authenticated_user_async(&self, query_params: Option<impl Into<OrgsListMembershipsForAuthenticatedUserParams<'api>>>) -> Result<Vec<OrgMembership>, OrgsListMembershipsForAuthenticatedUserError> {
 
@@ -3433,6 +3480,7 @@ impl<'api> Orgs<'api> {
     /// # List organization memberships for the authenticated user
     /// 
     /// [GitHub API docs for list_memberships_for_authenticated_user](https://docs.github.com/rest/reference/orgs#list-organization-memberships-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_memberships_for_authenticated_user(&self, query_params: Option<impl Into<OrgsListMembershipsForAuthenticatedUserParams<'api>>>) -> Result<Vec<OrgMembership>, OrgsListMembershipsForAuthenticatedUserError> {
@@ -3480,6 +3528,7 @@ impl<'api> Orgs<'api> {
     /// List all users who are outside collaborators of an organization.
     /// 
     /// [GitHub API docs for list_outside_collaborators](https://docs.github.com/rest/reference/orgs#list-outside-collaborators-for-an-organization)    
+    ///
     /// ---
     pub async fn list_outside_collaborators_async(&self, org: &str, query_params: Option<impl Into<OrgsListOutsideCollaboratorsParams<'api>>>) -> Result<Vec<SimpleUser>, OrgsListOutsideCollaboratorsError> {
 
@@ -3521,6 +3570,7 @@ impl<'api> Orgs<'api> {
     /// List all users who are outside collaborators of an organization.
     /// 
     /// [GitHub API docs for list_outside_collaborators](https://docs.github.com/rest/reference/orgs#list-outside-collaborators-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_outside_collaborators(&self, org: &str, query_params: Option<impl Into<OrgsListOutsideCollaboratorsParams<'api>>>) -> Result<Vec<SimpleUser>, OrgsListOutsideCollaboratorsError> {
@@ -3564,6 +3614,7 @@ impl<'api> Orgs<'api> {
     /// The return hash contains a `role` field which refers to the Organization Invitation role and will be one of the following values: `direct_member`, `admin`, `billing_manager`, `hiring_manager`, or `reinstate`. If the invitee is not a GitHub member, the `login` field in the return hash will be `null`.
     /// 
     /// [GitHub API docs for list_pending_invitations](https://docs.github.com/rest/reference/orgs#list-pending-organization-invitations)    
+    ///
     /// ---
     pub async fn list_pending_invitations_async(&self, org: &str, query_params: Option<impl Into<OrgsListPendingInvitationsParams>>) -> Result<Vec<OrganizationInvitation>, OrgsListPendingInvitationsError> {
 
@@ -3606,6 +3657,7 @@ impl<'api> Orgs<'api> {
     /// The return hash contains a `role` field which refers to the Organization Invitation role and will be one of the following values: `direct_member`, `admin`, `billing_manager`, `hiring_manager`, or `reinstate`. If the invitee is not a GitHub member, the `login` field in the return hash will be `null`.
     /// 
     /// [GitHub API docs for list_pending_invitations](https://docs.github.com/rest/reference/orgs#list-pending-organization-invitations)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_pending_invitations(&self, org: &str, query_params: Option<impl Into<OrgsListPendingInvitationsParams>>) -> Result<Vec<OrganizationInvitation>, OrgsListPendingInvitationsError> {
@@ -3650,6 +3702,7 @@ impl<'api> Orgs<'api> {
     /// Members of an organization can choose to have their membership publicized or not.
     /// 
     /// [GitHub API docs for list_public_members](https://docs.github.com/rest/reference/orgs#list-public-organization-members)    
+    ///
     /// ---
     pub async fn list_public_members_async(&self, org: &str, query_params: Option<impl Into<OrgsListPublicMembersParams>>) -> Result<Vec<SimpleUser>, OrgsListPublicMembersError> {
 
@@ -3691,6 +3744,7 @@ impl<'api> Orgs<'api> {
     /// Members of an organization can choose to have their membership publicized or not.
     /// 
     /// [GitHub API docs for list_public_members](https://docs.github.com/rest/reference/orgs#list-public-organization-members)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_public_members(&self, org: &str, query_params: Option<impl Into<OrgsListPublicMembersParams>>) -> Result<Vec<SimpleUser>, OrgsListPublicMembersError> {
@@ -3736,6 +3790,7 @@ impl<'api> Orgs<'api> {
     /// An authenticated organization owner with the `read:org` scope can list all credential authorizations for an organization that uses SAML single sign-on (SSO). The credentials are either personal access tokens or SSH keys that organization members have authorized for the organization. For more information, see [About authentication with SAML single sign-on](https://help.github.com/en/articles/about-authentication-with-saml-single-sign-on).
     /// 
     /// [GitHub API docs for list_saml_sso_authorizations](https://docs.github.com/rest/reference/orgs/#list-saml-sso-authorizations-for-an-organization)    
+    ///
     /// ---
     pub async fn list_saml_sso_authorizations_async(&self, org: &str) -> Result<Vec<CredentialAuthorization>, OrgsListSamlSsoAuthorizationsError> {
 
@@ -3775,6 +3830,7 @@ impl<'api> Orgs<'api> {
     /// An authenticated organization owner with the `read:org` scope can list all credential authorizations for an organization that uses SAML single sign-on (SSO). The credentials are either personal access tokens or SSH keys that organization members have authorized for the organization. For more information, see [About authentication with SAML single sign-on](https://help.github.com/en/articles/about-authentication-with-saml-single-sign-on).
     /// 
     /// [GitHub API docs for list_saml_sso_authorizations](https://docs.github.com/rest/reference/orgs/#list-saml-sso-authorizations-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_saml_sso_authorizations(&self, org: &str) -> Result<Vec<CredentialAuthorization>, OrgsListSamlSsoAuthorizationsError> {
@@ -3811,6 +3867,7 @@ impl<'api> Orgs<'api> {
     /// # List organization webhooks
     /// 
     /// [GitHub API docs for list_webhooks](https://docs.github.com/rest/reference/orgs#list-organization-webhooks)    
+    ///
     /// ---
     pub async fn list_webhooks_async(&self, org: &str, query_params: Option<impl Into<OrgsListWebhooksParams>>) -> Result<Vec<OrgHook>, OrgsListWebhooksError> {
 
@@ -3851,6 +3908,7 @@ impl<'api> Orgs<'api> {
     /// # List organization webhooks
     /// 
     /// [GitHub API docs for list_webhooks](https://docs.github.com/rest/reference/orgs#list-organization-webhooks)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_webhooks(&self, org: &str, query_params: Option<impl Into<OrgsListWebhooksParams>>) -> Result<Vec<OrgHook>, OrgsListWebhooksError> {
@@ -3895,6 +3953,7 @@ impl<'api> Orgs<'api> {
     /// This will trigger a [ping event](https://docs.github.com/webhooks/#ping-event) to be sent to the hook.
     /// 
     /// [GitHub API docs for ping_webhook](https://docs.github.com/rest/reference/orgs#ping-an-organization-webhook)    
+    ///
     /// ---
     pub async fn ping_webhook_async(&self, org: &str, hook_id: i32) -> Result<(), OrgsPingWebhookError> {
 
@@ -3933,6 +3992,7 @@ impl<'api> Orgs<'api> {
     /// This will trigger a [ping event](https://docs.github.com/webhooks/#ping-event) to be sent to the hook.
     /// 
     /// [GitHub API docs for ping_webhook](https://docs.github.com/rest/reference/orgs#ping-an-organization-webhook)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn ping_webhook(&self, org: &str, hook_id: i32) -> Result<(), OrgsPingWebhookError> {
@@ -3972,6 +4032,7 @@ impl<'api> Orgs<'api> {
     /// Removing a user from this list will remove them from all teams and they will no longer have any access to the organization's repositories.
     /// 
     /// [GitHub API docs for remove_member](https://docs.github.com/rest/reference/orgs#remove-an-organization-member)    
+    ///
     /// ---
     pub async fn remove_member_async(&self, org: &str, username: &str) -> Result<(), OrgsRemoveMemberError> {
 
@@ -4010,6 +4071,7 @@ impl<'api> Orgs<'api> {
     /// Removing a user from this list will remove them from all teams and they will no longer have any access to the organization's repositories.
     /// 
     /// [GitHub API docs for remove_member](https://docs.github.com/rest/reference/orgs#remove-an-organization-member)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn remove_member(&self, org: &str, username: &str) -> Result<(), OrgsRemoveMemberError> {
@@ -4051,6 +4113,7 @@ impl<'api> Orgs<'api> {
     /// If the specified user is an active member of the organization, this will remove them from the organization. If the specified user has been invited to the organization, this will cancel their invitation. The specified user will receive an email notification in both cases.
     /// 
     /// [GitHub API docs for remove_membership_for_user](https://docs.github.com/rest/reference/orgs#remove-organization-membership-for-a-user)    
+    ///
     /// ---
     pub async fn remove_membership_for_user_async(&self, org: &str, username: &str) -> Result<(), OrgsRemoveMembershipForUserError> {
 
@@ -4092,6 +4155,7 @@ impl<'api> Orgs<'api> {
     /// If the specified user is an active member of the organization, this will remove them from the organization. If the specified user has been invited to the organization, this will cancel their invitation. The specified user will receive an email notification in both cases.
     /// 
     /// [GitHub API docs for remove_membership_for_user](https://docs.github.com/rest/reference/orgs#remove-organization-membership-for-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn remove_membership_for_user(&self, org: &str, username: &str) -> Result<(), OrgsRemoveMembershipForUserError> {
@@ -4132,6 +4196,7 @@ impl<'api> Orgs<'api> {
     /// Removing a user from this list will remove them from all the organization's repositories.
     /// 
     /// [GitHub API docs for remove_outside_collaborator](https://docs.github.com/rest/reference/orgs#remove-outside-collaborator-from-an-organization)    
+    ///
     /// ---
     pub async fn remove_outside_collaborator_async(&self, org: &str, username: &str) -> Result<(), OrgsRemoveOutsideCollaboratorError> {
 
@@ -4170,6 +4235,7 @@ impl<'api> Orgs<'api> {
     /// Removing a user from this list will remove them from all the organization's repositories.
     /// 
     /// [GitHub API docs for remove_outside_collaborator](https://docs.github.com/rest/reference/orgs#remove-outside-collaborator-from-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn remove_outside_collaborator(&self, org: &str, username: &str) -> Result<(), OrgsRemoveOutsideCollaboratorError> {
@@ -4207,6 +4273,7 @@ impl<'api> Orgs<'api> {
     /// # Remove public organization membership for the authenticated user
     /// 
     /// [GitHub API docs for remove_public_membership_for_authenticated_user](https://docs.github.com/rest/reference/orgs#remove-public-organization-membership-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn remove_public_membership_for_authenticated_user_async(&self, org: &str, username: &str) -> Result<(), OrgsRemovePublicMembershipForAuthenticatedUserError> {
 
@@ -4242,6 +4309,7 @@ impl<'api> Orgs<'api> {
     /// # Remove public organization membership for the authenticated user
     /// 
     /// [GitHub API docs for remove_public_membership_for_authenticated_user](https://docs.github.com/rest/reference/orgs#remove-public-organization-membership-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn remove_public_membership_for_authenticated_user(&self, org: &str, username: &str) -> Result<(), OrgsRemovePublicMembershipForAuthenticatedUserError> {
@@ -4282,6 +4350,7 @@ impl<'api> Orgs<'api> {
     /// An authenticated organization owner with the `admin:org` scope can remove a credential authorization for an organization that uses SAML SSO. Once you remove someone's credential authorization, they will need to create a new personal access token or SSH key and authorize it for the organization they want to access.
     /// 
     /// [GitHub API docs for remove_saml_sso_authorization](https://docs.github.com/rest/reference/orgs/#remove-a-saml-sso-authorization-for-an-organization)    
+    ///
     /// ---
     pub async fn remove_saml_sso_authorization_async(&self, org: &str, credential_id: i32) -> Result<(), OrgsRemoveSamlSsoAuthorizationError> {
 
@@ -4322,6 +4391,7 @@ impl<'api> Orgs<'api> {
     /// An authenticated organization owner with the `admin:org` scope can remove a credential authorization for an organization that uses SAML SSO. Once you remove someone's credential authorization, they will need to create a new personal access token or SSH key and authorize it for the organization they want to access.
     /// 
     /// [GitHub API docs for remove_saml_sso_authorization](https://docs.github.com/rest/reference/orgs/#remove-a-saml-sso-authorization-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn remove_saml_sso_authorization(&self, org: &str, credential_id: i32) -> Result<(), OrgsRemoveSamlSsoAuthorizationError> {
@@ -4369,6 +4439,7 @@ impl<'api> Orgs<'api> {
     /// To prevent abuse, the authenticated user is limited to 50 organization invitations per 24 hour period. If the organization is more than one month old or on a paid plan, the limit is 500 invitations per 24 hour period.
     /// 
     /// [GitHub API docs for set_membership_for_user](https://docs.github.com/rest/reference/orgs#set-organization-membership-for-a-user)    
+    ///
     /// ---
     pub async fn set_membership_for_user_async(&self, org: &str, username: &str, body: PutOrgsSetMembershipForUser) -> Result<OrgMembership, OrgsSetMembershipForUserError> {
 
@@ -4416,6 +4487,7 @@ impl<'api> Orgs<'api> {
     /// To prevent abuse, the authenticated user is limited to 50 organization invitations per 24 hour period. If the organization is more than one month old or on a paid plan, the limit is 500 invitations per 24 hour period.
     /// 
     /// [GitHub API docs for set_membership_for_user](https://docs.github.com/rest/reference/orgs#set-organization-membership-for-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_membership_for_user(&self, org: &str, username: &str, body: PutOrgsSetMembershipForUser) -> Result<OrgMembership, OrgsSetMembershipForUserError> {
@@ -4458,6 +4530,7 @@ impl<'api> Orgs<'api> {
     /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
     /// 
     /// [GitHub API docs for set_public_membership_for_authenticated_user](https://docs.github.com/rest/reference/orgs#set-public-organization-membership-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn set_public_membership_for_authenticated_user_async(&self, org: &str, username: &str) -> Result<(), OrgsSetPublicMembershipForAuthenticatedUserError> {
 
@@ -4498,6 +4571,7 @@ impl<'api> Orgs<'api> {
     /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
     /// 
     /// [GitHub API docs for set_public_membership_for_authenticated_user](https://docs.github.com/rest/reference/orgs#set-public-organization-membership-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_public_membership_for_authenticated_user(&self, org: &str, username: &str) -> Result<(), OrgsSetPublicMembershipForAuthenticatedUserError> {
@@ -4535,6 +4609,7 @@ impl<'api> Orgs<'api> {
     /// # Unblock a user from an organization
     /// 
     /// [GitHub API docs for unblock_user](https://docs.github.com/rest/reference/orgs#unblock-a-user-from-an-organization)    
+    ///
     /// ---
     pub async fn unblock_user_async(&self, org: &str, username: &str) -> Result<(), OrgsUnblockUserError> {
 
@@ -4570,6 +4645,7 @@ impl<'api> Orgs<'api> {
     /// # Unblock a user from an organization
     /// 
     /// [GitHub API docs for unblock_user](https://docs.github.com/rest/reference/orgs#unblock-a-user-from-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn unblock_user(&self, org: &str, username: &str) -> Result<(), OrgsUnblockUserError> {
@@ -4611,6 +4687,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// [GitHub API docs for update](https://docs.github.com/rest/reference/orgs/#update-an-organization)///
     /// The `update_async` endpoint is enabled with the `surtur` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "surtur")]
     pub async fn update_async(&self, org: &str, body: PatchOrgsUpdate) -> Result<OrganizationFull, OrgsUpdateError> {
@@ -4655,6 +4732,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// [GitHub API docs for update](https://docs.github.com/rest/reference/orgs/#update-an-organization)///
     /// The `update` endpoint is enabled with the `surtur` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "surtur")]
@@ -4695,6 +4773,7 @@ impl<'api> Orgs<'api> {
     /// # Update an organization membership for the authenticated user
     /// 
     /// [GitHub API docs for update_membership_for_authenticated_user](https://docs.github.com/rest/reference/orgs#update-an-organization-membership-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn update_membership_for_authenticated_user_async(&self, org: &str, body: PatchOrgsUpdateMembershipForAuthenticatedUser) -> Result<OrgMembership, OrgsUpdateMembershipForAuthenticatedUserError> {
 
@@ -4733,6 +4812,7 @@ impl<'api> Orgs<'api> {
     /// # Update an organization membership for the authenticated user
     /// 
     /// [GitHub API docs for update_membership_for_authenticated_user](https://docs.github.com/rest/reference/orgs#update-an-organization-membership-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn update_membership_for_authenticated_user(&self, org: &str, body: PatchOrgsUpdateMembershipForAuthenticatedUser) -> Result<OrgMembership, OrgsUpdateMembershipForAuthenticatedUserError> {
@@ -4774,6 +4854,7 @@ impl<'api> Orgs<'api> {
     /// Updates a webhook configured in an organization. When you update a webhook, the `secret` will be overwritten. If you previously had a `secret` set, you must provide the same `secret` or set a new `secret` or the secret will be removed. If you are only updating individual webhook `config` properties, use "[Update a webhook configuration for an organization](/rest/reference/orgs#update-a-webhook-configuration-for-an-organization)."
     /// 
     /// [GitHub API docs for update_webhook](https://docs.github.com/rest/reference/orgs#update-an-organization-webhook)    
+    ///
     /// ---
     pub async fn update_webhook_async(&self, org: &str, hook_id: i32, body: PatchOrgsUpdateWebhook) -> Result<OrgHook, OrgsUpdateWebhookError> {
 
@@ -4813,6 +4894,7 @@ impl<'api> Orgs<'api> {
     /// Updates a webhook configured in an organization. When you update a webhook, the `secret` will be overwritten. If you previously had a `secret` set, you must provide the same `secret` or set a new `secret` or the secret will be removed. If you are only updating individual webhook `config` properties, use "[Update a webhook configuration for an organization](/rest/reference/orgs#update-a-webhook-configuration-for-an-organization)."
     /// 
     /// [GitHub API docs for update_webhook](https://docs.github.com/rest/reference/orgs#update-an-organization-webhook)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn update_webhook(&self, org: &str, hook_id: i32, body: PatchOrgsUpdateWebhook) -> Result<OrgHook, OrgsUpdateWebhookError> {
@@ -4855,6 +4937,7 @@ impl<'api> Orgs<'api> {
     /// Access tokens must have the `admin:org_hook` scope, and GitHub Apps must have the `organization_hooks:write` permission.
     /// 
     /// [GitHub API docs for update_webhook_config_for_org](https://docs.github.com/rest/reference/orgs#update-a-webhook-configuration-for-an-organization)    
+    ///
     /// ---
     pub async fn update_webhook_config_for_org_async(&self, org: &str, hook_id: i32, body: PatchOrgsUpdateWebhookConfigForOrg) -> Result<WebhookConfig, OrgsUpdateWebhookConfigForOrgError> {
 
@@ -4894,6 +4977,7 @@ impl<'api> Orgs<'api> {
     /// Access tokens must have the `admin:org_hook` scope, and GitHub Apps must have the `organization_hooks:write` permission.
     /// 
     /// [GitHub API docs for update_webhook_config_for_org](https://docs.github.com/rest/reference/orgs#update-a-webhook-configuration-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn update_webhook_config_for_org(&self, org: &str, hook_id: i32, body: PatchOrgsUpdateWebhookConfigForOrg) -> Result<WebhookConfig, OrgsUpdateWebhookConfigForOrgError> {

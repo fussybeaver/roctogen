@@ -101,6 +101,7 @@ impl<'api> CodesOfConduct<'api> {
     /// 
     /// [GitHub API docs for get_all_codes_of_conduct](https://docs.github.com/rest/reference/codes_of_conduct/#get-all-codes-of-conduct)///
     /// The `get_all_codes_of_conduct_async` endpoint is enabled with the `scarlet-witch` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "scarlet-witch")]
     pub async fn get_all_codes_of_conduct_async(&self) -> Result<Vec<CodeOfConduct>, CodesOfConductGetAllCodesOfConductError> {
@@ -140,6 +141,7 @@ impl<'api> CodesOfConduct<'api> {
     /// 
     /// [GitHub API docs for get_all_codes_of_conduct](https://docs.github.com/rest/reference/codes_of_conduct/#get-all-codes-of-conduct)///
     /// The `get_all_codes_of_conduct` endpoint is enabled with the `scarlet-witch` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "scarlet-witch")]
@@ -180,6 +182,7 @@ impl<'api> CodesOfConduct<'api> {
     /// 
     /// [GitHub API docs for get_conduct_code](https://docs.github.com/rest/reference/codes_of_conduct/#get-a-code-of-conduct)///
     /// The `get_conduct_code_async` endpoint is enabled with the `scarlet-witch` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "scarlet-witch")]
     pub async fn get_conduct_code_async(&self, key: &str) -> Result<CodeOfConduct, CodesOfConductGetConductCodeError> {
@@ -220,6 +223,7 @@ impl<'api> CodesOfConduct<'api> {
     /// 
     /// [GitHub API docs for get_conduct_code](https://docs.github.com/rest/reference/codes_of_conduct/#get-a-code-of-conduct)///
     /// The `get_conduct_code` endpoint is enabled with the `scarlet-witch` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "scarlet-witch")]
@@ -265,6 +269,7 @@ impl<'api> CodesOfConduct<'api> {
     /// 
     /// [GitHub API docs for get_for_repo](https://docs.github.com/rest/reference/codes_of_conduct/#get-the-code-of-conduct-for-a-repository)///
     /// The `get_for_repo_async` endpoint is enabled with the `scarlet-witch` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "scarlet-witch")]
     pub async fn get_for_repo_async(&self, owner: &str, repo: &str) -> Result<CodeOfConduct, CodesOfConductGetForRepoError> {
@@ -306,6 +311,7 @@ impl<'api> CodesOfConduct<'api> {
     /// 
     /// [GitHub API docs for get_for_repo](https://docs.github.com/rest/reference/codes_of_conduct/#get-the-code-of-conduct-for-a-repository)///
     /// The `get_for_repo` endpoint is enabled with the `scarlet-witch` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "scarlet-witch")]

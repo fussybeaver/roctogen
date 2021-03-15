@@ -725,6 +725,7 @@ impl<'api> Search<'api> {
     /// language:go`](https://github.com/search?utf8=%E2%9C%93&q=amazing+language%3Ago&type=Code) is.
     /// 
     /// [GitHub API docs for code](https://docs.github.com/rest/reference/search/#search-code)    
+    ///
     /// ---
     pub async fn code_async(&self, query_params: impl Into<SearchCodeParams<'api>>) -> Result<GetSearchCodeResponse200, SearchCodeError> {
 
@@ -785,6 +786,7 @@ impl<'api> Search<'api> {
     /// language:go`](https://github.com/search?utf8=%E2%9C%93&q=amazing+language%3Ago&type=Code) is.
     /// 
     /// [GitHub API docs for code](https://docs.github.com/rest/reference/search/#search-code)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn code(&self, query_params: impl Into<SearchCodeParams<'api>>) -> Result<GetSearchCodeResponse200, SearchCodeError> {
@@ -838,6 +840,7 @@ impl<'api> Search<'api> {
     /// 
     /// [GitHub API docs for commits](https://docs.github.com/rest/reference/search/#search-commits)///
     /// The `commits_async` endpoint is enabled with the `cloak` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "cloak")]
     pub async fn commits_async(&self, query_params: impl Into<SearchCommitsParams<'api>>) -> Result<GetSearchCommitsResponse200, SearchCommitsError> {
@@ -888,6 +891,7 @@ impl<'api> Search<'api> {
     /// 
     /// [GitHub API docs for commits](https://docs.github.com/rest/reference/search/#search-commits)///
     /// The `commits` endpoint is enabled with the `cloak` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "cloak")]
@@ -943,6 +947,7 @@ impl<'api> Search<'api> {
     /// **Note:** For [user-to-server](https://docs.github.com/developers/apps/identifying-and-authorizing-users-for-github-apps#user-to-server-requests) GitHub App requests, you can't retrieve a combination of issues and pull requests in a single query. Requests that don't include the `is:issue` or `is:pull-request` qualifier will receive an HTTP `422 Unprocessable Entity` response. To get results for both issues and pull requests, you must send separate queries for issues and pull requests. For more information about the `is` qualifier, see "[Searching only issues or pull requests](https://docs.github.com/github/searching-for-information-on-github/searching-issues-and-pull-requests#search-only-issues-or-pull-requests)."
     /// 
     /// [GitHub API docs for issues_and_pull_requests](https://docs.github.com/rest/reference/search/#search-issues-and-pull-requests)    
+    ///
     /// ---
     pub async fn issues_and_pull_requests_async(&self, query_params: impl Into<SearchIssuesAndPullRequestsParams<'api>>) -> Result<GetSearchIssuesAndPullRequestsResponse200, SearchIssuesAndPullRequestsError> {
 
@@ -997,6 +1002,7 @@ impl<'api> Search<'api> {
     /// **Note:** For [user-to-server](https://docs.github.com/developers/apps/identifying-and-authorizing-users-for-github-apps#user-to-server-requests) GitHub App requests, you can't retrieve a combination of issues and pull requests in a single query. Requests that don't include the `is:issue` or `is:pull-request` qualifier will receive an HTTP `422 Unprocessable Entity` response. To get results for both issues and pull requests, you must send separate queries for issues and pull requests. For more information about the `is` qualifier, see "[Searching only issues or pull requests](https://docs.github.com/github/searching-for-information-on-github/searching-issues-and-pull-requests#search-only-issues-or-pull-requests)."
     /// 
     /// [GitHub API docs for issues_and_pull_requests](https://docs.github.com/rest/reference/search/#search-issues-and-pull-requests)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn issues_and_pull_requests(&self, query_params: impl Into<SearchIssuesAndPullRequestsParams<'api>>) -> Result<GetSearchIssuesAndPullRequestsResponse200, SearchIssuesAndPullRequestsError> {
@@ -1050,6 +1056,7 @@ impl<'api> Search<'api> {
     /// The labels that best match the query appear first in the search results.
     /// 
     /// [GitHub API docs for labels](https://docs.github.com/rest/reference/search/#search-labels)    
+    ///
     /// ---
     pub async fn labels_async(&self, query_params: impl Into<SearchLabelsParams<'api>>) -> Result<GetSearchLabelsResponse200, SearchLabelsError> {
 
@@ -1101,6 +1108,7 @@ impl<'api> Search<'api> {
     /// The labels that best match the query appear first in the search results.
     /// 
     /// [GitHub API docs for labels](https://docs.github.com/rest/reference/search/#search-labels)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn labels(&self, query_params: impl Into<SearchLabelsParams<'api>>) -> Result<GetSearchLabelsResponse200, SearchLabelsError> {
@@ -1159,6 +1167,7 @@ impl<'api> Search<'api> {
     /// 
     /// [GitHub API docs for repos](https://docs.github.com/rest/reference/search/#search-repositories)///
     /// The `repos_async` endpoint is enabled with the `mercy` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "mercy")]
     pub async fn repos_async(&self, query_params: impl Into<SearchReposParams<'api>>) -> Result<GetSearchReposResponse200, SearchReposError> {
@@ -1215,6 +1224,7 @@ impl<'api> Search<'api> {
     /// 
     /// [GitHub API docs for repos](https://docs.github.com/rest/reference/search/#search-repositories)///
     /// The `repos` endpoint is enabled with the `mercy` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "mercy")]
@@ -1269,6 +1279,7 @@ impl<'api> Search<'api> {
     /// 
     /// [GitHub API docs for topics](https://docs.github.com/rest/reference/search/#search-topics)///
     /// The `topics_async` endpoint is enabled with the `mercy` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "mercy")]
     pub async fn topics_async(&self, query_params: impl Into<SearchTopicsParams<'api>>) -> Result<GetSearchTopicsResponse200, SearchTopicsError> {
@@ -1320,6 +1331,7 @@ impl<'api> Search<'api> {
     /// 
     /// [GitHub API docs for topics](https://docs.github.com/rest/reference/search/#search-topics)///
     /// The `topics` endpoint is enabled with the `mercy` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "mercy")]
@@ -1372,6 +1384,7 @@ impl<'api> Search<'api> {
     /// This query searches for users with the name `tom`. The results are restricted to users with more than 42 repositories and over 1,000 followers.
     /// 
     /// [GitHub API docs for users](https://docs.github.com/rest/reference/search/#search-users)    
+    ///
     /// ---
     pub async fn users_async(&self, query_params: impl Into<SearchUsersParams<'api>>) -> Result<GetSearchUsersResponse200, SearchUsersError> {
 
@@ -1422,6 +1435,7 @@ impl<'api> Search<'api> {
     /// This query searches for users with the name `tom`. The results are restricted to users with more than 42 repositories and over 1,000 followers.
     /// 
     /// [GitHub API docs for users](https://docs.github.com/rest/reference/search/#search-users)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn users(&self, query_params: impl Into<SearchUsersParams<'api>>) -> Result<GetSearchUsersResponse200, SearchUsersError> {

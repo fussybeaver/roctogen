@@ -2039,6 +2039,7 @@ impl<'api> Teams<'api> {
     /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
     /// 
     /// [GitHub API docs for add_member_legacy](https://docs.github.com/rest/reference/teams#add-team-member-legacy)    
+    ///
     /// ---
     pub async fn add_member_legacy_async(&self, team_id: i32, username: &str) -> Result<(), TeamsAddMemberLegacyError> {
 
@@ -2089,6 +2090,7 @@ impl<'api> Teams<'api> {
     /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
     /// 
     /// [GitHub API docs for add_member_legacy](https://docs.github.com/rest/reference/teams#add-team-member-legacy)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn add_member_legacy(&self, team_id: i32, username: &str) -> Result<(), TeamsAddMemberLegacyError> {
@@ -2140,6 +2142,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `PUT /organizations/{org_id}/team/{team_id}/memberships/{username}`.
     /// 
     /// [GitHub API docs for add_or_update_membership_for_user_in_org](https://docs.github.com/rest/reference/teams#add-or-update-team-membership-for-a-user)    
+    ///
     /// ---
     pub async fn add_or_update_membership_for_user_in_org_async(&self, org: &str, team_slug: &str, username: &str, body: PutTeamsAddOrUpdateMembershipForUserInOrg) -> Result<TeamMembership, TeamsAddOrUpdateMembershipForUserInOrgError> {
 
@@ -2189,6 +2192,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `PUT /organizations/{org_id}/team/{team_id}/memberships/{username}`.
     /// 
     /// [GitHub API docs for add_or_update_membership_for_user_in_org](https://docs.github.com/rest/reference/teams#add-or-update-team-membership-for-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn add_or_update_membership_for_user_in_org(&self, org: &str, team_slug: &str, username: &str, body: PutTeamsAddOrUpdateMembershipForUserInOrg) -> Result<TeamMembership, TeamsAddOrUpdateMembershipForUserInOrgError> {
@@ -2239,6 +2243,7 @@ impl<'api> Teams<'api> {
     /// If the user is already a member of the team, this endpoint will update the role of the team member's role. To update the membership of a team member, the authenticated user must be an organization owner or a team maintainer.
     /// 
     /// [GitHub API docs for add_or_update_membership_for_user_legacy](https://docs.github.com/rest/reference/teams#add-or-update-team-membership-for-a-user-legacy)    
+    ///
     /// ---
     pub async fn add_or_update_membership_for_user_legacy_async(&self, team_id: i32, username: &str, body: PutTeamsAddOrUpdateMembershipForUserLegacy) -> Result<TeamMembership, TeamsAddOrUpdateMembershipForUserLegacyError> {
 
@@ -2289,6 +2294,7 @@ impl<'api> Teams<'api> {
     /// If the user is already a member of the team, this endpoint will update the role of the team member's role. To update the membership of a team member, the authenticated user must be an organization owner or a team maintainer.
     /// 
     /// [GitHub API docs for add_or_update_membership_for_user_legacy](https://docs.github.com/rest/reference/teams#add-or-update-team-membership-for-a-user-legacy)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn add_or_update_membership_for_user_legacy(&self, team_id: i32, username: &str, body: PutTeamsAddOrUpdateMembershipForUserLegacy) -> Result<TeamMembership, TeamsAddOrUpdateMembershipForUserLegacyError> {
@@ -2333,6 +2339,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for add_or_update_project_permissions_in_org](https://docs.github.com/rest/reference/teams/#add-or-update-team-project-permissions)///
     /// The `add_or_update_project_permissions_in_org_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn add_or_update_project_permissions_in_org_async(&self, org: &str, team_slug: &str, project_id: i32, body: PutTeamsAddOrUpdateProjectPermissionsInOrg) -> Result<(), TeamsAddOrUpdateProjectPermissionsInOrgError> {
@@ -2375,6 +2382,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for add_or_update_project_permissions_in_org](https://docs.github.com/rest/reference/teams/#add-or-update-team-project-permissions)///
     /// The `add_or_update_project_permissions_in_org` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -2418,6 +2426,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for add_or_update_project_permissions_legacy](https://docs.github.com/rest/reference/teams/#add-or-update-team-project-permissions-legacy)///
     /// The `add_or_update_project_permissions_legacy_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn add_or_update_project_permissions_legacy_async(&self, team_id: i32, project_id: i32, body: PutTeamsAddOrUpdateProjectPermissionsLegacy) -> Result<(), TeamsAddOrUpdateProjectPermissionsLegacyError> {
@@ -2463,6 +2472,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for add_or_update_project_permissions_legacy](https://docs.github.com/rest/reference/teams/#add-or-update-team-project-permissions-legacy)///
     /// The `add_or_update_project_permissions_legacy` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -2510,6 +2520,7 @@ impl<'api> Teams<'api> {
     /// For more information about the permission levels, see "[Repository permission levels for an organization](https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/repository-permission-levels-for-an-organization#permission-levels-for-repositories-owned-by-an-organization)".
     /// 
     /// [GitHub API docs for add_or_update_repo_permissions_in_org](https://docs.github.com/rest/reference/teams/#add-or-update-team-repository-permissions)    
+    ///
     /// ---
     pub async fn add_or_update_repo_permissions_in_org_async(&self, org: &str, team_slug: &str, owner: &str, repo: &str, body: PutTeamsAddOrUpdateRepoPermissionsInOrg) -> Result<(), TeamsAddOrUpdateRepoPermissionsInOrgError> {
 
@@ -2551,6 +2562,7 @@ impl<'api> Teams<'api> {
     /// For more information about the permission levels, see "[Repository permission levels for an organization](https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/repository-permission-levels-for-an-organization#permission-levels-for-repositories-owned-by-an-organization)".
     /// 
     /// [GitHub API docs for add_or_update_repo_permissions_in_org](https://docs.github.com/rest/reference/teams/#add-or-update-team-repository-permissions)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn add_or_update_repo_permissions_in_org(&self, org: &str, team_slug: &str, owner: &str, repo: &str, body: PutTeamsAddOrUpdateRepoPermissionsInOrg) -> Result<(), TeamsAddOrUpdateRepoPermissionsInOrgError> {
@@ -2593,6 +2605,7 @@ impl<'api> Teams<'api> {
     /// Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
     /// 
     /// [GitHub API docs for add_or_update_repo_permissions_legacy](https://docs.github.com/rest/reference/teams/#add-or-update-team-repository-permissions-legacy)    
+    ///
     /// ---
     pub async fn add_or_update_repo_permissions_legacy_async(&self, team_id: i32, owner: &str, repo: &str, body: PutTeamsAddOrUpdateRepoPermissionsLegacy) -> Result<(), TeamsAddOrUpdateRepoPermissionsLegacyError> {
 
@@ -2636,6 +2649,7 @@ impl<'api> Teams<'api> {
     /// Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
     /// 
     /// [GitHub API docs for add_or_update_repo_permissions_legacy](https://docs.github.com/rest/reference/teams/#add-or-update-team-repository-permissions-legacy)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn add_or_update_repo_permissions_legacy(&self, team_id: i32, owner: &str, repo: &str, body: PutTeamsAddOrUpdateRepoPermissionsLegacy) -> Result<(), TeamsAddOrUpdateRepoPermissionsLegacyError> {
@@ -2679,6 +2693,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for check_permissions_for_project_in_org](https://docs.github.com/rest/reference/teams/#check-team-permissions-for-a-project)///
     /// The `check_permissions_for_project_in_org_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn check_permissions_for_project_in_org_async(&self, org: &str, team_slug: &str, project_id: i32) -> Result<TeamProject, TeamsCheckPermissionsForProjectInOrgError> {
@@ -2721,6 +2736,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for check_permissions_for_project_in_org](https://docs.github.com/rest/reference/teams/#check-team-permissions-for-a-project)///
     /// The `check_permissions_for_project_in_org` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -2764,6 +2780,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for check_permissions_for_project_legacy](https://docs.github.com/rest/reference/teams/#check-team-permissions-for-a-project-legacy)///
     /// The `check_permissions_for_project_legacy_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn check_permissions_for_project_legacy_async(&self, team_id: i32, project_id: i32) -> Result<TeamProject, TeamsCheckPermissionsForProjectLegacyError> {
@@ -2807,6 +2824,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for check_permissions_for_project_legacy](https://docs.github.com/rest/reference/teams/#check-team-permissions-for-a-project-legacy)///
     /// The `check_permissions_for_project_legacy` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -2854,6 +2872,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/repos/{owner}/{repo}`.
     /// 
     /// [GitHub API docs for check_permissions_for_repo_in_org](https://docs.github.com/rest/reference/teams/#check-team-permissions-for-a-repository)    
+    ///
     /// ---
     pub async fn check_permissions_for_repo_in_org_async(&self, org: &str, team_slug: &str, owner: &str, repo: &str) -> Result<TeamRepository, TeamsCheckPermissionsForRepoInOrgError> {
 
@@ -2899,6 +2918,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/repos/{owner}/{repo}`.
     /// 
     /// [GitHub API docs for check_permissions_for_repo_in_org](https://docs.github.com/rest/reference/teams/#check-team-permissions-for-a-repository)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn check_permissions_for_repo_in_org(&self, org: &str, team_slug: &str, owner: &str, repo: &str) -> Result<TeamRepository, TeamsCheckPermissionsForRepoInOrgError> {
@@ -2943,6 +2963,7 @@ impl<'api> Teams<'api> {
     /// You can also get information about the specified repository, including what permissions the team grants on it, by passing the following custom [media type](https://docs.github.com/rest/overview/media-types/) via the `Accept` header:
     /// 
     /// [GitHub API docs for check_permissions_for_repo_legacy](https://docs.github.com/rest/reference/teams/#check-team-permissions-for-a-repository-legacy)    
+    ///
     /// ---
     pub async fn check_permissions_for_repo_legacy_async(&self, team_id: i32, owner: &str, repo: &str) -> Result<TeamRepository, TeamsCheckPermissionsForRepoLegacyError> {
 
@@ -2986,6 +3007,7 @@ impl<'api> Teams<'api> {
     /// You can also get information about the specified repository, including what permissions the team grants on it, by passing the following custom [media type](https://docs.github.com/rest/overview/media-types/) via the `Accept` header:
     /// 
     /// [GitHub API docs for check_permissions_for_repo_legacy](https://docs.github.com/rest/reference/teams/#check-team-permissions-for-a-repository-legacy)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn check_permissions_for_repo_legacy(&self, team_id: i32, owner: &str, repo: &str) -> Result<TeamRepository, TeamsCheckPermissionsForRepoLegacyError> {
@@ -3028,6 +3050,7 @@ impl<'api> Teams<'api> {
     /// When you create a new team, you automatically become a team maintainer without explicitly adding yourself to the optional array of `maintainers`. For more information, see "[About teams](https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/about-teams)".
     /// 
     /// [GitHub API docs for create](https://docs.github.com/rest/reference/teams/#create-a-team)    
+    ///
     /// ---
     pub async fn create_async(&self, org: &str, body: PostTeamsCreate) -> Result<TeamFull, TeamsCreateError> {
 
@@ -3069,6 +3092,7 @@ impl<'api> Teams<'api> {
     /// When you create a new team, you automatically become a team maintainer without explicitly adding yourself to the optional array of `maintainers`. For more information, see "[About teams](https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/about-teams)".
     /// 
     /// [GitHub API docs for create](https://docs.github.com/rest/reference/teams/#create-a-team)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create(&self, org: &str, body: PostTeamsCreate) -> Result<TeamFull, TeamsCreateError> {
@@ -3114,6 +3138,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for create_discussion_comment_in_org](https://docs.github.com/rest/reference/teams#create-a-discussion-comment)///
     /// The `create_discussion_comment_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn create_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, body: PostTeamsCreateDiscussionCommentInOrg) -> Result<TeamDiscussionComment, TeamsCreateDiscussionCommentInOrgError> {
@@ -3157,6 +3182,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for create_discussion_comment_in_org](https://docs.github.com/rest/reference/teams#create-a-discussion-comment)///
     /// The `create_discussion_comment_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -3201,6 +3227,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for create_discussion_comment_legacy](https://docs.github.com/rest/reference/teams#create-a-discussion-comment-legacy)///
     /// The `create_discussion_comment_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn create_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, body: PostTeamsCreateDiscussionCommentLegacy) -> Result<TeamDiscussionComment, TeamsCreateDiscussionCommentLegacyError> {
@@ -3244,6 +3271,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for create_discussion_comment_legacy](https://docs.github.com/rest/reference/teams#create-a-discussion-comment-legacy)///
     /// The `create_discussion_comment_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -3288,6 +3316,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for create_discussion_in_org](https://docs.github.com/rest/reference/teams#create-a-discussion)///
     /// The `create_discussion_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn create_discussion_in_org_async(&self, org: &str, team_slug: &str, body: PostTeamsCreateDiscussionInOrg) -> Result<TeamDiscussion, TeamsCreateDiscussionInOrgError> {
@@ -3331,6 +3360,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for create_discussion_in_org](https://docs.github.com/rest/reference/teams#create-a-discussion)///
     /// The `create_discussion_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -3375,6 +3405,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for create_discussion_legacy](https://docs.github.com/rest/reference/teams#create-a-discussion-legacy)///
     /// The `create_discussion_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn create_discussion_legacy_async(&self, team_id: i32, body: PostTeamsCreateDiscussionLegacy) -> Result<TeamDiscussion, TeamsCreateDiscussionLegacyError> {
@@ -3418,6 +3449,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for create_discussion_legacy](https://docs.github.com/rest/reference/teams#create-a-discussion-legacy)///
     /// The `create_discussion_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -3461,6 +3493,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `PATCH /organizations/{org_id}/team/{team_id}/team-sync/group-mappings`.
     /// 
     /// [GitHub API docs for create_or_update_idp_group_connections_in_org](https://docs.github.com/rest/reference/teams#create-or-update-idp-group-connections)    
+    ///
     /// ---
     pub async fn create_or_update_idp_group_connections_in_org_async(&self, org: &str, team_slug: &str, body: PatchTeamsCreateOrUpdateIdpGroupConnectionsInOrg) -> Result<GroupMapping, TeamsCreateOrUpdateIdpGroupConnectionsInOrgError> {
 
@@ -3502,6 +3535,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `PATCH /organizations/{org_id}/team/{team_id}/team-sync/group-mappings`.
     /// 
     /// [GitHub API docs for create_or_update_idp_group_connections_in_org](https://docs.github.com/rest/reference/teams#create-or-update-idp-group-connections)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_or_update_idp_group_connections_in_org(&self, org: &str, team_slug: &str, body: PatchTeamsCreateOrUpdateIdpGroupConnectionsInOrg) -> Result<GroupMapping, TeamsCreateOrUpdateIdpGroupConnectionsInOrgError> {
@@ -3544,6 +3578,7 @@ impl<'api> Teams<'api> {
     /// Creates, updates, or removes a connection between a team and an IdP group. When adding groups to a team, you must include all new and existing groups to avoid replacing existing groups with the new ones. Specifying an empty `groups` array will remove all connections for a team.
     /// 
     /// [GitHub API docs for create_or_update_idp_group_connections_legacy](https://docs.github.com/rest/reference/teams#create-or-update-idp-group-connections-legacy)    
+    ///
     /// ---
     pub async fn create_or_update_idp_group_connections_legacy_async(&self, team_id: i32, body: PatchTeamsCreateOrUpdateIdpGroupConnectionsLegacy) -> Result<GroupMapping, TeamsCreateOrUpdateIdpGroupConnectionsLegacyError> {
 
@@ -3587,6 +3622,7 @@ impl<'api> Teams<'api> {
     /// Creates, updates, or removes a connection between a team and an IdP group. When adding groups to a team, you must include all new and existing groups to avoid replacing existing groups with the new ones. Specifying an empty `groups` array will remove all connections for a team.
     /// 
     /// [GitHub API docs for create_or_update_idp_group_connections_legacy](https://docs.github.com/rest/reference/teams#create-or-update-idp-group-connections-legacy)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn create_or_update_idp_group_connections_legacy(&self, team_id: i32, body: PatchTeamsCreateOrUpdateIdpGroupConnectionsLegacy) -> Result<GroupMapping, TeamsCreateOrUpdateIdpGroupConnectionsLegacyError> {
@@ -3629,6 +3665,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}/discussions/{discussion_number}/comments/{comment_number}`.
     /// 
     /// [GitHub API docs for delete_discussion_comment_in_org](https://docs.github.com/rest/reference/teams#delete-a-discussion-comment)    
+    ///
     /// ---
     pub async fn delete_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32) -> Result<(), TeamsDeleteDiscussionCommentInOrgError> {
 
@@ -3668,6 +3705,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}/discussions/{discussion_number}/comments/{comment_number}`.
     /// 
     /// [GitHub API docs for delete_discussion_comment_in_org](https://docs.github.com/rest/reference/teams#delete-a-discussion-comment)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_discussion_comment_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32) -> Result<(), TeamsDeleteDiscussionCommentInOrgError> {
@@ -3708,6 +3746,7 @@ impl<'api> Teams<'api> {
     /// Deletes a comment on a team discussion. OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
     /// [GitHub API docs for delete_discussion_comment_legacy](https://docs.github.com/rest/reference/teams#delete-a-discussion-comment-legacy)    
+    ///
     /// ---
     pub async fn delete_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, comment_number: i32) -> Result<(), TeamsDeleteDiscussionCommentLegacyError> {
 
@@ -3747,6 +3786,7 @@ impl<'api> Teams<'api> {
     /// Deletes a comment on a team discussion. OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
     /// [GitHub API docs for delete_discussion_comment_legacy](https://docs.github.com/rest/reference/teams#delete-a-discussion-comment-legacy)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_discussion_comment_legacy(&self, team_id: i32, discussion_number: i32, comment_number: i32) -> Result<(), TeamsDeleteDiscussionCommentLegacyError> {
@@ -3787,6 +3827,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}/discussions/{discussion_number}`.
     /// 
     /// [GitHub API docs for delete_discussion_in_org](https://docs.github.com/rest/reference/teams#delete-a-discussion)    
+    ///
     /// ---
     pub async fn delete_discussion_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32) -> Result<(), TeamsDeleteDiscussionInOrgError> {
 
@@ -3826,6 +3867,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}/discussions/{discussion_number}`.
     /// 
     /// [GitHub API docs for delete_discussion_in_org](https://docs.github.com/rest/reference/teams#delete-a-discussion)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_discussion_in_org(&self, org: &str, team_slug: &str, discussion_number: i32) -> Result<(), TeamsDeleteDiscussionInOrgError> {
@@ -3866,6 +3908,7 @@ impl<'api> Teams<'api> {
     /// Delete a discussion from a team's page. OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
     /// [GitHub API docs for delete_discussion_legacy](https://docs.github.com/rest/reference/teams#delete-a-discussion-legacy)    
+    ///
     /// ---
     pub async fn delete_discussion_legacy_async(&self, team_id: i32, discussion_number: i32) -> Result<(), TeamsDeleteDiscussionLegacyError> {
 
@@ -3905,6 +3948,7 @@ impl<'api> Teams<'api> {
     /// Delete a discussion from a team's page. OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
     /// [GitHub API docs for delete_discussion_legacy](https://docs.github.com/rest/reference/teams#delete-a-discussion-legacy)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_discussion_legacy(&self, team_id: i32, discussion_number: i32) -> Result<(), TeamsDeleteDiscussionLegacyError> {
@@ -3947,6 +3991,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}`.
     /// 
     /// [GitHub API docs for delete_in_org](https://docs.github.com/rest/reference/teams/#delete-a-team)    
+    ///
     /// ---
     pub async fn delete_in_org_async(&self, org: &str, team_slug: &str) -> Result<(), TeamsDeleteInOrgError> {
 
@@ -3988,6 +4033,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}`.
     /// 
     /// [GitHub API docs for delete_in_org](https://docs.github.com/rest/reference/teams/#delete-a-team)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_in_org(&self, org: &str, team_slug: &str) -> Result<(), TeamsDeleteInOrgError> {
@@ -4030,6 +4076,7 @@ impl<'api> Teams<'api> {
     /// If you are an organization owner, deleting a parent team will delete all of its child teams as well.
     /// 
     /// [GitHub API docs for delete_legacy](https://docs.github.com/rest/reference/teams/#delete-a-team-legacy)    
+    ///
     /// ---
     pub async fn delete_legacy_async(&self, team_id: i32) -> Result<(), TeamsDeleteLegacyError> {
 
@@ -4073,6 +4120,7 @@ impl<'api> Teams<'api> {
     /// If you are an organization owner, deleting a parent team will delete all of its child teams as well.
     /// 
     /// [GitHub API docs for delete_legacy](https://docs.github.com/rest/reference/teams/#delete-a-team-legacy)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn delete_legacy(&self, team_id: i32) -> Result<(), TeamsDeleteLegacyError> {
@@ -4115,6 +4163,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}`.
     /// 
     /// [GitHub API docs for get_by_name](https://docs.github.com/rest/reference/teams/#get-a-team-by-name)    
+    ///
     /// ---
     pub async fn get_by_name_async(&self, org: &str, team_slug: &str) -> Result<TeamFull, TeamsGetByNameError> {
 
@@ -4155,6 +4204,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}`.
     /// 
     /// [GitHub API docs for get_by_name](https://docs.github.com/rest/reference/teams/#get-a-team-by-name)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_by_name(&self, org: &str, team_slug: &str) -> Result<TeamFull, TeamsGetByNameError> {
@@ -4197,6 +4247,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for get_discussion_comment_in_org](https://docs.github.com/rest/reference/teams#get-a-discussion-comment)///
     /// The `get_discussion_comment_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn get_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32) -> Result<TeamDiscussionComment, TeamsGetDiscussionCommentInOrgError> {
@@ -4238,6 +4289,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for get_discussion_comment_in_org](https://docs.github.com/rest/reference/teams#get-a-discussion-comment)///
     /// The `get_discussion_comment_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -4280,6 +4332,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for get_discussion_comment_legacy](https://docs.github.com/rest/reference/teams#get-a-discussion-comment-legacy)///
     /// The `get_discussion_comment_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn get_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, comment_number: i32) -> Result<TeamDiscussionComment, TeamsGetDiscussionCommentLegacyError> {
@@ -4321,6 +4374,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for get_discussion_comment_legacy](https://docs.github.com/rest/reference/teams#get-a-discussion-comment-legacy)///
     /// The `get_discussion_comment_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -4363,6 +4417,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for get_discussion_in_org](https://docs.github.com/rest/reference/teams#get-a-discussion)///
     /// The `get_discussion_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn get_discussion_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32) -> Result<TeamDiscussion, TeamsGetDiscussionInOrgError> {
@@ -4404,6 +4459,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for get_discussion_in_org](https://docs.github.com/rest/reference/teams#get-a-discussion)///
     /// The `get_discussion_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -4446,6 +4502,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for get_discussion_legacy](https://docs.github.com/rest/reference/teams#get-a-discussion-legacy)///
     /// The `get_discussion_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn get_discussion_legacy_async(&self, team_id: i32, discussion_number: i32) -> Result<TeamDiscussion, TeamsGetDiscussionLegacyError> {
@@ -4487,6 +4544,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for get_discussion_legacy](https://docs.github.com/rest/reference/teams#get-a-discussion-legacy)///
     /// The `get_discussion_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -4526,6 +4584,7 @@ impl<'api> Teams<'api> {
     /// **Deprecation Notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the [Get a team by name](https://docs.github.com/rest/reference/teams#get-a-team-by-name) endpoint.
     /// 
     /// [GitHub API docs for get_legacy](https://docs.github.com/rest/reference/teams/#get-a-team-legacy)    
+    ///
     /// ---
     pub async fn get_legacy_async(&self, team_id: i32) -> Result<TeamFull, TeamsGetLegacyError> {
 
@@ -4564,6 +4623,7 @@ impl<'api> Teams<'api> {
     /// **Deprecation Notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the [Get a team by name](https://docs.github.com/rest/reference/teams#get-a-team-by-name) endpoint.
     /// 
     /// [GitHub API docs for get_legacy](https://docs.github.com/rest/reference/teams/#get-a-team-legacy)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_legacy(&self, team_id: i32) -> Result<TeamFull, TeamsGetLegacyError> {
@@ -4607,6 +4667,7 @@ impl<'api> Teams<'api> {
     /// To list members in a team, the team must be visible to the authenticated user.
     /// 
     /// [GitHub API docs for get_member_legacy](https://docs.github.com/rest/reference/teams#get-team-member-legacy)    
+    ///
     /// ---
     pub async fn get_member_legacy_async(&self, team_id: i32, username: &str) -> Result<(), TeamsGetMemberLegacyError> {
 
@@ -4649,6 +4710,7 @@ impl<'api> Teams<'api> {
     /// To list members in a team, the team must be visible to the authenticated user.
     /// 
     /// [GitHub API docs for get_member_legacy](https://docs.github.com/rest/reference/teams#get-team-member-legacy)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_member_legacy(&self, team_id: i32, username: &str) -> Result<(), TeamsGetMemberLegacyError> {
@@ -4694,6 +4756,7 @@ impl<'api> Teams<'api> {
     /// **Note:** The `role` for organization owners returns as `maintainer`. For more information about `maintainer` roles, see [Create a team](https://docs.github.com/rest/reference/teams#create-a-team).
     /// 
     /// [GitHub API docs for get_membership_for_user_in_org](https://docs.github.com/rest/reference/teams#get-team-membership-for-a-user)    
+    ///
     /// ---
     pub async fn get_membership_for_user_in_org_async(&self, org: &str, team_slug: &str, username: &str) -> Result<TeamMembership, TeamsGetMembershipForUserInOrgError> {
 
@@ -4738,6 +4801,7 @@ impl<'api> Teams<'api> {
     /// **Note:** The `role` for organization owners returns as `maintainer`. For more information about `maintainer` roles, see [Create a team](https://docs.github.com/rest/reference/teams#create-a-team).
     /// 
     /// [GitHub API docs for get_membership_for_user_in_org](https://docs.github.com/rest/reference/teams#get-team-membership-for-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_membership_for_user_in_org(&self, org: &str, team_slug: &str, username: &str) -> Result<TeamMembership, TeamsGetMembershipForUserInOrgError> {
@@ -4783,6 +4847,7 @@ impl<'api> Teams<'api> {
     /// **Note:** The `role` for organization owners returns as `maintainer`. For more information about `maintainer` roles, see [Create a team](https://docs.github.com/rest/reference/teams#create-a-team).
     /// 
     /// [GitHub API docs for get_membership_for_user_legacy](https://docs.github.com/rest/reference/teams#get-team-membership-for-a-user-legacy)    
+    ///
     /// ---
     pub async fn get_membership_for_user_legacy_async(&self, team_id: i32, username: &str) -> Result<TeamMembership, TeamsGetMembershipForUserLegacyError> {
 
@@ -4827,6 +4892,7 @@ impl<'api> Teams<'api> {
     /// **Note:** The `role` for organization owners returns as `maintainer`. For more information about `maintainer` roles, see [Create a team](https://docs.github.com/rest/reference/teams#create-a-team).
     /// 
     /// [GitHub API docs for get_membership_for_user_legacy](https://docs.github.com/rest/reference/teams#get-team-membership-for-a-user-legacy)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn get_membership_for_user_legacy(&self, team_id: i32, username: &str) -> Result<TeamMembership, TeamsGetMembershipForUserLegacyError> {
@@ -4866,6 +4932,7 @@ impl<'api> Teams<'api> {
     /// Lists all teams in an organization that are visible to the authenticated user.
     /// 
     /// [GitHub API docs for list](https://docs.github.com/rest/reference/teams/#list-teams)    
+    ///
     /// ---
     pub async fn list_async(&self, org: &str, query_params: Option<impl Into<TeamsListParams>>) -> Result<Vec<Team>, TeamsListError> {
 
@@ -4908,6 +4975,7 @@ impl<'api> Teams<'api> {
     /// Lists all teams in an organization that are visible to the authenticated user.
     /// 
     /// [GitHub API docs for list](https://docs.github.com/rest/reference/teams/#list-teams)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list(&self, org: &str, query_params: Option<impl Into<TeamsListParams>>) -> Result<Vec<Team>, TeamsListError> {
@@ -4954,6 +5022,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/teams`.
     /// 
     /// [GitHub API docs for list_child_in_org](https://docs.github.com/rest/reference/teams/#list-child-teams)    
+    ///
     /// ---
     pub async fn list_child_in_org_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListChildInOrgParams>>) -> Result<Vec<Team>, TeamsListChildInOrgError> {
 
@@ -4997,6 +5066,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/teams`.
     /// 
     /// [GitHub API docs for list_child_in_org](https://docs.github.com/rest/reference/teams/#list-child-teams)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_child_in_org(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListChildInOrgParams>>) -> Result<Vec<Team>, TeamsListChildInOrgError> {
@@ -5040,6 +5110,7 @@ impl<'api> Teams<'api> {
     /// **Deprecation Notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List child teams`](https://docs.github.com/rest/reference/teams#list-child-teams) endpoint.
     /// 
     /// [GitHub API docs for list_child_legacy](https://docs.github.com/rest/reference/teams/#list-child-teams-legacy)    
+    ///
     /// ---
     pub async fn list_child_legacy_async(&self, team_id: i32, query_params: Option<impl Into<TeamsListChildLegacyParams>>) -> Result<Vec<Team>, TeamsListChildLegacyError> {
 
@@ -5084,6 +5155,7 @@ impl<'api> Teams<'api> {
     /// **Deprecation Notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List child teams`](https://docs.github.com/rest/reference/teams#list-child-teams) endpoint.
     /// 
     /// [GitHub API docs for list_child_legacy](https://docs.github.com/rest/reference/teams/#list-child-teams-legacy)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_child_legacy(&self, team_id: i32, query_params: Option<impl Into<TeamsListChildLegacyParams>>) -> Result<Vec<Team>, TeamsListChildLegacyError> {
@@ -5133,6 +5205,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_discussion_comments_in_org](https://docs.github.com/rest/reference/teams#list-discussion-comments)///
     /// The `list_discussion_comments_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn list_discussion_comments_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, query_params: Option<impl Into<TeamsListDiscussionCommentsInOrgParams<'api>>>) -> Result<Vec<TeamDiscussionComment>, TeamsListDiscussionCommentsInOrgError> {
@@ -5178,6 +5251,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_discussion_comments_in_org](https://docs.github.com/rest/reference/teams#list-discussion-comments)///
     /// The `list_discussion_comments_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -5225,6 +5299,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_discussion_comments_legacy](https://docs.github.com/rest/reference/teams#list-discussion-comments-legacy)///
     /// The `list_discussion_comments_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn list_discussion_comments_legacy_async(&self, team_id: i32, discussion_number: i32, query_params: Option<impl Into<TeamsListDiscussionCommentsLegacyParams<'api>>>) -> Result<Vec<TeamDiscussionComment>, TeamsListDiscussionCommentsLegacyError> {
@@ -5270,6 +5345,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_discussion_comments_legacy](https://docs.github.com/rest/reference/teams#list-discussion-comments-legacy)///
     /// The `list_discussion_comments_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -5317,6 +5393,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_discussions_in_org](https://docs.github.com/rest/reference/teams#list-discussions)///
     /// The `list_discussions_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn list_discussions_in_org_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListDiscussionsInOrgParams<'api>>>) -> Result<Vec<TeamDiscussion>, TeamsListDiscussionsInOrgError> {
@@ -5362,6 +5439,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_discussions_in_org](https://docs.github.com/rest/reference/teams#list-discussions)///
     /// The `list_discussions_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -5409,6 +5487,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_discussions_legacy](https://docs.github.com/rest/reference/teams#list-discussions-legacy)///
     /// The `list_discussions_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn list_discussions_legacy_async(&self, team_id: i32, query_params: Option<impl Into<TeamsListDiscussionsLegacyParams<'api>>>) -> Result<Vec<TeamDiscussion>, TeamsListDiscussionsLegacyError> {
@@ -5454,6 +5533,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_discussions_legacy](https://docs.github.com/rest/reference/teams#list-discussions-legacy)///
     /// The `list_discussions_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -5498,6 +5578,7 @@ impl<'api> Teams<'api> {
     /// List all of the teams across all of the organizations to which the authenticated user belongs. This method requires `user`, `repo`, or `read:org` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/) when authenticating via [OAuth](https://docs.github.com/apps/building-oauth-apps/).
     /// 
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/teams/#list-teams-for-the-authenticated-user)    
+    ///
     /// ---
     pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<TeamsListForAuthenticatedUserParams>>) -> Result<Vec<TeamFull>, TeamsListForAuthenticatedUserError> {
 
@@ -5542,6 +5623,7 @@ impl<'api> Teams<'api> {
     /// List all of the teams across all of the organizations to which the authenticated user belongs. This method requires `user`, `repo`, or `read:org` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/) when authenticating via [OAuth](https://docs.github.com/apps/building-oauth-apps/).
     /// 
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/teams/#list-teams-for-the-authenticated-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_for_authenticated_user(&self, query_params: Option<impl Into<TeamsListForAuthenticatedUserParams>>) -> Result<Vec<TeamFull>, TeamsListForAuthenticatedUserError> {
@@ -5592,6 +5674,7 @@ impl<'api> Teams<'api> {
     /// List IdP groups connected to a team on GitHub.
     /// 
     /// [GitHub API docs for list_idp_groups_for_legacy](https://docs.github.com/rest/reference/teams#list-idp-groups-for-a-team-legacy)    
+    ///
     /// ---
     pub async fn list_idp_groups_for_legacy_async(&self, team_id: i32) -> Result<GroupMapping, TeamsListIdpGroupsForLegacyError> {
 
@@ -5635,6 +5718,7 @@ impl<'api> Teams<'api> {
     /// List IdP groups connected to a team on GitHub.
     /// 
     /// [GitHub API docs for list_idp_groups_for_legacy](https://docs.github.com/rest/reference/teams#list-idp-groups-for-a-team-legacy)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_idp_groups_for_legacy(&self, team_id: i32) -> Result<GroupMapping, TeamsListIdpGroupsForLegacyError> {
@@ -5679,6 +5763,7 @@ impl<'api> Teams<'api> {
     /// The `per_page` parameter provides pagination for a list of IdP groups the authenticated user can access in an organization. For example, if the user `octocat` wants to see two groups per page in `octo-org` via cURL, it would look like this:
     /// 
     /// [GitHub API docs for list_idp_groups_for_org](https://docs.github.com/rest/reference/teams#list-idp-groups-for-an-organization)    
+    ///
     /// ---
     pub async fn list_idp_groups_for_org_async(&self, org: &str, query_params: Option<impl Into<TeamsListIdpGroupsForOrgParams>>) -> Result<GroupMapping, TeamsListIdpGroupsForOrgError> {
 
@@ -5724,6 +5809,7 @@ impl<'api> Teams<'api> {
     /// The `per_page` parameter provides pagination for a list of IdP groups the authenticated user can access in an organization. For example, if the user `octocat` wants to see two groups per page in `octo-org` via cURL, it would look like this:
     /// 
     /// [GitHub API docs for list_idp_groups_for_org](https://docs.github.com/rest/reference/teams#list-idp-groups-for-an-organization)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_idp_groups_for_org(&self, org: &str, query_params: Option<impl Into<TeamsListIdpGroupsForOrgParams>>) -> Result<GroupMapping, TeamsListIdpGroupsForOrgError> {
@@ -5771,6 +5857,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/team-sync/group-mappings`.
     /// 
     /// [GitHub API docs for list_idp_groups_in_org](https://docs.github.com/rest/reference/teams#list-idp-groups-for-a-team)    
+    ///
     /// ---
     pub async fn list_idp_groups_in_org_async(&self, org: &str, team_slug: &str) -> Result<GroupMapping, TeamsListIdpGroupsInOrgError> {
 
@@ -5812,6 +5899,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/team-sync/group-mappings`.
     /// 
     /// [GitHub API docs for list_idp_groups_in_org](https://docs.github.com/rest/reference/teams#list-idp-groups-for-a-team)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_idp_groups_in_org(&self, org: &str, team_slug: &str) -> Result<GroupMapping, TeamsListIdpGroupsInOrgError> {
@@ -5852,6 +5940,7 @@ impl<'api> Teams<'api> {
     /// To list members in a team, the team must be visible to the authenticated user.
     /// 
     /// [GitHub API docs for list_members_in_org](https://docs.github.com/rest/reference/teams#list-team-members)    
+    ///
     /// ---
     pub async fn list_members_in_org_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListMembersInOrgParams<'api>>>) -> Result<Vec<SimpleUser>, TeamsListMembersInOrgError> {
 
@@ -5895,6 +5984,7 @@ impl<'api> Teams<'api> {
     /// To list members in a team, the team must be visible to the authenticated user.
     /// 
     /// [GitHub API docs for list_members_in_org](https://docs.github.com/rest/reference/teams#list-team-members)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_members_in_org(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListMembersInOrgParams<'api>>>) -> Result<Vec<SimpleUser>, TeamsListMembersInOrgError> {
@@ -5940,6 +6030,7 @@ impl<'api> Teams<'api> {
     /// Team members will include the members of child teams.
     /// 
     /// [GitHub API docs for list_members_legacy](https://docs.github.com/rest/reference/teams#list-team-members-legacy)    
+    ///
     /// ---
     pub async fn list_members_legacy_async(&self, team_id: i32, query_params: Option<impl Into<TeamsListMembersLegacyParams<'api>>>) -> Result<Vec<SimpleUser>, TeamsListMembersLegacyError> {
 
@@ -5984,6 +6075,7 @@ impl<'api> Teams<'api> {
     /// Team members will include the members of child teams.
     /// 
     /// [GitHub API docs for list_members_legacy](https://docs.github.com/rest/reference/teams#list-team-members-legacy)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_members_legacy(&self, team_id: i32, query_params: Option<impl Into<TeamsListMembersLegacyParams<'api>>>) -> Result<Vec<SimpleUser>, TeamsListMembersLegacyError> {
@@ -6030,6 +6122,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/invitations`.
     /// 
     /// [GitHub API docs for list_pending_invitations_in_org](https://docs.github.com/rest/reference/teams#list-pending-team-invitations)    
+    ///
     /// ---
     pub async fn list_pending_invitations_in_org_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListPendingInvitationsInOrgParams>>) -> Result<Vec<OrganizationInvitation>, TeamsListPendingInvitationsInOrgError> {
 
@@ -6073,6 +6166,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/invitations`.
     /// 
     /// [GitHub API docs for list_pending_invitations_in_org](https://docs.github.com/rest/reference/teams#list-pending-team-invitations)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_pending_invitations_in_org(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListPendingInvitationsInOrgParams>>) -> Result<Vec<OrganizationInvitation>, TeamsListPendingInvitationsInOrgError> {
@@ -6118,6 +6212,7 @@ impl<'api> Teams<'api> {
     /// The return hash contains a `role` field which refers to the Organization Invitation role and will be one of the following values: `direct_member`, `admin`, `billing_manager`, `hiring_manager`, or `reinstate`. If the invitee is not a GitHub member, the `login` field in the return hash will be `null`.
     /// 
     /// [GitHub API docs for list_pending_invitations_legacy](https://docs.github.com/rest/reference/teams#list-pending-team-invitations-legacy)    
+    ///
     /// ---
     pub async fn list_pending_invitations_legacy_async(&self, team_id: i32, query_params: Option<impl Into<TeamsListPendingInvitationsLegacyParams>>) -> Result<Vec<OrganizationInvitation>, TeamsListPendingInvitationsLegacyError> {
 
@@ -6161,6 +6256,7 @@ impl<'api> Teams<'api> {
     /// The return hash contains a `role` field which refers to the Organization Invitation role and will be one of the following values: `direct_member`, `admin`, `billing_manager`, `hiring_manager`, or `reinstate`. If the invitee is not a GitHub member, the `login` field in the return hash will be `null`.
     /// 
     /// [GitHub API docs for list_pending_invitations_legacy](https://docs.github.com/rest/reference/teams#list-pending-team-invitations-legacy)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_pending_invitations_legacy(&self, team_id: i32, query_params: Option<impl Into<TeamsListPendingInvitationsLegacyParams>>) -> Result<Vec<OrganizationInvitation>, TeamsListPendingInvitationsLegacyError> {
@@ -6207,6 +6303,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_projects_in_org](https://docs.github.com/rest/reference/teams/#list-team-projects)///
     /// The `list_projects_in_org_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn list_projects_in_org_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListProjectsInOrgParams>>) -> Result<Vec<TeamProject>, TeamsListProjectsInOrgError> {
@@ -6252,6 +6349,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_projects_in_org](https://docs.github.com/rest/reference/teams/#list-team-projects)///
     /// The `list_projects_in_org` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -6299,6 +6397,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_projects_legacy](https://docs.github.com/rest/reference/teams/#list-team-projects-legacy)///
     /// The `list_projects_legacy_async` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "inertia")]
     pub async fn list_projects_legacy_async(&self, team_id: i32, query_params: Option<impl Into<TeamsListProjectsLegacyParams>>) -> Result<Vec<TeamProject>, TeamsListProjectsLegacyError> {
@@ -6346,6 +6445,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_projects_legacy](https://docs.github.com/rest/reference/teams/#list-team-projects-legacy)///
     /// The `list_projects_legacy` endpoint is enabled with the `inertia` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
@@ -6394,6 +6494,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/repos`.
     /// 
     /// [GitHub API docs for list_repos_in_org](https://docs.github.com/rest/reference/teams/#list-team-repositories)    
+    ///
     /// ---
     pub async fn list_repos_in_org_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListReposInOrgParams>>) -> Result<Vec<MinimalRepository>, TeamsListReposInOrgError> {
 
@@ -6437,6 +6538,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/repos`.
     /// 
     /// [GitHub API docs for list_repos_in_org](https://docs.github.com/rest/reference/teams/#list-team-repositories)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_repos_in_org(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListReposInOrgParams>>) -> Result<Vec<MinimalRepository>, TeamsListReposInOrgError> {
@@ -6480,6 +6582,7 @@ impl<'api> Teams<'api> {
     /// **Deprecation Notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [List team repositories](https://docs.github.com/rest/reference/teams#list-team-repositories) endpoint.
     /// 
     /// [GitHub API docs for list_repos_legacy](https://docs.github.com/rest/reference/teams/#list-team-repositories-legacy)    
+    ///
     /// ---
     pub async fn list_repos_legacy_async(&self, team_id: i32, query_params: Option<impl Into<TeamsListReposLegacyParams>>) -> Result<Vec<MinimalRepository>, TeamsListReposLegacyError> {
 
@@ -6522,6 +6625,7 @@ impl<'api> Teams<'api> {
     /// **Deprecation Notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [List team repositories](https://docs.github.com/rest/reference/teams#list-team-repositories) endpoint.
     /// 
     /// [GitHub API docs for list_repos_legacy](https://docs.github.com/rest/reference/teams/#list-team-repositories-legacy)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn list_repos_legacy(&self, team_id: i32, query_params: Option<impl Into<TeamsListReposLegacyParams>>) -> Result<Vec<MinimalRepository>, TeamsListReposLegacyError> {
@@ -6574,6 +6678,7 @@ impl<'api> Teams<'api> {
     /// **Note:** When you have team synchronization set up for a team with your organization's identity provider (IdP), you will see an error if you attempt to use the API for making changes to the team's membership. If you have access to manage group membership in your IdP, you can manage GitHub team membership through your identity provider, which automatically adds and removes team members in an organization. For more information, see "[Synchronizing teams between your identity provider and GitHub](https://help.github.com/articles/synchronizing-teams-between-your-identity-provider-and-github/)."
     /// 
     /// [GitHub API docs for remove_member_legacy](https://docs.github.com/rest/reference/teams#remove-team-member-legacy)    
+    ///
     /// ---
     pub async fn remove_member_legacy_async(&self, team_id: i32, username: &str) -> Result<(), TeamsRemoveMemberLegacyError> {
 
@@ -6620,6 +6725,7 @@ impl<'api> Teams<'api> {
     /// **Note:** When you have team synchronization set up for a team with your organization's identity provider (IdP), you will see an error if you attempt to use the API for making changes to the team's membership. If you have access to manage group membership in your IdP, you can manage GitHub team membership through your identity provider, which automatically adds and removes team members in an organization. For more information, see "[Synchronizing teams between your identity provider and GitHub](https://help.github.com/articles/synchronizing-teams-between-your-identity-provider-and-github/)."
     /// 
     /// [GitHub API docs for remove_member_legacy](https://docs.github.com/rest/reference/teams#remove-team-member-legacy)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn remove_member_legacy(&self, team_id: i32, username: &str) -> Result<(), TeamsRemoveMemberLegacyError> {
@@ -6665,6 +6771,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}/memberships/{username}`.
     /// 
     /// [GitHub API docs for remove_membership_for_user_in_org](https://docs.github.com/rest/reference/teams#remove-team-membership-for-a-user)    
+    ///
     /// ---
     pub async fn remove_membership_for_user_in_org_async(&self, org: &str, team_slug: &str, username: &str) -> Result<(), TeamsRemoveMembershipForUserInOrgError> {
 
@@ -6709,6 +6816,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}/memberships/{username}`.
     /// 
     /// [GitHub API docs for remove_membership_for_user_in_org](https://docs.github.com/rest/reference/teams#remove-team-membership-for-a-user)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn remove_membership_for_user_in_org(&self, org: &str, team_slug: &str, username: &str) -> Result<(), TeamsRemoveMembershipForUserInOrgError> {
@@ -6754,6 +6862,7 @@ impl<'api> Teams<'api> {
     /// **Note:** When you have team synchronization set up for a team with your organization's identity provider (IdP), you will see an error if you attempt to use the API for making changes to the team's membership. If you have access to manage group membership in your IdP, you can manage GitHub team membership through your identity provider, which automatically adds and removes team members in an organization. For more information, see "[Synchronizing teams between your identity provider and GitHub](https://help.github.com/articles/synchronizing-teams-between-your-identity-provider-and-github/)."
     /// 
     /// [GitHub API docs for remove_membership_for_user_legacy](https://docs.github.com/rest/reference/teams#remove-team-membership-for-a-user-legacy)    
+    ///
     /// ---
     pub async fn remove_membership_for_user_legacy_async(&self, team_id: i32, username: &str) -> Result<(), TeamsRemoveMembershipForUserLegacyError> {
 
@@ -6798,6 +6907,7 @@ impl<'api> Teams<'api> {
     /// **Note:** When you have team synchronization set up for a team with your organization's identity provider (IdP), you will see an error if you attempt to use the API for making changes to the team's membership. If you have access to manage group membership in your IdP, you can manage GitHub team membership through your identity provider, which automatically adds and removes team members in an organization. For more information, see "[Synchronizing teams between your identity provider and GitHub](https://help.github.com/articles/synchronizing-teams-between-your-identity-provider-and-github/)."
     /// 
     /// [GitHub API docs for remove_membership_for_user_legacy](https://docs.github.com/rest/reference/teams#remove-team-membership-for-a-user-legacy)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn remove_membership_for_user_legacy(&self, team_id: i32, username: &str) -> Result<(), TeamsRemoveMembershipForUserLegacyError> {
@@ -6839,6 +6949,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}/projects/{project_id}`.
     /// 
     /// [GitHub API docs for remove_project_in_org](https://docs.github.com/rest/reference/teams/#remove-a-project-from-a-team)    
+    ///
     /// ---
     pub async fn remove_project_in_org_async(&self, org: &str, team_slug: &str, project_id: i32) -> Result<(), TeamsRemoveProjectInOrgError> {
 
@@ -6878,6 +6989,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}/projects/{project_id}`.
     /// 
     /// [GitHub API docs for remove_project_in_org](https://docs.github.com/rest/reference/teams/#remove-a-project-from-a-team)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn remove_project_in_org(&self, org: &str, team_slug: &str, project_id: i32) -> Result<(), TeamsRemoveProjectInOrgError> {
@@ -6918,6 +7030,7 @@ impl<'api> Teams<'api> {
     /// Removes an organization project from a team. An organization owner or a team maintainer can remove any project from the team. To remove a project from a team as an organization member, the authenticated user must have `read` access to both the team and project, or `admin` access to the team or project. **Note:** This endpoint removes the project from the team, but does not delete it.
     /// 
     /// [GitHub API docs for remove_project_legacy](https://docs.github.com/rest/reference/teams/#remove-a-project-from-a-team-legacy)    
+    ///
     /// ---
     pub async fn remove_project_legacy_async(&self, team_id: i32, project_id: i32) -> Result<(), TeamsRemoveProjectLegacyError> {
 
@@ -6960,6 +7073,7 @@ impl<'api> Teams<'api> {
     /// Removes an organization project from a team. An organization owner or a team maintainer can remove any project from the team. To remove a project from a team as an organization member, the authenticated user must have `read` access to both the team and project, or `admin` access to the team or project. **Note:** This endpoint removes the project from the team, but does not delete it.
     /// 
     /// [GitHub API docs for remove_project_legacy](https://docs.github.com/rest/reference/teams/#remove-a-project-from-a-team-legacy)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn remove_project_legacy(&self, team_id: i32, project_id: i32) -> Result<(), TeamsRemoveProjectLegacyError> {
@@ -7003,6 +7117,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}/repos/{owner}/{repo}`.
     /// 
     /// [GitHub API docs for remove_repo_in_org](https://docs.github.com/rest/reference/teams/#remove-a-repository-from-a-team)    
+    ///
     /// ---
     pub async fn remove_repo_in_org_async(&self, org: &str, team_slug: &str, owner: &str, repo: &str) -> Result<(), TeamsRemoveRepoInOrgError> {
 
@@ -7042,6 +7157,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}/repos/{owner}/{repo}`.
     /// 
     /// [GitHub API docs for remove_repo_in_org](https://docs.github.com/rest/reference/teams/#remove-a-repository-from-a-team)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn remove_repo_in_org(&self, org: &str, team_slug: &str, owner: &str, repo: &str) -> Result<(), TeamsRemoveRepoInOrgError> {
@@ -7082,6 +7198,7 @@ impl<'api> Teams<'api> {
     /// If the authenticated user is an organization owner or a team maintainer, they can remove any repositories from the team. To remove a repository from a team as an organization member, the authenticated user must have admin access to the repository and must be able to see the team. NOTE: This does not delete the repository, it just removes it from the team.
     /// 
     /// [GitHub API docs for remove_repo_legacy](https://docs.github.com/rest/reference/teams/#remove-a-repository-from-a-team-legacy)    
+    ///
     /// ---
     pub async fn remove_repo_legacy_async(&self, team_id: i32, owner: &str, repo: &str) -> Result<(), TeamsRemoveRepoLegacyError> {
 
@@ -7121,6 +7238,7 @@ impl<'api> Teams<'api> {
     /// If the authenticated user is an organization owner or a team maintainer, they can remove any repositories from the team. To remove a repository from a team as an organization member, the authenticated user must have admin access to the repository and must be able to see the team. NOTE: This does not delete the repository, it just removes it from the team.
     /// 
     /// [GitHub API docs for remove_repo_legacy](https://docs.github.com/rest/reference/teams/#remove-a-repository-from-a-team-legacy)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn remove_repo_legacy(&self, team_id: i32, owner: &str, repo: &str) -> Result<(), TeamsRemoveRepoLegacyError> {
@@ -7162,6 +7280,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for update_discussion_comment_in_org](https://docs.github.com/rest/reference/teams#update-a-discussion-comment)///
     /// The `update_discussion_comment_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn update_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, body: PatchTeamsUpdateDiscussionCommentInOrg) -> Result<TeamDiscussionComment, TeamsUpdateDiscussionCommentInOrgError> {
@@ -7203,6 +7322,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for update_discussion_comment_in_org](https://docs.github.com/rest/reference/teams#update-a-discussion-comment)///
     /// The `update_discussion_comment_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -7245,6 +7365,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for update_discussion_comment_legacy](https://docs.github.com/rest/reference/teams#update-a-discussion-comment-legacy)///
     /// The `update_discussion_comment_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn update_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, comment_number: i32, body: PatchTeamsUpdateDiscussionCommentLegacy) -> Result<TeamDiscussionComment, TeamsUpdateDiscussionCommentLegacyError> {
@@ -7286,6 +7407,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for update_discussion_comment_legacy](https://docs.github.com/rest/reference/teams#update-a-discussion-comment-legacy)///
     /// The `update_discussion_comment_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -7328,6 +7450,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for update_discussion_in_org](https://docs.github.com/rest/reference/teams#update-a-discussion)///
     /// The `update_discussion_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn update_discussion_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, body: PatchTeamsUpdateDiscussionInOrg) -> Result<TeamDiscussion, TeamsUpdateDiscussionInOrgError> {
@@ -7369,6 +7492,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for update_discussion_in_org](https://docs.github.com/rest/reference/teams#update-a-discussion)///
     /// The `update_discussion_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -7411,6 +7535,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for update_discussion_legacy](https://docs.github.com/rest/reference/teams#update-a-discussion-legacy)///
     /// The `update_discussion_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
     pub async fn update_discussion_legacy_async(&self, team_id: i32, discussion_number: i32, body: PatchTeamsUpdateDiscussionLegacy) -> Result<TeamDiscussion, TeamsUpdateDiscussionLegacyError> {
@@ -7452,6 +7577,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for update_discussion_legacy](https://docs.github.com/rest/reference/teams#update-a-discussion-legacy)///
     /// The `update_discussion_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
@@ -7493,6 +7619,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `PATCH /organizations/{org_id}/team/{team_id}`.
     /// 
     /// [GitHub API docs for update_in_org](https://docs.github.com/rest/reference/teams/#update-a-team)    
+    ///
     /// ---
     pub async fn update_in_org_async(&self, org: &str, team_slug: &str, body: PatchTeamsUpdateInOrg) -> Result<TeamFull, TeamsUpdateInOrgError> {
 
@@ -7532,6 +7659,7 @@ impl<'api> Teams<'api> {
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `PATCH /organizations/{org_id}/team/{team_id}`.
     /// 
     /// [GitHub API docs for update_in_org](https://docs.github.com/rest/reference/teams/#update-a-team)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn update_in_org(&self, org: &str, team_slug: &str, body: PatchTeamsUpdateInOrg) -> Result<TeamFull, TeamsUpdateInOrgError> {
@@ -7574,6 +7702,7 @@ impl<'api> Teams<'api> {
     /// **Note:** With nested teams, the `privacy` for parent teams cannot be `secret`.
     /// 
     /// [GitHub API docs for update_legacy](https://docs.github.com/rest/reference/teams/#update-a-team-legacy)    
+    ///
     /// ---
     pub async fn update_legacy_async(&self, team_id: i32, body: PatchTeamsUpdateLegacy) -> Result<TeamFull, TeamsUpdateLegacyError> {
 
@@ -7618,6 +7747,7 @@ impl<'api> Teams<'api> {
     /// **Note:** With nested teams, the `privacy` for parent teams cannot be `secret`.
     /// 
     /// [GitHub API docs for update_legacy](https://docs.github.com/rest/reference/teams/#update-a-team-legacy)    
+    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     pub fn update_legacy(&self, team_id: i32, body: PatchTeamsUpdateLegacy) -> Result<TeamFull, TeamsUpdateLegacyError> {

@@ -156,12 +156,6 @@ public class GitHubCodegen extends RustServerCodegen {
                             prop.vendorExtensions.put("x-rustgen-has-empty-enum", true);
                         }
                     }
-
-                    // add additional enum values that get patched in at the template level
-                    // if (patchEnumValues.containsKey(model.classname + prop.enumName)) {
-                    // prop.vendorExtensions.put("x-rustgen-additional-enum-values",
-                    // patchEnumValues.get(model.classname + prop.enumName));
-                    // }
                 }
                 
                 if (prop.baseName.equals(prop.name)) {
@@ -175,9 +169,7 @@ public class GitHubCodegen extends RustServerCodegen {
                     prop.datatype = "f32";
                 }
             }
-            //if (model.readWriteVars != null) {
-            //    LOGGER.info("::: readOnlyVars " + model.readWriteVars);
-            //}
+
         }
 
         return newObjs;
@@ -207,29 +199,6 @@ public class GitHubCodegen extends RustServerCodegen {
     public Map<String, Object> postProcessOperationsWithModels(Map<String, Object> objs, List<Object> allModels) {
         // Index all CodegenModels by model name.
         HashMap<String, CodegenModel> allTheModels = new HashMap<String, CodegenModel>();
-        // for (Entry<String, Object> entry : objs.entrySet()) {
-        // String modelName = toModelName(entry.getKey());
-        // if (entry.getValue() instanceof String) {
-        // String inner = (String) entry.getValue();
-        // } else if (entry.getValue() instanceof ArrayList) {
-        // List<Map<String, Object>> inner = (List<Map<String, Object>>)
-        // entry.getValue();
-        // for (Map<String, Object> mo : inner) {
-        // // allTheModels.put(modelName, cm);
-        // String className = (String) mo.get("import");
-        // if (patchOperationBodyNames.get(className) != null) {
-        // mo.put("import", patchOperationBodyNames.get(className));
-        // }
-        // if (patchOperationResponseNames.get(className) != null) {
-        // mo.put("import", patchOperationResponseNames.get(className));
-        // }
-        // }
-        // } else if (entry.getValue() instanceof Boolean) {
-        // Boolean inner = (Boolean) entry.getValue();
-        // } else {
-        // Map<String, Object> inner = (Map<String, Object>) entry.getValue();
-        // }
-        // }
 
         for (Object obj : (List<Object>) allModels) {
             Map<String, Object> map = (Map<String, Object>) obj;
@@ -241,8 +210,6 @@ public class GitHubCodegen extends RustServerCodegen {
             }
             String resName = (String) patchOperationResponseNames.get(camelize(cm.getName()));
             if (resName != null) {
-                // LOGGER.info(" +++ setting resName " + camelize(cm.getName()) + " to " +
-                // toModelName(resName));
                 cm.setClassname(toModelName(resName));
             }
         }
