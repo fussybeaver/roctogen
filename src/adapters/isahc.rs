@@ -25,7 +25,7 @@ pub(crate) fn fetch(request: Request<Body>) -> Result<Response<Body>, AdapterErr
 }
 
 pub(crate) async fn fetch_async(_request: Request<Body>) -> Result<Response<Body>, AdapterError> {
-    unimplemented!()
+    todo!()
 }
 
 impl<T: std::io::Read> GitHubResponseExt for Response<T> {
