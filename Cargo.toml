@@ -41,6 +41,9 @@ switcheroo = []
 wyandotte = []
 zzzax = []
 
+# Activate mock base url
+mock = []
+
 [dependencies]
 base64 = "0.13"
 chrono = { version = "0.4", features = ["serde"] }

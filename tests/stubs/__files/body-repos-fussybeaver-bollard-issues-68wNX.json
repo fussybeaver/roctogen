@@ -1,0 +1,78 @@
+[
+  {
+    "url": "https://api.github.com/repos/fussybeaver/bollard/issues/146",
+    "repository_url": "https://api.github.com/repos/fussybeaver/bollard",
+    "labels_url": "https://api.github.com/repos/fussybeaver/bollard/issues/146/labels{/name}",
+    "comments_url": "https://api.github.com/repos/fussybeaver/bollard/issues/146/comments",
+    "events_url": "https://api.github.com/repos/fussybeaver/bollard/issues/146/events",
+    "html_url": "https://github.com/fussybeaver/bollard/pull/146",
+    "id": 828897039,
+    "node_id": "MDExOlB1bGxSZXF1ZXN0NTkwNjUzMTM5",
+    "number": 146,
+    "title": "Bump swagger-codegen from 2.4.14 to 2.4.19 in /codegen",
+    "user": {
+      "login": "dependabot[bot]",
+      "id": 49699333,
+      "node_id": "MDM6Qm90NDk2OTkzMzM=",
+      "avatar_url": "https://avatars.githubusercontent.com/in/29110?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/dependabot%5Bbot%5D",
+      "html_url": "https://github.com/apps/dependabot",
+      "followers_url": "https://api.github.com/users/dependabot%5Bbot%5D/followers",
+      "following_url": "https://api.github.com/users/dependabot%5Bbot%5D/following{/other_user}",
+      "gists_url": "https://api.github.com/users/dependabot%5Bbot%5D/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/dependabot%5Bbot%5D/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/dependabot%5Bbot%5D/subscriptions",
+      "organizations_url": "https://api.github.com/users/dependabot%5Bbot%5D/orgs",
+      "repos_url": "https://api.github.com/users/dependabot%5Bbot%5D/repos",
+      "events_url": "https://api.github.com/users/dependabot%5Bbot%5D/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/dependabot%5Bbot%5D/received_events",
+      "type": "Bot",
+      "site_admin": false
+    },
+    "labels": [
+      {
+        "id": 2811584095,
+        "node_id": "MDU6TGFiZWwyODExNTg0MDk1",
+        "url": "https://api.github.com/repos/fussybeaver/bollard/labels/dependencies",
+        "name": "dependencies",
+        "color": "0366d6",
+        "default": false,
+        "description": "Pull requests that update a dependency file"
+      }
+    ],
+    "state": "open",
+    "locked": false,
+    "assignee": null,
+    "assignees": [
+
+    ],
+    "milestone": null,
+    "comments": 0,
+    "created_at": "2021-03-11T07:58:54Z",
+    "updated_at": "2021-03-11T07:58:57Z",
+    "closed_at": null,
+    "author_association": "NONE",
+    "active_lock_reason": null,
+    "pull_request": {
+      "url": "https://api.github.com/repos/fussybeaver/bollard/pulls/146",
+      "html_url": "https://github.com/fussybeaver/bollard/pull/146",
+      "diff_url": "https://github.com/fussybeaver/bollard/pull/146.diff",
+      "patch_url": "https://github.com/fussybeaver/bollard/pull/146.patch"
+    },
+    "body": "Bumps [swagger-codegen](https://github.com/swagger-api/swagger-codegen) from 2.4.14 to 2.4.19.\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a href=\"https://github.com/swagger-api/swagger-codegen/releases\">swagger-codegen's releases</a>.</em></p>\n<blockquote>\n<h2>Swagger Codegen 2.4.19 has been released!</h2>\n<ul>\n<li>ref CVE-2020-25649 - jackson 2.11.4 (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10926\">#10926</a>)</li>\n<li>[csharp] masked EnumMember value in modelEnum (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/8129\">#8129</a>)</li>\n<li>Generator updates: sample updates and fixes (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10924\">#10924</a>)</li>\n<li>Add option modelPropertyNaming to javascript generator (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/8086\">#8086</a>)</li>\n<li><a href=\"https://github.com/swagger-api/swagger-codegen/issues/10125\">#10125</a> fix DefaultCodegen parsing to handle 'uniqueItems' flag (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10154\">#10154</a>)</li>\n<li>Fix code generation for Angular 10 (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10464\">#10464</a>)</li>\n<li>added actions for dotnet, java and js generators (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10869\">#10869</a>)</li>\n<li>added docker file for go-server generator (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10863\">#10863</a>)</li>\n<li>added missed validated annotation. (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10856\">#10856</a>)</li>\n<li>added option to skip client validaton (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10847\">#10847</a>)</li>\n<li>Deprecate InlineModelResolver (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10841\">#10841</a>)</li>\n</ul>\n<h2>Swagger Codegen 2.4.18 has been released!</h2>\n<ul>\n<li><a href=\"https://github.com/swagger-api/swagger-codegen/issues/9808\">#9808</a> - Dart double cast (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/9809\">#9809</a>)</li>\n<li>Update dependencies and samples (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10044\">#10044</a>)</li>\n<li>Configure WhiteSource for GitHub.com (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10593\">#10593</a>)</li>\n<li>Issue 10516 (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10576\">#10576</a>)</li>\n<li>fix CVE-2020-27216 - bump jetty version (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10568\">#10568</a>)</li>\n<li>updated model inner enum template for java generator (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10567\">#10567</a>)</li>\n<li>Enum values issue (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10563\">#10563</a>)</li>\n<li>add info object extensions to additional property map (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10557\">#10557</a>)</li>\n<li>updated parser version and required porperty from composed model (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10549\">#10549</a>)</li>\n</ul>\n<h2>Swagger Codegen 2.4.17 has been released!</h2>\n<ul>\n<li>added option to check duplicated model names. (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10529\">#10529</a>)</li>\n<li>[Issue 9178] Handle multiple formats when decoding dates (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/9730\">#9730</a>)</li>\n<li>added <a href=\"https://github.com/Valid\"><code>@​Valid</code></a> annotation on bean validation template for java jaxrs (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10519\">#10519</a>)</li>\n<li>Bump master junit deps (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10512\">#10512</a>)</li>\n<li>removed commented typescript-fetch module (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10511\">#10511</a>)</li>\n<li>Fix code generation for Angular 10 (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10464\">#10464</a>)</li>\n<li>fix(go): return decoding errors (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10429\">#10429</a>)</li>\n<li>Use same spaces style for json snippets in readme (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10487\">#10487</a>)</li>\n<li>Update README.md: typo fixed, version 3.X vs 2.X (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10503\">#10503</a>)</li>\n<li>Issue 10125 DefaultCodegen doesn't handle &quot;uniqueItems&quot; flag (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10490\">#10490</a>)</li>\n</ul>\n<h2>Swagger Codegen 2.4.16 has been released!</h2>\n<ul>\n<li>updated typescript-fetch sample in order to fix issue (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10481\">#10481</a>)</li>\n<li>fixed solution template on aspnetcore (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10478\">#10478</a>)</li>\n<li>Wrong generation of <a href=\"https://github.com/JacksonXmlElementWrapper\"><code>@​JacksonXmlElementWrapper</code></a> annotation (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10333\">#10333</a>)</li>\n<li>package-lock fix npm advisories 1071 1500 (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10453\">#10453</a>)</li>\n<li>[RUBY] Replace deprecated <code>URI.encode</code> to support ruby 2.7 without warnings (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10445\">#10445</a>)</li>\n<li>Update README.md (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10443\">#10443</a>)</li>\n<li>[Documentation] Use HTTPS for petstore urls (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10427\">#10427</a>)</li>\n</ul>\n<h2>Swagger Codegen 2.4.15 has been released!</h2>\n<ul>\n<li>Updated to support .net core 3 (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/9782\">#9782</a>)</li>\n<li>PHP 7.2 (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/8534\">#8534</a>)</li>\n<li>fix help command format (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/10385\">#10385</a>)</li>\n<li>[typescript-angular] error TS1345: An expression of type 'void' canno… (<a href=\"https://github.com/swagger-api/swagger-codegen/issues/9065\">#9065</a>)</li>\n</ul>\n<!-- raw HTML omitted -->\n</blockquote>\n<p>... (truncated)</p>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a href=\"https://github.com/swagger-api/swagger-codegen/commit/ab21af6f6566f603e0ccb3556b0d3158d3740eac\"><code>ab21af6</code></a> Merge pull request <a href=\"https://github.com/swagger-api/swagger-codegen/issues/10928\">#10928</a> from swagger-api/prepare-release-2.4.19</li>\n<li><a href=\"https://github.com/swagger-api/swagger-codegen/commit/4e6b194cd006d6f4ff8af02093cdfeeeee4bc678\"><code>4e6b194</code></a> prepare release 2.4.19</li>\n<li><a href=\"https://github.com/swagger-api/swagger-codegen/commit/455b3b9c6849f474137f0250373fc1f615c63b5a\"><code>455b3b9</code></a> Merge pull request <a href=\"https://github.com/swagger-api/swagger-codegen/issues/10926\">#10926</a> from swagger-api/jackson-update</li>\n<li><a href=\"https://github.com/swagger-api/swagger-codegen/commit/7e66f4c9edcaf89e14c11deccea6e852081979ce\"><code>7e66f4c</code></a> ref CVE-2020-25649 - fix jackson code</li>\n<li><a href=\"https://github.com/swagger-api/swagger-codegen/commit/a50f14ae1d11f3d12118b28ae3ccde6c584caa03\"><code>a50f14a</code></a> ref CVE-2020-25649 - jackson 2.11.4</li>\n<li><a href=\"https://github.com/swagger-api/swagger-codegen/commit/067d980b74945ea54b6512b0b8602d060ef3bf62\"><code>067d980</code></a> Merge pull request <a href=\"https://github.com/swagger-api/swagger-codegen/issues/10924\">#10924</a> from swagger-api/generator-updates</li>\n<li><a href=\"https://github.com/swagger-api/swagger-codegen/commit/bc9691e04432861b27a4ef915f48d373b01e7ec3\"><code>bc9691e</code></a> disabled jetty start plugin on jax-cxf sample</li>\n<li><a href=\"https://github.com/swagger-api/swagger-codegen/commit/b78de690179d0e311adc08ca1aee721bcbac2c1e\"><code>b78de69</code></a> reverted scheme to http and update client samples</li>\n<li><a href=\"https://github.com/swagger-api/swagger-codegen/commit/1aa1f3f50e8c27abaa50385c20d5c8e76d62772a\"><code>1aa1f3f</code></a> fixed spring cloud tests</li>\n<li><a href=\"https://github.com/swagger-api/swagger-codegen/commit/43d78ac77f1d6c41313fdc9e83518b50eb18e978\"><code>43d78ac</code></a> ignoring spring cloud tests.</li>\n<li>Additional commits viewable in <a href=\"https://github.com/swagger-api/swagger-codegen/compare/v2.4.14...v2.4.19\">compare view</a></li>\n</ul>\n</details>\n<br />\n\n\n[![Dependabot compatibility score](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=io.swagger:swagger-codegen&package-manager=maven&previous-version=2.4.14&new-version=2.4.19)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)\n\nDependabot will resolve any conflicts with this PR as long as you don't alter it yourself. You can also trigger a rebase manually by commenting `@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits that have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after your CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge and block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating it. You can achieve the same result by closing it manually\n- `@dependabot ignore this major version` will close this PR and stop Dependabot creating any more for this major version (unless you reopen the PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop Dependabot creating any more for this minor version (unless you reopen the PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop Dependabot creating any more for this dependency (unless you reopen the PR or upgrade to it yourself)\n- `@dependabot use these labels` will set the current labels as the default for future PRs for this repo and language\n- `@dependabot use these reviewers` will set the current reviewers as the default for future PRs for this repo and language\n- `@dependabot use these assignees` will set the current assignees as the default for future PRs for this repo and language\n- `@dependabot use this milestone` will set the current milestone as the default for future PRs for this repo and language\n\nYou can disable automated security fix PRs for this repo from the [Security Alerts page](https://github.com/fussybeaver/bollard/network/alerts).\n\n</details>",
+    "reactions": {
+      "url": "https://api.github.com/repos/fussybeaver/bollard/issues/146/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "performed_via_github_app": null
+  }
+]

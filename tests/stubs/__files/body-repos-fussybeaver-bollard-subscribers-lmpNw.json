@@ -1,0 +1,22 @@
+[
+  {
+    "login": "fussybeaver",
+    "id": 8981974,
+    "node_id": "MDQ6VXNlcjg5ODE5NzQ=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/8981974?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/fussybeaver",
+    "html_url": "https://github.com/fussybeaver",
+    "followers_url": "https://api.github.com/users/fussybeaver/followers",
+    "following_url": "https://api.github.com/users/fussybeaver/following{/other_user}",
+    "gists_url": "https://api.github.com/users/fussybeaver/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/fussybeaver/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/fussybeaver/subscriptions",
+    "organizations_url": "https://api.github.com/users/fussybeaver/orgs",
+    "repos_url": "https://api.github.com/users/fussybeaver/repos",
+    "events_url": "https://api.github.com/users/fussybeaver/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/fussybeaver/received_events",
+    "type": "User",
+    "site_admin": false
+  }
+]

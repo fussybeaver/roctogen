@@ -1,7 +1,11 @@
 //! Endpoints module and `PerPage` struct/impl
 {{>partial_header}}
 
-pub const GITHUB_BASE_API_URL: &str = "https://api.github.com";
+pub const GITHUB_BASE_API_URL: &str = if cfg!(feature = "mock") {
+    "http://localhost:8080"
+} else {
+    "https://api.github.com"
+};
 
 {{#tags}}
 pub mod {{baseName}};

@@ -1,0 +1,34 @@
+{
+  "id" : "36b301bb-7dd3-3edb-812b-1ea3db67e807",
+  "request" : {
+    "url" : "/repos/fussybeaver/bollard/license",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-repos-fussybeaver-bollard-license-DMLLq.json",
+    "headers" : {
+      "Server" : "GitHub.com",
+      "Date" : "Sat, 20 Mar 2021 17:04:25 GMT",
+      "Content-Type" : "application/json; charset=utf-8",
+      "Cache-Control" : "public, max-age=60, s-maxage=60",
+      "Vary" : "Accept, Accept-Encoding, Accept, X-Requested-With",
+      "ETag" : "W/\"961cefa433318c7c5cb4815222db8a888ebf585674d5fe70f1180fb335b013e2\"",
+      "Last-Modified" : "Sun, 14 Mar 2021 16:10:32 GMT",
+      "X-GitHub-Media-Type" : "github.v3; format=json",
+      "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
+      "X-Frame-Options" : "deny",
+      "X-Content-Type-Options" : "nosniff",
+      "X-XSS-Protection" : "0",
+      "Referrer-Policy" : "origin-when-cross-origin, strict-origin-when-cross-origin",
+      "Content-Security-Policy" : "default-src 'none'",
+      "X-RateLimit-Limit" : "60",
+      "X-RateLimit-Remaining" : "34",
+      "X-RateLimit-Reset" : "1616263342",
+      "X-RateLimit-Used" : "26",
+      "Accept-Ranges" : "bytes",
+      "X-GitHub-Request-Id" : "3875:B275:6CCBCF:74C454:60562B19"
+    }
+  },
+  "uuid" : "36b301bb-7dd3-3edb-812b-1ea3db67e807"
+}

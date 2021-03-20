@@ -1,0 +1,30 @@
+{
+  "id" : "d2b8f29c-52de-36d2-a75c-5516ddc7c175",
+  "request" : {
+    "url" : "/repos/this-user-does-not-exist/bollard/commits?per_page=1&page=0",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 404,
+    "bodyFileName" : "body-repos-this-user-does-not-exist-bollard-commits-pHO1B.json",
+    "headers" : {
+      "Server" : "GitHub.com",
+      "Date" : "Sat, 20 Mar 2021 17:04:24 GMT",
+      "Content-Type" : "application/json; charset=utf-8",
+      "X-GitHub-Media-Type" : "github.v3; format=json",
+      "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
+      "X-Frame-Options" : "deny",
+      "X-Content-Type-Options" : "nosniff",
+      "X-XSS-Protection" : "0",
+      "Referrer-Policy" : "origin-when-cross-origin, strict-origin-when-cross-origin",
+      "Content-Security-Policy" : "default-src 'none'",
+      "Vary" : "Accept-Encoding, Accept, X-Requested-With",
+      "X-RateLimit-Limit" : "60",
+      "X-RateLimit-Remaining" : "38",
+      "X-RateLimit-Reset" : "1616263342",
+      "X-RateLimit-Used" : "22",
+      "X-GitHub-Request-Id" : "3874:BD38:257AD35:2676E97:60562B18"
+    }
+  },
+  "uuid" : "d2b8f29c-52de-36d2-a75c-5516ddc7c175"
+}

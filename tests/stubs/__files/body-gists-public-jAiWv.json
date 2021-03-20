@@ -1,0 +1,49 @@
+[
+  {
+    "url": "https://api.github.com/gists/e677c8c424fdbfd49a2791f41db16506",
+    "forks_url": "https://api.github.com/gists/e677c8c424fdbfd49a2791f41db16506/forks",
+    "commits_url": "https://api.github.com/gists/e677c8c424fdbfd49a2791f41db16506/commits",
+    "id": "e677c8c424fdbfd49a2791f41db16506",
+    "node_id": "MDQ6R2lzdGU2NzdjOGM0MjRmZGJmZDQ5YTI3OTFmNDFkYjE2NTA2",
+    "git_pull_url": "https://gist.github.com/e677c8c424fdbfd49a2791f41db16506.git",
+    "git_push_url": "https://gist.github.com/e677c8c424fdbfd49a2791f41db16506.git",
+    "html_url": "https://gist.github.com/e677c8c424fdbfd49a2791f41db16506",
+    "files": {
+      "DV0101EN-3-4-1-Waffle-Charts-Word-Clouds-and-Regression-Plots-py-v2.0.ipynb": {
+        "filename": "DV0101EN-3-4-1-Waffle-Charts-Word-Clouds-and-Regression-Plots-py-v2.0.ipynb",
+        "type": "text/plain",
+        "language": "Jupyter Notebook",
+        "raw_url": "https://gist.githubusercontent.com/wgozzard/e677c8c424fdbfd49a2791f41db16506/raw/09bb469c19d43afe5c99dcad9983efc086474e4a/DV0101EN-3-4-1-Waffle-Charts-Word-Clouds-and-Regression-Plots-py-v2.0.ipynb",
+        "size": 2010371
+      }
+    },
+    "public": true,
+    "created_at": "2021-03-20T17:04:08Z",
+    "updated_at": "2021-03-20T17:04:09Z",
+    "description": "Created on Skills Network Labs",
+    "comments": 0,
+    "user": null,
+    "comments_url": "https://api.github.com/gists/e677c8c424fdbfd49a2791f41db16506/comments",
+    "owner": {
+      "login": "wgozzard",
+      "id": 72624648,
+      "node_id": "MDQ6VXNlcjcyNjI0NjQ4",
+      "avatar_url": "https://avatars.githubusercontent.com/u/72624648?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/wgozzard",
+      "html_url": "https://github.com/wgozzard",
+      "followers_url": "https://api.github.com/users/wgozzard/followers",
+      "following_url": "https://api.github.com/users/wgozzard/following{/other_user}",
+      "gists_url": "https://api.github.com/users/wgozzard/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/wgozzard/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/wgozzard/subscriptions",
+      "organizations_url": "https://api.github.com/users/wgozzard/orgs",
+      "repos_url": "https://api.github.com/users/wgozzard/repos",
+      "events_url": "https://api.github.com/users/wgozzard/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/wgozzard/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "truncated": false
+  }
+]

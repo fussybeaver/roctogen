@@ -1,0 +1,33 @@
+{
+  "id" : "6cdef743-1d79-3789-9f31-6e97219ac22a",
+  "request" : {
+    "url" : "/repos/fussybeaver/bollard/subscribers?per_page=1&page=0",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-repos-fussybeaver-bollard-subscribers-lmpNw.json",
+    "headers" : {
+      "Server" : "GitHub.com",
+      "Date" : "Sat, 20 Mar 2021 17:04:24 GMT",
+      "Content-Type" : "application/json; charset=utf-8",
+      "Cache-Control" : "public, max-age=60, s-maxage=60",
+      "Vary" : "Accept, Accept-Encoding, Accept, X-Requested-With",
+      "ETag" : "W/\"754b9f2dddffa3018d6cb0bae737313c93a77a668eb98d1ef65745d507058826\"",
+      "X-GitHub-Media-Type" : "github.v3; format=json",
+      "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
+      "X-Frame-Options" : "deny",
+      "X-Content-Type-Options" : "nosniff",
+      "X-XSS-Protection" : "0",
+      "Referrer-Policy" : "origin-when-cross-origin, strict-origin-when-cross-origin",
+      "Content-Security-Policy" : "default-src 'none'",
+      "X-RateLimit-Limit" : "60",
+      "X-RateLimit-Remaining" : "36",
+      "X-RateLimit-Reset" : "1616263342",
+      "X-RateLimit-Used" : "24",
+      "Accept-Ranges" : "bytes",
+      "X-GitHub-Request-Id" : "3872:3003:A6E3A79:A99A1D7:60562B18"
+    }
+  },
+  "uuid" : "6cdef743-1d79-3789-9f31-6e97219ac22a"
+}

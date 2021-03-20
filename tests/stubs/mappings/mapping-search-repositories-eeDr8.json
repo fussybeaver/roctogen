@@ -1,0 +1,32 @@
+{
+  "id" : "0644e528-4c66-35a7-8881-4018e54d4721",
+  "request" : {
+    "url" : "/search/repositories?q=bollard",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-search-repositories-eeDr8.json",
+    "headers" : {
+      "Server" : "GitHub.com",
+      "Date" : "Sat, 20 Mar 2021 17:04:26 GMT",
+      "Content-Type" : "application/json; charset=utf-8",
+      "Cache-Control" : "no-cache",
+      "Vary" : "Accept, Accept-Encoding, Accept, X-Requested-With",
+      "X-GitHub-Media-Type" : "github.v3; format=json, github.mercy-preview; format=json",
+      "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
+      "X-Frame-Options" : "deny",
+      "X-Content-Type-Options" : "nosniff",
+      "X-XSS-Protection" : "0",
+      "Referrer-Policy" : "origin-when-cross-origin, strict-origin-when-cross-origin",
+      "Content-Security-Policy" : "default-src 'none'",
+      "X-RateLimit-Limit" : "10",
+      "X-RateLimit-Remaining" : "9",
+      "X-RateLimit-Reset" : "1616259925",
+      "X-RateLimit-Used" : "1",
+      "Accept-Ranges" : "bytes",
+      "X-GitHub-Request-Id" : "3873:1052C:28C6DB7:296ECA2:60562B19"
+    }
+  },
+  "uuid" : "0644e528-4c66-35a7-8881-4018e54d4721"
+}

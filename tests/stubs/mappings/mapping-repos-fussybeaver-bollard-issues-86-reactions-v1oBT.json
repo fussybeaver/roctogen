@@ -1,0 +1,33 @@
+{
+  "id" : "bf794d38-11d6-38fa-9627-1670696edd83",
+  "request" : {
+    "url" : "/repos/fussybeaver/bollard/issues/86/reactions?per_page=1&page=0",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-repos-fussybeaver-bollard-issues-86-reactions-v1oBT.json",
+    "headers" : {
+      "Server" : "GitHub.com",
+      "Date" : "Sat, 20 Mar 2021 17:04:25 GMT",
+      "Content-Type" : "application/json; charset=utf-8",
+      "Cache-Control" : "public, max-age=60, s-maxage=60",
+      "Vary" : "Accept, Accept-Encoding, Accept, X-Requested-With",
+      "ETag" : "W/\"a5eec3404bfe2f1263f55c2fbd4dfe6117d2109d1f7b7f92308d4a7c47b265ac\"",
+      "X-GitHub-Media-Type" : "github.v3; format=json, github.squirrel-girl-preview; format=json",
+      "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
+      "X-Frame-Options" : "deny",
+      "X-Content-Type-Options" : "nosniff",
+      "X-XSS-Protection" : "0",
+      "Referrer-Policy" : "origin-when-cross-origin, strict-origin-when-cross-origin",
+      "Content-Security-Policy" : "default-src 'none'",
+      "X-RateLimit-Limit" : "60",
+      "X-RateLimit-Remaining" : "21",
+      "X-RateLimit-Reset" : "1616263342",
+      "X-RateLimit-Used" : "39",
+      "Accept-Ranges" : "bytes",
+      "X-GitHub-Request-Id" : "3872:3003:A6E3C04:A99A363:60562B19"
+    }
+  },
+  "uuid" : "bf794d38-11d6-38fa-9627-1670696edd83"
+}

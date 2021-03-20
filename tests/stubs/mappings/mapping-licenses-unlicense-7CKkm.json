@@ -1,0 +1,33 @@
+{
+  "id" : "18e197dd-1fa2-3253-abcf-2209a7fccf24",
+  "request" : {
+    "url" : "/licenses/unlicense",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-licenses-unlicense-7CKkm.json",
+    "headers" : {
+      "Server" : "GitHub.com",
+      "Date" : "Sat, 20 Mar 2021 17:04:25 GMT",
+      "Content-Type" : "application/json; charset=utf-8",
+      "Cache-Control" : "public, max-age=60, s-maxage=60",
+      "Vary" : "Accept, Accept-Encoding, Accept, X-Requested-With",
+      "ETag" : "W/\"e09bc5c59d8963be5d68f0294d3f8aa418bfec21785673d2ca76cf1a4f81a353\"",
+      "X-GitHub-Media-Type" : "github.v3; format=json",
+      "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
+      "X-Frame-Options" : "deny",
+      "X-Content-Type-Options" : "nosniff",
+      "X-XSS-Protection" : "0",
+      "Referrer-Policy" : "origin-when-cross-origin, strict-origin-when-cross-origin",
+      "Content-Security-Policy" : "default-src 'none'",
+      "X-RateLimit-Limit" : "60",
+      "X-RateLimit-Remaining" : "27",
+      "X-RateLimit-Reset" : "1616263342",
+      "X-RateLimit-Used" : "33",
+      "Accept-Ranges" : "bytes",
+      "X-GitHub-Request-Id" : "3875:B275:6CCBD6:74C45B:60562B19"
+    }
+  },
+  "uuid" : "18e197dd-1fa2-3253-abcf-2209a7fccf24"
+}

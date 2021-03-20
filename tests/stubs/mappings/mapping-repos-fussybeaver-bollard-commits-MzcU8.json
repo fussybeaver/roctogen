@@ -1,0 +1,35 @@
+{
+  "id" : "3e5c0e9e-b187-3d35-bca8-030cc1c13bff",
+  "request" : {
+    "url" : "/repos/fussybeaver/bollard/commits?author=fussybeaver&per_page=1&page=2",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-repos-fussybeaver-bollard-commits-MzcU8.json",
+    "headers" : {
+      "Server" : "GitHub.com",
+      "Date" : "Sat, 20 Mar 2021 17:04:25 GMT",
+      "Content-Type" : "application/json; charset=utf-8",
+      "Cache-Control" : "public, max-age=60, s-maxage=60",
+      "Vary" : "Accept, Accept-Encoding, Accept, X-Requested-With",
+      "ETag" : "W/\"03d764fae5bd3c3d01b6cc92e792b5d035a0c502e062976de0e44e300acf4586\"",
+      "Last-Modified" : "Tue, 02 Mar 2021 20:33:02 GMT",
+      "X-GitHub-Media-Type" : "github.v3; format=json",
+      "Link" : "<https://api.github.com/repositories/137915065/commits?author=fussybeaver&per_page=1&page=3>; rel=\"next\", <https://api.github.com/repositories/137915065/commits?author=fussybeaver&per_page=1&page=298>; rel=\"last\", <https://api.github.com/repositories/137915065/commits?author=fussybeaver&per_page=1&page=1>; rel=\"first\", <https://api.github.com/repositories/137915065/commits?author=fussybeaver&per_page=1&page=1>; rel=\"prev\"",
+      "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
+      "X-Frame-Options" : "deny",
+      "X-Content-Type-Options" : "nosniff",
+      "X-XSS-Protection" : "0",
+      "Referrer-Policy" : "origin-when-cross-origin, strict-origin-when-cross-origin",
+      "Content-Security-Policy" : "default-src 'none'",
+      "X-RateLimit-Limit" : "60",
+      "X-RateLimit-Remaining" : "32",
+      "X-RateLimit-Reset" : "1616263342",
+      "X-RateLimit-Used" : "28",
+      "Accept-Ranges" : "bytes",
+      "X-GitHub-Request-Id" : "3872:3003:A6E3B24:A99A27E:60562B19"
+    }
+  },
+  "uuid" : "3e5c0e9e-b187-3d35-bca8-030cc1c13bff"
+}
