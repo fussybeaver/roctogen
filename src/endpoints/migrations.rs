@@ -816,7 +816,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -861,7 +861,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -905,7 +905,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -947,7 +947,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -988,7 +988,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1031,7 +1031,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1093,7 +1093,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1158,7 +1158,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1527,7 +1527,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1584,7 +1584,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1639,7 +1639,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1693,7 +1693,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1738,7 +1738,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1787,7 +1787,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1834,7 +1834,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1880,7 +1880,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1924,7 +1924,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1971,7 +1971,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2016,7 +2016,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2063,7 +2063,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2511,7 +2511,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2556,7 +2556,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2600,7 +2600,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2642,7 +2642,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;

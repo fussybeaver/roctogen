@@ -124,7 +124,7 @@ impl<'api> {{classname}}<'api> {
             uri: request_uri,
             body: {{#hasBodyParam}}Some({{#bodyParam}}{{{dataType}}}{{/bodyParam}}::from_json(body)?){{/hasBodyParam}}{{^hasBodyParam}}None{{/hasBodyParam}},
             method: "{{httpMethod}}",
-            headers: vec![{{#vendorExtensions.x-github.previews}}("Accept", "application/vnd.github.{{name}}-preview+json"){{/vendorExtensions.x-github.previews}}]
+            headers: vec![{{#vendorExtensions.x-github.previews}}("Accept", "application/vnd.github.{{name}}-preview+json"), {{/vendorExtensions.x-github.previews}}]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -185,7 +185,7 @@ impl<'api> {{classname}}<'api> {
             uri: request_uri,
             body: {{#hasBodyParam}}Some({{#bodyParam}}{{{dataType}}}{{/bodyParam}}::from_json(body)?){{/hasBodyParam}}{{^hasBodyParam}}None{{/hasBodyParam}},
             method: "{{httpMethod}}",
-            headers: vec![{{#vendorExtensions.x-github.previews}}("Accept", "application/vnd.github.{{name}}-preview+json"){{/vendorExtensions.x-github.previews}}]
+            headers: vec![{{#vendorExtensions.x-github.previews}}("Accept", "application/vnd.github.{{name}}-preview+json"), {{/vendorExtensions.x-github.previews}}]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;

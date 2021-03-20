@@ -919,7 +919,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForCommitComment::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -963,7 +963,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForCommitComment::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1006,7 +1006,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForIssue::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1049,7 +1049,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForIssue::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1091,7 +1091,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForIssueComment::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1135,7 +1135,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForIssueComment::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1178,7 +1178,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForPullRequestReviewComment::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1222,7 +1222,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForPullRequestReviewComment::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1267,7 +1267,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForTeamDiscussionCommentInOrg::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1310,7 +1310,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForTeamDiscussionCommentInOrg::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1352,7 +1352,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForTeamDiscussionCommentLegacy::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1395,7 +1395,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForTeamDiscussionCommentLegacy::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1437,7 +1437,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForTeamDiscussionInOrg::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1480,7 +1480,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForTeamDiscussionInOrg::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1522,7 +1522,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForTeamDiscussionLegacy::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1565,7 +1565,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForTeamDiscussionLegacy::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1607,7 +1607,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1650,7 +1650,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1692,7 +1692,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1735,7 +1735,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1777,7 +1777,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1820,7 +1820,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1862,7 +1862,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1905,7 +1905,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1947,7 +1947,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1990,7 +1990,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2032,7 +2032,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2075,7 +2075,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2117,7 +2117,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2165,7 +2165,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2214,7 +2214,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2262,7 +2262,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2308,7 +2308,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2357,7 +2357,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2404,7 +2404,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2452,7 +2452,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2498,7 +2498,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2546,7 +2546,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2594,7 +2594,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2642,7 +2642,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2688,7 +2688,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2736,7 +2736,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2782,7 +2782,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2830,7 +2830,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2876,7 +2876,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2924,7 +2924,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;

@@ -5281,7 +5281,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.dorian-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.dorian-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -5323,7 +5323,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.dorian-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.dorian-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -5612,7 +5612,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.zzzax-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.zzzax-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -5656,7 +5656,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.zzzax-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.zzzax-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -5901,7 +5901,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreateDeployment::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.ant-man-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.ant-man-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -5989,7 +5989,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreateDeployment::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.ant-man-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.ant-man-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6035,7 +6035,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreateDeploymentStatus::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.flash-preview+json")("Accept", "application/vnd.github.ant-man-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.flash-preview+json"), ("Accept", "application/vnd.github.ant-man-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6080,7 +6080,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreateDeploymentStatus::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.flash-preview+json")("Accept", "application/vnd.github.ant-man-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.flash-preview+json"), ("Accept", "application/vnd.github.ant-man-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6226,7 +6226,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreateForAuthenticatedUser::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json")("Accept", "application/vnd.github.baptiste-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ("Accept", "application/vnd.github.baptiste-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6281,7 +6281,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreateForAuthenticatedUser::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json")("Accept", "application/vnd.github.baptiste-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ("Accept", "application/vnd.github.baptiste-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6433,7 +6433,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreateInOrg::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json")("Accept", "application/vnd.github.baptiste-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ("Accept", "application/vnd.github.baptiste-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6484,7 +6484,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreateInOrg::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json")("Accept", "application/vnd.github.baptiste-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ("Accept", "application/vnd.github.baptiste-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6702,7 +6702,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreatePagesSite::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.switcheroo-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.switcheroo-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6746,7 +6746,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreatePagesSite::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.switcheroo-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.switcheroo-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6879,7 +6879,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreateUsingTemplate::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.baptiste-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.baptiste-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6927,7 +6927,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreateUsingTemplate::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.baptiste-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.baptiste-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -7617,7 +7617,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.zzzax-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.zzzax-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -7661,7 +7661,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.zzzax-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.zzzax-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -8042,7 +8042,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.switcheroo-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.switcheroo-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -8084,7 +8084,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.switcheroo-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.switcheroo-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -8431,7 +8431,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.london-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.london-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -8472,7 +8472,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.london-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.london-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -8512,7 +8512,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.dorian-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.dorian-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -8553,7 +8553,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.dorian-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.dorian-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -8763,7 +8763,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.london-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.london-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -8804,7 +8804,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.london-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.london-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -8844,7 +8844,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.dorian-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.dorian-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -8885,7 +8885,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.dorian-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.dorian-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -8928,7 +8928,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json")("Accept", "application/vnd.github.scarlet-witch-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ("Accept", "application/vnd.github.scarlet-witch-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -8975,7 +8975,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json")("Accept", "application/vnd.github.scarlet-witch-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ("Accept", "application/vnd.github.scarlet-witch-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -9344,7 +9344,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.mercy-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.mercy-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -9390,7 +9390,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.mercy-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.mercy-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -9592,7 +9592,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -9634,7 +9634,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -10260,7 +10260,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -10300,7 +10300,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -10345,7 +10345,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.zzzax-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.zzzax-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -10391,7 +10391,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.zzzax-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.zzzax-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -10847,7 +10847,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.ant-man-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.ant-man-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -10887,7 +10887,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.ant-man-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.ant-man-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -10929,7 +10929,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.flash-preview+json")("Accept", "application/vnd.github.ant-man-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.flash-preview+json"), ("Accept", "application/vnd.github.ant-man-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -10973,7 +10973,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.flash-preview+json")("Accept", "application/vnd.github.ant-man-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.flash-preview+json"), ("Accept", "application/vnd.github.ant-man-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -11477,7 +11477,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -11518,7 +11518,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -12813,7 +12813,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.groot-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.groot-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -12858,7 +12858,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.groot-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.groot-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -12996,7 +12996,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -13042,7 +13042,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -13088,7 +13088,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -13136,7 +13136,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -13599,7 +13599,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.flash-preview+json")("Accept", "application/vnd.github.ant-man-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.flash-preview+json"), ("Accept", "application/vnd.github.ant-man-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -13647,7 +13647,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.flash-preview+json")("Accept", "application/vnd.github.ant-man-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.flash-preview+json"), ("Accept", "application/vnd.github.ant-man-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -13692,7 +13692,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.ant-man-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.ant-man-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -13738,7 +13738,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.ant-man-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.ant-man-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -13881,7 +13881,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json")("Accept", "application/vnd.github.baptiste-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ("Accept", "application/vnd.github.baptiste-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -13928,7 +13928,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json")("Accept", "application/vnd.github.baptiste-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ("Accept", "application/vnd.github.baptiste-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -13972,7 +13972,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -14018,7 +14018,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -14583,7 +14583,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.groot-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.groot-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -14630,7 +14630,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.groot-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.groot-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -15866,7 +15866,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PutReposReplaceAllTopics::from_json(body)?),
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.mercy-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.mercy-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -15908,7 +15908,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PutReposReplaceAllTopics::from_json(body)?),
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.mercy-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.mercy-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -16628,7 +16628,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PatchReposUpdate::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json")("Accept", "application/vnd.github.baptiste-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ("Accept", "application/vnd.github.baptiste-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -16673,7 +16673,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PatchReposUpdate::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json")("Accept", "application/vnd.github.baptiste-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ("Accept", "application/vnd.github.baptiste-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -16722,7 +16722,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PutReposUpdateBranchProtection::from_json(body)?),
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -16773,7 +16773,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PutReposUpdateBranchProtection::from_json(body)?),
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -17050,7 +17050,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PatchReposUpdatePullRequestReviewProtection::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -17096,7 +17096,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PatchReposUpdatePullRequestReviewProtection::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;

@@ -854,7 +854,7 @@ impl<'api> Search<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.cloak-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.cloak-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -907,7 +907,7 @@ impl<'api> Search<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.cloak-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.cloak-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1181,7 +1181,7 @@ impl<'api> Search<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.mercy-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.mercy-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1240,7 +1240,7 @@ impl<'api> Search<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.mercy-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.mercy-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1293,7 +1293,7 @@ impl<'api> Search<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.mercy-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.mercy-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1347,7 +1347,7 @@ impl<'api> Search<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.mercy-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.mercy-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;

@@ -2241,7 +2241,7 @@ impl<'api> Orgs<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.surtur-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.surtur-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2285,7 +2285,7 @@ impl<'api> Orgs<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.surtur-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.surtur-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -4699,7 +4699,7 @@ impl<'api> Orgs<'api> {
             uri: request_uri,
             body: Some(PatchOrgsUpdate::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.surtur-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.surtur-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -4745,7 +4745,7 @@ impl<'api> Orgs<'api> {
             uri: request_uri,
             body: Some(PatchOrgsUpdate::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.surtur-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.surtur-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;

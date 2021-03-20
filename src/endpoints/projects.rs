@@ -1000,7 +1000,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PutProjectsAddCollaborator::from_json(body)?),
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1047,7 +1047,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PutProjectsAddCollaborator::from_json(body)?),
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1095,7 +1095,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsCreateCard::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1143,7 +1143,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsCreateCard::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1186,7 +1186,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsCreateColumn::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1229,7 +1229,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsCreateColumn::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1271,7 +1271,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsCreateForAuthenticatedUser::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1315,7 +1315,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsCreateForAuthenticatedUser::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1360,7 +1360,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsCreateForOrg::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1406,7 +1406,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsCreateForOrg::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1451,7 +1451,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsCreateForRepo::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1497,7 +1497,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsCreateForRepo::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1542,7 +1542,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1588,7 +1588,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1631,7 +1631,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1674,7 +1674,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1716,7 +1716,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1758,7 +1758,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1801,7 +1801,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1845,7 +1845,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1886,7 +1886,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1929,7 +1929,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1971,7 +1971,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2014,7 +2014,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2058,7 +2058,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2105,7 +2105,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2153,7 +2153,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2200,7 +2200,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2247,7 +2247,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2299,7 +2299,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2347,7 +2347,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2394,7 +2394,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2441,7 +2441,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2488,7 +2488,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2533,7 +2533,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2584,7 +2584,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2631,7 +2631,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2677,7 +2677,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2717,7 +2717,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsMoveCard::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2761,7 +2761,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsMoveCard::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2804,7 +2804,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsMoveColumn::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2847,7 +2847,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsMoveColumn::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2891,7 +2891,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2938,7 +2938,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2984,7 +2984,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PatchProjectsUpdate::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3031,7 +3031,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PatchProjectsUpdate::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3075,7 +3075,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PatchProjectsUpdateCard::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3119,7 +3119,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PatchProjectsUpdateCard::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3162,7 +3162,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PatchProjectsUpdateColumn::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3204,7 +3204,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PatchProjectsUpdateColumn::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;

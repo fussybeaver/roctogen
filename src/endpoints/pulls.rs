@@ -1439,7 +1439,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: Some(PostPullsCreateReviewComment::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1489,7 +1489,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: Some(PostPullsCreateReviewComment::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1955,7 +1955,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json")("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1998,7 +1998,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json")("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2480,7 +2480,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json")("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2527,7 +2527,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json")("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2572,7 +2572,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json")("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2619,7 +2619,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json")("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3152,7 +3152,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: Some(PutPullsUpdateBranch::from_json(body)?),
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.lydian-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.lydian-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3196,7 +3196,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: Some(PutPullsUpdateBranch::from_json(body)?),
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.lydian-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.lydian-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3318,7 +3318,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: Some(PatchPullsUpdateReviewComment::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3359,7 +3359,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: Some(PatchPullsUpdateReviewComment::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
