@@ -1,5 +1,6 @@
 [![license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![docs](https://docs.rs/roctogen/badge.svg)](https://docs.rs/roctogen/)
+[![GitHub workflow](https://github.com/github/docs/actions/workflows/default.yml/badge.svg)](https://github.com/fussybeaver/roctogen/actions/workflows/default.yml)
 
 ## Roctogen: a rust client library for the GitHub v3 API
 
