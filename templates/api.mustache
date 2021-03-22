@@ -96,10 +96,13 @@ impl<'api> {{classname}}<'api> {
     {{/summary}}{{#unescapedNotes}}///
     /// {{{.}}}
     {{/unescapedNotes}}{{#externalDocs.url}}/// 
-    /// [GitHub API docs for {{operationId}}]({{.}}){{/externalDocs.url ~}}
-    {{#vendorExtensions.x-codegen-has-previews}}///
+    /// [GitHub API docs for {{operationId}}]({{.}}){{/externalDocs.url}}
+    {{#vendorExtensions.x-codegen-has-previews}}   
+    ///
     {{/vendorExtensions.x-codegen-has-previews}}
-    {{#vendorExtensions.x-github.previews}}/// The `{{operationId}}_async` endpoint is enabled with the `{{name}}` cargo feature.{{/vendorExtensions.x-github.previews}}
+    {{#vendorExtensions.x-github.previews}}   
+    /// The `{{operationId}}_async` endpoint is enabled with the `{{name}}` cargo feature.
+    {{/vendorExtensions.x-github.previews}}
     ///
     /// ---
     {{#vendorExtensions.x-github.previews}}#[cfg(feature = "{{name}}")]
@@ -154,10 +157,13 @@ impl<'api> {{classname}}<'api> {
     {{/summary}}{{#unescapedNotes}}///
     /// {{{.}}}
     {{/unescapedNotes}}{{#externalDocs.url}}/// 
-    /// [GitHub API docs for {{operationId}}]({{.}}){{/externalDocs.url ~}}
-    {{#vendorExtensions.x-codegen-has-previews}}///
+    /// [GitHub API docs for {{operationId}}]({{.}}){{/externalDocs.url}}
+    {{#vendorExtensions.x-codegen-has-previews}}   
+    ///
     {{/vendorExtensions.x-codegen-has-previews}}
-    {{#vendorExtensions.x-github.previews}}/// The `{{operationId}}` endpoint is enabled with the `{{name}}` cargo feature.{{/vendorExtensions.x-github.previews}}
+    {{#vendorExtensions.x-github.previews}}
+    /// The `{{operationId}}` endpoint is enabled with the `{{name}}` cargo feature.
+    {{/vendorExtensions.x-github.previews}}
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

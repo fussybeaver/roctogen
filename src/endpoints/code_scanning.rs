@@ -597,7 +597,7 @@ impl<'api> CodeScanning<'api> {
     /// 
     /// The above process assumes that you want to remove all trace of the tool's analyses from the GitHub user interface, for the specified repository, and it therefore uses the `next_analysis_url` value. Alternatively, you could use the `confirm_delete_url` value, which would leave the last analysis in each set undeleted to avoid removing a tool's analysis entirely.
     /// 
-    /// [GitHub API docs for delete_analysis](https://docs.github.com/rest/reference/code-scanning#delete-a-code-scanning-analysis-from-a-repository)    
+    /// [GitHub API docs for delete_analysis](https://docs.github.com/rest/reference/code-scanning#delete-a-code-scanning-analysis-from-a-repository)
     ///
     /// ---
     pub async fn delete_analysis_async(&self, owner: &str, repo: &str, analysis_id: i32, query_params: Option<impl Into<CodeScanningDeleteAnalysisParams<'api>>>) -> Result<CodeScanningAnalysisDeletion, CodeScanningDeleteAnalysisError> {
@@ -706,7 +706,7 @@ impl<'api> CodeScanning<'api> {
     /// 
     /// The above process assumes that you want to remove all trace of the tool's analyses from the GitHub user interface, for the specified repository, and it therefore uses the `next_analysis_url` value. Alternatively, you could use the `confirm_delete_url` value, which would leave the last analysis in each set undeleted to avoid removing a tool's analysis entirely.
     /// 
-    /// [GitHub API docs for delete_analysis](https://docs.github.com/rest/reference/code-scanning#delete-a-code-scanning-analysis-from-a-repository)    
+    /// [GitHub API docs for delete_analysis](https://docs.github.com/rest/reference/code-scanning#delete-a-code-scanning-analysis-from-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -757,7 +757,7 @@ impl<'api> CodeScanning<'api> {
     /// **Deprecation notice**:
     /// The instances field is deprecated and will, in future, not be included in the response for this endpoint. The example response reflects this change. The same information can now be retrieved via a GET request to the URL specified by `instances_url`.
     /// 
-    /// [GitHub API docs for get_alert](https://docs.github.com/rest/reference/code-scanning#get-a-code-scanning-alert)    
+    /// [GitHub API docs for get_alert](https://docs.github.com/rest/reference/code-scanning#get-a-code-scanning-alert)
     ///
     /// ---
     pub async fn get_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber) -> Result<CodeScanningAlert, CodeScanningGetAlertError> {
@@ -801,7 +801,7 @@ impl<'api> CodeScanning<'api> {
     /// **Deprecation notice**:
     /// The instances field is deprecated and will, in future, not be included in the response for this endpoint. The example response reflects this change. The same information can now be retrieved via a GET request to the URL specified by `instances_url`.
     /// 
-    /// [GitHub API docs for get_alert](https://docs.github.com/rest/reference/code-scanning#get-a-code-scanning-alert)    
+    /// [GitHub API docs for get_alert](https://docs.github.com/rest/reference/code-scanning#get-a-code-scanning-alert)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -864,7 +864,7 @@ impl<'api> CodeScanning<'api> {
     /// **Deprecation notice**:
     /// The `tool_name` field is deprecated and will, in future, not be included in the response for this endpoint. The example response reflects this change. The tool name can now be found inside the `tool` field.
     /// 
-    /// [GitHub API docs for get_analysis](https://docs.github.com/rest/reference/code-scanning#get-a-code-scanning-analysis-for-a-repository)    
+    /// [GitHub API docs for get_analysis](https://docs.github.com/rest/reference/code-scanning#get-a-code-scanning-analysis-for-a-repository)
     ///
     /// ---
     pub async fn get_analysis_async(&self, owner: &str, repo: &str, analysis_id: i32) -> Result<CodeScanningAnalysis, CodeScanningGetAnalysisError> {
@@ -926,7 +926,7 @@ impl<'api> CodeScanning<'api> {
     /// **Deprecation notice**:
     /// The `tool_name` field is deprecated and will, in future, not be included in the response for this endpoint. The example response reflects this change. The tool name can now be found inside the `tool` field.
     /// 
-    /// [GitHub API docs for get_analysis](https://docs.github.com/rest/reference/code-scanning#get-a-code-scanning-analysis-for-a-repository)    
+    /// [GitHub API docs for get_analysis](https://docs.github.com/rest/reference/code-scanning#get-a-code-scanning-analysis-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -968,7 +968,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// Gets information about a SARIF upload, including the status and the URL of the analysis that was uploaded so that you can retrieve details of the analysis. For more information, see "[Get a code scanning analysis for a repository](/rest/reference/code-scanning#get-a-code-scanning-analysis-for-a-repository)." You must use an access token with the `security_events` scope to use this endpoint. GitHub Apps must have the `security_events` read permission to use this endpoint.
     /// 
-    /// [GitHub API docs for get_sarif](https://docs.github.com/rest/reference/code-scanning#get-information-about-a-sarif-upload)    
+    /// [GitHub API docs for get_sarif](https://docs.github.com/rest/reference/code-scanning#get-information-about-a-sarif-upload)
     ///
     /// ---
     pub async fn get_sarif_async(&self, owner: &str, repo: &str, sarif_id: &str) -> Result<CodeScanningSarifsStatus, CodeScanningGetSarifError> {
@@ -1009,7 +1009,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// Gets information about a SARIF upload, including the status and the URL of the analysis that was uploaded so that you can retrieve details of the analysis. For more information, see "[Get a code scanning analysis for a repository](/rest/reference/code-scanning#get-a-code-scanning-analysis-for-a-repository)." You must use an access token with the `security_events` scope to use this endpoint. GitHub Apps must have the `security_events` read permission to use this endpoint.
     /// 
-    /// [GitHub API docs for get_sarif](https://docs.github.com/rest/reference/code-scanning#get-information-about-a-sarif-upload)    
+    /// [GitHub API docs for get_sarif](https://docs.github.com/rest/reference/code-scanning#get-information-about-a-sarif-upload)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1059,7 +1059,7 @@ impl<'api> CodeScanning<'api> {
     /// for the default branch or for the specified Git reference
     /// (if you used `ref` in the request).
     /// 
-    /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/reference/code-scanning#list-code-scanning-alerts-for-a-repository)    
+    /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/reference/code-scanning#list-code-scanning-alerts-for-a-repository)
     ///
     /// ---
     pub async fn list_alerts_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodeScanningListAlertsForRepoParams>>) -> Result<Vec<CodeScanningAlertItems>, CodeScanningListAlertsForRepoError> {
@@ -1112,7 +1112,7 @@ impl<'api> CodeScanning<'api> {
     /// for the default branch or for the specified Git reference
     /// (if you used `ref` in the request).
     /// 
-    /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/reference/code-scanning#list-code-scanning-alerts-for-a-repository)    
+    /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/reference/code-scanning#list-code-scanning-alerts-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1159,7 +1159,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// Lists all instances of the specified code scanning alert. You must use an access token with the `security_events` scope to use this endpoint. GitHub Apps must have the `security_events` read permission to use this endpoint.
     /// 
-    /// [GitHub API docs for list_alerts_instances](https://docs.github.com/rest/reference/code-scanning#list-instances-of-a-code-scanning-alert)    
+    /// [GitHub API docs for list_alerts_instances](https://docs.github.com/rest/reference/code-scanning#list-instances-of-a-code-scanning-alert)
     ///
     /// ---
     pub async fn list_alerts_instances_async(&self, owner: &str, repo: &str, alert_number: AlertNumber, query_params: Option<impl Into<CodeScanningListAlertsInstancesParams>>) -> Result<Vec<CodeScanningAlertInstance>, CodeScanningListAlertsInstancesError> {
@@ -1204,7 +1204,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// Lists all instances of the specified code scanning alert. You must use an access token with the `security_events` scope to use this endpoint. GitHub Apps must have the `security_events` read permission to use this endpoint.
     /// 
-    /// [GitHub API docs for list_alerts_instances](https://docs.github.com/rest/reference/code-scanning#list-instances-of-a-code-scanning-alert)    
+    /// [GitHub API docs for list_alerts_instances](https://docs.github.com/rest/reference/code-scanning#list-instances-of-a-code-scanning-alert)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1266,7 +1266,7 @@ impl<'api> CodeScanning<'api> {
     /// **Deprecation notice**:
     /// The `tool_name` field is deprecated and will, in future, not be included in the response for this endpoint. The example response reflects this change. The tool name can now be found inside the `tool` field.
     /// 
-    /// [GitHub API docs for list_recent_analyses](https://docs.github.com/rest/reference/code-scanning#list-code-scanning-analyses-for-a-repository)    
+    /// [GitHub API docs for list_recent_analyses](https://docs.github.com/rest/reference/code-scanning#list-code-scanning-analyses-for-a-repository)
     ///
     /// ---
     pub async fn list_recent_analyses_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodeScanningListRecentAnalysesParams>>) -> Result<Vec<CodeScanningAnalysis>, CodeScanningListRecentAnalysesError> {
@@ -1326,7 +1326,7 @@ impl<'api> CodeScanning<'api> {
     /// **Deprecation notice**:
     /// The `tool_name` field is deprecated and will, in future, not be included in the response for this endpoint. The example response reflects this change. The tool name can now be found inside the `tool` field.
     /// 
-    /// [GitHub API docs for list_recent_analyses](https://docs.github.com/rest/reference/code-scanning#list-code-scanning-analyses-for-a-repository)    
+    /// [GitHub API docs for list_recent_analyses](https://docs.github.com/rest/reference/code-scanning#list-code-scanning-analyses-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1373,7 +1373,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// Updates the status of a single code scanning alert. You must use an access token with the `security_events` scope to use this endpoint. GitHub Apps must have the `security_events` write permission to use this endpoint.
     /// 
-    /// [GitHub API docs for update_alert](https://docs.github.com/rest/reference/code-scanning#update-a-code-scanning-alert)    
+    /// [GitHub API docs for update_alert](https://docs.github.com/rest/reference/code-scanning#update-a-code-scanning-alert)
     ///
     /// ---
     pub async fn update_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber, body: PatchCodeScanningUpdateAlert) -> Result<CodeScanningAlert, CodeScanningUpdateAlertError> {
@@ -1414,7 +1414,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// Updates the status of a single code scanning alert. You must use an access token with the `security_events` scope to use this endpoint. GitHub Apps must have the `security_events` write permission to use this endpoint.
     /// 
-    /// [GitHub API docs for update_alert](https://docs.github.com/rest/reference/code-scanning#update-a-code-scanning-alert)    
+    /// [GitHub API docs for update_alert](https://docs.github.com/rest/reference/code-scanning#update-a-code-scanning-alert)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1472,7 +1472,7 @@ impl<'api> CodeScanning<'api> {
     /// You can use this ID to check the status of the upload by using this for the `/sarifs/{sarif_id}` endpoint.
     /// For more information, see "[Get information about a SARIF upload](/rest/reference/code-scanning#get-information-about-a-sarif-upload)."
     /// 
-    /// [GitHub API docs for upload_sarif](https://docs.github.com/rest/reference/code-scanning#upload-an-analysis-as-sarif-data)    
+    /// [GitHub API docs for upload_sarif](https://docs.github.com/rest/reference/code-scanning#upload-an-analysis-as-sarif-data)
     ///
     /// ---
     pub async fn upload_sarif_async(&self, owner: &str, repo: &str, body: PostCodeScanningUploadSarif) -> Result<CodeScanningSarifsReceipt, CodeScanningUploadSarifError> {
@@ -1531,7 +1531,7 @@ impl<'api> CodeScanning<'api> {
     /// You can use this ID to check the status of the upload by using this for the `/sarifs/{sarif_id}` endpoint.
     /// For more information, see "[Get information about a SARIF upload](/rest/reference/code-scanning#get-information-about-a-sarif-upload)."
     /// 
-    /// [GitHub API docs for upload_sarif](https://docs.github.com/rest/reference/code-scanning#upload-an-analysis-as-sarif-data)    
+    /// [GitHub API docs for upload_sarif](https://docs.github.com/rest/reference/code-scanning#upload-an-analysis-as-sarif-data)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

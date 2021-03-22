@@ -78,7 +78,7 @@ impl<'api> Gitignore<'api> {
     ///
     /// List all templates available to pass as an option when [creating a repository](https://docs.github.com/rest/reference/repos#create-a-repository-for-the-authenticated-user).
     /// 
-    /// [GitHub API docs for get_all_templates](https://docs.github.com/rest/reference/gitignore/#get-all-gitignore-templates)    
+    /// [GitHub API docs for get_all_templates](https://docs.github.com/rest/reference/gitignore/#get-all-gitignore-templates)
     ///
     /// ---
     pub async fn get_all_templates_async(&self) -> Result<Vec<String>, GitignoreGetAllTemplatesError> {
@@ -117,7 +117,7 @@ impl<'api> Gitignore<'api> {
     ///
     /// List all templates available to pass as an option when [creating a repository](https://docs.github.com/rest/reference/repos#create-a-repository-for-the-authenticated-user).
     /// 
-    /// [GitHub API docs for get_all_templates](https://docs.github.com/rest/reference/gitignore/#get-all-gitignore-templates)    
+    /// [GitHub API docs for get_all_templates](https://docs.github.com/rest/reference/gitignore/#get-all-gitignore-templates)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -158,7 +158,7 @@ impl<'api> Gitignore<'api> {
     /// The API also allows fetching the source of a single template.
     /// Use the raw [media type](https://docs.github.com/rest/overview/media-types/) to get the raw contents.
     /// 
-    /// [GitHub API docs for get_template](https://docs.github.com/rest/reference/gitignore/#get-a-gitignore-template)    
+    /// [GitHub API docs for get_template](https://docs.github.com/rest/reference/gitignore/#get-a-gitignore-template)
     ///
     /// ---
     pub async fn get_template_async(&self, name: &str) -> Result<GitignoreTemplate, GitignoreGetTemplateError> {
@@ -198,7 +198,7 @@ impl<'api> Gitignore<'api> {
     /// The API also allows fetching the source of a single template.
     /// Use the raw [media type](https://docs.github.com/rest/overview/media-types/) to get the raw contents.
     /// 
-    /// [GitHub API docs for get_template](https://docs.github.com/rest/reference/gitignore/#get-a-gitignore-template)    
+    /// [GitHub API docs for get_template](https://docs.github.com/rest/reference/gitignore/#get-a-gitignore-template)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

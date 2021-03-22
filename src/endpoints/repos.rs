@@ -4642,7 +4642,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Accept a repository invitation
     /// 
-    /// [GitHub API docs for accept_invitation](https://docs.github.com/rest/reference/repos#accept-a-repository-invitation)    
+    /// [GitHub API docs for accept_invitation](https://docs.github.com/rest/reference/repos#accept-a-repository-invitation)
     ///
     /// ---
     pub async fn accept_invitation_async(&self, invitation_id: i32) -> Result<(), ReposAcceptInvitationError> {
@@ -4682,7 +4682,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Accept a repository invitation
     /// 
-    /// [GitHub API docs for accept_invitation](https://docs.github.com/rest/reference/repos#accept-a-repository-invitation)    
+    /// [GitHub API docs for accept_invitation](https://docs.github.com/rest/reference/repos#accept-a-repository-invitation)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4731,7 +4731,7 @@ impl<'api> Repos<'api> {
     /// | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
     /// | `array` | The GitHub Apps that have push access to this branch. Use the app's `slug`. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
     /// 
-    /// [GitHub API docs for add_app_access_restrictions](https://docs.github.com/rest/reference/repos#add-app-access-restrictions)    
+    /// [GitHub API docs for add_app_access_restrictions](https://docs.github.com/rest/reference/repos#add-app-access-restrictions)
     ///
     /// ---
     pub async fn add_app_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: PostReposAddAppAccessRestrictions) -> Result<Vec<Integration>, ReposAddAppAccessRestrictionsError> {
@@ -4776,7 +4776,7 @@ impl<'api> Repos<'api> {
     /// | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
     /// | `array` | The GitHub Apps that have push access to this branch. Use the app's `slug`. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
     /// 
-    /// [GitHub API docs for add_app_access_restrictions](https://docs.github.com/rest/reference/repos#add-app-access-restrictions)    
+    /// [GitHub API docs for add_app_access_restrictions](https://docs.github.com/rest/reference/repos#add-app-access-restrictions)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4826,7 +4826,7 @@ impl<'api> Repos<'api> {
     /// 
     /// To prevent abuse, you are limited to sending 50 invitations to a repository per 24 hour period. Note there is no limit if you are inviting organization members to an organization repository.
     /// 
-    /// [GitHub API docs for add_collaborator](https://docs.github.com/rest/reference/repos#add-a-repository-collaborator)    
+    /// [GitHub API docs for add_collaborator](https://docs.github.com/rest/reference/repos#add-a-repository-collaborator)
     ///
     /// ---
     pub async fn add_collaborator_async(&self, owner: &str, repo: &str, username: &str, body: PutReposAddCollaborator) -> Result<RepositoryInvitation, ReposAddCollaboratorError> {
@@ -4877,7 +4877,7 @@ impl<'api> Repos<'api> {
     /// 
     /// To prevent abuse, you are limited to sending 50 invitations to a repository per 24 hour period. Note there is no limit if you are inviting organization members to an organization repository.
     /// 
-    /// [GitHub API docs for add_collaborator](https://docs.github.com/rest/reference/repos#add-a-repository-collaborator)    
+    /// [GitHub API docs for add_collaborator](https://docs.github.com/rest/reference/repos#add-a-repository-collaborator)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4919,7 +4919,7 @@ impl<'api> Repos<'api> {
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for add_status_check_contexts](https://docs.github.com/rest/reference/repos#add-status-check-contexts)    
+    /// [GitHub API docs for add_status_check_contexts](https://docs.github.com/rest/reference/repos#add-status-check-contexts)
     ///
     /// ---
     pub async fn add_status_check_contexts_async(&self, owner: &str, repo: &str, branch: &str, body: PostReposAddStatusCheckContexts) -> Result<Vec<String>, ReposAddStatusCheckContextsError> {
@@ -4960,7 +4960,7 @@ impl<'api> Repos<'api> {
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for add_status_check_contexts](https://docs.github.com/rest/reference/repos#add-status-check-contexts)    
+    /// [GitHub API docs for add_status_check_contexts](https://docs.github.com/rest/reference/repos#add-status-check-contexts)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5008,7 +5008,7 @@ impl<'api> Repos<'api> {
     /// | ------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
     /// | `array` | The teams that can have push access. Use the team's `slug`. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
     /// 
-    /// [GitHub API docs for add_team_access_restrictions](https://docs.github.com/rest/reference/repos#add-team-access-restrictions)    
+    /// [GitHub API docs for add_team_access_restrictions](https://docs.github.com/rest/reference/repos#add-team-access-restrictions)
     ///
     /// ---
     pub async fn add_team_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: PostReposAddTeamAccessRestrictions) -> Result<Vec<Team>, ReposAddTeamAccessRestrictionsError> {
@@ -5053,7 +5053,7 @@ impl<'api> Repos<'api> {
     /// | ------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
     /// | `array` | The teams that can have push access. Use the team's `slug`. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
     /// 
-    /// [GitHub API docs for add_team_access_restrictions](https://docs.github.com/rest/reference/repos#add-team-access-restrictions)    
+    /// [GitHub API docs for add_team_access_restrictions](https://docs.github.com/rest/reference/repos#add-team-access-restrictions)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5099,7 +5099,7 @@ impl<'api> Repos<'api> {
     /// | ------- | ----------------------------------------------------------------------------------------------------------------------------- |
     /// | `array` | Usernames for people who can have push access. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
     /// 
-    /// [GitHub API docs for add_user_access_restrictions](https://docs.github.com/rest/reference/repos#add-user-access-restrictions)    
+    /// [GitHub API docs for add_user_access_restrictions](https://docs.github.com/rest/reference/repos#add-user-access-restrictions)
     ///
     /// ---
     pub async fn add_user_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: PostReposAddUserAccessRestrictions) -> Result<Vec<SimpleUser>, ReposAddUserAccessRestrictionsError> {
@@ -5144,7 +5144,7 @@ impl<'api> Repos<'api> {
     /// | ------- | ----------------------------------------------------------------------------------------------------------------------------- |
     /// | `array` | Usernames for people who can have push access. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
     /// 
-    /// [GitHub API docs for add_user_access_restrictions](https://docs.github.com/rest/reference/repos#add-user-access-restrictions)    
+    /// [GitHub API docs for add_user_access_restrictions](https://docs.github.com/rest/reference/repos#add-user-access-restrictions)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5186,7 +5186,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Team members will include the members of child teams.
     /// 
-    /// [GitHub API docs for check_collaborator](https://docs.github.com/rest/reference/repos#check-if-a-user-is-a-repository-collaborator)    
+    /// [GitHub API docs for check_collaborator](https://docs.github.com/rest/reference/repos#check-if-a-user-is-a-repository-collaborator)
     ///
     /// ---
     pub async fn check_collaborator_async(&self, owner: &str, repo: &str, username: &str) -> Result<(), ReposCheckCollaboratorError> {
@@ -5227,7 +5227,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Team members will include the members of child teams.
     /// 
-    /// [GitHub API docs for check_collaborator](https://docs.github.com/rest/reference/repos#check-if-a-user-is-a-repository-collaborator)    
+    /// [GitHub API docs for check_collaborator](https://docs.github.com/rest/reference/repos#check-if-a-user-is-a-repository-collaborator)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5267,7 +5267,8 @@ impl<'api> Repos<'api> {
     ///
     /// Shows whether dependency alerts are enabled or disabled for a repository. The authenticated user must have admin access to the repository. For more information, see "[About security alerts for vulnerable dependencies](https://help.github.com/en/articles/about-security-alerts-for-vulnerable-dependencies)".
     /// 
-    /// [GitHub API docs for check_vulnerability_alerts](https://docs.github.com/rest/reference/repos/#check-if-vulnerability-alerts-are-enabled-for-a-repository)///
+    /// [GitHub API docs for check_vulnerability_alerts](https://docs.github.com/rest/reference/repos/#check-if-vulnerability-alerts-are-enabled-for-a-repository)
+    ///
     /// The `check_vulnerability_alerts_async` endpoint is enabled with the `dorian` cargo feature.
     ///
     /// ---
@@ -5308,7 +5309,8 @@ impl<'api> Repos<'api> {
     ///
     /// Shows whether dependency alerts are enabled or disabled for a repository. The authenticated user must have admin access to the repository. For more information, see "[About security alerts for vulnerable dependencies](https://help.github.com/en/articles/about-security-alerts-for-vulnerable-dependencies)".
     /// 
-    /// [GitHub API docs for check_vulnerability_alerts](https://docs.github.com/rest/reference/repos/#check-if-vulnerability-alerts-are-enabled-for-a-repository)///
+    /// [GitHub API docs for check_vulnerability_alerts](https://docs.github.com/rest/reference/repos/#check-if-vulnerability-alerts-are-enabled-for-a-repository)
+    ///
     /// The `check_vulnerability_alerts` endpoint is enabled with the `dorian` cargo feature.
     ///
     /// ---
@@ -5390,7 +5392,7 @@ impl<'api> Repos<'api> {
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
     /// 
-    /// [GitHub API docs for compare_commits](https://docs.github.com/rest/reference/repos#compare-two-commits)    
+    /// [GitHub API docs for compare_commits](https://docs.github.com/rest/reference/repos#compare-two-commits)
     ///
     /// ---
     pub async fn compare_commits_async(&self, owner: &str, repo: &str, base: &str, head: &str) -> Result<CommitComparison, ReposCompareCommitsError> {
@@ -5470,7 +5472,7 @@ impl<'api> Repos<'api> {
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
     /// 
-    /// [GitHub API docs for compare_commits](https://docs.github.com/rest/reference/repos#compare-two-commits)    
+    /// [GitHub API docs for compare_commits](https://docs.github.com/rest/reference/repos#compare-two-commits)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5513,7 +5515,7 @@ impl<'api> Repos<'api> {
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for create_commit_comment](https://docs.github.com/rest/reference/repos#create-a-commit-comment)    
+    /// [GitHub API docs for create_commit_comment](https://docs.github.com/rest/reference/repos#create-a-commit-comment)
     ///
     /// ---
     pub async fn create_commit_comment_async(&self, owner: &str, repo: &str, commit_sha: &str, body: PostReposCreateCommitComment) -> Result<CommitComment, ReposCreateCommitCommentError> {
@@ -5555,7 +5557,7 @@ impl<'api> Repos<'api> {
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for create_commit_comment](https://docs.github.com/rest/reference/repos#create-a-commit-comment)    
+    /// [GitHub API docs for create_commit_comment](https://docs.github.com/rest/reference/repos#create-a-commit-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5598,7 +5600,8 @@ impl<'api> Repos<'api> {
     /// 
     /// When authenticated with admin or owner permissions to the repository, you can use this endpoint to require signed commits on a branch. You must enable branch protection to require signed commits.
     /// 
-    /// [GitHub API docs for create_commit_signature_protection](https://docs.github.com/rest/reference/repos#create-commit-signature-protection)///
+    /// [GitHub API docs for create_commit_signature_protection](https://docs.github.com/rest/reference/repos#create-commit-signature-protection)
+    ///
     /// The `create_commit_signature_protection_async` endpoint is enabled with the `zzzax` cargo feature.
     ///
     /// ---
@@ -5641,7 +5644,8 @@ impl<'api> Repos<'api> {
     /// 
     /// When authenticated with admin or owner permissions to the repository, you can use this endpoint to require signed commits on a branch. You must enable branch protection to require signed commits.
     /// 
-    /// [GitHub API docs for create_commit_signature_protection](https://docs.github.com/rest/reference/repos#create-commit-signature-protection)///
+    /// [GitHub API docs for create_commit_signature_protection](https://docs.github.com/rest/reference/repos#create-commit-signature-protection)
+    ///
     /// The `create_commit_signature_protection` endpoint is enabled with the `zzzax` cargo feature.
     ///
     /// ---
@@ -5685,7 +5689,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Note: there is a limit of 1000 statuses per `sha` and `context` within a repository. Attempts to create more than 1000 statuses will result in a validation error.
     /// 
-    /// [GitHub API docs for create_commit_status](https://docs.github.com/rest/reference/repos#create-a-commit-status)    
+    /// [GitHub API docs for create_commit_status](https://docs.github.com/rest/reference/repos#create-a-commit-status)
     ///
     /// ---
     pub async fn create_commit_status_async(&self, owner: &str, repo: &str, sha: &str, body: PostReposCreateCommitStatus) -> Result<Status, ReposCreateCommitStatusError> {
@@ -5725,7 +5729,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Note: there is a limit of 1000 statuses per `sha` and `context` within a repository. Attempts to create more than 1000 statuses will result in a validation error.
     /// 
-    /// [GitHub API docs for create_commit_status](https://docs.github.com/rest/reference/repos#create-a-commit-status)    
+    /// [GitHub API docs for create_commit_status](https://docs.github.com/rest/reference/repos#create-a-commit-status)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5764,7 +5768,7 @@ impl<'api> Repos<'api> {
     ///
     /// You can create a read-only deploy key.
     /// 
-    /// [GitHub API docs for create_deploy_key](https://docs.github.com/rest/reference/repos#create-a-deploy-key)    
+    /// [GitHub API docs for create_deploy_key](https://docs.github.com/rest/reference/repos#create-a-deploy-key)
     ///
     /// ---
     pub async fn create_deploy_key_async(&self, owner: &str, repo: &str, body: PostReposCreateDeployKey) -> Result<DeployKey, ReposCreateDeployKeyError> {
@@ -5803,7 +5807,7 @@ impl<'api> Repos<'api> {
     ///
     /// You can create a read-only deploy key.
     /// 
-    /// [GitHub API docs for create_deploy_key](https://docs.github.com/rest/reference/repos#create-a-deploy-key)    
+    /// [GitHub API docs for create_deploy_key](https://docs.github.com/rest/reference/repos#create-a-deploy-key)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5887,7 +5891,8 @@ impl<'api> Repos<'api> {
     /// This error happens when the `required_contexts` parameter indicates that one or more contexts need to have a `success`
     /// status for the commit to be deployed, but one or more of the required contexts do not have a state of `success`.
     /// 
-    /// [GitHub API docs for create_deployment](https://docs.github.com/rest/reference/repos#create-a-deployment)///
+    /// [GitHub API docs for create_deployment](https://docs.github.com/rest/reference/repos#create-a-deployment)
+    ///
     /// The `create_deployment_async` endpoint is enabled with the `ant-man` cargo feature.
     ///
     /// ---
@@ -5974,7 +5979,8 @@ impl<'api> Repos<'api> {
     /// This error happens when the `required_contexts` parameter indicates that one or more contexts need to have a `success`
     /// status for the commit to be deployed, but one or more of the required contexts do not have a state of `success`.
     /// 
-    /// [GitHub API docs for create_deployment](https://docs.github.com/rest/reference/repos#create-a-deployment)///
+    /// [GitHub API docs for create_deployment](https://docs.github.com/rest/reference/repos#create-a-deployment)
+    ///
     /// The `create_deployment` endpoint is enabled with the `ant-man` cargo feature.
     ///
     /// ---
@@ -6020,8 +6026,10 @@ impl<'api> Repos<'api> {
     /// 
     /// GitHub Apps require `read & write` access to "Deployments" and `read-only` access to "Repo contents" (for private repos). OAuth Apps require the `repo_deployment` scope.
     /// 
-    /// [GitHub API docs for create_deployment_status](https://docs.github.com/rest/reference/repos#create-a-deployment-status)///
-    /// The `create_deployment_status_async` endpoint is enabled with the `flash` cargo feature./// The `create_deployment_status_async` endpoint is enabled with the `ant-man` cargo feature.
+    /// [GitHub API docs for create_deployment_status](https://docs.github.com/rest/reference/repos#create-a-deployment-status)
+    ///
+    /// The `create_deployment_status_async` endpoint is enabled with the `flash` cargo feature.
+    /// The `create_deployment_status_async` endpoint is enabled with the `ant-man` cargo feature.
     ///
     /// ---
     #[cfg(feature = "flash")]
@@ -6064,8 +6072,10 @@ impl<'api> Repos<'api> {
     /// 
     /// GitHub Apps require `read & write` access to "Deployments" and `read-only` access to "Repo contents" (for private repos). OAuth Apps require the `repo_deployment` scope.
     /// 
-    /// [GitHub API docs for create_deployment_status](https://docs.github.com/rest/reference/repos#create-a-deployment-status)///
-    /// The `create_deployment_status` endpoint is enabled with the `flash` cargo feature./// The `create_deployment_status` endpoint is enabled with the `ant-man` cargo feature.
+    /// [GitHub API docs for create_deployment_status](https://docs.github.com/rest/reference/repos#create-a-deployment-status)
+    ///
+    /// The `create_deployment_status` endpoint is enabled with the `flash` cargo feature.
+    /// The `create_deployment_status` endpoint is enabled with the `ant-man` cargo feature.
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -6116,7 +6126,7 @@ impl<'api> Repos<'api> {
     /// 
     /// This input example shows how you can use the `client_payload` as a test to debug your workflow.
     /// 
-    /// [GitHub API docs for create_dispatch_event](https://docs.github.com/rest/reference/repos/#create-a-repository-dispatch-event)    
+    /// [GitHub API docs for create_dispatch_event](https://docs.github.com/rest/reference/repos/#create-a-repository-dispatch-event)
     ///
     /// ---
     pub async fn create_dispatch_event_async(&self, owner: &str, repo: &str, body: PostReposCreateDispatchEvent) -> Result<(), ReposCreateDispatchEventError> {
@@ -6164,7 +6174,7 @@ impl<'api> Repos<'api> {
     /// 
     /// This input example shows how you can use the `client_payload` as a test to debug your workflow.
     /// 
-    /// [GitHub API docs for create_dispatch_event](https://docs.github.com/rest/reference/repos/#create-a-repository-dispatch-event)    
+    /// [GitHub API docs for create_dispatch_event](https://docs.github.com/rest/reference/repos/#create-a-repository-dispatch-event)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -6211,8 +6221,10 @@ impl<'api> Repos<'api> {
     /// *   `public_repo` scope or `repo` scope to create a public repository. Note: For GitHub AE, use `repo` scope to create an internal repository.
     /// *   `repo` scope to create a private repository.
     /// 
-    /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/reference/repos/#create-a-repository-for-the-authenticated-user)///
-    /// The `create_for_authenticated_user_async` endpoint is enabled with the `nebula` cargo feature./// The `create_for_authenticated_user_async` endpoint is enabled with the `baptiste` cargo feature.
+    /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/reference/repos/#create-a-repository-for-the-authenticated-user)
+    ///
+    /// The `create_for_authenticated_user_async` endpoint is enabled with the `nebula` cargo feature.
+    /// The `create_for_authenticated_user_async` endpoint is enabled with the `baptiste` cargo feature.
     ///
     /// ---
     #[cfg(feature = "nebula")]
@@ -6265,8 +6277,10 @@ impl<'api> Repos<'api> {
     /// *   `public_repo` scope or `repo` scope to create a public repository. Note: For GitHub AE, use `repo` scope to create an internal repository.
     /// *   `repo` scope to create a private repository.
     /// 
-    /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/reference/repos/#create-a-repository-for-the-authenticated-user)///
-    /// The `create_for_authenticated_user` endpoint is enabled with the `nebula` cargo feature./// The `create_for_authenticated_user` endpoint is enabled with the `baptiste` cargo feature.
+    /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/reference/repos/#create-a-repository-for-the-authenticated-user)
+    ///
+    /// The `create_for_authenticated_user` endpoint is enabled with the `nebula` cargo feature.
+    /// The `create_for_authenticated_user` endpoint is enabled with the `baptiste` cargo feature.
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -6315,7 +6329,7 @@ impl<'api> Repos<'api> {
     /// 
     /// **Note**: Forking a Repository happens asynchronously. You may have to wait a short period of time before you can access the git objects. If this takes longer than 5 minutes, be sure to contact [GitHub Support](https://support.github.com/contact) or [GitHub Premium Support](https://premium.githubsupport.com).
     /// 
-    /// [GitHub API docs for create_fork](https://docs.github.com/rest/reference/repos#create-a-fork)    
+    /// [GitHub API docs for create_fork](https://docs.github.com/rest/reference/repos#create-a-fork)
     ///
     /// ---
     pub async fn create_fork_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposCreateForkParams<'api>>>, body: PostReposCreateFork) -> Result<Repository, ReposCreateForkError> {
@@ -6363,7 +6377,7 @@ impl<'api> Repos<'api> {
     /// 
     /// **Note**: Forking a Repository happens asynchronously. You may have to wait a short period of time before you can access the git objects. If this takes longer than 5 minutes, be sure to contact [GitHub Support](https://support.github.com/contact) or [GitHub Premium Support](https://premium.githubsupport.com).
     /// 
-    /// [GitHub API docs for create_fork](https://docs.github.com/rest/reference/repos#create-a-fork)    
+    /// [GitHub API docs for create_fork](https://docs.github.com/rest/reference/repos#create-a-fork)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -6418,8 +6432,10 @@ impl<'api> Repos<'api> {
     /// *   `public_repo` scope or `repo` scope to create a public repository. Note: For GitHub AE, use `repo` scope to create an internal repository.
     /// *   `repo` scope to create a private repository
     /// 
-    /// [GitHub API docs for create_in_org](https://docs.github.com/rest/reference/repos/#create-an-organization-repository)///
-    /// The `create_in_org_async` endpoint is enabled with the `nebula` cargo feature./// The `create_in_org_async` endpoint is enabled with the `baptiste` cargo feature.
+    /// [GitHub API docs for create_in_org](https://docs.github.com/rest/reference/repos/#create-an-organization-repository)
+    ///
+    /// The `create_in_org_async` endpoint is enabled with the `nebula` cargo feature.
+    /// The `create_in_org_async` endpoint is enabled with the `baptiste` cargo feature.
     ///
     /// ---
     #[cfg(feature = "nebula")]
@@ -6468,8 +6484,10 @@ impl<'api> Repos<'api> {
     /// *   `public_repo` scope or `repo` scope to create a public repository. Note: For GitHub AE, use `repo` scope to create an internal repository.
     /// *   `repo` scope to create a private repository
     /// 
-    /// [GitHub API docs for create_in_org](https://docs.github.com/rest/reference/repos/#create-an-organization-repository)///
-    /// The `create_in_org` endpoint is enabled with the `nebula` cargo feature./// The `create_in_org` endpoint is enabled with the `baptiste` cargo feature.
+    /// [GitHub API docs for create_in_org](https://docs.github.com/rest/reference/repos/#create-an-organization-repository)
+    ///
+    /// The `create_in_org` endpoint is enabled with the `nebula` cargo feature.
+    /// The `create_in_org` endpoint is enabled with the `baptiste` cargo feature.
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -6518,7 +6536,7 @@ impl<'api> Repos<'api> {
     /// 
     /// You must authenticate using an access token with the repo scope to use this endpoint.
     /// 
-    /// [GitHub API docs for create_or_update_environment](https://docs.github.com/rest/reference/repos#create-or-update-an-environment)    
+    /// [GitHub API docs for create_or_update_environment](https://docs.github.com/rest/reference/repos#create-or-update-an-environment)
     ///
     /// ---
     pub async fn create_or_update_environment_async(&self, owner: &str, repo: &str, environment_name: &str, body: PutReposCreateOrUpdateEnvironment) -> Result<Environment, ReposCreateOrUpdateEnvironmentError> {
@@ -6563,7 +6581,7 @@ impl<'api> Repos<'api> {
     /// 
     /// You must authenticate using an access token with the repo scope to use this endpoint.
     /// 
-    /// [GitHub API docs for create_or_update_environment](https://docs.github.com/rest/reference/repos#create-or-update-an-environment)    
+    /// [GitHub API docs for create_or_update_environment](https://docs.github.com/rest/reference/repos#create-or-update-an-environment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -6603,7 +6621,7 @@ impl<'api> Repos<'api> {
     ///
     /// Creates a new file or replaces an existing file in a repository.
     /// 
-    /// [GitHub API docs for create_or_update_file_contents](https://docs.github.com/rest/reference/repos#create-or-update-file-contents)    
+    /// [GitHub API docs for create_or_update_file_contents](https://docs.github.com/rest/reference/repos#create-or-update-file-contents)
     ///
     /// ---
     pub async fn create_or_update_file_contents_async(&self, owner: &str, repo: &str, path: &str, body: PutReposCreateOrUpdateFileContents) -> Result<FileCommit, ReposCreateOrUpdateFileContentsError> {
@@ -6645,7 +6663,7 @@ impl<'api> Repos<'api> {
     ///
     /// Creates a new file or replaces an existing file in a repository.
     /// 
-    /// [GitHub API docs for create_or_update_file_contents](https://docs.github.com/rest/reference/repos#create-or-update-file-contents)    
+    /// [GitHub API docs for create_or_update_file_contents](https://docs.github.com/rest/reference/repos#create-or-update-file-contents)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -6688,7 +6706,8 @@ impl<'api> Repos<'api> {
     ///
     /// Configures a GitHub Pages site. For more information, see "[About GitHub Pages](/github/working-with-github-pages/about-github-pages)."
     /// 
-    /// [GitHub API docs for create_pages_site](https://docs.github.com/rest/reference/repos#create-a-github-pages-site)///
+    /// [GitHub API docs for create_pages_site](https://docs.github.com/rest/reference/repos#create-a-github-pages-site)
+    ///
     /// The `create_pages_site_async` endpoint is enabled with the `switcheroo` cargo feature.
     ///
     /// ---
@@ -6731,7 +6750,8 @@ impl<'api> Repos<'api> {
     ///
     /// Configures a GitHub Pages site. For more information, see "[About GitHub Pages](/github/working-with-github-pages/about-github-pages)."
     /// 
-    /// [GitHub API docs for create_pages_site](https://docs.github.com/rest/reference/repos#create-a-github-pages-site)///
+    /// [GitHub API docs for create_pages_site](https://docs.github.com/rest/reference/repos#create-a-github-pages-site)
+    ///
     /// The `create_pages_site` endpoint is enabled with the `switcheroo` cargo feature.
     ///
     /// ---
@@ -6777,7 +6797,7 @@ impl<'api> Repos<'api> {
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for create_release](https://docs.github.com/rest/reference/repos#create-a-release)    
+    /// [GitHub API docs for create_release](https://docs.github.com/rest/reference/repos#create-a-release)
     ///
     /// ---
     pub async fn create_release_async(&self, owner: &str, repo: &str, body: PostReposCreateRelease) -> Result<Release, ReposCreateReleaseError> {
@@ -6818,7 +6838,7 @@ impl<'api> Repos<'api> {
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for create_release](https://docs.github.com/rest/reference/repos#create-a-release)    
+    /// [GitHub API docs for create_release](https://docs.github.com/rest/reference/repos#create-a-release)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -6865,7 +6885,8 @@ impl<'api> Repos<'api> {
     /// *   `public_repo` scope or `repo` scope to create a public repository. Note: For GitHub AE, use `repo` scope to create an internal repository.
     /// *   `repo` scope to create a private repository
     /// 
-    /// [GitHub API docs for create_using_template](https://docs.github.com/rest/reference/repos/#create-a-repository-using-a-template)///
+    /// [GitHub API docs for create_using_template](https://docs.github.com/rest/reference/repos/#create-a-repository-using-a-template)
+    ///
     /// The `create_using_template_async` endpoint is enabled with the `baptiste` cargo feature.
     ///
     /// ---
@@ -6912,7 +6933,8 @@ impl<'api> Repos<'api> {
     /// *   `public_repo` scope or `repo` scope to create a public repository. Note: For GitHub AE, use `repo` scope to create an internal repository.
     /// *   `repo` scope to create a private repository
     /// 
-    /// [GitHub API docs for create_using_template](https://docs.github.com/rest/reference/repos/#create-a-repository-using-a-template)///
+    /// [GitHub API docs for create_using_template](https://docs.github.com/rest/reference/repos/#create-a-repository-using-a-template)
+    ///
     /// The `create_using_template` endpoint is enabled with the `baptiste` cargo feature.
     ///
     /// ---
@@ -6954,7 +6976,7 @@ impl<'api> Repos<'api> {
     /// Repositories can have multiple webhooks installed. Each webhook should have a unique `config`. Multiple webhooks can
     /// share the same `config` as long as those webhooks do not have any `events` that overlap.
     /// 
-    /// [GitHub API docs for create_webhook](https://docs.github.com/rest/reference/repos#create-a-repository-webhook)    
+    /// [GitHub API docs for create_webhook](https://docs.github.com/rest/reference/repos#create-a-repository-webhook)
     ///
     /// ---
     pub async fn create_webhook_async(&self, owner: &str, repo: &str, body: PostReposCreateWebhook) -> Result<Hook, ReposCreateWebhookError> {
@@ -6996,7 +7018,7 @@ impl<'api> Repos<'api> {
     /// Repositories can have multiple webhooks installed. Each webhook should have a unique `config`. Multiple webhooks can
     /// share the same `config` as long as those webhooks do not have any `events` that overlap.
     /// 
-    /// [GitHub API docs for create_webhook](https://docs.github.com/rest/reference/repos#create-a-repository-webhook)    
+    /// [GitHub API docs for create_webhook](https://docs.github.com/rest/reference/repos#create-a-repository-webhook)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -7036,7 +7058,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Decline a repository invitation
     /// 
-    /// [GitHub API docs for decline_invitation](https://docs.github.com/rest/reference/repos#decline-a-repository-invitation)    
+    /// [GitHub API docs for decline_invitation](https://docs.github.com/rest/reference/repos#decline-a-repository-invitation)
     ///
     /// ---
     pub async fn decline_invitation_async(&self, invitation_id: i32) -> Result<(), ReposDeclineInvitationError> {
@@ -7076,7 +7098,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Decline a repository invitation
     /// 
-    /// [GitHub API docs for decline_invitation](https://docs.github.com/rest/reference/repos#decline-a-repository-invitation)    
+    /// [GitHub API docs for decline_invitation](https://docs.github.com/rest/reference/repos#decline-a-repository-invitation)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -7122,7 +7144,7 @@ impl<'api> Repos<'api> {
     /// If an organization owner has configured the organization to prevent members from deleting organization-owned
     /// repositories, you will get a `403 Forbidden` response.
     /// 
-    /// [GitHub API docs for delete](https://docs.github.com/rest/reference/repos/#delete-a-repository)    
+    /// [GitHub API docs for delete](https://docs.github.com/rest/reference/repos/#delete-a-repository)
     ///
     /// ---
     pub async fn delete_async(&self, owner: &str, repo: &str) -> Result<(), ReposDeleteError> {
@@ -7165,7 +7187,7 @@ impl<'api> Repos<'api> {
     /// If an organization owner has configured the organization to prevent members from deleting organization-owned
     /// repositories, you will get a `403 Forbidden` response.
     /// 
-    /// [GitHub API docs for delete](https://docs.github.com/rest/reference/repos/#delete-a-repository)    
+    /// [GitHub API docs for delete](https://docs.github.com/rest/reference/repos/#delete-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -7208,7 +7230,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Disables the ability to restrict who can push to this branch.
     /// 
-    /// [GitHub API docs for delete_access_restrictions](https://docs.github.com/rest/reference/repos#delete-access-restrictions)    
+    /// [GitHub API docs for delete_access_restrictions](https://docs.github.com/rest/reference/repos#delete-access-restrictions)
     ///
     /// ---
     pub async fn delete_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str) -> Result<(), ReposDeleteAccessRestrictionsError> {
@@ -7248,7 +7270,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Disables the ability to restrict who can push to this branch.
     /// 
-    /// [GitHub API docs for delete_access_restrictions](https://docs.github.com/rest/reference/repos#delete-access-restrictions)    
+    /// [GitHub API docs for delete_access_restrictions](https://docs.github.com/rest/reference/repos#delete-access-restrictions)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -7289,7 +7311,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Removing admin enforcement requires admin or owner permissions to the repository and branch protection to be enabled.
     /// 
-    /// [GitHub API docs for delete_admin_branch_protection](https://docs.github.com/rest/reference/repos#delete-admin-branch-protection)    
+    /// [GitHub API docs for delete_admin_branch_protection](https://docs.github.com/rest/reference/repos#delete-admin-branch-protection)
     ///
     /// ---
     pub async fn delete_admin_branch_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<(), ReposDeleteAdminBranchProtectionError> {
@@ -7330,7 +7352,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Removing admin enforcement requires admin or owner permissions to the repository and branch protection to be enabled.
     /// 
-    /// [GitHub API docs for delete_admin_branch_protection](https://docs.github.com/rest/reference/repos#delete-admin-branch-protection)    
+    /// [GitHub API docs for delete_admin_branch_protection](https://docs.github.com/rest/reference/repos#delete-admin-branch-protection)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -7370,7 +7392,7 @@ impl<'api> Repos<'api> {
     ///
     /// You must authenticate using an access token with the repo scope to use this endpoint.
     /// 
-    /// [GitHub API docs for delete_an_environment](https://docs.github.com/rest/reference/repos#delete-an-environment)    
+    /// [GitHub API docs for delete_an_environment](https://docs.github.com/rest/reference/repos#delete-an-environment)
     ///
     /// ---
     pub async fn delete_an_environment_async(&self, owner: &str, repo: &str, environment_name: &str) -> Result<(), ReposDeleteAnEnvironmentError> {
@@ -7408,7 +7430,7 @@ impl<'api> Repos<'api> {
     ///
     /// You must authenticate using an access token with the repo scope to use this endpoint.
     /// 
-    /// [GitHub API docs for delete_an_environment](https://docs.github.com/rest/reference/repos#delete-an-environment)    
+    /// [GitHub API docs for delete_an_environment](https://docs.github.com/rest/reference/repos#delete-an-environment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -7447,7 +7469,7 @@ impl<'api> Repos<'api> {
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for delete_branch_protection](https://docs.github.com/rest/reference/repos#delete-branch-protection)    
+    /// [GitHub API docs for delete_branch_protection](https://docs.github.com/rest/reference/repos#delete-branch-protection)
     ///
     /// ---
     pub async fn delete_branch_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<(), ReposDeleteBranchProtectionError> {
@@ -7486,7 +7508,7 @@ impl<'api> Repos<'api> {
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for delete_branch_protection](https://docs.github.com/rest/reference/repos#delete-branch-protection)    
+    /// [GitHub API docs for delete_branch_protection](https://docs.github.com/rest/reference/repos#delete-branch-protection)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -7524,7 +7546,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Delete a commit comment
     /// 
-    /// [GitHub API docs for delete_commit_comment](https://docs.github.com/rest/reference/repos#delete-a-commit-comment)    
+    /// [GitHub API docs for delete_commit_comment](https://docs.github.com/rest/reference/repos#delete-a-commit-comment)
     ///
     /// ---
     pub async fn delete_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i32) -> Result<(), ReposDeleteCommitCommentError> {
@@ -7561,7 +7583,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Delete a commit comment
     /// 
-    /// [GitHub API docs for delete_commit_comment](https://docs.github.com/rest/reference/repos#delete-a-commit-comment)    
+    /// [GitHub API docs for delete_commit_comment](https://docs.github.com/rest/reference/repos#delete-a-commit-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -7603,7 +7625,8 @@ impl<'api> Repos<'api> {
     /// 
     /// When authenticated with admin or owner permissions to the repository, you can use this endpoint to disable required signed commits on a branch. You must enable branch protection to require signed commits.
     /// 
-    /// [GitHub API docs for delete_commit_signature_protection](https://docs.github.com/rest/reference/repos#delete-commit-signature-protection)///
+    /// [GitHub API docs for delete_commit_signature_protection](https://docs.github.com/rest/reference/repos#delete-commit-signature-protection)
+    ///
     /// The `delete_commit_signature_protection_async` endpoint is enabled with the `zzzax` cargo feature.
     ///
     /// ---
@@ -7646,7 +7669,8 @@ impl<'api> Repos<'api> {
     /// 
     /// When authenticated with admin or owner permissions to the repository, you can use this endpoint to disable required signed commits on a branch. You must enable branch protection to require signed commits.
     /// 
-    /// [GitHub API docs for delete_commit_signature_protection](https://docs.github.com/rest/reference/repos#delete-commit-signature-protection)///
+    /// [GitHub API docs for delete_commit_signature_protection](https://docs.github.com/rest/reference/repos#delete-commit-signature-protection)
+    ///
     /// The `delete_commit_signature_protection` endpoint is enabled with the `zzzax` cargo feature.
     ///
     /// ---
@@ -7688,7 +7712,7 @@ impl<'api> Repos<'api> {
     ///
     /// Deploy keys are immutable. If you need to update a key, remove the key and create a new one instead.
     /// 
-    /// [GitHub API docs for delete_deploy_key](https://docs.github.com/rest/reference/repos#delete-a-deploy-key)    
+    /// [GitHub API docs for delete_deploy_key](https://docs.github.com/rest/reference/repos#delete-a-deploy-key)
     ///
     /// ---
     pub async fn delete_deploy_key_async(&self, owner: &str, repo: &str, key_id: i32) -> Result<(), ReposDeleteDeployKeyError> {
@@ -7726,7 +7750,7 @@ impl<'api> Repos<'api> {
     ///
     /// Deploy keys are immutable. If you need to update a key, remove the key and create a new one instead.
     /// 
-    /// [GitHub API docs for delete_deploy_key](https://docs.github.com/rest/reference/repos#delete-a-deploy-key)    
+    /// [GitHub API docs for delete_deploy_key](https://docs.github.com/rest/reference/repos#delete-a-deploy-key)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -7772,7 +7796,7 @@ impl<'api> Repos<'api> {
     /// 
     /// For more information, see "[Create a deployment](https://docs.github.com/rest/reference/repos/#create-a-deployment)" and "[Create a deployment status](https://docs.github.com/rest/reference/repos#create-a-deployment-status)."
     /// 
-    /// [GitHub API docs for delete_deployment](https://docs.github.com/rest/reference/repos#delete-a-deployment)    
+    /// [GitHub API docs for delete_deployment](https://docs.github.com/rest/reference/repos#delete-a-deployment)
     ///
     /// ---
     pub async fn delete_deployment_async(&self, owner: &str, repo: &str, deployment_id: i32) -> Result<(), ReposDeleteDeploymentError> {
@@ -7819,7 +7843,7 @@ impl<'api> Repos<'api> {
     /// 
     /// For more information, see "[Create a deployment](https://docs.github.com/rest/reference/repos/#create-a-deployment)" and "[Create a deployment status](https://docs.github.com/rest/reference/repos#create-a-deployment-status)."
     /// 
-    /// [GitHub API docs for delete_deployment](https://docs.github.com/rest/reference/repos#delete-a-deployment)    
+    /// [GitHub API docs for delete_deployment](https://docs.github.com/rest/reference/repos#delete-a-deployment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -7866,7 +7890,7 @@ impl<'api> Repos<'api> {
     /// 
     /// You must provide values for both `name` and `email`, whether you choose to use `author` or `committer`. Otherwise, you'll receive a `422` status code.
     /// 
-    /// [GitHub API docs for delete_file](https://docs.github.com/rest/reference/repos#delete-a-file)    
+    /// [GitHub API docs for delete_file](https://docs.github.com/rest/reference/repos#delete-a-file)
     ///
     /// ---
     pub async fn delete_file_async(&self, owner: &str, repo: &str, path: &str, body: DeleteReposDeleteFile) -> Result<FileCommit, ReposDeleteFileError> {
@@ -7914,7 +7938,7 @@ impl<'api> Repos<'api> {
     /// 
     /// You must provide values for both `name` and `email`, whether you choose to use `author` or `committer`. Otherwise, you'll receive a `422` status code.
     /// 
-    /// [GitHub API docs for delete_file](https://docs.github.com/rest/reference/repos#delete-a-file)    
+    /// [GitHub API docs for delete_file](https://docs.github.com/rest/reference/repos#delete-a-file)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -7955,7 +7979,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Delete a repository invitation
     /// 
-    /// [GitHub API docs for delete_invitation](https://docs.github.com/rest/reference/repos#delete-a-repository-invitation)    
+    /// [GitHub API docs for delete_invitation](https://docs.github.com/rest/reference/repos#delete-a-repository-invitation)
     ///
     /// ---
     pub async fn delete_invitation_async(&self, owner: &str, repo: &str, invitation_id: i32) -> Result<(), ReposDeleteInvitationError> {
@@ -7991,7 +8015,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Delete a repository invitation
     /// 
-    /// [GitHub API docs for delete_invitation](https://docs.github.com/rest/reference/repos#delete-a-repository-invitation)    
+    /// [GitHub API docs for delete_invitation](https://docs.github.com/rest/reference/repos#delete-a-repository-invitation)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -8028,7 +8052,8 @@ impl<'api> Repos<'api> {
     ///
     /// # Delete a GitHub Pages site
     /// 
-    /// [GitHub API docs for delete_pages_site](https://docs.github.com/rest/reference/repos#delete-a-github-pages-site)///
+    /// [GitHub API docs for delete_pages_site](https://docs.github.com/rest/reference/repos#delete-a-github-pages-site)
+    ///
     /// The `delete_pages_site_async` endpoint is enabled with the `switcheroo` cargo feature.
     ///
     /// ---
@@ -8069,7 +8094,8 @@ impl<'api> Repos<'api> {
     ///
     /// # Delete a GitHub Pages site
     /// 
-    /// [GitHub API docs for delete_pages_site](https://docs.github.com/rest/reference/repos#delete-a-github-pages-site)///
+    /// [GitHub API docs for delete_pages_site](https://docs.github.com/rest/reference/repos#delete-a-github-pages-site)
+    ///
     /// The `delete_pages_site` endpoint is enabled with the `switcheroo` cargo feature.
     ///
     /// ---
@@ -8113,7 +8139,7 @@ impl<'api> Repos<'api> {
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for delete_pull_request_review_protection](https://docs.github.com/rest/reference/repos#delete-pull-request-review-protection)    
+    /// [GitHub API docs for delete_pull_request_review_protection](https://docs.github.com/rest/reference/repos#delete-pull-request-review-protection)
     ///
     /// ---
     pub async fn delete_pull_request_review_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<(), ReposDeletePullRequestReviewProtectionError> {
@@ -8152,7 +8178,7 @@ impl<'api> Repos<'api> {
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for delete_pull_request_review_protection](https://docs.github.com/rest/reference/repos#delete-pull-request-review-protection)    
+    /// [GitHub API docs for delete_pull_request_review_protection](https://docs.github.com/rest/reference/repos#delete-pull-request-review-protection)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -8192,7 +8218,7 @@ impl<'api> Repos<'api> {
     ///
     /// Users with push access to the repository can delete a release.
     /// 
-    /// [GitHub API docs for delete_release](https://docs.github.com/rest/reference/repos#delete-a-release)    
+    /// [GitHub API docs for delete_release](https://docs.github.com/rest/reference/repos#delete-a-release)
     ///
     /// ---
     pub async fn delete_release_async(&self, owner: &str, repo: &str, release_id: i32) -> Result<(), ReposDeleteReleaseError> {
@@ -8230,7 +8256,7 @@ impl<'api> Repos<'api> {
     ///
     /// Users with push access to the repository can delete a release.
     /// 
-    /// [GitHub API docs for delete_release](https://docs.github.com/rest/reference/repos#delete-a-release)    
+    /// [GitHub API docs for delete_release](https://docs.github.com/rest/reference/repos#delete-a-release)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -8267,7 +8293,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Delete a release asset
     /// 
-    /// [GitHub API docs for delete_release_asset](https://docs.github.com/rest/reference/repos#delete-a-release-asset)    
+    /// [GitHub API docs for delete_release_asset](https://docs.github.com/rest/reference/repos#delete-a-release-asset)
     ///
     /// ---
     pub async fn delete_release_asset_async(&self, owner: &str, repo: &str, asset_id: i32) -> Result<(), ReposDeleteReleaseAssetError> {
@@ -8303,7 +8329,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Delete a release asset
     /// 
-    /// [GitHub API docs for delete_release_asset](https://docs.github.com/rest/reference/repos#delete-a-release-asset)    
+    /// [GitHub API docs for delete_release_asset](https://docs.github.com/rest/reference/repos#delete-a-release-asset)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -8340,7 +8366,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Delete a repository webhook
     /// 
-    /// [GitHub API docs for delete_webhook](https://docs.github.com/rest/reference/repos#delete-a-repository-webhook)    
+    /// [GitHub API docs for delete_webhook](https://docs.github.com/rest/reference/repos#delete-a-repository-webhook)
     ///
     /// ---
     pub async fn delete_webhook_async(&self, owner: &str, repo: &str, hook_id: i32) -> Result<(), ReposDeleteWebhookError> {
@@ -8377,7 +8403,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Delete a repository webhook
     /// 
-    /// [GitHub API docs for delete_webhook](https://docs.github.com/rest/reference/repos#delete-a-repository-webhook)    
+    /// [GitHub API docs for delete_webhook](https://docs.github.com/rest/reference/repos#delete-a-repository-webhook)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -8417,7 +8443,8 @@ impl<'api> Repos<'api> {
     ///
     /// Disables automated security fixes for a repository. The authenticated user must have admin access to the repository. For more information, see "[Configuring automated security fixes](https://help.github.com/en/articles/configuring-automated-security-fixes)".
     /// 
-    /// [GitHub API docs for disable_automated_security_fixes](https://docs.github.com/rest/reference/repos/#disable-automated-security-fixes)///
+    /// [GitHub API docs for disable_automated_security_fixes](https://docs.github.com/rest/reference/repos/#disable-automated-security-fixes)
+    ///
     /// The `disable_automated_security_fixes_async` endpoint is enabled with the `london` cargo feature.
     ///
     /// ---
@@ -8457,7 +8484,8 @@ impl<'api> Repos<'api> {
     ///
     /// Disables automated security fixes for a repository. The authenticated user must have admin access to the repository. For more information, see "[Configuring automated security fixes](https://help.github.com/en/articles/configuring-automated-security-fixes)".
     /// 
-    /// [GitHub API docs for disable_automated_security_fixes](https://docs.github.com/rest/reference/repos/#disable-automated-security-fixes)///
+    /// [GitHub API docs for disable_automated_security_fixes](https://docs.github.com/rest/reference/repos/#disable-automated-security-fixes)
+    ///
     /// The `disable_automated_security_fixes` endpoint is enabled with the `london` cargo feature.
     ///
     /// ---
@@ -8498,7 +8526,8 @@ impl<'api> Repos<'api> {
     ///
     /// Disables dependency alerts and the dependency graph for a repository. The authenticated user must have admin access to the repository. For more information, see "[About security alerts for vulnerable dependencies](https://help.github.com/en/articles/about-security-alerts-for-vulnerable-dependencies)".
     /// 
-    /// [GitHub API docs for disable_vulnerability_alerts](https://docs.github.com/rest/reference/repos/#disable-vulnerability-alerts)///
+    /// [GitHub API docs for disable_vulnerability_alerts](https://docs.github.com/rest/reference/repos/#disable-vulnerability-alerts)
+    ///
     /// The `disable_vulnerability_alerts_async` endpoint is enabled with the `dorian` cargo feature.
     ///
     /// ---
@@ -8538,7 +8567,8 @@ impl<'api> Repos<'api> {
     ///
     /// Disables dependency alerts and the dependency graph for a repository. The authenticated user must have admin access to the repository. For more information, see "[About security alerts for vulnerable dependencies](https://help.github.com/en/articles/about-security-alerts-for-vulnerable-dependencies)".
     /// 
-    /// [GitHub API docs for disable_vulnerability_alerts](https://docs.github.com/rest/reference/repos/#disable-vulnerability-alerts)///
+    /// [GitHub API docs for disable_vulnerability_alerts](https://docs.github.com/rest/reference/repos/#disable-vulnerability-alerts)
+    ///
     /// The `disable_vulnerability_alerts` endpoint is enabled with the `dorian` cargo feature.
     ///
     /// ---
@@ -8582,7 +8612,7 @@ impl<'api> Repos<'api> {
     /// the `Location` header to make a second `GET` request.
     /// **Note**: For private repositories, these links are temporary and expire after five minutes.
     /// 
-    /// [GitHub API docs for download_tarball_archive](https://docs.github.com/rest/reference/repos#download-a-repository-archive)    
+    /// [GitHub API docs for download_tarball_archive](https://docs.github.com/rest/reference/repos#download-a-repository-archive)
     ///
     /// ---
     pub async fn download_tarball_archive_async(&self, owner: &str, repo: &str, git_ref: &str) -> Result<(), ReposDownloadTarballArchiveError> {
@@ -8624,7 +8654,7 @@ impl<'api> Repos<'api> {
     /// the `Location` header to make a second `GET` request.
     /// **Note**: For private repositories, these links are temporary and expire after five minutes.
     /// 
-    /// [GitHub API docs for download_tarball_archive](https://docs.github.com/rest/reference/repos#download-a-repository-archive)    
+    /// [GitHub API docs for download_tarball_archive](https://docs.github.com/rest/reference/repos#download-a-repository-archive)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -8667,7 +8697,7 @@ impl<'api> Repos<'api> {
     /// the `Location` header to make a second `GET` request.
     /// **Note**: For private repositories, these links are temporary and expire after five minutes.
     /// 
-    /// [GitHub API docs for download_zipball_archive](https://docs.github.com/rest/reference/repos#download-a-repository-archive)    
+    /// [GitHub API docs for download_zipball_archive](https://docs.github.com/rest/reference/repos#download-a-repository-archive)
     ///
     /// ---
     pub async fn download_zipball_archive_async(&self, owner: &str, repo: &str, git_ref: &str) -> Result<(), ReposDownloadZipballArchiveError> {
@@ -8709,7 +8739,7 @@ impl<'api> Repos<'api> {
     /// the `Location` header to make a second `GET` request.
     /// **Note**: For private repositories, these links are temporary and expire after five minutes.
     /// 
-    /// [GitHub API docs for download_zipball_archive](https://docs.github.com/rest/reference/repos#download-a-repository-archive)    
+    /// [GitHub API docs for download_zipball_archive](https://docs.github.com/rest/reference/repos#download-a-repository-archive)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -8749,7 +8779,8 @@ impl<'api> Repos<'api> {
     ///
     /// Enables automated security fixes for a repository. The authenticated user must have admin access to the repository. For more information, see "[Configuring automated security fixes](https://help.github.com/en/articles/configuring-automated-security-fixes)".
     /// 
-    /// [GitHub API docs for enable_automated_security_fixes](https://docs.github.com/rest/reference/repos/#enable-automated-security-fixes)///
+    /// [GitHub API docs for enable_automated_security_fixes](https://docs.github.com/rest/reference/repos/#enable-automated-security-fixes)
+    ///
     /// The `enable_automated_security_fixes_async` endpoint is enabled with the `london` cargo feature.
     ///
     /// ---
@@ -8789,7 +8820,8 @@ impl<'api> Repos<'api> {
     ///
     /// Enables automated security fixes for a repository. The authenticated user must have admin access to the repository. For more information, see "[Configuring automated security fixes](https://help.github.com/en/articles/configuring-automated-security-fixes)".
     /// 
-    /// [GitHub API docs for enable_automated_security_fixes](https://docs.github.com/rest/reference/repos/#enable-automated-security-fixes)///
+    /// [GitHub API docs for enable_automated_security_fixes](https://docs.github.com/rest/reference/repos/#enable-automated-security-fixes)
+    ///
     /// The `enable_automated_security_fixes` endpoint is enabled with the `london` cargo feature.
     ///
     /// ---
@@ -8830,7 +8862,8 @@ impl<'api> Repos<'api> {
     ///
     /// Enables dependency alerts and the dependency graph for a repository. The authenticated user must have admin access to the repository. For more information, see "[About security alerts for vulnerable dependencies](https://help.github.com/en/articles/about-security-alerts-for-vulnerable-dependencies)".
     /// 
-    /// [GitHub API docs for enable_vulnerability_alerts](https://docs.github.com/rest/reference/repos/#enable-vulnerability-alerts)///
+    /// [GitHub API docs for enable_vulnerability_alerts](https://docs.github.com/rest/reference/repos/#enable-vulnerability-alerts)
+    ///
     /// The `enable_vulnerability_alerts_async` endpoint is enabled with the `dorian` cargo feature.
     ///
     /// ---
@@ -8870,7 +8903,8 @@ impl<'api> Repos<'api> {
     ///
     /// Enables dependency alerts and the dependency graph for a repository. The authenticated user must have admin access to the repository. For more information, see "[About security alerts for vulnerable dependencies](https://help.github.com/en/articles/about-security-alerts-for-vulnerable-dependencies)".
     /// 
-    /// [GitHub API docs for enable_vulnerability_alerts](https://docs.github.com/rest/reference/repos/#enable-vulnerability-alerts)///
+    /// [GitHub API docs for enable_vulnerability_alerts](https://docs.github.com/rest/reference/repos/#enable-vulnerability-alerts)
+    ///
     /// The `enable_vulnerability_alerts` endpoint is enabled with the `dorian` cargo feature.
     ///
     /// ---
@@ -8913,8 +8947,10 @@ impl<'api> Repos<'api> {
     /// 
     /// The `parent` and `source` objects are present when the repository is a fork. `parent` is the repository this repository was forked from, `source` is the ultimate source for the network.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/repos/#get-a-repository)///
-    /// The `get_async` endpoint is enabled with the `nebula` cargo feature./// The `get_async` endpoint is enabled with the `scarlet-witch` cargo feature.
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/repos/#get-a-repository)
+    ///
+    /// The `get_async` endpoint is enabled with the `nebula` cargo feature.
+    /// The `get_async` endpoint is enabled with the `scarlet-witch` cargo feature.
     ///
     /// ---
     #[cfg(feature = "nebula")]
@@ -8959,8 +8995,10 @@ impl<'api> Repos<'api> {
     /// 
     /// The `parent` and `source` objects are present when the repository is a fork. `parent` is the repository this repository was forked from, `source` is the ultimate source for the network.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/repos/#get-a-repository)///
-    /// The `get` endpoint is enabled with the `nebula` cargo feature./// The `get` endpoint is enabled with the `scarlet-witch` cargo feature.
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/repos/#get-a-repository)
+    ///
+    /// The `get` endpoint is enabled with the `nebula` cargo feature.
+    /// The `get` endpoint is enabled with the `scarlet-witch` cargo feature.
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -9008,7 +9046,7 @@ impl<'api> Repos<'api> {
     /// 
     /// **Note**: Users, apps, and teams `restrictions` are only available for organization-owned repositories.
     /// 
-    /// [GitHub API docs for get_access_restrictions](https://docs.github.com/rest/reference/repos#get-access-restrictions)    
+    /// [GitHub API docs for get_access_restrictions](https://docs.github.com/rest/reference/repos#get-access-restrictions)
     ///
     /// ---
     pub async fn get_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str) -> Result<BranchRestrictionPolicy, ReposGetAccessRestrictionsError> {
@@ -9051,7 +9089,7 @@ impl<'api> Repos<'api> {
     /// 
     /// **Note**: Users, apps, and teams `restrictions` are only available for organization-owned repositories.
     /// 
-    /// [GitHub API docs for get_access_restrictions](https://docs.github.com/rest/reference/repos#get-access-restrictions)    
+    /// [GitHub API docs for get_access_restrictions](https://docs.github.com/rest/reference/repos#get-access-restrictions)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -9091,7 +9129,7 @@ impl<'api> Repos<'api> {
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for get_admin_branch_protection](https://docs.github.com/rest/reference/repos#get-admin-branch-protection)    
+    /// [GitHub API docs for get_admin_branch_protection](https://docs.github.com/rest/reference/repos#get-admin-branch-protection)
     ///
     /// ---
     pub async fn get_admin_branch_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchAdminEnforced, ReposGetAdminBranchProtectionError> {
@@ -9129,7 +9167,7 @@ impl<'api> Repos<'api> {
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for get_admin_branch_protection](https://docs.github.com/rest/reference/repos#get-admin-branch-protection)    
+    /// [GitHub API docs for get_admin_branch_protection](https://docs.github.com/rest/reference/repos#get-admin-branch-protection)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -9170,7 +9208,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Anyone with read access to the repository can use this endpoint. If the repository is private, you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
-    /// [GitHub API docs for get_all_environments](https://docs.github.com/rest/reference/repos#get-all-environments)    
+    /// [GitHub API docs for get_all_environments](https://docs.github.com/rest/reference/repos#get-all-environments)
     ///
     /// ---
     pub async fn get_all_environments_async(&self, owner: &str, repo: &str) -> Result<GetReposGetAllEnvironmentsResponse200, ReposGetAllEnvironmentsError> {
@@ -9210,7 +9248,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Anyone with read access to the repository can use this endpoint. If the repository is private, you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
-    /// [GitHub API docs for get_all_environments](https://docs.github.com/rest/reference/repos#get-all-environments)    
+    /// [GitHub API docs for get_all_environments](https://docs.github.com/rest/reference/repos#get-all-environments)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -9249,7 +9287,7 @@ impl<'api> Repos<'api> {
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for get_all_status_check_contexts](https://docs.github.com/rest/reference/repos#get-all-status-check-contexts)    
+    /// [GitHub API docs for get_all_status_check_contexts](https://docs.github.com/rest/reference/repos#get-all-status-check-contexts)
     ///
     /// ---
     pub async fn get_all_status_check_contexts_async(&self, owner: &str, repo: &str, branch: &str) -> Result<Vec<String>, ReposGetAllStatusCheckContextsError> {
@@ -9288,7 +9326,7 @@ impl<'api> Repos<'api> {
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for get_all_status_check_contexts](https://docs.github.com/rest/reference/repos#get-all-status-check-contexts)    
+    /// [GitHub API docs for get_all_status_check_contexts](https://docs.github.com/rest/reference/repos#get-all-status-check-contexts)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -9326,7 +9364,8 @@ impl<'api> Repos<'api> {
     ///
     /// # Get all repository topics
     /// 
-    /// [GitHub API docs for get_all_topics](https://docs.github.com/rest/reference/repos/#get-all-repository-topics)///
+    /// [GitHub API docs for get_all_topics](https://docs.github.com/rest/reference/repos/#get-all-repository-topics)
+    ///
     /// The `get_all_topics_async` endpoint is enabled with the `mercy` cargo feature.
     ///
     /// ---
@@ -9370,7 +9409,8 @@ impl<'api> Repos<'api> {
     ///
     /// # Get all repository topics
     /// 
-    /// [GitHub API docs for get_all_topics](https://docs.github.com/rest/reference/repos/#get-all-repository-topics)///
+    /// [GitHub API docs for get_all_topics](https://docs.github.com/rest/reference/repos/#get-all-repository-topics)
+    ///
     /// The `get_all_topics` endpoint is enabled with the `mercy` cargo feature.
     ///
     /// ---
@@ -9420,7 +9460,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Lists the GitHub Apps that have push access to this branch. Only installed GitHub Apps with `write` access to the `contents` permission can be added as authorized actors on a protected branch.
     /// 
-    /// [GitHub API docs for get_apps_with_access_to_protected_branch](https://docs.github.com/rest/reference/repos#list-apps-with-access-to-the-protected-branch)    
+    /// [GitHub API docs for get_apps_with_access_to_protected_branch](https://docs.github.com/rest/reference/repos#list-apps-with-access-to-the-protected-branch)
     ///
     /// ---
     pub async fn get_apps_with_access_to_protected_branch_async(&self, owner: &str, repo: &str, branch: &str) -> Result<Vec<Integration>, ReposGetAppsWithAccessToProtectedBranchError> {
@@ -9461,7 +9501,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Lists the GitHub Apps that have push access to this branch. Only installed GitHub Apps with `write` access to the `contents` permission can be added as authorized actors on a protected branch.
     /// 
-    /// [GitHub API docs for get_apps_with_access_to_protected_branch](https://docs.github.com/rest/reference/repos#list-apps-with-access-to-the-protected-branch)    
+    /// [GitHub API docs for get_apps_with_access_to_protected_branch](https://docs.github.com/rest/reference/repos#list-apps-with-access-to-the-protected-branch)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -9499,7 +9539,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Get a branch
     /// 
-    /// [GitHub API docs for get_branch](https://docs.github.com/rest/reference/repos#get-a-branch)    
+    /// [GitHub API docs for get_branch](https://docs.github.com/rest/reference/repos#get-a-branch)
     ///
     /// ---
     pub async fn get_branch_async(&self, owner: &str, repo: &str, branch: &str) -> Result<BranchWithProtection, ReposGetBranchError> {
@@ -9537,7 +9577,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Get a branch
     /// 
-    /// [GitHub API docs for get_branch](https://docs.github.com/rest/reference/repos#get-a-branch)    
+    /// [GitHub API docs for get_branch](https://docs.github.com/rest/reference/repos#get-a-branch)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -9578,7 +9618,8 @@ impl<'api> Repos<'api> {
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for get_branch_protection](https://docs.github.com/rest/reference/repos#get-branch-protection)///
+    /// [GitHub API docs for get_branch_protection](https://docs.github.com/rest/reference/repos#get-branch-protection)
+    ///
     /// The `get_branch_protection_async` endpoint is enabled with the `luke-cage` cargo feature.
     ///
     /// ---
@@ -9619,7 +9660,8 @@ impl<'api> Repos<'api> {
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for get_branch_protection](https://docs.github.com/rest/reference/repos#get-branch-protection)///
+    /// [GitHub API docs for get_branch_protection](https://docs.github.com/rest/reference/repos#get-branch-protection)
+    ///
     /// The `get_branch_protection` endpoint is enabled with the `luke-cage` cargo feature.
     ///
     /// ---
@@ -9661,7 +9703,7 @@ impl<'api> Repos<'api> {
     ///
     /// Get the total number of clones and breakdown per day or week for the last 14 days. Timestamps are aligned to UTC midnight of the beginning of the day or week. Week begins on Monday.
     /// 
-    /// [GitHub API docs for get_clones](https://docs.github.com/rest/reference/repos#get-repository-clones)    
+    /// [GitHub API docs for get_clones](https://docs.github.com/rest/reference/repos#get-repository-clones)
     ///
     /// ---
     pub async fn get_clones_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetClonesParams<'api>>>) -> Result<CloneTraffic, ReposGetClonesError> {
@@ -9704,7 +9746,7 @@ impl<'api> Repos<'api> {
     ///
     /// Get the total number of clones and breakdown per day or week for the last 14 days. Timestamps are aligned to UTC midnight of the beginning of the day or week. Week begins on Monday.
     /// 
-    /// [GitHub API docs for get_clones](https://docs.github.com/rest/reference/repos#get-repository-clones)    
+    /// [GitHub API docs for get_clones](https://docs.github.com/rest/reference/repos#get-repository-clones)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -9749,7 +9791,7 @@ impl<'api> Repos<'api> {
     ///
     /// Returns a weekly aggregate of the number of additions and deletions pushed to a repository.
     /// 
-    /// [GitHub API docs for get_code_frequency_stats](https://docs.github.com/rest/reference/repos#get-the-weekly-commit-activity)    
+    /// [GitHub API docs for get_code_frequency_stats](https://docs.github.com/rest/reference/repos#get-the-weekly-commit-activity)
     ///
     /// ---
     pub async fn get_code_frequency_stats_async(&self, owner: &str, repo: &str) -> Result<Vec<CodeFrequencyStat>, ReposGetCodeFrequencyStatsError> {
@@ -9787,7 +9829,7 @@ impl<'api> Repos<'api> {
     ///
     /// Returns a weekly aggregate of the number of additions and deletions pushed to a repository.
     /// 
-    /// [GitHub API docs for get_code_frequency_stats](https://docs.github.com/rest/reference/repos#get-the-weekly-commit-activity)    
+    /// [GitHub API docs for get_code_frequency_stats](https://docs.github.com/rest/reference/repos#get-the-weekly-commit-activity)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -9826,7 +9868,7 @@ impl<'api> Repos<'api> {
     ///
     /// Checks the repository permission of a collaborator. The possible repository permissions are `admin`, `write`, `read`, and `none`.
     /// 
-    /// [GitHub API docs for get_collaborator_permission_level](https://docs.github.com/rest/reference/repos#get-repository-permissions-for-a-user)    
+    /// [GitHub API docs for get_collaborator_permission_level](https://docs.github.com/rest/reference/repos#get-repository-permissions-for-a-user)
     ///
     /// ---
     pub async fn get_collaborator_permission_level_async(&self, owner: &str, repo: &str, username: &str) -> Result<RepositoryCollaboratorPermission, ReposGetCollaboratorPermissionLevelError> {
@@ -9865,7 +9907,7 @@ impl<'api> Repos<'api> {
     ///
     /// Checks the repository permission of a collaborator. The possible repository permissions are `admin`, `write`, `read`, and `none`.
     /// 
-    /// [GitHub API docs for get_collaborator_permission_level](https://docs.github.com/rest/reference/repos#get-repository-permissions-for-a-user)    
+    /// [GitHub API docs for get_collaborator_permission_level](https://docs.github.com/rest/reference/repos#get-repository-permissions-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -9913,7 +9955,7 @@ impl<'api> Repos<'api> {
     /// *   **pending** if there are no statuses or a context is `pending`
     /// *   **success** if the latest status for all contexts is `success`
     /// 
-    /// [GitHub API docs for get_combined_status_for_ref](https://docs.github.com/rest/reference/repos#get-the-combined-status-for-a-specific-reference)    
+    /// [GitHub API docs for get_combined_status_for_ref](https://docs.github.com/rest/reference/repos#get-the-combined-status-for-a-specific-reference)
     ///
     /// ---
     pub async fn get_combined_status_for_ref_async(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ReposGetCombinedStatusForRefParams>>) -> Result<CombinedCommitStatus, ReposGetCombinedStatusForRefError> {
@@ -9964,7 +10006,7 @@ impl<'api> Repos<'api> {
     /// *   **pending** if there are no statuses or a context is `pending`
     /// *   **success** if the latest status for all contexts is `success`
     /// 
-    /// [GitHub API docs for get_combined_status_for_ref](https://docs.github.com/rest/reference/repos#get-the-combined-status-for-a-specific-reference)    
+    /// [GitHub API docs for get_combined_status_for_ref](https://docs.github.com/rest/reference/repos#get-the-combined-status-for-a-specific-reference)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -10044,7 +10086,7 @@ impl<'api> Repos<'api> {
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
     /// 
-    /// [GitHub API docs for get_commit](https://docs.github.com/rest/reference/repos#get-a-commit)    
+    /// [GitHub API docs for get_commit](https://docs.github.com/rest/reference/repos#get-a-commit)
     ///
     /// ---
     pub async fn get_commit_async(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ReposGetCommitParams>>) -> Result<Commit, ReposGetCommitError> {
@@ -10124,7 +10166,7 @@ impl<'api> Repos<'api> {
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
     /// 
-    /// [GitHub API docs for get_commit](https://docs.github.com/rest/reference/repos#get-a-commit)    
+    /// [GitHub API docs for get_commit](https://docs.github.com/rest/reference/repos#get-a-commit)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -10171,7 +10213,7 @@ impl<'api> Repos<'api> {
     ///
     /// Returns the last year of commit activity grouped by week. The `days` array is a group of commits per day, starting on `Sunday`.
     /// 
-    /// [GitHub API docs for get_commit_activity_stats](https://docs.github.com/rest/reference/repos#get-the-last-year-of-commit-activity)    
+    /// [GitHub API docs for get_commit_activity_stats](https://docs.github.com/rest/reference/repos#get-the-last-year-of-commit-activity)
     ///
     /// ---
     pub async fn get_commit_activity_stats_async(&self, owner: &str, repo: &str) -> Result<Vec<CommitActivity>, ReposGetCommitActivityStatsError> {
@@ -10209,7 +10251,7 @@ impl<'api> Repos<'api> {
     ///
     /// Returns the last year of commit activity grouped by week. The `days` array is a group of commits per day, starting on `Sunday`.
     /// 
-    /// [GitHub API docs for get_commit_activity_stats](https://docs.github.com/rest/reference/repos#get-the-last-year-of-commit-activity)    
+    /// [GitHub API docs for get_commit_activity_stats](https://docs.github.com/rest/reference/repos#get-the-last-year-of-commit-activity)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -10246,7 +10288,8 @@ impl<'api> Repos<'api> {
     ///
     /// # Get a commit comment
     /// 
-    /// [GitHub API docs for get_commit_comment](https://docs.github.com/rest/reference/repos#get-a-commit-comment)///
+    /// [GitHub API docs for get_commit_comment](https://docs.github.com/rest/reference/repos#get-a-commit-comment)
+    ///
     /// The `get_commit_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
@@ -10285,7 +10328,8 @@ impl<'api> Repos<'api> {
     ///
     /// # Get a commit comment
     /// 
-    /// [GitHub API docs for get_commit_comment](https://docs.github.com/rest/reference/repos#get-a-commit-comment)///
+    /// [GitHub API docs for get_commit_comment](https://docs.github.com/rest/reference/repos#get-a-commit-comment)
+    ///
     /// The `get_commit_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
@@ -10331,7 +10375,8 @@ impl<'api> Repos<'api> {
     /// 
     /// **Note**: You must enable branch protection to require signed commits.
     /// 
-    /// [GitHub API docs for get_commit_signature_protection](https://docs.github.com/rest/reference/repos#get-commit-signature-protection)///
+    /// [GitHub API docs for get_commit_signature_protection](https://docs.github.com/rest/reference/repos#get-commit-signature-protection)
+    ///
     /// The `get_commit_signature_protection_async` endpoint is enabled with the `zzzax` cargo feature.
     ///
     /// ---
@@ -10376,7 +10421,8 @@ impl<'api> Repos<'api> {
     /// 
     /// **Note**: You must enable branch protection to require signed commits.
     /// 
-    /// [GitHub API docs for get_commit_signature_protection](https://docs.github.com/rest/reference/repos#get-commit-signature-protection)///
+    /// [GitHub API docs for get_commit_signature_protection](https://docs.github.com/rest/reference/repos#get-commit-signature-protection)
+    ///
     /// The `get_commit_signature_protection` endpoint is enabled with the `zzzax` cargo feature.
     ///
     /// ---
@@ -10429,7 +10475,7 @@ impl<'api> Repos<'api> {
     /// 
     /// `content_reports_enabled` is only returned for organization-owned repositories.
     /// 
-    /// [GitHub API docs for get_community_profile_metrics](https://docs.github.com/rest/reference/repos#get-community-profile-metrics)    
+    /// [GitHub API docs for get_community_profile_metrics](https://docs.github.com/rest/reference/repos#get-community-profile-metrics)
     ///
     /// ---
     pub async fn get_community_profile_metrics_async(&self, owner: &str, repo: &str) -> Result<CommunityProfile, ReposGetCommunityProfileMetricsError> {
@@ -10478,7 +10524,7 @@ impl<'api> Repos<'api> {
     /// 
     /// `content_reports_enabled` is only returned for organization-owned repositories.
     /// 
-    /// [GitHub API docs for get_community_profile_metrics](https://docs.github.com/rest/reference/repos#get-community-profile-metrics)    
+    /// [GitHub API docs for get_community_profile_metrics](https://docs.github.com/rest/reference/repos#get-community-profile-metrics)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -10548,7 +10594,7 @@ impl<'api> Repos<'api> {
     /// If the submodule repository is not hosted on github.com, the Git URLs (`git_url` and `_links["git"]`) and the
     /// github.com URLs (`html_url` and `_links["html"]`) will have null values.
     /// 
-    /// [GitHub API docs for get_content](https://docs.github.com/rest/reference/repos#get-repository-content)    
+    /// [GitHub API docs for get_content](https://docs.github.com/rest/reference/repos#get-repository-content)
     ///
     /// ---
     pub async fn get_content_async(&self, owner: &str, repo: &str, path: &str, query_params: Option<impl Into<ReposGetContentParams<'api>>>) -> Result<ContentTree, ReposGetContentError> {
@@ -10624,7 +10670,7 @@ impl<'api> Repos<'api> {
     /// If the submodule repository is not hosted on github.com, the Git URLs (`git_url` and `_links["git"]`) and the
     /// github.com URLs (`html_url` and `_links["html"]`) will have null values.
     /// 
-    /// [GitHub API docs for get_content](https://docs.github.com/rest/reference/repos#get-repository-content)    
+    /// [GitHub API docs for get_content](https://docs.github.com/rest/reference/repos#get-repository-content)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -10677,7 +10723,7 @@ impl<'api> Repos<'api> {
     /// *   `d` - Number of deletions
     /// *   `c` - Number of commits
     /// 
-    /// [GitHub API docs for get_contributors_stats](https://docs.github.com/rest/reference/repos#get-all-contributor-commit-activity)    
+    /// [GitHub API docs for get_contributors_stats](https://docs.github.com/rest/reference/repos#get-all-contributor-commit-activity)
     ///
     /// ---
     pub async fn get_contributors_stats_async(&self, owner: &str, repo: &str) -> Result<Vec<ContributorActivity>, ReposGetContributorsStatsError> {
@@ -10721,7 +10767,7 @@ impl<'api> Repos<'api> {
     /// *   `d` - Number of deletions
     /// *   `c` - Number of commits
     /// 
-    /// [GitHub API docs for get_contributors_stats](https://docs.github.com/rest/reference/repos#get-all-contributor-commit-activity)    
+    /// [GitHub API docs for get_contributors_stats](https://docs.github.com/rest/reference/repos#get-all-contributor-commit-activity)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -10758,7 +10804,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Get a deploy key
     /// 
-    /// [GitHub API docs for get_deploy_key](https://docs.github.com/rest/reference/repos#get-a-deploy-key)    
+    /// [GitHub API docs for get_deploy_key](https://docs.github.com/rest/reference/repos#get-a-deploy-key)
     ///
     /// ---
     pub async fn get_deploy_key_async(&self, owner: &str, repo: &str, key_id: i32) -> Result<DeployKey, ReposGetDeployKeyError> {
@@ -10795,7 +10841,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Get a deploy key
     /// 
-    /// [GitHub API docs for get_deploy_key](https://docs.github.com/rest/reference/repos#get-a-deploy-key)    
+    /// [GitHub API docs for get_deploy_key](https://docs.github.com/rest/reference/repos#get-a-deploy-key)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -10833,7 +10879,8 @@ impl<'api> Repos<'api> {
     ///
     /// # Get a deployment
     /// 
-    /// [GitHub API docs for get_deployment](https://docs.github.com/rest/reference/repos#get-a-deployment)///
+    /// [GitHub API docs for get_deployment](https://docs.github.com/rest/reference/repos#get-a-deployment)
+    ///
     /// The `get_deployment_async` endpoint is enabled with the `ant-man` cargo feature.
     ///
     /// ---
@@ -10872,7 +10919,8 @@ impl<'api> Repos<'api> {
     ///
     /// # Get a deployment
     /// 
-    /// [GitHub API docs for get_deployment](https://docs.github.com/rest/reference/repos#get-a-deployment)///
+    /// [GitHub API docs for get_deployment](https://docs.github.com/rest/reference/repos#get-a-deployment)
+    ///
     /// The `get_deployment` endpoint is enabled with the `ant-man` cargo feature.
     ///
     /// ---
@@ -10914,8 +10962,10 @@ impl<'api> Repos<'api> {
     ///
     /// Users with pull access can view a deployment status for a deployment:
     /// 
-    /// [GitHub API docs for get_deployment_status](https://docs.github.com/rest/reference/repos#get-a-deployment-status)///
-    /// The `get_deployment_status_async` endpoint is enabled with the `flash` cargo feature./// The `get_deployment_status_async` endpoint is enabled with the `ant-man` cargo feature.
+    /// [GitHub API docs for get_deployment_status](https://docs.github.com/rest/reference/repos#get-a-deployment-status)
+    ///
+    /// The `get_deployment_status_async` endpoint is enabled with the `flash` cargo feature.
+    /// The `get_deployment_status_async` endpoint is enabled with the `ant-man` cargo feature.
     ///
     /// ---
     #[cfg(feature = "flash")]
@@ -10957,8 +11007,10 @@ impl<'api> Repos<'api> {
     ///
     /// Users with pull access can view a deployment status for a deployment:
     /// 
-    /// [GitHub API docs for get_deployment_status](https://docs.github.com/rest/reference/repos#get-a-deployment-status)///
-    /// The `get_deployment_status` endpoint is enabled with the `flash` cargo feature./// The `get_deployment_status` endpoint is enabled with the `ant-man` cargo feature.
+    /// [GitHub API docs for get_deployment_status](https://docs.github.com/rest/reference/repos#get-a-deployment-status)
+    ///
+    /// The `get_deployment_status` endpoint is enabled with the `flash` cargo feature.
+    /// The `get_deployment_status` endpoint is enabled with the `ant-man` cargo feature.
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -11001,7 +11053,7 @@ impl<'api> Repos<'api> {
     ///
     /// Anyone with read access to the repository can use this endpoint. If the repository is private, you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
-    /// [GitHub API docs for get_environment](https://docs.github.com/rest/reference/repos#get-an-environment)    
+    /// [GitHub API docs for get_environment](https://docs.github.com/rest/reference/repos#get-an-environment)
     ///
     /// ---
     pub async fn get_environment_async(&self, owner: &str, repo: &str, environment_name: &str) -> Result<Environment, ReposGetEnvironmentError> {
@@ -11039,7 +11091,7 @@ impl<'api> Repos<'api> {
     ///
     /// Anyone with read access to the repository can use this endpoint. If the repository is private, you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
     /// 
-    /// [GitHub API docs for get_environment](https://docs.github.com/rest/reference/repos#get-an-environment)    
+    /// [GitHub API docs for get_environment](https://docs.github.com/rest/reference/repos#get-an-environment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -11076,7 +11128,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Get latest Pages build
     /// 
-    /// [GitHub API docs for get_latest_pages_build](https://docs.github.com/rest/reference/repos#get-latest-pages-build)    
+    /// [GitHub API docs for get_latest_pages_build](https://docs.github.com/rest/reference/repos#get-latest-pages-build)
     ///
     /// ---
     pub async fn get_latest_pages_build_async(&self, owner: &str, repo: &str) -> Result<PageBuild, ReposGetLatestPagesBuildError> {
@@ -11112,7 +11164,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Get latest Pages build
     /// 
-    /// [GitHub API docs for get_latest_pages_build](https://docs.github.com/rest/reference/repos#get-latest-pages-build)    
+    /// [GitHub API docs for get_latest_pages_build](https://docs.github.com/rest/reference/repos#get-latest-pages-build)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -11153,7 +11205,7 @@ impl<'api> Repos<'api> {
     /// 
     /// The latest release is the most recent non-prerelease, non-draft release, sorted by the `created_at` attribute. The `created_at` attribute is the date of the commit used for the release, and not the date when the release was drafted or published.
     /// 
-    /// [GitHub API docs for get_latest_release](https://docs.github.com/rest/reference/repos#get-the-latest-release)    
+    /// [GitHub API docs for get_latest_release](https://docs.github.com/rest/reference/repos#get-the-latest-release)
     ///
     /// ---
     pub async fn get_latest_release_async(&self, owner: &str, repo: &str) -> Result<Release, ReposGetLatestReleaseError> {
@@ -11193,7 +11245,7 @@ impl<'api> Repos<'api> {
     /// 
     /// The latest release is the most recent non-prerelease, non-draft release, sorted by the `created_at` attribute. The `created_at` attribute is the date of the commit used for the release, and not the date when the release was drafted or published.
     /// 
-    /// [GitHub API docs for get_latest_release](https://docs.github.com/rest/reference/repos#get-the-latest-release)    
+    /// [GitHub API docs for get_latest_release](https://docs.github.com/rest/reference/repos#get-the-latest-release)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -11230,7 +11282,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Get a GitHub Pages site
     /// 
-    /// [GitHub API docs for get_pages](https://docs.github.com/rest/reference/repos#get-a-github-pages-site)    
+    /// [GitHub API docs for get_pages](https://docs.github.com/rest/reference/repos#get-a-github-pages-site)
     ///
     /// ---
     pub async fn get_pages_async(&self, owner: &str, repo: &str) -> Result<Page, ReposGetPagesError> {
@@ -11267,7 +11319,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Get a GitHub Pages site
     /// 
-    /// [GitHub API docs for get_pages](https://docs.github.com/rest/reference/repos#get-a-github-pages-site)    
+    /// [GitHub API docs for get_pages](https://docs.github.com/rest/reference/repos#get-a-github-pages-site)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -11305,7 +11357,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Get GitHub Pages build
     /// 
-    /// [GitHub API docs for get_pages_build](https://docs.github.com/rest/reference/repos#get-github-pages-build)    
+    /// [GitHub API docs for get_pages_build](https://docs.github.com/rest/reference/repos#get-github-pages-build)
     ///
     /// ---
     pub async fn get_pages_build_async(&self, owner: &str, repo: &str, build_id: i32) -> Result<PageBuild, ReposGetPagesBuildError> {
@@ -11341,7 +11393,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Get GitHub Pages build
     /// 
-    /// [GitHub API docs for get_pages_build](https://docs.github.com/rest/reference/repos#get-github-pages-build)    
+    /// [GitHub API docs for get_pages_build](https://docs.github.com/rest/reference/repos#get-github-pages-build)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -11382,7 +11434,7 @@ impl<'api> Repos<'api> {
     /// 
     /// The array order is oldest week (index 0) to most recent week.
     /// 
-    /// [GitHub API docs for get_participation_stats](https://docs.github.com/rest/reference/repos#get-the-weekly-commit-count)    
+    /// [GitHub API docs for get_participation_stats](https://docs.github.com/rest/reference/repos#get-the-weekly-commit-count)
     ///
     /// ---
     pub async fn get_participation_stats_async(&self, owner: &str, repo: &str) -> Result<ParticipationStats, ReposGetParticipationStatsError> {
@@ -11423,7 +11475,7 @@ impl<'api> Repos<'api> {
     /// 
     /// The array order is oldest week (index 0) to most recent week.
     /// 
-    /// [GitHub API docs for get_participation_stats](https://docs.github.com/rest/reference/repos#get-the-weekly-commit-count)    
+    /// [GitHub API docs for get_participation_stats](https://docs.github.com/rest/reference/repos#get-the-weekly-commit-count)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -11463,7 +11515,8 @@ impl<'api> Repos<'api> {
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for get_pull_request_review_protection](https://docs.github.com/rest/reference/repos#get-pull-request-review-protection)///
+    /// [GitHub API docs for get_pull_request_review_protection](https://docs.github.com/rest/reference/repos#get-pull-request-review-protection)
+    ///
     /// The `get_pull_request_review_protection_async` endpoint is enabled with the `luke-cage` cargo feature.
     ///
     /// ---
@@ -11503,7 +11556,8 @@ impl<'api> Repos<'api> {
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for get_pull_request_review_protection](https://docs.github.com/rest/reference/repos#get-pull-request-review-protection)///
+    /// [GitHub API docs for get_pull_request_review_protection](https://docs.github.com/rest/reference/repos#get-pull-request-review-protection)
+    ///
     /// The `get_pull_request_review_protection` endpoint is enabled with the `luke-cage` cargo feature.
     ///
     /// ---
@@ -11550,7 +11604,7 @@ impl<'api> Repos<'api> {
     /// 
     /// For example, `[2, 14, 25]` indicates that there were 25 total commits, during the 2:00pm hour on Tuesdays. All times are based on the time zone of individual commits.
     /// 
-    /// [GitHub API docs for get_punch_card_stats](https://docs.github.com/rest/reference/repos#get-the-hourly-commit-count-for-each-day)    
+    /// [GitHub API docs for get_punch_card_stats](https://docs.github.com/rest/reference/repos#get-the-hourly-commit-count-for-each-day)
     ///
     /// ---
     pub async fn get_punch_card_stats_async(&self, owner: &str, repo: &str) -> Result<Vec<CodeFrequencyStat>, ReposGetPunchCardStatsError> {
@@ -11594,7 +11648,7 @@ impl<'api> Repos<'api> {
     /// 
     /// For example, `[2, 14, 25]` indicates that there were 25 total commits, during the 2:00pm hour on Tuesdays. All times are based on the time zone of individual commits.
     /// 
-    /// [GitHub API docs for get_punch_card_stats](https://docs.github.com/rest/reference/repos#get-the-hourly-commit-count-for-each-day)    
+    /// [GitHub API docs for get_punch_card_stats](https://docs.github.com/rest/reference/repos#get-the-hourly-commit-count-for-each-day)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -11635,7 +11689,7 @@ impl<'api> Repos<'api> {
     /// 
     /// READMEs support [custom media types](https://docs.github.com/rest/reference/repos#custom-media-types) for retrieving the raw content or rendered HTML.
     /// 
-    /// [GitHub API docs for get_readme](https://docs.github.com/rest/reference/repos#get-a-repository-readme)    
+    /// [GitHub API docs for get_readme](https://docs.github.com/rest/reference/repos#get-a-repository-readme)
     ///
     /// ---
     pub async fn get_readme_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetReadmeParams<'api>>>) -> Result<ContentFile, ReposGetReadmeError> {
@@ -11681,7 +11735,7 @@ impl<'api> Repos<'api> {
     /// 
     /// READMEs support [custom media types](https://docs.github.com/rest/reference/repos#custom-media-types) for retrieving the raw content or rendered HTML.
     /// 
-    /// [GitHub API docs for get_readme](https://docs.github.com/rest/reference/repos#get-a-repository-readme)    
+    /// [GitHub API docs for get_readme](https://docs.github.com/rest/reference/repos#get-a-repository-readme)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -11729,7 +11783,7 @@ impl<'api> Repos<'api> {
     /// 
     /// READMEs support [custom media types](https://docs.github.com/rest/reference/repos#custom-media-types) for retrieving the raw content or rendered HTML.
     /// 
-    /// [GitHub API docs for get_readme_from_alt_path](https://docs.github.com/rest/reference/repos#get-a-repository-readme)    
+    /// [GitHub API docs for get_readme_from_alt_path](https://docs.github.com/rest/reference/repos#get-a-repository-readme)
     ///
     /// ---
     pub async fn get_readme_from_alt_path_async(&self, owner: &str, repo: &str, dir: &str, query_params: Option<impl Into<ReposGetReadmeFromAltPathParams<'api>>>) -> Result<ContentFile, ReposGetReadmeFromAltPathError> {
@@ -11775,7 +11829,7 @@ impl<'api> Repos<'api> {
     /// 
     /// READMEs support [custom media types](https://docs.github.com/rest/reference/repos#custom-media-types) for retrieving the raw content or rendered HTML.
     /// 
-    /// [GitHub API docs for get_readme_from_alt_path](https://docs.github.com/rest/reference/repos#get-a-repository-readme)    
+    /// [GitHub API docs for get_readme_from_alt_path](https://docs.github.com/rest/reference/repos#get-a-repository-readme)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -11821,7 +11875,7 @@ impl<'api> Repos<'api> {
     ///
     /// **Note:** This returns an `upload_url` key corresponding to the endpoint for uploading release assets. This key is a [hypermedia resource](https://docs.github.com/rest/overview/resources-in-the-rest-api#hypermedia).
     /// 
-    /// [GitHub API docs for get_release](https://docs.github.com/rest/reference/repos#get-a-release)    
+    /// [GitHub API docs for get_release](https://docs.github.com/rest/reference/repos#get-a-release)
     ///
     /// ---
     pub async fn get_release_async(&self, owner: &str, repo: &str, release_id: i32) -> Result<Release, ReposGetReleaseError> {
@@ -11860,7 +11914,7 @@ impl<'api> Repos<'api> {
     ///
     /// **Note:** This returns an `upload_url` key corresponding to the endpoint for uploading release assets. This key is a [hypermedia resource](https://docs.github.com/rest/overview/resources-in-the-rest-api#hypermedia).
     /// 
-    /// [GitHub API docs for get_release](https://docs.github.com/rest/reference/repos#get-a-release)    
+    /// [GitHub API docs for get_release](https://docs.github.com/rest/reference/repos#get-a-release)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -11900,7 +11954,7 @@ impl<'api> Repos<'api> {
     ///
     /// To download the asset's binary content, set the `Accept` header of the request to [`application/octet-stream`](https://docs.github.com/rest/overview/media-types). The API will either redirect the client to the location, or stream it directly if possible. API clients should handle both a `200` or `302` response.
     /// 
-    /// [GitHub API docs for get_release_asset](https://docs.github.com/rest/reference/repos#get-a-release-asset)    
+    /// [GitHub API docs for get_release_asset](https://docs.github.com/rest/reference/repos#get-a-release-asset)
     ///
     /// ---
     pub async fn get_release_asset_async(&self, owner: &str, repo: &str, asset_id: i32) -> Result<ReleaseAsset, ReposGetReleaseAssetError> {
@@ -11941,7 +11995,7 @@ impl<'api> Repos<'api> {
     ///
     /// To download the asset's binary content, set the `Accept` header of the request to [`application/octet-stream`](https://docs.github.com/rest/overview/media-types). The API will either redirect the client to the location, or stream it directly if possible. API clients should handle both a `200` or `302` response.
     /// 
-    /// [GitHub API docs for get_release_asset](https://docs.github.com/rest/reference/repos#get-a-release-asset)    
+    /// [GitHub API docs for get_release_asset](https://docs.github.com/rest/reference/repos#get-a-release-asset)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -11983,7 +12037,7 @@ impl<'api> Repos<'api> {
     ///
     /// Get a published release with the specified tag.
     /// 
-    /// [GitHub API docs for get_release_by_tag](https://docs.github.com/rest/reference/repos#get-a-release-by-tag-name)    
+    /// [GitHub API docs for get_release_by_tag](https://docs.github.com/rest/reference/repos#get-a-release-by-tag-name)
     ///
     /// ---
     pub async fn get_release_by_tag_async(&self, owner: &str, repo: &str, tag: &str) -> Result<Release, ReposGetReleaseByTagError> {
@@ -12022,7 +12076,7 @@ impl<'api> Repos<'api> {
     ///
     /// Get a published release with the specified tag.
     /// 
-    /// [GitHub API docs for get_release_by_tag](https://docs.github.com/rest/reference/repos#get-a-release-by-tag-name)    
+    /// [GitHub API docs for get_release_by_tag](https://docs.github.com/rest/reference/repos#get-a-release-by-tag-name)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -12062,7 +12116,7 @@ impl<'api> Repos<'api> {
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for get_status_checks_protection](https://docs.github.com/rest/reference/repos#get-status-checks-protection)    
+    /// [GitHub API docs for get_status_checks_protection](https://docs.github.com/rest/reference/repos#get-status-checks-protection)
     ///
     /// ---
     pub async fn get_status_checks_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<StatusCheckPolicy, ReposGetStatusChecksProtectionError> {
@@ -12101,7 +12155,7 @@ impl<'api> Repos<'api> {
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for get_status_checks_protection](https://docs.github.com/rest/reference/repos#get-status-checks-protection)    
+    /// [GitHub API docs for get_status_checks_protection](https://docs.github.com/rest/reference/repos#get-status-checks-protection)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -12143,7 +12197,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Lists the teams who have push access to this branch. The list includes child teams.
     /// 
-    /// [GitHub API docs for get_teams_with_access_to_protected_branch](https://docs.github.com/rest/reference/repos#list-teams-with-access-to-the-protected-branch)    
+    /// [GitHub API docs for get_teams_with_access_to_protected_branch](https://docs.github.com/rest/reference/repos#list-teams-with-access-to-the-protected-branch)
     ///
     /// ---
     pub async fn get_teams_with_access_to_protected_branch_async(&self, owner: &str, repo: &str, branch: &str) -> Result<Vec<Team>, ReposGetTeamsWithAccessToProtectedBranchError> {
@@ -12184,7 +12238,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Lists the teams who have push access to this branch. The list includes child teams.
     /// 
-    /// [GitHub API docs for get_teams_with_access_to_protected_branch](https://docs.github.com/rest/reference/repos#list-teams-with-access-to-the-protected-branch)    
+    /// [GitHub API docs for get_teams_with_access_to_protected_branch](https://docs.github.com/rest/reference/repos#list-teams-with-access-to-the-protected-branch)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -12224,7 +12278,7 @@ impl<'api> Repos<'api> {
     ///
     /// Get the top 10 popular contents over the last 14 days.
     /// 
-    /// [GitHub API docs for get_top_paths](https://docs.github.com/rest/reference/repos#get-top-referral-paths)    
+    /// [GitHub API docs for get_top_paths](https://docs.github.com/rest/reference/repos#get-top-referral-paths)
     ///
     /// ---
     pub async fn get_top_paths_async(&self, owner: &str, repo: &str) -> Result<Vec<ContentTraffic>, ReposGetTopPathsError> {
@@ -12263,7 +12317,7 @@ impl<'api> Repos<'api> {
     ///
     /// Get the top 10 popular contents over the last 14 days.
     /// 
-    /// [GitHub API docs for get_top_paths](https://docs.github.com/rest/reference/repos#get-top-referral-paths)    
+    /// [GitHub API docs for get_top_paths](https://docs.github.com/rest/reference/repos#get-top-referral-paths)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -12303,7 +12357,7 @@ impl<'api> Repos<'api> {
     ///
     /// Get the top 10 referrers over the last 14 days.
     /// 
-    /// [GitHub API docs for get_top_referrers](https://docs.github.com/rest/reference/repos#get-top-referral-sources)    
+    /// [GitHub API docs for get_top_referrers](https://docs.github.com/rest/reference/repos#get-top-referral-sources)
     ///
     /// ---
     pub async fn get_top_referrers_async(&self, owner: &str, repo: &str) -> Result<Vec<ReferrerTraffic>, ReposGetTopReferrersError> {
@@ -12342,7 +12396,7 @@ impl<'api> Repos<'api> {
     ///
     /// Get the top 10 referrers over the last 14 days.
     /// 
-    /// [GitHub API docs for get_top_referrers](https://docs.github.com/rest/reference/repos#get-top-referral-sources)    
+    /// [GitHub API docs for get_top_referrers](https://docs.github.com/rest/reference/repos#get-top-referral-sources)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -12384,7 +12438,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Lists the people who have push access to this branch.
     /// 
-    /// [GitHub API docs for get_users_with_access_to_protected_branch](https://docs.github.com/rest/reference/repos#list-users-with-access-to-the-protected-branch)    
+    /// [GitHub API docs for get_users_with_access_to_protected_branch](https://docs.github.com/rest/reference/repos#list-users-with-access-to-the-protected-branch)
     ///
     /// ---
     pub async fn get_users_with_access_to_protected_branch_async(&self, owner: &str, repo: &str, branch: &str) -> Result<Vec<SimpleUser>, ReposGetUsersWithAccessToProtectedBranchError> {
@@ -12425,7 +12479,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Lists the people who have push access to this branch.
     /// 
-    /// [GitHub API docs for get_users_with_access_to_protected_branch](https://docs.github.com/rest/reference/repos#list-users-with-access-to-the-protected-branch)    
+    /// [GitHub API docs for get_users_with_access_to_protected_branch](https://docs.github.com/rest/reference/repos#list-users-with-access-to-the-protected-branch)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -12465,7 +12519,7 @@ impl<'api> Repos<'api> {
     ///
     /// Get the total number of views and breakdown per day or week for the last 14 days. Timestamps are aligned to UTC midnight of the beginning of the day or week. Week begins on Monday.
     /// 
-    /// [GitHub API docs for get_views](https://docs.github.com/rest/reference/repos#get-page-views)    
+    /// [GitHub API docs for get_views](https://docs.github.com/rest/reference/repos#get-page-views)
     ///
     /// ---
     pub async fn get_views_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetViewsParams<'api>>>) -> Result<ViewTraffic, ReposGetViewsError> {
@@ -12508,7 +12562,7 @@ impl<'api> Repos<'api> {
     ///
     /// Get the total number of views and breakdown per day or week for the last 14 days. Timestamps are aligned to UTC midnight of the beginning of the day or week. Week begins on Monday.
     /// 
-    /// [GitHub API docs for get_views](https://docs.github.com/rest/reference/repos#get-page-views)    
+    /// [GitHub API docs for get_views](https://docs.github.com/rest/reference/repos#get-page-views)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -12553,7 +12607,7 @@ impl<'api> Repos<'api> {
     ///
     /// Returns a webhook configured in a repository. To get only the webhook `config` properties, see "[Get a webhook configuration for a repository](/rest/reference/repos#get-a-webhook-configuration-for-a-repository)."
     /// 
-    /// [GitHub API docs for get_webhook](https://docs.github.com/rest/reference/repos#get-a-repository-webhook)    
+    /// [GitHub API docs for get_webhook](https://docs.github.com/rest/reference/repos#get-a-repository-webhook)
     ///
     /// ---
     pub async fn get_webhook_async(&self, owner: &str, repo: &str, hook_id: i32) -> Result<Hook, ReposGetWebhookError> {
@@ -12592,7 +12646,7 @@ impl<'api> Repos<'api> {
     ///
     /// Returns a webhook configured in a repository. To get only the webhook `config` properties, see "[Get a webhook configuration for a repository](/rest/reference/repos#get-a-webhook-configuration-for-a-repository)."
     /// 
-    /// [GitHub API docs for get_webhook](https://docs.github.com/rest/reference/repos#get-a-repository-webhook)    
+    /// [GitHub API docs for get_webhook](https://docs.github.com/rest/reference/repos#get-a-repository-webhook)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -12634,7 +12688,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Access tokens must have the `read:repo_hook` or `repo` scope, and GitHub Apps must have the `repository_hooks:read` permission.
     /// 
-    /// [GitHub API docs for get_webhook_config_for_repo](https://docs.github.com/rest/reference/repos#get-a-webhook-configuration-for-a-repository)    
+    /// [GitHub API docs for get_webhook_config_for_repo](https://docs.github.com/rest/reference/repos#get-a-webhook-configuration-for-a-repository)
     ///
     /// ---
     pub async fn get_webhook_config_for_repo_async(&self, owner: &str, repo: &str, hook_id: i32) -> Result<WebhookConfig, ReposGetWebhookConfigForRepoError> {
@@ -12674,7 +12728,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Access tokens must have the `read:repo_hook` or `repo` scope, and GitHub Apps must have the `repository_hooks:read` permission.
     /// 
-    /// [GitHub API docs for get_webhook_config_for_repo](https://docs.github.com/rest/reference/repos#get-a-webhook-configuration-for-a-repository)    
+    /// [GitHub API docs for get_webhook_config_for_repo](https://docs.github.com/rest/reference/repos#get-a-webhook-configuration-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -12711,7 +12765,7 @@ impl<'api> Repos<'api> {
     ///
     /// # List branches
     /// 
-    /// [GitHub API docs for list_branches](https://docs.github.com/rest/reference/repos#list-branches)    
+    /// [GitHub API docs for list_branches](https://docs.github.com/rest/reference/repos#list-branches)
     ///
     /// ---
     pub async fn list_branches_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListBranchesParams>>) -> Result<Vec<ShortBranch>, ReposListBranchesError> {
@@ -12752,7 +12806,7 @@ impl<'api> Repos<'api> {
     ///
     /// # List branches
     /// 
-    /// [GitHub API docs for list_branches](https://docs.github.com/rest/reference/repos#list-branches)    
+    /// [GitHub API docs for list_branches](https://docs.github.com/rest/reference/repos#list-branches)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -12799,7 +12853,8 @@ impl<'api> Repos<'api> {
     /// 
     /// Returns all branches where the given commit SHA is the HEAD, or latest commit for the branch.
     /// 
-    /// [GitHub API docs for list_branches_for_head_commit](https://docs.github.com/rest/reference/repos#list-branches-for-head-commit)///
+    /// [GitHub API docs for list_branches_for_head_commit](https://docs.github.com/rest/reference/repos#list-branches-for-head-commit)
+    ///
     /// The `list_branches_for_head_commit_async` endpoint is enabled with the `groot` cargo feature.
     ///
     /// ---
@@ -12843,7 +12898,8 @@ impl<'api> Repos<'api> {
     /// 
     /// Returns all branches where the given commit SHA is the HEAD, or latest commit for the branch.
     /// 
-    /// [GitHub API docs for list_branches_for_head_commit](https://docs.github.com/rest/reference/repos#list-branches-for-head-commit)///
+    /// [GitHub API docs for list_branches_for_head_commit](https://docs.github.com/rest/reference/repos#list-branches-for-head-commit)
+    ///
     /// The `list_branches_for_head_commit` endpoint is enabled with the `groot` cargo feature.
     ///
     /// ---
@@ -12888,7 +12944,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Team members will include the members of child teams.
     /// 
-    /// [GitHub API docs for list_collaborators](https://docs.github.com/rest/reference/repos#list-repository-collaborators)    
+    /// [GitHub API docs for list_collaborators](https://docs.github.com/rest/reference/repos#list-repository-collaborators)
     ///
     /// ---
     pub async fn list_collaborators_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListCollaboratorsParams<'api>>>) -> Result<Vec<Collaborator>, ReposListCollaboratorsError> {
@@ -12933,7 +12989,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Team members will include the members of child teams.
     /// 
-    /// [GitHub API docs for list_collaborators](https://docs.github.com/rest/reference/repos#list-repository-collaborators)    
+    /// [GitHub API docs for list_collaborators](https://docs.github.com/rest/reference/repos#list-repository-collaborators)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -12978,7 +13034,8 @@ impl<'api> Repos<'api> {
     ///
     /// Use the `:commit_sha` to specify the commit that will have its comments listed.
     /// 
-    /// [GitHub API docs for list_comments_for_commit](https://docs.github.com/rest/reference/repos#list-commit-comments)///
+    /// [GitHub API docs for list_comments_for_commit](https://docs.github.com/rest/reference/repos#list-commit-comments)
+    ///
     /// The `list_comments_for_commit_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
@@ -13022,7 +13079,8 @@ impl<'api> Repos<'api> {
     ///
     /// Use the `:commit_sha` to specify the commit that will have its comments listed.
     /// 
-    /// [GitHub API docs for list_comments_for_commit](https://docs.github.com/rest/reference/repos#list-commit-comments)///
+    /// [GitHub API docs for list_comments_for_commit](https://docs.github.com/rest/reference/repos#list-commit-comments)
+    ///
     /// The `list_comments_for_commit` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
@@ -13070,7 +13128,8 @@ impl<'api> Repos<'api> {
     /// 
     /// Comments are ordered by ascending ID.
     /// 
-    /// [GitHub API docs for list_commit_comments_for_repo](https://docs.github.com/rest/reference/repos#list-commit-comments-for-a-repository)///
+    /// [GitHub API docs for list_commit_comments_for_repo](https://docs.github.com/rest/reference/repos#list-commit-comments-for-a-repository)
+    ///
     /// The `list_commit_comments_for_repo_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
@@ -13116,7 +13175,8 @@ impl<'api> Repos<'api> {
     /// 
     /// Comments are ordered by ascending ID.
     /// 
-    /// [GitHub API docs for list_commit_comments_for_repo](https://docs.github.com/rest/reference/repos#list-commit-comments-for-a-repository)///
+    /// [GitHub API docs for list_commit_comments_for_repo](https://docs.github.com/rest/reference/repos#list-commit-comments-for-a-repository)
+    ///
     /// The `list_commit_comments_for_repo` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
@@ -13164,7 +13224,7 @@ impl<'api> Repos<'api> {
     /// 
     /// This resource is also available via a legacy route: `GET /repos/:owner/:repo/statuses/:ref`.
     /// 
-    /// [GitHub API docs for list_commit_statuses_for_ref](https://docs.github.com/rest/reference/repos#list-commit-statuses-for-a-reference)    
+    /// [GitHub API docs for list_commit_statuses_for_ref](https://docs.github.com/rest/reference/repos#list-commit-statuses-for-a-reference)
     ///
     /// ---
     pub async fn list_commit_statuses_for_ref_async(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ReposListCommitStatusesForRefParams>>) -> Result<Vec<Status>, ReposListCommitStatusesForRefError> {
@@ -13209,7 +13269,7 @@ impl<'api> Repos<'api> {
     /// 
     /// This resource is also available via a legacy route: `GET /repos/:owner/:repo/statuses/:ref`.
     /// 
-    /// [GitHub API docs for list_commit_statuses_for_ref](https://docs.github.com/rest/reference/repos#list-commit-statuses-for-a-reference)    
+    /// [GitHub API docs for list_commit_statuses_for_ref](https://docs.github.com/rest/reference/repos#list-commit-statuses-for-a-reference)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -13281,7 +13341,7 @@ impl<'api> Repos<'api> {
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
     /// 
-    /// [GitHub API docs for list_commits](https://docs.github.com/rest/reference/repos#list-commits)    
+    /// [GitHub API docs for list_commits](https://docs.github.com/rest/reference/repos#list-commits)
     ///
     /// ---
     pub async fn list_commits_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListCommitsParams<'api>>>) -> Result<Vec<Commit>, ReposListCommitsError> {
@@ -13354,7 +13414,7 @@ impl<'api> Repos<'api> {
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
     /// 
-    /// [GitHub API docs for list_commits](https://docs.github.com/rest/reference/repos#list-commits)    
+    /// [GitHub API docs for list_commits](https://docs.github.com/rest/reference/repos#list-commits)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -13404,7 +13464,7 @@ impl<'api> Repos<'api> {
     /// 
     /// GitHub identifies contributors by author email address. This endpoint groups contribution counts by GitHub user, which includes all associated email addresses. To improve performance, only the first 500 author email addresses in the repository link to GitHub users. The rest will appear as anonymous contributors without associated GitHub user information.
     /// 
-    /// [GitHub API docs for list_contributors](https://docs.github.com/rest/reference/repos/#list-repository-contributors)    
+    /// [GitHub API docs for list_contributors](https://docs.github.com/rest/reference/repos/#list-repository-contributors)
     ///
     /// ---
     pub async fn list_contributors_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListContributorsParams<'api>>>) -> Result<Vec<Contributor>, ReposListContributorsError> {
@@ -13451,7 +13511,7 @@ impl<'api> Repos<'api> {
     /// 
     /// GitHub identifies contributors by author email address. This endpoint groups contribution counts by GitHub user, which includes all associated email addresses. To improve performance, only the first 500 author email addresses in the repository link to GitHub users. The rest will appear as anonymous contributors without associated GitHub user information.
     /// 
-    /// [GitHub API docs for list_contributors](https://docs.github.com/rest/reference/repos/#list-repository-contributors)    
+    /// [GitHub API docs for list_contributors](https://docs.github.com/rest/reference/repos/#list-repository-contributors)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -13496,7 +13556,7 @@ impl<'api> Repos<'api> {
     ///
     /// # List deploy keys
     /// 
-    /// [GitHub API docs for list_deploy_keys](https://docs.github.com/rest/reference/repos#list-deploy-keys)    
+    /// [GitHub API docs for list_deploy_keys](https://docs.github.com/rest/reference/repos#list-deploy-keys)
     ///
     /// ---
     pub async fn list_deploy_keys_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListDeployKeysParams>>) -> Result<Vec<DeployKey>, ReposListDeployKeysError> {
@@ -13536,7 +13596,7 @@ impl<'api> Repos<'api> {
     ///
     /// # List deploy keys
     /// 
-    /// [GitHub API docs for list_deploy_keys](https://docs.github.com/rest/reference/repos#list-deploy-keys)    
+    /// [GitHub API docs for list_deploy_keys](https://docs.github.com/rest/reference/repos#list-deploy-keys)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -13580,8 +13640,10 @@ impl<'api> Repos<'api> {
     ///
     /// Users with pull access can view deployment statuses for a deployment:
     /// 
-    /// [GitHub API docs for list_deployment_statuses](https://docs.github.com/rest/reference/repos#list-deployment-statuses)///
-    /// The `list_deployment_statuses_async` endpoint is enabled with the `flash` cargo feature./// The `list_deployment_statuses_async` endpoint is enabled with the `ant-man` cargo feature.
+    /// [GitHub API docs for list_deployment_statuses](https://docs.github.com/rest/reference/repos#list-deployment-statuses)
+    ///
+    /// The `list_deployment_statuses_async` endpoint is enabled with the `flash` cargo feature.
+    /// The `list_deployment_statuses_async` endpoint is enabled with the `ant-man` cargo feature.
     ///
     /// ---
     #[cfg(feature = "flash")]
@@ -13626,8 +13688,10 @@ impl<'api> Repos<'api> {
     ///
     /// Users with pull access can view deployment statuses for a deployment:
     /// 
-    /// [GitHub API docs for list_deployment_statuses](https://docs.github.com/rest/reference/repos#list-deployment-statuses)///
-    /// The `list_deployment_statuses` endpoint is enabled with the `flash` cargo feature./// The `list_deployment_statuses` endpoint is enabled with the `ant-man` cargo feature.
+    /// [GitHub API docs for list_deployment_statuses](https://docs.github.com/rest/reference/repos#list-deployment-statuses)
+    ///
+    /// The `list_deployment_statuses` endpoint is enabled with the `flash` cargo feature.
+    /// The `list_deployment_statuses` endpoint is enabled with the `ant-man` cargo feature.
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -13674,7 +13738,8 @@ impl<'api> Repos<'api> {
     ///
     /// Simple filtering of deployments is available via query parameters:
     /// 
-    /// [GitHub API docs for list_deployments](https://docs.github.com/rest/reference/repos#list-deployments)///
+    /// [GitHub API docs for list_deployments](https://docs.github.com/rest/reference/repos#list-deployments)
+    ///
     /// The `list_deployments_async` endpoint is enabled with the `ant-man` cargo feature.
     ///
     /// ---
@@ -13718,7 +13783,8 @@ impl<'api> Repos<'api> {
     ///
     /// Simple filtering of deployments is available via query parameters:
     /// 
-    /// [GitHub API docs for list_deployments](https://docs.github.com/rest/reference/repos#list-deployments)///
+    /// [GitHub API docs for list_deployments](https://docs.github.com/rest/reference/repos#list-deployments)
+    ///
     /// The `list_deployments` endpoint is enabled with the `ant-man` cargo feature.
     ///
     /// ---
@@ -13766,7 +13832,7 @@ impl<'api> Repos<'api> {
     /// 
     /// The authenticated user has explicit permission to access repositories they own, repositories where they are a collaborator, and repositories that they can access through an organization membership.
     /// 
-    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/repos/#list-repositories-for-the-authenticated-user)    
+    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/repos/#list-repositories-for-the-authenticated-user)
     ///
     /// ---
     pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<ReposListForAuthenticatedUserParams<'api>>>) -> Result<Vec<Repository>, ReposListForAuthenticatedUserError> {
@@ -13814,7 +13880,7 @@ impl<'api> Repos<'api> {
     /// 
     /// The authenticated user has explicit permission to access repositories they own, repositories where they are a collaborator, and repositories that they can access through an organization membership.
     /// 
-    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/repos/#list-repositories-for-the-authenticated-user)    
+    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/repos/#list-repositories-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -13862,8 +13928,10 @@ impl<'api> Repos<'api> {
     ///
     /// Lists repositories for the specified organization.
     /// 
-    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/repos/#list-organization-repositories)///
-    /// The `list_for_org_async` endpoint is enabled with the `nebula` cargo feature./// The `list_for_org_async` endpoint is enabled with the `baptiste` cargo feature.
+    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/repos/#list-organization-repositories)
+    ///
+    /// The `list_for_org_async` endpoint is enabled with the `nebula` cargo feature.
+    /// The `list_for_org_async` endpoint is enabled with the `baptiste` cargo feature.
     ///
     /// ---
     #[cfg(feature = "nebula")]
@@ -13907,8 +13975,10 @@ impl<'api> Repos<'api> {
     ///
     /// Lists repositories for the specified organization.
     /// 
-    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/repos/#list-organization-repositories)///
-    /// The `list_for_org` endpoint is enabled with the `nebula` cargo feature./// The `list_for_org` endpoint is enabled with the `baptiste` cargo feature.
+    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/repos/#list-organization-repositories)
+    ///
+    /// The `list_for_org` endpoint is enabled with the `nebula` cargo feature.
+    /// The `list_for_org` endpoint is enabled with the `baptiste` cargo feature.
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -13954,7 +14024,8 @@ impl<'api> Repos<'api> {
     ///
     /// Lists public repositories for the specified user. Note: For GitHub AE, this endpoint will list internal repositories for the specified user.
     /// 
-    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/repos/#list-repositories-for-a-user)///
+    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/repos/#list-repositories-for-a-user)
+    ///
     /// The `list_for_user_async` endpoint is enabled with the `nebula` cargo feature.
     ///
     /// ---
@@ -13998,7 +14069,8 @@ impl<'api> Repos<'api> {
     ///
     /// Lists public repositories for the specified user. Note: For GitHub AE, this endpoint will list internal repositories for the specified user.
     /// 
-    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/repos/#list-repositories-for-a-user)///
+    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/repos/#list-repositories-for-a-user)
+    ///
     /// The `list_for_user` endpoint is enabled with the `nebula` cargo feature.
     ///
     /// ---
@@ -14042,7 +14114,7 @@ impl<'api> Repos<'api> {
     ///
     /// # List forks
     /// 
-    /// [GitHub API docs for list_forks](https://docs.github.com/rest/reference/repos#list-forks)    
+    /// [GitHub API docs for list_forks](https://docs.github.com/rest/reference/repos#list-forks)
     ///
     /// ---
     pub async fn list_forks_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListForksParams<'api>>>) -> Result<Vec<MinimalRepository>, ReposListForksError> {
@@ -14083,7 +14155,7 @@ impl<'api> Repos<'api> {
     ///
     /// # List forks
     /// 
-    /// [GitHub API docs for list_forks](https://docs.github.com/rest/reference/repos#list-forks)    
+    /// [GitHub API docs for list_forks](https://docs.github.com/rest/reference/repos#list-forks)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -14128,7 +14200,7 @@ impl<'api> Repos<'api> {
     ///
     /// When authenticating as a user with admin rights to a repository, this endpoint will list all currently open repository invitations.
     /// 
-    /// [GitHub API docs for list_invitations](https://docs.github.com/rest/reference/repos#list-repository-invitations)    
+    /// [GitHub API docs for list_invitations](https://docs.github.com/rest/reference/repos#list-repository-invitations)
     ///
     /// ---
     pub async fn list_invitations_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListInvitationsParams>>) -> Result<Vec<RepositoryInvitation>, ReposListInvitationsError> {
@@ -14170,7 +14242,7 @@ impl<'api> Repos<'api> {
     ///
     /// When authenticating as a user with admin rights to a repository, this endpoint will list all currently open repository invitations.
     /// 
-    /// [GitHub API docs for list_invitations](https://docs.github.com/rest/reference/repos#list-repository-invitations)    
+    /// [GitHub API docs for list_invitations](https://docs.github.com/rest/reference/repos#list-repository-invitations)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -14214,7 +14286,7 @@ impl<'api> Repos<'api> {
     ///
     /// When authenticating as a user, this endpoint will list all currently open repository invitations for that user.
     /// 
-    /// [GitHub API docs for list_invitations_for_authenticated_user](https://docs.github.com/rest/reference/repos#list-repository-invitations-for-the-authenticated-user)    
+    /// [GitHub API docs for list_invitations_for_authenticated_user](https://docs.github.com/rest/reference/repos#list-repository-invitations-for-the-authenticated-user)
     ///
     /// ---
     pub async fn list_invitations_for_authenticated_user_async(&self, query_params: Option<impl Into<ReposListInvitationsForAuthenticatedUserParams>>) -> Result<Vec<RepositoryInvitation>, ReposListInvitationsForAuthenticatedUserError> {
@@ -14260,7 +14332,7 @@ impl<'api> Repos<'api> {
     ///
     /// When authenticating as a user, this endpoint will list all currently open repository invitations for that user.
     /// 
-    /// [GitHub API docs for list_invitations_for_authenticated_user](https://docs.github.com/rest/reference/repos#list-repository-invitations-for-the-authenticated-user)    
+    /// [GitHub API docs for list_invitations_for_authenticated_user](https://docs.github.com/rest/reference/repos#list-repository-invitations-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -14308,7 +14380,7 @@ impl<'api> Repos<'api> {
     ///
     /// Lists languages for the specified repository. The value shown for each language is the number of bytes of code written in that language.
     /// 
-    /// [GitHub API docs for list_languages](https://docs.github.com/rest/reference/repos/#list-repository-languages)    
+    /// [GitHub API docs for list_languages](https://docs.github.com/rest/reference/repos/#list-repository-languages)
     ///
     /// ---
     pub async fn list_languages_async(&self, owner: &str, repo: &str) -> Result<Language, ReposListLanguagesError> {
@@ -14346,7 +14418,7 @@ impl<'api> Repos<'api> {
     ///
     /// Lists languages for the specified repository. The value shown for each language is the number of bytes of code written in that language.
     /// 
-    /// [GitHub API docs for list_languages](https://docs.github.com/rest/reference/repos/#list-repository-languages)    
+    /// [GitHub API docs for list_languages](https://docs.github.com/rest/reference/repos/#list-repository-languages)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -14383,7 +14455,7 @@ impl<'api> Repos<'api> {
     ///
     /// # List GitHub Pages builds
     /// 
-    /// [GitHub API docs for list_pages_builds](https://docs.github.com/rest/reference/repos#list-github-pages-builds)    
+    /// [GitHub API docs for list_pages_builds](https://docs.github.com/rest/reference/repos#list-github-pages-builds)
     ///
     /// ---
     pub async fn list_pages_builds_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListPagesBuildsParams>>) -> Result<Vec<PageBuild>, ReposListPagesBuildsError> {
@@ -14423,7 +14495,7 @@ impl<'api> Repos<'api> {
     ///
     /// # List GitHub Pages builds
     /// 
-    /// [GitHub API docs for list_pages_builds](https://docs.github.com/rest/reference/repos#list-github-pages-builds)    
+    /// [GitHub API docs for list_pages_builds](https://docs.github.com/rest/reference/repos#list-github-pages-builds)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -14471,7 +14543,7 @@ impl<'api> Repos<'api> {
     /// - For GitHub Enterprise Server and GitHub AE, this endpoint will only list repositories available to all users on the enterprise.
     /// - Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header) to get the URL for the next page of repositories.
     /// 
-    /// [GitHub API docs for list_public](https://docs.github.com/rest/reference/repos/#list-public-repositories)    
+    /// [GitHub API docs for list_public](https://docs.github.com/rest/reference/repos/#list-public-repositories)
     ///
     /// ---
     pub async fn list_public_async(&self, query_params: Option<impl Into<ReposListPublicParams>>) -> Result<Vec<MinimalRepository>, ReposListPublicError> {
@@ -14519,7 +14591,7 @@ impl<'api> Repos<'api> {
     /// - For GitHub Enterprise Server and GitHub AE, this endpoint will only list repositories available to all users on the enterprise.
     /// - Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header) to get the URL for the next page of repositories.
     /// 
-    /// [GitHub API docs for list_public](https://docs.github.com/rest/reference/repos/#list-public-repositories)    
+    /// [GitHub API docs for list_public](https://docs.github.com/rest/reference/repos/#list-public-repositories)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -14565,7 +14637,8 @@ impl<'api> Repos<'api> {
     ///
     /// Lists all pull requests containing the provided commit SHA, which can be from any point in the commit history. The results will include open and closed pull requests. Additional preview headers may be required to see certain details for associated pull requests, such as whether a pull request is in a draft state. For more information about previews that might affect this endpoint, see the [List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests) endpoint.
     /// 
-    /// [GitHub API docs for list_pull_requests_associated_with_commit](https://docs.github.com/rest/reference/repos#list-pull-requests-associated-with-a-commit)///
+    /// [GitHub API docs for list_pull_requests_associated_with_commit](https://docs.github.com/rest/reference/repos#list-pull-requests-associated-with-a-commit)
+    ///
     /// The `list_pull_requests_associated_with_commit_async` endpoint is enabled with the `groot` cargo feature.
     ///
     /// ---
@@ -14610,7 +14683,8 @@ impl<'api> Repos<'api> {
     ///
     /// Lists all pull requests containing the provided commit SHA, which can be from any point in the commit history. The results will include open and closed pull requests. Additional preview headers may be required to see certain details for associated pull requests, such as whether a pull request is in a draft state. For more information about previews that might affect this endpoint, see the [List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests) endpoint.
     /// 
-    /// [GitHub API docs for list_pull_requests_associated_with_commit](https://docs.github.com/rest/reference/repos#list-pull-requests-associated-with-a-commit)///
+    /// [GitHub API docs for list_pull_requests_associated_with_commit](https://docs.github.com/rest/reference/repos#list-pull-requests-associated-with-a-commit)
+    ///
     /// The `list_pull_requests_associated_with_commit` endpoint is enabled with the `groot` cargo feature.
     ///
     /// ---
@@ -14655,7 +14729,7 @@ impl<'api> Repos<'api> {
     ///
     /// # List release assets
     /// 
-    /// [GitHub API docs for list_release_assets](https://docs.github.com/rest/reference/repos#list-release-assets)    
+    /// [GitHub API docs for list_release_assets](https://docs.github.com/rest/reference/repos#list-release-assets)
     ///
     /// ---
     pub async fn list_release_assets_async(&self, owner: &str, repo: &str, release_id: i32, query_params: Option<impl Into<ReposListReleaseAssetsParams>>) -> Result<Vec<ReleaseAsset>, ReposListReleaseAssetsError> {
@@ -14695,7 +14769,7 @@ impl<'api> Repos<'api> {
     ///
     /// # List release assets
     /// 
-    /// [GitHub API docs for list_release_assets](https://docs.github.com/rest/reference/repos#list-release-assets)    
+    /// [GitHub API docs for list_release_assets](https://docs.github.com/rest/reference/repos#list-release-assets)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -14741,7 +14815,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Information about published releases are available to everyone. Only users with push access will receive listings for draft releases.
     /// 
-    /// [GitHub API docs for list_releases](https://docs.github.com/rest/reference/repos#list-releases)    
+    /// [GitHub API docs for list_releases](https://docs.github.com/rest/reference/repos#list-releases)
     ///
     /// ---
     pub async fn list_releases_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListReleasesParams>>) -> Result<Vec<Release>, ReposListReleasesError> {
@@ -14786,7 +14860,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Information about published releases are available to everyone. Only users with push access will receive listings for draft releases.
     /// 
-    /// [GitHub API docs for list_releases](https://docs.github.com/rest/reference/repos#list-releases)    
+    /// [GitHub API docs for list_releases](https://docs.github.com/rest/reference/repos#list-releases)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -14829,7 +14903,7 @@ impl<'api> Repos<'api> {
     ///
     /// # List repository tags
     /// 
-    /// [GitHub API docs for list_tags](https://docs.github.com/rest/reference/repos/#list-repository-tags)    
+    /// [GitHub API docs for list_tags](https://docs.github.com/rest/reference/repos/#list-repository-tags)
     ///
     /// ---
     pub async fn list_tags_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListTagsParams>>) -> Result<Vec<Tag>, ReposListTagsError> {
@@ -14869,7 +14943,7 @@ impl<'api> Repos<'api> {
     ///
     /// # List repository tags
     /// 
-    /// [GitHub API docs for list_tags](https://docs.github.com/rest/reference/repos/#list-repository-tags)    
+    /// [GitHub API docs for list_tags](https://docs.github.com/rest/reference/repos/#list-repository-tags)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -14911,7 +14985,7 @@ impl<'api> Repos<'api> {
     ///
     /// # List repository teams
     /// 
-    /// [GitHub API docs for list_teams](https://docs.github.com/rest/reference/repos/#list-repository-teams)    
+    /// [GitHub API docs for list_teams](https://docs.github.com/rest/reference/repos/#list-repository-teams)
     ///
     /// ---
     pub async fn list_teams_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListTeamsParams>>) -> Result<Vec<Team>, ReposListTeamsError> {
@@ -14951,7 +15025,7 @@ impl<'api> Repos<'api> {
     ///
     /// # List repository teams
     /// 
-    /// [GitHub API docs for list_teams](https://docs.github.com/rest/reference/repos/#list-repository-teams)    
+    /// [GitHub API docs for list_teams](https://docs.github.com/rest/reference/repos/#list-repository-teams)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -14993,7 +15067,7 @@ impl<'api> Repos<'api> {
     ///
     /// # List repository webhooks
     /// 
-    /// [GitHub API docs for list_webhooks](https://docs.github.com/rest/reference/repos#list-repository-webhooks)    
+    /// [GitHub API docs for list_webhooks](https://docs.github.com/rest/reference/repos#list-repository-webhooks)
     ///
     /// ---
     pub async fn list_webhooks_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListWebhooksParams>>) -> Result<Vec<Hook>, ReposListWebhooksError> {
@@ -15034,7 +15108,7 @@ impl<'api> Repos<'api> {
     ///
     /// # List repository webhooks
     /// 
-    /// [GitHub API docs for list_webhooks](https://docs.github.com/rest/reference/repos#list-repository-webhooks)    
+    /// [GitHub API docs for list_webhooks](https://docs.github.com/rest/reference/repos#list-repository-webhooks)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -15077,7 +15151,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Merge a branch
     /// 
-    /// [GitHub API docs for merge](https://docs.github.com/rest/reference/repos#merge-a-branch)    
+    /// [GitHub API docs for merge](https://docs.github.com/rest/reference/repos#merge-a-branch)
     ///
     /// ---
     pub async fn merge_async(&self, owner: &str, repo: &str, body: PostReposMerge) -> Result<Commit, ReposMergeError> {
@@ -15117,7 +15191,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Merge a branch
     /// 
-    /// [GitHub API docs for merge](https://docs.github.com/rest/reference/repos#merge-a-branch)    
+    /// [GitHub API docs for merge](https://docs.github.com/rest/reference/repos#merge-a-branch)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -15160,7 +15234,7 @@ impl<'api> Repos<'api> {
     ///
     /// This will trigger a [ping event](https://docs.github.com/webhooks/#ping-event) to be sent to the hook.
     /// 
-    /// [GitHub API docs for ping_webhook](https://docs.github.com/rest/reference/repos#ping-a-repository-webhook)    
+    /// [GitHub API docs for ping_webhook](https://docs.github.com/rest/reference/repos#ping-a-repository-webhook)
     ///
     /// ---
     pub async fn ping_webhook_async(&self, owner: &str, repo: &str, hook_id: i32) -> Result<(), ReposPingWebhookError> {
@@ -15199,7 +15273,7 @@ impl<'api> Repos<'api> {
     ///
     /// This will trigger a [ping event](https://docs.github.com/webhooks/#ping-event) to be sent to the hook.
     /// 
-    /// [GitHub API docs for ping_webhook](https://docs.github.com/rest/reference/repos#ping-a-repository-webhook)    
+    /// [GitHub API docs for ping_webhook](https://docs.github.com/rest/reference/repos#ping-a-repository-webhook)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -15245,7 +15319,7 @@ impl<'api> Repos<'api> {
     /// | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
     /// | `array` | The GitHub Apps that have push access to this branch. Use the app's `slug`. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
     /// 
-    /// [GitHub API docs for remove_app_access_restrictions](https://docs.github.com/rest/reference/repos#remove-app-access-restrictions)    
+    /// [GitHub API docs for remove_app_access_restrictions](https://docs.github.com/rest/reference/repos#remove-app-access-restrictions)
     ///
     /// ---
     pub async fn remove_app_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: DeleteReposRemoveAppAccessRestrictions) -> Result<Vec<Integration>, ReposRemoveAppAccessRestrictionsError> {
@@ -15290,7 +15364,7 @@ impl<'api> Repos<'api> {
     /// | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
     /// | `array` | The GitHub Apps that have push access to this branch. Use the app's `slug`. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
     /// 
-    /// [GitHub API docs for remove_app_access_restrictions](https://docs.github.com/rest/reference/repos#remove-app-access-restrictions)    
+    /// [GitHub API docs for remove_app_access_restrictions](https://docs.github.com/rest/reference/repos#remove-app-access-restrictions)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -15328,7 +15402,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Remove a repository collaborator
     /// 
-    /// [GitHub API docs for remove_collaborator](https://docs.github.com/rest/reference/repos#remove-a-repository-collaborator)    
+    /// [GitHub API docs for remove_collaborator](https://docs.github.com/rest/reference/repos#remove-a-repository-collaborator)
     ///
     /// ---
     pub async fn remove_collaborator_async(&self, owner: &str, repo: &str, username: &str) -> Result<(), ReposRemoveCollaboratorError> {
@@ -15364,7 +15438,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Remove a repository collaborator
     /// 
-    /// [GitHub API docs for remove_collaborator](https://docs.github.com/rest/reference/repos#remove-a-repository-collaborator)    
+    /// [GitHub API docs for remove_collaborator](https://docs.github.com/rest/reference/repos#remove-a-repository-collaborator)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -15403,7 +15477,7 @@ impl<'api> Repos<'api> {
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for remove_status_check_contexts](https://docs.github.com/rest/reference/repos#remove-status-check-contexts)    
+    /// [GitHub API docs for remove_status_check_contexts](https://docs.github.com/rest/reference/repos#remove-status-check-contexts)
     ///
     /// ---
     pub async fn remove_status_check_contexts_async(&self, owner: &str, repo: &str, branch: &str, body: DeleteReposRemoveStatusCheckContexts) -> Result<Vec<String>, ReposRemoveStatusCheckContextsError> {
@@ -15443,7 +15517,7 @@ impl<'api> Repos<'api> {
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for remove_status_check_contexts](https://docs.github.com/rest/reference/repos#remove-status-check-contexts)    
+    /// [GitHub API docs for remove_status_check_contexts](https://docs.github.com/rest/reference/repos#remove-status-check-contexts)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -15484,7 +15558,7 @@ impl<'api> Repos<'api> {
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for remove_status_check_protection](https://docs.github.com/rest/reference/repos#remove-status-check-protection)    
+    /// [GitHub API docs for remove_status_check_protection](https://docs.github.com/rest/reference/repos#remove-status-check-protection)
     ///
     /// ---
     pub async fn remove_status_check_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<(), ReposRemoveStatusCheckProtectionError> {
@@ -15522,7 +15596,7 @@ impl<'api> Repos<'api> {
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for remove_status_check_protection](https://docs.github.com/rest/reference/repos#remove-status-check-protection)    
+    /// [GitHub API docs for remove_status_check_protection](https://docs.github.com/rest/reference/repos#remove-status-check-protection)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -15567,7 +15641,7 @@ impl<'api> Repos<'api> {
     /// | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
     /// | `array` | Teams that should no longer have push access. Use the team's `slug`. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
     /// 
-    /// [GitHub API docs for remove_team_access_restrictions](https://docs.github.com/rest/reference/repos#remove-team-access-restrictions)    
+    /// [GitHub API docs for remove_team_access_restrictions](https://docs.github.com/rest/reference/repos#remove-team-access-restrictions)
     ///
     /// ---
     pub async fn remove_team_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: DeleteReposRemoveTeamAccessRestrictions) -> Result<Vec<Team>, ReposRemoveTeamAccessRestrictionsError> {
@@ -15612,7 +15686,7 @@ impl<'api> Repos<'api> {
     /// | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
     /// | `array` | Teams that should no longer have push access. Use the team's `slug`. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
     /// 
-    /// [GitHub API docs for remove_team_access_restrictions](https://docs.github.com/rest/reference/repos#remove-team-access-restrictions)    
+    /// [GitHub API docs for remove_team_access_restrictions](https://docs.github.com/rest/reference/repos#remove-team-access-restrictions)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -15658,7 +15732,7 @@ impl<'api> Repos<'api> {
     /// | ------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
     /// | `array` | Usernames of the people who should no longer have push access. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
     /// 
-    /// [GitHub API docs for remove_user_access_restrictions](https://docs.github.com/rest/reference/repos#remove-user-access-restrictions)    
+    /// [GitHub API docs for remove_user_access_restrictions](https://docs.github.com/rest/reference/repos#remove-user-access-restrictions)
     ///
     /// ---
     pub async fn remove_user_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: DeleteReposRemoveUserAccessRestrictions) -> Result<Vec<SimpleUser>, ReposRemoveUserAccessRestrictionsError> {
@@ -15703,7 +15777,7 @@ impl<'api> Repos<'api> {
     /// | ------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
     /// | `array` | Usernames of the people who should no longer have push access. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
     /// 
-    /// [GitHub API docs for remove_user_access_restrictions](https://docs.github.com/rest/reference/repos#remove-user-access-restrictions)    
+    /// [GitHub API docs for remove_user_access_restrictions](https://docs.github.com/rest/reference/repos#remove-user-access-restrictions)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -15757,7 +15831,7 @@ impl<'api> Repos<'api> {
     /// * Users must have admin or owner permissions.
     /// * GitHub Apps must have the `administration:write` repository permission.
     /// 
-    /// [GitHub API docs for rename_branch](https://docs.github.com/rest/reference/repos#rename-a-branch)    
+    /// [GitHub API docs for rename_branch](https://docs.github.com/rest/reference/repos#rename-a-branch)
     ///
     /// ---
     pub async fn rename_branch_async(&self, owner: &str, repo: &str, branch: &str, body: PostReposRenameBranch) -> Result<BranchWithProtection, ReposRenameBranchError> {
@@ -15812,7 +15886,7 @@ impl<'api> Repos<'api> {
     /// * Users must have admin or owner permissions.
     /// * GitHub Apps must have the `administration:write` repository permission.
     /// 
-    /// [GitHub API docs for rename_branch](https://docs.github.com/rest/reference/repos#rename-a-branch)    
+    /// [GitHub API docs for rename_branch](https://docs.github.com/rest/reference/repos#rename-a-branch)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -15852,7 +15926,8 @@ impl<'api> Repos<'api> {
     ///
     /// # Replace all repository topics
     /// 
-    /// [GitHub API docs for replace_all_topics](https://docs.github.com/rest/reference/repos/#replace-all-repository-topics)///
+    /// [GitHub API docs for replace_all_topics](https://docs.github.com/rest/reference/repos/#replace-all-repository-topics)
+    ///
     /// The `replace_all_topics_async` endpoint is enabled with the `mercy` cargo feature.
     ///
     /// ---
@@ -15893,7 +15968,8 @@ impl<'api> Repos<'api> {
     ///
     /// # Replace all repository topics
     /// 
-    /// [GitHub API docs for replace_all_topics](https://docs.github.com/rest/reference/repos/#replace-all-repository-topics)///
+    /// [GitHub API docs for replace_all_topics](https://docs.github.com/rest/reference/repos/#replace-all-repository-topics)
+    ///
     /// The `replace_all_topics` endpoint is enabled with the `mercy` cargo feature.
     ///
     /// ---
@@ -15939,7 +16015,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Build requests are limited to one concurrent build per repository and one concurrent build per requester. If you request a build while another is still in progress, the second request will be queued until the first completes.
     /// 
-    /// [GitHub API docs for request_pages_build](https://docs.github.com/rest/reference/repos#request-a-github-pages-build)    
+    /// [GitHub API docs for request_pages_build](https://docs.github.com/rest/reference/repos#request-a-github-pages-build)
     ///
     /// ---
     pub async fn request_pages_build_async(&self, owner: &str, repo: &str) -> Result<PageBuildStatus, ReposRequestPagesBuildError> {
@@ -15979,7 +16055,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Build requests are limited to one concurrent build per repository and one concurrent build per requester. If you request a build while another is still in progress, the second request will be queued until the first completes.
     /// 
-    /// [GitHub API docs for request_pages_build](https://docs.github.com/rest/reference/repos#request-a-github-pages-build)    
+    /// [GitHub API docs for request_pages_build](https://docs.github.com/rest/reference/repos#request-a-github-pages-build)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -16020,7 +16096,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Adding admin enforcement requires admin or owner permissions to the repository and branch protection to be enabled.
     /// 
-    /// [GitHub API docs for set_admin_branch_protection](https://docs.github.com/rest/reference/repos#set-admin-branch-protection)    
+    /// [GitHub API docs for set_admin_branch_protection](https://docs.github.com/rest/reference/repos#set-admin-branch-protection)
     ///
     /// ---
     pub async fn set_admin_branch_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchAdminEnforced, ReposSetAdminBranchProtectionError> {
@@ -16060,7 +16136,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Adding admin enforcement requires admin or owner permissions to the repository and branch protection to be enabled.
     /// 
-    /// [GitHub API docs for set_admin_branch_protection](https://docs.github.com/rest/reference/repos#set-admin-branch-protection)    
+    /// [GitHub API docs for set_admin_branch_protection](https://docs.github.com/rest/reference/repos#set-admin-branch-protection)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -16105,7 +16181,7 @@ impl<'api> Repos<'api> {
     /// | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
     /// | `array` | The GitHub Apps that have push access to this branch. Use the app's `slug`. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
     /// 
-    /// [GitHub API docs for set_app_access_restrictions](https://docs.github.com/rest/reference/repos#set-app-access-restrictions)    
+    /// [GitHub API docs for set_app_access_restrictions](https://docs.github.com/rest/reference/repos#set-app-access-restrictions)
     ///
     /// ---
     pub async fn set_app_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: PutReposSetAppAccessRestrictions) -> Result<Vec<Integration>, ReposSetAppAccessRestrictionsError> {
@@ -16150,7 +16226,7 @@ impl<'api> Repos<'api> {
     /// | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
     /// | `array` | The GitHub Apps that have push access to this branch. Use the app's `slug`. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
     /// 
-    /// [GitHub API docs for set_app_access_restrictions](https://docs.github.com/rest/reference/repos#set-app-access-restrictions)    
+    /// [GitHub API docs for set_app_access_restrictions](https://docs.github.com/rest/reference/repos#set-app-access-restrictions)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -16190,7 +16266,7 @@ impl<'api> Repos<'api> {
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for set_status_check_contexts](https://docs.github.com/rest/reference/repos#set-status-check-contexts)    
+    /// [GitHub API docs for set_status_check_contexts](https://docs.github.com/rest/reference/repos#set-status-check-contexts)
     ///
     /// ---
     pub async fn set_status_check_contexts_async(&self, owner: &str, repo: &str, branch: &str, body: PutReposSetStatusCheckContexts) -> Result<Vec<String>, ReposSetStatusCheckContextsError> {
@@ -16230,7 +16306,7 @@ impl<'api> Repos<'api> {
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for set_status_check_contexts](https://docs.github.com/rest/reference/repos#set-status-check-contexts)    
+    /// [GitHub API docs for set_status_check_contexts](https://docs.github.com/rest/reference/repos#set-status-check-contexts)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -16277,7 +16353,7 @@ impl<'api> Repos<'api> {
     /// | ------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
     /// | `array` | The teams that can have push access. Use the team's `slug`. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
     /// 
-    /// [GitHub API docs for set_team_access_restrictions](https://docs.github.com/rest/reference/repos#set-team-access-restrictions)    
+    /// [GitHub API docs for set_team_access_restrictions](https://docs.github.com/rest/reference/repos#set-team-access-restrictions)
     ///
     /// ---
     pub async fn set_team_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: PutReposSetTeamAccessRestrictions) -> Result<Vec<Team>, ReposSetTeamAccessRestrictionsError> {
@@ -16322,7 +16398,7 @@ impl<'api> Repos<'api> {
     /// | ------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
     /// | `array` | The teams that can have push access. Use the team's `slug`. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
     /// 
-    /// [GitHub API docs for set_team_access_restrictions](https://docs.github.com/rest/reference/repos#set-team-access-restrictions)    
+    /// [GitHub API docs for set_team_access_restrictions](https://docs.github.com/rest/reference/repos#set-team-access-restrictions)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -16368,7 +16444,7 @@ impl<'api> Repos<'api> {
     /// | ------- | ----------------------------------------------------------------------------------------------------------------------------- |
     /// | `array` | Usernames for people who can have push access. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
     /// 
-    /// [GitHub API docs for set_user_access_restrictions](https://docs.github.com/rest/reference/repos#set-user-access-restrictions)    
+    /// [GitHub API docs for set_user_access_restrictions](https://docs.github.com/rest/reference/repos#set-user-access-restrictions)
     ///
     /// ---
     pub async fn set_user_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: PutReposSetUserAccessRestrictions) -> Result<Vec<SimpleUser>, ReposSetUserAccessRestrictionsError> {
@@ -16413,7 +16489,7 @@ impl<'api> Repos<'api> {
     /// | ------- | ----------------------------------------------------------------------------------------------------------------------------- |
     /// | `array` | Usernames for people who can have push access. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
     /// 
-    /// [GitHub API docs for set_user_access_restrictions](https://docs.github.com/rest/reference/repos#set-user-access-restrictions)    
+    /// [GitHub API docs for set_user_access_restrictions](https://docs.github.com/rest/reference/repos#set-user-access-restrictions)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -16455,7 +16531,7 @@ impl<'api> Repos<'api> {
     /// 
     /// **Note**: Previously `/repos/:owner/:repo/hooks/:hook_id/test`
     /// 
-    /// [GitHub API docs for test_push_webhook](https://docs.github.com/rest/reference/repos#test-the-push-repository-webhook)    
+    /// [GitHub API docs for test_push_webhook](https://docs.github.com/rest/reference/repos#test-the-push-repository-webhook)
     ///
     /// ---
     pub async fn test_push_webhook_async(&self, owner: &str, repo: &str, hook_id: i32) -> Result<(), ReposTestPushWebhookError> {
@@ -16496,7 +16572,7 @@ impl<'api> Repos<'api> {
     /// 
     /// **Note**: Previously `/repos/:owner/:repo/hooks/:hook_id/test`
     /// 
-    /// [GitHub API docs for test_push_webhook](https://docs.github.com/rest/reference/repos#test-the-push-repository-webhook)    
+    /// [GitHub API docs for test_push_webhook](https://docs.github.com/rest/reference/repos#test-the-push-repository-webhook)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -16536,7 +16612,7 @@ impl<'api> Repos<'api> {
     ///
     /// A transfer request will need to be accepted by the new owner when transferring a personal repository to another user. The response will contain the original `owner`, and the transfer will continue asynchronously. For more details on the requirements to transfer personal and organization-owned repositories, see [about repository transfers](https://help.github.com/articles/about-repository-transfers/).
     /// 
-    /// [GitHub API docs for transfer](https://docs.github.com/rest/reference/repos/#transfer-a-repository)    
+    /// [GitHub API docs for transfer](https://docs.github.com/rest/reference/repos/#transfer-a-repository)
     ///
     /// ---
     pub async fn transfer_async(&self, owner: &str, repo: &str, body: PostReposTransfer) -> Result<Repository, ReposTransferError> {
@@ -16574,7 +16650,7 @@ impl<'api> Repos<'api> {
     ///
     /// A transfer request will need to be accepted by the new owner when transferring a personal repository to another user. The response will contain the original `owner`, and the transfer will continue asynchronously. For more details on the requirements to transfer personal and organization-owned repositories, see [about repository transfers](https://help.github.com/articles/about-repository-transfers/).
     /// 
-    /// [GitHub API docs for transfer](https://docs.github.com/rest/reference/repos/#transfer-a-repository)    
+    /// [GitHub API docs for transfer](https://docs.github.com/rest/reference/repos/#transfer-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -16613,8 +16689,10 @@ impl<'api> Repos<'api> {
     ///
     /// **Note**: To edit a repository's topics, use the [Replace all repository topics](https://docs.github.com/rest/reference/repos#replace-all-repository-topics) endpoint.
     /// 
-    /// [GitHub API docs for update](https://docs.github.com/rest/reference/repos/#update-a-repository)///
-    /// The `update_async` endpoint is enabled with the `nebula` cargo feature./// The `update_async` endpoint is enabled with the `baptiste` cargo feature.
+    /// [GitHub API docs for update](https://docs.github.com/rest/reference/repos/#update-a-repository)
+    ///
+    /// The `update_async` endpoint is enabled with the `nebula` cargo feature.
+    /// The `update_async` endpoint is enabled with the `baptiste` cargo feature.
     ///
     /// ---
     #[cfg(feature = "nebula")]
@@ -16657,8 +16735,10 @@ impl<'api> Repos<'api> {
     ///
     /// **Note**: To edit a repository's topics, use the [Replace all repository topics](https://docs.github.com/rest/reference/repos#replace-all-repository-topics) endpoint.
     /// 
-    /// [GitHub API docs for update](https://docs.github.com/rest/reference/repos/#update-a-repository)///
-    /// The `update` endpoint is enabled with the `nebula` cargo feature./// The `update` endpoint is enabled with the `baptiste` cargo feature.
+    /// [GitHub API docs for update](https://docs.github.com/rest/reference/repos/#update-a-repository)
+    ///
+    /// The `update` endpoint is enabled with the `nebula` cargo feature.
+    /// The `update` endpoint is enabled with the `baptiste` cargo feature.
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -16708,7 +16788,8 @@ impl<'api> Repos<'api> {
     /// 
     /// **Note**: The list of users, apps, and teams in total is limited to 100 items.
     /// 
-    /// [GitHub API docs for update_branch_protection](https://docs.github.com/rest/reference/repos#update-branch-protection)///
+    /// [GitHub API docs for update_branch_protection](https://docs.github.com/rest/reference/repos#update-branch-protection)
+    ///
     /// The `update_branch_protection_async` endpoint is enabled with the `luke-cage` cargo feature.
     ///
     /// ---
@@ -16758,7 +16839,8 @@ impl<'api> Repos<'api> {
     /// 
     /// **Note**: The list of users, apps, and teams in total is limited to 100 items.
     /// 
-    /// [GitHub API docs for update_branch_protection](https://docs.github.com/rest/reference/repos#update-branch-protection)///
+    /// [GitHub API docs for update_branch_protection](https://docs.github.com/rest/reference/repos#update-branch-protection)
+    ///
     /// The `update_branch_protection` endpoint is enabled with the `luke-cage` cargo feature.
     ///
     /// ---
@@ -16801,7 +16883,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Update a commit comment
     /// 
-    /// [GitHub API docs for update_commit_comment](https://docs.github.com/rest/reference/repos#update-a-commit-comment)    
+    /// [GitHub API docs for update_commit_comment](https://docs.github.com/rest/reference/repos#update-a-commit-comment)
     ///
     /// ---
     pub async fn update_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i32, body: PatchReposUpdateCommitComment) -> Result<CommitComment, ReposUpdateCommitCommentError> {
@@ -16838,7 +16920,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Update a commit comment
     /// 
-    /// [GitHub API docs for update_commit_comment](https://docs.github.com/rest/reference/repos#update-a-commit-comment)    
+    /// [GitHub API docs for update_commit_comment](https://docs.github.com/rest/reference/repos#update-a-commit-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -16878,7 +16960,7 @@ impl<'api> Repos<'api> {
     ///
     /// Updates information for a GitHub Pages site. For more information, see "[About GitHub Pages](/github/working-with-github-pages/about-github-pages).
     /// 
-    /// [GitHub API docs for update_information_about_pages_site](https://docs.github.com/rest/reference/repos#update-information-about-a-github-pages-site)    
+    /// [GitHub API docs for update_information_about_pages_site](https://docs.github.com/rest/reference/repos#update-information-about-a-github-pages-site)
     ///
     /// ---
     pub async fn update_information_about_pages_site_async(&self, owner: &str, repo: &str, body: PutReposUpdateInformationAboutPagesSite) -> Result<(), ReposUpdateInformationAboutPagesSiteError> {
@@ -16918,7 +17000,7 @@ impl<'api> Repos<'api> {
     ///
     /// Updates information for a GitHub Pages site. For more information, see "[About GitHub Pages](/github/working-with-github-pages/about-github-pages).
     /// 
-    /// [GitHub API docs for update_information_about_pages_site](https://docs.github.com/rest/reference/repos#update-information-about-a-github-pages-site)    
+    /// [GitHub API docs for update_information_about_pages_site](https://docs.github.com/rest/reference/repos#update-information-about-a-github-pages-site)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -16957,7 +17039,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Update a repository invitation
     /// 
-    /// [GitHub API docs for update_invitation](https://docs.github.com/rest/reference/repos#update-a-repository-invitation)    
+    /// [GitHub API docs for update_invitation](https://docs.github.com/rest/reference/repos#update-a-repository-invitation)
     ///
     /// ---
     pub async fn update_invitation_async(&self, owner: &str, repo: &str, invitation_id: i32, body: PatchReposUpdateInvitation) -> Result<RepositoryInvitation, ReposUpdateInvitationError> {
@@ -16993,7 +17075,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Update a repository invitation
     /// 
-    /// [GitHub API docs for update_invitation](https://docs.github.com/rest/reference/repos#update-a-repository-invitation)    
+    /// [GitHub API docs for update_invitation](https://docs.github.com/rest/reference/repos#update-a-repository-invitation)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -17036,7 +17118,8 @@ impl<'api> Repos<'api> {
     /// 
     /// **Note**: Passing new arrays of `users` and `teams` replaces their previous values.
     /// 
-    /// [GitHub API docs for update_pull_request_review_protection](https://docs.github.com/rest/reference/repos#update-pull-request-review-protection)///
+    /// [GitHub API docs for update_pull_request_review_protection](https://docs.github.com/rest/reference/repos#update-pull-request-review-protection)
+    ///
     /// The `update_pull_request_review_protection_async` endpoint is enabled with the `luke-cage` cargo feature.
     ///
     /// ---
@@ -17081,7 +17164,8 @@ impl<'api> Repos<'api> {
     /// 
     /// **Note**: Passing new arrays of `users` and `teams` replaces their previous values.
     /// 
-    /// [GitHub API docs for update_pull_request_review_protection](https://docs.github.com/rest/reference/repos#update-pull-request-review-protection)///
+    /// [GitHub API docs for update_pull_request_review_protection](https://docs.github.com/rest/reference/repos#update-pull-request-review-protection)
+    ///
     /// The `update_pull_request_review_protection` endpoint is enabled with the `luke-cage` cargo feature.
     ///
     /// ---
@@ -17123,7 +17207,7 @@ impl<'api> Repos<'api> {
     ///
     /// Users with push access to the repository can edit a release.
     /// 
-    /// [GitHub API docs for update_release](https://docs.github.com/rest/reference/repos#update-a-release)    
+    /// [GitHub API docs for update_release](https://docs.github.com/rest/reference/repos#update-a-release)
     ///
     /// ---
     pub async fn update_release_async(&self, owner: &str, repo: &str, release_id: i32, body: PatchReposUpdateRelease) -> Result<Release, ReposUpdateReleaseError> {
@@ -17161,7 +17245,7 @@ impl<'api> Repos<'api> {
     ///
     /// Users with push access to the repository can edit a release.
     /// 
-    /// [GitHub API docs for update_release](https://docs.github.com/rest/reference/repos#update-a-release)    
+    /// [GitHub API docs for update_release](https://docs.github.com/rest/reference/repos#update-a-release)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -17200,7 +17284,7 @@ impl<'api> Repos<'api> {
     ///
     /// Users with push access to the repository can edit a release asset.
     /// 
-    /// [GitHub API docs for update_release_asset](https://docs.github.com/rest/reference/repos#update-a-release-asset)    
+    /// [GitHub API docs for update_release_asset](https://docs.github.com/rest/reference/repos#update-a-release-asset)
     ///
     /// ---
     pub async fn update_release_asset_async(&self, owner: &str, repo: &str, asset_id: i32, body: PatchReposUpdateReleaseAsset) -> Result<ReleaseAsset, ReposUpdateReleaseAssetError> {
@@ -17238,7 +17322,7 @@ impl<'api> Repos<'api> {
     ///
     /// Users with push access to the repository can edit a release asset.
     /// 
-    /// [GitHub API docs for update_release_asset](https://docs.github.com/rest/reference/repos#update-a-release-asset)    
+    /// [GitHub API docs for update_release_asset](https://docs.github.com/rest/reference/repos#update-a-release-asset)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -17279,7 +17363,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Updating required status checks requires admin or owner permissions to the repository and branch protection to be enabled.
     /// 
-    /// [GitHub API docs for update_status_check_protection](https://docs.github.com/rest/reference/repos#update-status-check-potection)    
+    /// [GitHub API docs for update_status_check_protection](https://docs.github.com/rest/reference/repos#update-status-check-potection)
     ///
     /// ---
     pub async fn update_status_check_protection_async(&self, owner: &str, repo: &str, branch: &str, body: PatchReposUpdateStatusCheckProtection) -> Result<StatusCheckPolicy, ReposUpdateStatusCheckProtectionError> {
@@ -17321,7 +17405,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Updating required status checks requires admin or owner permissions to the repository and branch protection to be enabled.
     /// 
-    /// [GitHub API docs for update_status_check_protection](https://docs.github.com/rest/reference/repos#update-status-check-potection)    
+    /// [GitHub API docs for update_status_check_protection](https://docs.github.com/rest/reference/repos#update-status-check-potection)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -17362,7 +17446,7 @@ impl<'api> Repos<'api> {
     ///
     /// Updates a webhook configured in a repository. If you previously had a `secret` set, you must provide the same `secret` or set a new `secret` or the secret will be removed. If you are only updating individual webhook `config` properties, use "[Update a webhook configuration for a repository](/rest/reference/repos#update-a-webhook-configuration-for-a-repository)."
     /// 
-    /// [GitHub API docs for update_webhook](https://docs.github.com/rest/reference/repos#update-a-repository-webhook)    
+    /// [GitHub API docs for update_webhook](https://docs.github.com/rest/reference/repos#update-a-repository-webhook)
     ///
     /// ---
     pub async fn update_webhook_async(&self, owner: &str, repo: &str, hook_id: i32, body: PatchReposUpdateWebhook) -> Result<Hook, ReposUpdateWebhookError> {
@@ -17402,7 +17486,7 @@ impl<'api> Repos<'api> {
     ///
     /// Updates a webhook configured in a repository. If you previously had a `secret` set, you must provide the same `secret` or set a new `secret` or the secret will be removed. If you are only updating individual webhook `config` properties, use "[Update a webhook configuration for a repository](/rest/reference/repos#update-a-webhook-configuration-for-a-repository)."
     /// 
-    /// [GitHub API docs for update_webhook](https://docs.github.com/rest/reference/repos#update-a-repository-webhook)    
+    /// [GitHub API docs for update_webhook](https://docs.github.com/rest/reference/repos#update-a-repository-webhook)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -17445,7 +17529,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Access tokens must have the `write:repo_hook` or `repo` scope, and GitHub Apps must have the `repository_hooks:write` permission.
     /// 
-    /// [GitHub API docs for update_webhook_config_for_repo](https://docs.github.com/rest/reference/repos#update-a-webhook-configuration-for-a-repository)    
+    /// [GitHub API docs for update_webhook_config_for_repo](https://docs.github.com/rest/reference/repos#update-a-webhook-configuration-for-a-repository)
     ///
     /// ---
     pub async fn update_webhook_config_for_repo_async(&self, owner: &str, repo: &str, hook_id: i32, body: PatchReposUpdateWebhookConfigForRepo) -> Result<WebhookConfig, ReposUpdateWebhookConfigForRepoError> {
@@ -17485,7 +17569,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Access tokens must have the `write:repo_hook` or `repo` scope, and GitHub Apps must have the `repository_hooks:write` permission.
     /// 
-    /// [GitHub API docs for update_webhook_config_for_repo](https://docs.github.com/rest/reference/repos#update-a-webhook-configuration-for-a-repository)    
+    /// [GitHub API docs for update_webhook_config_for_repo](https://docs.github.com/rest/reference/repos#update-a-webhook-configuration-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -17541,7 +17625,7 @@ impl<'api> Repos<'api> {
     /// endpoint lists the renamed filenames. For more information and help, contact [GitHub Support](https://support.github.com/contact).
     /// *   If you upload an asset with the same filename as another uploaded asset, you'll receive an error and must delete the old file before you can re-upload the new asset.
     /// 
-    /// [GitHub API docs for upload_release_asset](https://docs.github.com/rest/reference/repos#upload-a-release-asset)    
+    /// [GitHub API docs for upload_release_asset](https://docs.github.com/rest/reference/repos#upload-a-release-asset)
     ///
     /// ---
     pub async fn upload_release_asset_async(&self, owner: &str, repo: &str, release_id: i32, query_params: Option<impl Into<ReposUploadReleaseAssetParams<'api>>>, body: String) -> Result<ReleaseAsset, ReposUploadReleaseAssetError> {
@@ -17600,7 +17684,7 @@ impl<'api> Repos<'api> {
     /// endpoint lists the renamed filenames. For more information and help, contact [GitHub Support](https://support.github.com/contact).
     /// *   If you upload an asset with the same filename as another uploaded asset, you'll receive an error and must delete the old file before you can re-upload the new asset.
     /// 
-    /// [GitHub API docs for upload_release_asset](https://docs.github.com/rest/reference/repos#upload-a-release-asset)    
+    /// [GitHub API docs for upload_release_asset](https://docs.github.com/rest/reference/repos#upload-a-release-asset)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

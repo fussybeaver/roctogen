@@ -99,7 +99,8 @@ impl<'api> CodesOfConduct<'api> {
     ///
     /// # Get all codes of conduct
     /// 
-    /// [GitHub API docs for get_all_codes_of_conduct](https://docs.github.com/rest/reference/codes_of_conduct/#get-all-codes-of-conduct)///
+    /// [GitHub API docs for get_all_codes_of_conduct](https://docs.github.com/rest/reference/codes_of_conduct/#get-all-codes-of-conduct)
+    ///
     /// The `get_all_codes_of_conduct_async` endpoint is enabled with the `scarlet-witch` cargo feature.
     ///
     /// ---
@@ -139,7 +140,8 @@ impl<'api> CodesOfConduct<'api> {
     ///
     /// # Get all codes of conduct
     /// 
-    /// [GitHub API docs for get_all_codes_of_conduct](https://docs.github.com/rest/reference/codes_of_conduct/#get-all-codes-of-conduct)///
+    /// [GitHub API docs for get_all_codes_of_conduct](https://docs.github.com/rest/reference/codes_of_conduct/#get-all-codes-of-conduct)
+    ///
     /// The `get_all_codes_of_conduct` endpoint is enabled with the `scarlet-witch` cargo feature.
     ///
     /// ---
@@ -180,7 +182,8 @@ impl<'api> CodesOfConduct<'api> {
     ///
     /// # Get a code of conduct
     /// 
-    /// [GitHub API docs for get_conduct_code](https://docs.github.com/rest/reference/codes_of_conduct/#get-a-code-of-conduct)///
+    /// [GitHub API docs for get_conduct_code](https://docs.github.com/rest/reference/codes_of_conduct/#get-a-code-of-conduct)
+    ///
     /// The `get_conduct_code_async` endpoint is enabled with the `scarlet-witch` cargo feature.
     ///
     /// ---
@@ -221,7 +224,8 @@ impl<'api> CodesOfConduct<'api> {
     ///
     /// # Get a code of conduct
     /// 
-    /// [GitHub API docs for get_conduct_code](https://docs.github.com/rest/reference/codes_of_conduct/#get-a-code-of-conduct)///
+    /// [GitHub API docs for get_conduct_code](https://docs.github.com/rest/reference/codes_of_conduct/#get-a-code-of-conduct)
+    ///
     /// The `get_conduct_code` endpoint is enabled with the `scarlet-witch` cargo feature.
     ///
     /// ---
@@ -267,7 +271,8 @@ impl<'api> CodesOfConduct<'api> {
     /// 
     /// A code of conduct is detected if there is a file named `CODE_OF_CONDUCT` in the root directory of the repository. GitHub detects which code of conduct it is using fuzzy matching.
     /// 
-    /// [GitHub API docs for get_for_repo](https://docs.github.com/rest/reference/codes_of_conduct/#get-the-code-of-conduct-for-a-repository)///
+    /// [GitHub API docs for get_for_repo](https://docs.github.com/rest/reference/codes_of_conduct/#get-the-code-of-conduct-for-a-repository)
+    ///
     /// The `get_for_repo_async` endpoint is enabled with the `scarlet-witch` cargo feature.
     ///
     /// ---
@@ -309,7 +314,8 @@ impl<'api> CodesOfConduct<'api> {
     /// 
     /// A code of conduct is detected if there is a file named `CODE_OF_CONDUCT` in the root directory of the repository. GitHub detects which code of conduct it is using fuzzy matching.
     /// 
-    /// [GitHub API docs for get_for_repo](https://docs.github.com/rest/reference/codes_of_conduct/#get-the-code-of-conduct-for-a-repository)///
+    /// [GitHub API docs for get_for_repo](https://docs.github.com/rest/reference/codes_of_conduct/#get-the-code-of-conduct-for-a-repository)
+    ///
     /// The `get_for_repo` endpoint is enabled with the `scarlet-witch` cargo feature.
     ///
     /// ---

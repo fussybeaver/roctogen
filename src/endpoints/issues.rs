@@ -2125,7 +2125,7 @@ impl<'api> Issues<'api> {
     ///
     /// Adds up to 10 assignees to an issue. Users already assigned to an issue are not replaced.
     /// 
-    /// [GitHub API docs for add_assignees](https://docs.github.com/rest/reference/issues#add-assignees-to-an-issue)    
+    /// [GitHub API docs for add_assignees](https://docs.github.com/rest/reference/issues#add-assignees-to-an-issue)
     ///
     /// ---
     pub async fn add_assignees_async(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesAddAssignees) -> Result<IssueSimple, IssuesAddAssigneesError> {
@@ -2163,7 +2163,7 @@ impl<'api> Issues<'api> {
     ///
     /// Adds up to 10 assignees to an issue. Users already assigned to an issue are not replaced.
     /// 
-    /// [GitHub API docs for add_assignees](https://docs.github.com/rest/reference/issues#add-assignees-to-an-issue)    
+    /// [GitHub API docs for add_assignees](https://docs.github.com/rest/reference/issues#add-assignees-to-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2200,7 +2200,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Add labels to an issue
     /// 
-    /// [GitHub API docs for add_labels](https://docs.github.com/rest/reference/issues#add-labels-to-an-issue)    
+    /// [GitHub API docs for add_labels](https://docs.github.com/rest/reference/issues#add-labels-to-an-issue)
     ///
     /// ---
     pub async fn add_labels_async(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesAddLabels) -> Result<Vec<Label>, IssuesAddLabelsError> {
@@ -2238,7 +2238,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Add labels to an issue
     /// 
-    /// [GitHub API docs for add_labels](https://docs.github.com/rest/reference/issues#add-labels-to-an-issue)    
+    /// [GitHub API docs for add_labels](https://docs.github.com/rest/reference/issues#add-labels-to-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2283,7 +2283,7 @@ impl<'api> Issues<'api> {
     /// 
     /// Otherwise a `404` status code is returned.
     /// 
-    /// [GitHub API docs for check_user_can_be_assigned](https://docs.github.com/rest/reference/issues#check-if-a-user-can-be-assigned)    
+    /// [GitHub API docs for check_user_can_be_assigned](https://docs.github.com/rest/reference/issues#check-if-a-user-can-be-assigned)
     ///
     /// ---
     pub async fn check_user_can_be_assigned_async(&self, owner: &str, repo: &str, assignee: &str) -> Result<(), IssuesCheckUserCanBeAssignedError> {
@@ -2326,7 +2326,7 @@ impl<'api> Issues<'api> {
     /// 
     /// Otherwise a `404` status code is returned.
     /// 
-    /// [GitHub API docs for check_user_can_be_assigned](https://docs.github.com/rest/reference/issues#check-if-a-user-can-be-assigned)    
+    /// [GitHub API docs for check_user_can_be_assigned](https://docs.github.com/rest/reference/issues#check-if-a-user-can-be-assigned)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2368,7 +2368,7 @@ impl<'api> Issues<'api> {
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-abuse-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for create](https://docs.github.com/rest/reference/issues/#create-an-issue)    
+    /// [GitHub API docs for create](https://docs.github.com/rest/reference/issues/#create-an-issue)
     ///
     /// ---
     pub async fn create_async(&self, owner: &str, repo: &str, body: PostIssuesCreate) -> Result<Issue, IssuesCreateError> {
@@ -2413,7 +2413,7 @@ impl<'api> Issues<'api> {
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-abuse-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for create](https://docs.github.com/rest/reference/issues/#create-an-issue)    
+    /// [GitHub API docs for create](https://docs.github.com/rest/reference/issues/#create-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2457,7 +2457,7 @@ impl<'api> Issues<'api> {
     ///
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-abuse-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for create_comment](https://docs.github.com/rest/reference/issues#create-an-issue-comment)    
+    /// [GitHub API docs for create_comment](https://docs.github.com/rest/reference/issues#create-an-issue-comment)
     ///
     /// ---
     pub async fn create_comment_async(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesCreateComment) -> Result<IssueComment, IssuesCreateCommentError> {
@@ -2499,7 +2499,7 @@ impl<'api> Issues<'api> {
     ///
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-abuse-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for create_comment](https://docs.github.com/rest/reference/issues#create-an-issue-comment)    
+    /// [GitHub API docs for create_comment](https://docs.github.com/rest/reference/issues#create-an-issue-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2540,7 +2540,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Create a label
     /// 
-    /// [GitHub API docs for create_label](https://docs.github.com/rest/reference/issues#create-a-label)    
+    /// [GitHub API docs for create_label](https://docs.github.com/rest/reference/issues#create-a-label)
     ///
     /// ---
     pub async fn create_label_async(&self, owner: &str, repo: &str, body: PostIssuesCreateLabel) -> Result<Label, IssuesCreateLabelError> {
@@ -2578,7 +2578,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Create a label
     /// 
-    /// [GitHub API docs for create_label](https://docs.github.com/rest/reference/issues#create-a-label)    
+    /// [GitHub API docs for create_label](https://docs.github.com/rest/reference/issues#create-a-label)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2617,7 +2617,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Create a milestone
     /// 
-    /// [GitHub API docs for create_milestone](https://docs.github.com/rest/reference/issues#create-a-milestone)    
+    /// [GitHub API docs for create_milestone](https://docs.github.com/rest/reference/issues#create-a-milestone)
     ///
     /// ---
     pub async fn create_milestone_async(&self, owner: &str, repo: &str, body: PostIssuesCreateMilestone) -> Result<Milestone, IssuesCreateMilestoneError> {
@@ -2655,7 +2655,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Create a milestone
     /// 
-    /// [GitHub API docs for create_milestone](https://docs.github.com/rest/reference/issues#create-a-milestone)    
+    /// [GitHub API docs for create_milestone](https://docs.github.com/rest/reference/issues#create-a-milestone)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2694,7 +2694,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Delete an issue comment
     /// 
-    /// [GitHub API docs for delete_comment](https://docs.github.com/rest/reference/issues#delete-an-issue-comment)    
+    /// [GitHub API docs for delete_comment](https://docs.github.com/rest/reference/issues#delete-an-issue-comment)
     ///
     /// ---
     pub async fn delete_comment_async(&self, owner: &str, repo: &str, comment_id: i32) -> Result<(), IssuesDeleteCommentError> {
@@ -2730,7 +2730,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Delete an issue comment
     /// 
-    /// [GitHub API docs for delete_comment](https://docs.github.com/rest/reference/issues#delete-an-issue-comment)    
+    /// [GitHub API docs for delete_comment](https://docs.github.com/rest/reference/issues#delete-an-issue-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2767,7 +2767,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Delete a label
     /// 
-    /// [GitHub API docs for delete_label](https://docs.github.com/rest/reference/issues#delete-a-label)    
+    /// [GitHub API docs for delete_label](https://docs.github.com/rest/reference/issues#delete-a-label)
     ///
     /// ---
     pub async fn delete_label_async(&self, owner: &str, repo: &str, name: &str) -> Result<(), IssuesDeleteLabelError> {
@@ -2803,7 +2803,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Delete a label
     /// 
-    /// [GitHub API docs for delete_label](https://docs.github.com/rest/reference/issues#delete-a-label)    
+    /// [GitHub API docs for delete_label](https://docs.github.com/rest/reference/issues#delete-a-label)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2840,7 +2840,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Delete a milestone
     /// 
-    /// [GitHub API docs for delete_milestone](https://docs.github.com/rest/reference/issues#delete-a-milestone)    
+    /// [GitHub API docs for delete_milestone](https://docs.github.com/rest/reference/issues#delete-a-milestone)
     ///
     /// ---
     pub async fn delete_milestone_async(&self, owner: &str, repo: &str, milestone_number: i32) -> Result<(), IssuesDeleteMilestoneError> {
@@ -2877,7 +2877,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Delete a milestone
     /// 
-    /// [GitHub API docs for delete_milestone](https://docs.github.com/rest/reference/issues#delete-a-milestone)    
+    /// [GitHub API docs for delete_milestone](https://docs.github.com/rest/reference/issues#delete-a-milestone)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2927,7 +2927,8 @@ impl<'api> Issues<'api> {
     /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
     /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/issues/#get-an-issue)///
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/issues/#get-an-issue)
+    ///
     /// The `get_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
@@ -2981,7 +2982,8 @@ impl<'api> Issues<'api> {
     /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
     /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/issues/#get-an-issue)///
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/issues/#get-an-issue)
+    ///
     /// The `get` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
@@ -3024,7 +3026,8 @@ impl<'api> Issues<'api> {
     ///
     /// # Get an issue comment
     /// 
-    /// [GitHub API docs for get_comment](https://docs.github.com/rest/reference/issues#get-an-issue-comment)///
+    /// [GitHub API docs for get_comment](https://docs.github.com/rest/reference/issues#get-an-issue-comment)
+    ///
     /// The `get_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
@@ -3063,7 +3066,8 @@ impl<'api> Issues<'api> {
     ///
     /// # Get an issue comment
     /// 
-    /// [GitHub API docs for get_comment](https://docs.github.com/rest/reference/issues#get-an-issue-comment)///
+    /// [GitHub API docs for get_comment](https://docs.github.com/rest/reference/issues#get-an-issue-comment)
+    ///
     /// The `get_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
@@ -3103,7 +3107,8 @@ impl<'api> Issues<'api> {
     ///
     /// # Get an issue event
     /// 
-    /// [GitHub API docs for get_event](https://docs.github.com/rest/reference/issues#get-an-issue-event)///
+    /// [GitHub API docs for get_event](https://docs.github.com/rest/reference/issues#get-an-issue-event)
+    ///
     /// The `get_event_async` endpoint is enabled with the `starfox` cargo feature.
     ///
     /// ---
@@ -3144,7 +3149,8 @@ impl<'api> Issues<'api> {
     ///
     /// # Get an issue event
     /// 
-    /// [GitHub API docs for get_event](https://docs.github.com/rest/reference/issues#get-an-issue-event)///
+    /// [GitHub API docs for get_event](https://docs.github.com/rest/reference/issues#get-an-issue-event)
+    ///
     /// The `get_event` endpoint is enabled with the `starfox` cargo feature.
     ///
     /// ---
@@ -3186,7 +3192,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Get a label
     /// 
-    /// [GitHub API docs for get_label](https://docs.github.com/rest/reference/issues#get-a-label)    
+    /// [GitHub API docs for get_label](https://docs.github.com/rest/reference/issues#get-a-label)
     ///
     /// ---
     pub async fn get_label_async(&self, owner: &str, repo: &str, name: &str) -> Result<Label, IssuesGetLabelError> {
@@ -3223,7 +3229,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Get a label
     /// 
-    /// [GitHub API docs for get_label](https://docs.github.com/rest/reference/issues#get-a-label)    
+    /// [GitHub API docs for get_label](https://docs.github.com/rest/reference/issues#get-a-label)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3261,7 +3267,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Get a milestone
     /// 
-    /// [GitHub API docs for get_milestone](https://docs.github.com/rest/reference/issues#get-a-milestone)    
+    /// [GitHub API docs for get_milestone](https://docs.github.com/rest/reference/issues#get-a-milestone)
     ///
     /// ---
     pub async fn get_milestone_async(&self, owner: &str, repo: &str, milestone_number: i32) -> Result<Milestone, IssuesGetMilestoneError> {
@@ -3298,7 +3304,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Get a milestone
     /// 
-    /// [GitHub API docs for get_milestone](https://docs.github.com/rest/reference/issues#get-a-milestone)    
+    /// [GitHub API docs for get_milestone](https://docs.github.com/rest/reference/issues#get-a-milestone)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3346,7 +3352,8 @@ impl<'api> Issues<'api> {
     /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
     /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/issues/#list-issues-assigned-to-the-authenticated-user)///
+    /// [GitHub API docs for list](https://docs.github.com/rest/reference/issues/#list-issues-assigned-to-the-authenticated-user)
+    ///
     /// The `list_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
@@ -3401,7 +3408,8 @@ impl<'api> Issues<'api> {
     /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
     /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/issues/#list-issues-assigned-to-the-authenticated-user)///
+    /// [GitHub API docs for list](https://docs.github.com/rest/reference/issues/#list-issues-assigned-to-the-authenticated-user)
+    ///
     /// The `list` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
@@ -3450,7 +3458,7 @@ impl<'api> Issues<'api> {
     ///
     /// Lists the [available assignees](https://help.github.com/articles/assigning-issues-and-pull-requests-to-other-github-users/) for issues in a repository.
     /// 
-    /// [GitHub API docs for list_assignees](https://docs.github.com/rest/reference/issues#list-assignees)    
+    /// [GitHub API docs for list_assignees](https://docs.github.com/rest/reference/issues#list-assignees)
     ///
     /// ---
     pub async fn list_assignees_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListAssigneesParams>>) -> Result<Vec<SimpleUser>, IssuesListAssigneesError> {
@@ -3493,7 +3501,7 @@ impl<'api> Issues<'api> {
     ///
     /// Lists the [available assignees](https://help.github.com/articles/assigning-issues-and-pull-requests-to-other-github-users/) for issues in a repository.
     /// 
-    /// [GitHub API docs for list_assignees](https://docs.github.com/rest/reference/issues#list-assignees)    
+    /// [GitHub API docs for list_assignees](https://docs.github.com/rest/reference/issues#list-assignees)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3538,7 +3546,8 @@ impl<'api> Issues<'api> {
     ///
     /// Issue Comments are ordered by ascending ID.
     /// 
-    /// [GitHub API docs for list_comments](https://docs.github.com/rest/reference/issues#list-issue-comments)///
+    /// [GitHub API docs for list_comments](https://docs.github.com/rest/reference/issues#list-issue-comments)
+    ///
     /// The `list_comments_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
@@ -3584,7 +3593,8 @@ impl<'api> Issues<'api> {
     ///
     /// Issue Comments are ordered by ascending ID.
     /// 
-    /// [GitHub API docs for list_comments](https://docs.github.com/rest/reference/issues#list-issue-comments)///
+    /// [GitHub API docs for list_comments](https://docs.github.com/rest/reference/issues#list-issue-comments)
+    ///
     /// The `list_comments` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
@@ -3632,7 +3642,8 @@ impl<'api> Issues<'api> {
     ///
     /// By default, Issue Comments are ordered by ascending ID.
     /// 
-    /// [GitHub API docs for list_comments_for_repo](https://docs.github.com/rest/reference/issues#list-issue-comments-for-a-repository)///
+    /// [GitHub API docs for list_comments_for_repo](https://docs.github.com/rest/reference/issues#list-issue-comments-for-a-repository)
+    ///
     /// The `list_comments_for_repo_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
@@ -3678,7 +3689,8 @@ impl<'api> Issues<'api> {
     ///
     /// By default, Issue Comments are ordered by ascending ID.
     /// 
-    /// [GitHub API docs for list_comments_for_repo](https://docs.github.com/rest/reference/issues#list-issue-comments-for-a-repository)///
+    /// [GitHub API docs for list_comments_for_repo](https://docs.github.com/rest/reference/issues#list-issue-comments-for-a-repository)
+    ///
     /// The `list_comments_for_repo` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
@@ -3724,7 +3736,8 @@ impl<'api> Issues<'api> {
     ///
     /// # List issue events
     /// 
-    /// [GitHub API docs for list_events](https://docs.github.com/rest/reference/issues#list-issue-events)///
+    /// [GitHub API docs for list_events](https://docs.github.com/rest/reference/issues#list-issue-events)
+    ///
     /// The `list_events_async` endpoint is enabled with the `starfox` cargo feature.
     ///
     /// ---
@@ -3767,7 +3780,8 @@ impl<'api> Issues<'api> {
     ///
     /// # List issue events
     /// 
-    /// [GitHub API docs for list_events](https://docs.github.com/rest/reference/issues#list-issue-events)///
+    /// [GitHub API docs for list_events](https://docs.github.com/rest/reference/issues#list-issue-events)
+    ///
     /// The `list_events` endpoint is enabled with the `starfox` cargo feature.
     ///
     /// ---
@@ -3812,7 +3826,8 @@ impl<'api> Issues<'api> {
     ///
     /// # List issue events for a repository
     /// 
-    /// [GitHub API docs for list_events_for_repo](https://docs.github.com/rest/reference/issues#list-issue-events-for-a-repository)///
+    /// [GitHub API docs for list_events_for_repo](https://docs.github.com/rest/reference/issues#list-issue-events-for-a-repository)
+    ///
     /// The `list_events_for_repo_async` endpoint is enabled with the `starfox` cargo feature.
     ///
     /// ---
@@ -3855,7 +3870,8 @@ impl<'api> Issues<'api> {
     ///
     /// # List issue events for a repository
     /// 
-    /// [GitHub API docs for list_events_for_repo](https://docs.github.com/rest/reference/issues#list-issue-events-for-a-repository)///
+    /// [GitHub API docs for list_events_for_repo](https://docs.github.com/rest/reference/issues#list-issue-events-for-a-repository)
+    ///
     /// The `list_events_for_repo` endpoint is enabled with the `starfox` cargo feature.
     ///
     /// ---
@@ -3900,8 +3916,10 @@ impl<'api> Issues<'api> {
     ///
     /// # List timeline events for an issue
     /// 
-    /// [GitHub API docs for list_events_for_timeline](https://docs.github.com/rest/reference/issues#list-timeline-events-for-an-issue)///
-    /// The `list_events_for_timeline_async` endpoint is enabled with the `mockingbird` cargo feature./// The `list_events_for_timeline_async` endpoint is enabled with the `starfox` cargo feature.
+    /// [GitHub API docs for list_events_for_timeline](https://docs.github.com/rest/reference/issues#list-timeline-events-for-an-issue)
+    ///
+    /// The `list_events_for_timeline_async` endpoint is enabled with the `mockingbird` cargo feature.
+    /// The `list_events_for_timeline_async` endpoint is enabled with the `starfox` cargo feature.
     ///
     /// ---
     #[cfg(feature = "mockingbird")]
@@ -3946,8 +3964,10 @@ impl<'api> Issues<'api> {
     ///
     /// # List timeline events for an issue
     /// 
-    /// [GitHub API docs for list_events_for_timeline](https://docs.github.com/rest/reference/issues#list-timeline-events-for-an-issue)///
-    /// The `list_events_for_timeline` endpoint is enabled with the `mockingbird` cargo feature./// The `list_events_for_timeline` endpoint is enabled with the `starfox` cargo feature.
+    /// [GitHub API docs for list_events_for_timeline](https://docs.github.com/rest/reference/issues#list-timeline-events-for-an-issue)
+    ///
+    /// The `list_events_for_timeline` endpoint is enabled with the `mockingbird` cargo feature.
+    /// The `list_events_for_timeline` endpoint is enabled with the `starfox` cargo feature.
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4001,7 +4021,8 @@ impl<'api> Issues<'api> {
     /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
     /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/issues/#list-user-account-issues-assigned-to-the-authenticated-user)///
+    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/issues/#list-user-account-issues-assigned-to-the-authenticated-user)
+    ///
     /// The `list_for_authenticated_user_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
@@ -4052,7 +4073,8 @@ impl<'api> Issues<'api> {
     /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
     /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/issues/#list-user-account-issues-assigned-to-the-authenticated-user)///
+    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/issues/#list-user-account-issues-assigned-to-the-authenticated-user)
+    ///
     /// The `list_for_authenticated_user` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
@@ -4105,7 +4127,8 @@ impl<'api> Issues<'api> {
     /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
     /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/issues/#list-organization-issues-assigned-to-the-authenticated-user)///
+    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/issues/#list-organization-issues-assigned-to-the-authenticated-user)
+    ///
     /// The `list_for_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
@@ -4155,7 +4178,8 @@ impl<'api> Issues<'api> {
     /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
     /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/issues/#list-organization-issues-assigned-to-the-authenticated-user)///
+    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/issues/#list-organization-issues-assigned-to-the-authenticated-user)
+    ///
     /// The `list_for_org` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
@@ -4207,7 +4231,8 @@ impl<'api> Issues<'api> {
     /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
     /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/reference/issues/#list-repository-issues)///
+    /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/reference/issues/#list-repository-issues)
+    ///
     /// The `list_for_repo_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
@@ -4259,7 +4284,8 @@ impl<'api> Issues<'api> {
     /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
     /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/reference/issues/#list-repository-issues)///
+    /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/reference/issues/#list-repository-issues)
+    ///
     /// The `list_for_repo` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
@@ -4306,7 +4332,7 @@ impl<'api> Issues<'api> {
     ///
     /// # List labels for issues in a milestone
     /// 
-    /// [GitHub API docs for list_labels_for_milestone](https://docs.github.com/rest/reference/issues#list-labels-for-issues-in-a-milestone)    
+    /// [GitHub API docs for list_labels_for_milestone](https://docs.github.com/rest/reference/issues#list-labels-for-issues-in-a-milestone)
     ///
     /// ---
     pub async fn list_labels_for_milestone_async(&self, owner: &str, repo: &str, milestone_number: i32, query_params: Option<impl Into<IssuesListLabelsForMilestoneParams>>) -> Result<Vec<Label>, IssuesListLabelsForMilestoneError> {
@@ -4346,7 +4372,7 @@ impl<'api> Issues<'api> {
     ///
     /// # List labels for issues in a milestone
     /// 
-    /// [GitHub API docs for list_labels_for_milestone](https://docs.github.com/rest/reference/issues#list-labels-for-issues-in-a-milestone)    
+    /// [GitHub API docs for list_labels_for_milestone](https://docs.github.com/rest/reference/issues#list-labels-for-issues-in-a-milestone)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4388,7 +4414,7 @@ impl<'api> Issues<'api> {
     ///
     /// # List labels for a repository
     /// 
-    /// [GitHub API docs for list_labels_for_repo](https://docs.github.com/rest/reference/issues#list-labels-for-a-repository)    
+    /// [GitHub API docs for list_labels_for_repo](https://docs.github.com/rest/reference/issues#list-labels-for-a-repository)
     ///
     /// ---
     pub async fn list_labels_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListLabelsForRepoParams>>) -> Result<Vec<Label>, IssuesListLabelsForRepoError> {
@@ -4429,7 +4455,7 @@ impl<'api> Issues<'api> {
     ///
     /// # List labels for a repository
     /// 
-    /// [GitHub API docs for list_labels_for_repo](https://docs.github.com/rest/reference/issues#list-labels-for-a-repository)    
+    /// [GitHub API docs for list_labels_for_repo](https://docs.github.com/rest/reference/issues#list-labels-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4472,7 +4498,7 @@ impl<'api> Issues<'api> {
     ///
     /// # List labels for an issue
     /// 
-    /// [GitHub API docs for list_labels_on_issue](https://docs.github.com/rest/reference/issues#list-labels-for-an-issue)    
+    /// [GitHub API docs for list_labels_on_issue](https://docs.github.com/rest/reference/issues#list-labels-for-an-issue)
     ///
     /// ---
     pub async fn list_labels_on_issue_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListLabelsOnIssueParams>>) -> Result<Vec<Label>, IssuesListLabelsOnIssueError> {
@@ -4513,7 +4539,7 @@ impl<'api> Issues<'api> {
     ///
     /// # List labels for an issue
     /// 
-    /// [GitHub API docs for list_labels_on_issue](https://docs.github.com/rest/reference/issues#list-labels-for-an-issue)    
+    /// [GitHub API docs for list_labels_on_issue](https://docs.github.com/rest/reference/issues#list-labels-for-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4556,7 +4582,7 @@ impl<'api> Issues<'api> {
     ///
     /// # List milestones
     /// 
-    /// [GitHub API docs for list_milestones](https://docs.github.com/rest/reference/issues#list-milestones)    
+    /// [GitHub API docs for list_milestones](https://docs.github.com/rest/reference/issues#list-milestones)
     ///
     /// ---
     pub async fn list_milestones_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListMilestonesParams<'api>>>) -> Result<Vec<Milestone>, IssuesListMilestonesError> {
@@ -4597,7 +4623,7 @@ impl<'api> Issues<'api> {
     ///
     /// # List milestones
     /// 
-    /// [GitHub API docs for list_milestones](https://docs.github.com/rest/reference/issues#list-milestones)    
+    /// [GitHub API docs for list_milestones](https://docs.github.com/rest/reference/issues#list-milestones)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4644,7 +4670,7 @@ impl<'api> Issues<'api> {
     /// 
     /// Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
     /// 
-    /// [GitHub API docs for lock](https://docs.github.com/rest/reference/issues/#lock-an-issue)    
+    /// [GitHub API docs for lock](https://docs.github.com/rest/reference/issues/#lock-an-issue)
     ///
     /// ---
     pub async fn lock_async(&self, owner: &str, repo: &str, issue_number: i32, body: PutIssuesLock) -> Result<(), IssuesLockError> {
@@ -4688,7 +4714,7 @@ impl<'api> Issues<'api> {
     /// 
     /// Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
     /// 
-    /// [GitHub API docs for lock](https://docs.github.com/rest/reference/issues/#lock-an-issue)    
+    /// [GitHub API docs for lock](https://docs.github.com/rest/reference/issues/#lock-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4729,7 +4755,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Remove all labels from an issue
     /// 
-    /// [GitHub API docs for remove_all_labels](https://docs.github.com/rest/reference/issues#remove-all-labels-from-an-issue)    
+    /// [GitHub API docs for remove_all_labels](https://docs.github.com/rest/reference/issues#remove-all-labels-from-an-issue)
     ///
     /// ---
     pub async fn remove_all_labels_async(&self, owner: &str, repo: &str, issue_number: i32) -> Result<(), IssuesRemoveAllLabelsError> {
@@ -4766,7 +4792,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Remove all labels from an issue
     /// 
-    /// [GitHub API docs for remove_all_labels](https://docs.github.com/rest/reference/issues#remove-all-labels-from-an-issue)    
+    /// [GitHub API docs for remove_all_labels](https://docs.github.com/rest/reference/issues#remove-all-labels-from-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4806,7 +4832,7 @@ impl<'api> Issues<'api> {
     ///
     /// Removes one or more assignees from an issue.
     /// 
-    /// [GitHub API docs for remove_assignees](https://docs.github.com/rest/reference/issues#remove-assignees-from-an-issue)    
+    /// [GitHub API docs for remove_assignees](https://docs.github.com/rest/reference/issues#remove-assignees-from-an-issue)
     ///
     /// ---
     pub async fn remove_assignees_async(&self, owner: &str, repo: &str, issue_number: i32, body: DeleteIssuesRemoveAssignees) -> Result<IssueSimple, IssuesRemoveAssigneesError> {
@@ -4844,7 +4870,7 @@ impl<'api> Issues<'api> {
     ///
     /// Removes one or more assignees from an issue.
     /// 
-    /// [GitHub API docs for remove_assignees](https://docs.github.com/rest/reference/issues#remove-assignees-from-an-issue)    
+    /// [GitHub API docs for remove_assignees](https://docs.github.com/rest/reference/issues#remove-assignees-from-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4883,7 +4909,7 @@ impl<'api> Issues<'api> {
     ///
     /// Removes the specified label from the issue, and returns the remaining labels on the issue. This endpoint returns a `404 Not Found` status if the label does not exist.
     /// 
-    /// [GitHub API docs for remove_label](https://docs.github.com/rest/reference/issues#remove-a-label-from-an-issue)    
+    /// [GitHub API docs for remove_label](https://docs.github.com/rest/reference/issues#remove-a-label-from-an-issue)
     ///
     /// ---
     pub async fn remove_label_async(&self, owner: &str, repo: &str, issue_number: i32, name: &str) -> Result<Vec<Label>, IssuesRemoveLabelError> {
@@ -4923,7 +4949,7 @@ impl<'api> Issues<'api> {
     ///
     /// Removes the specified label from the issue, and returns the remaining labels on the issue. This endpoint returns a `404 Not Found` status if the label does not exist.
     /// 
-    /// [GitHub API docs for remove_label](https://docs.github.com/rest/reference/issues#remove-a-label-from-an-issue)    
+    /// [GitHub API docs for remove_label](https://docs.github.com/rest/reference/issues#remove-a-label-from-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4964,7 +4990,7 @@ impl<'api> Issues<'api> {
     ///
     /// Removes any previous labels and sets the new labels for an issue.
     /// 
-    /// [GitHub API docs for set_labels](https://docs.github.com/rest/reference/issues#set-labels-for-an-issue)    
+    /// [GitHub API docs for set_labels](https://docs.github.com/rest/reference/issues#set-labels-for-an-issue)
     ///
     /// ---
     pub async fn set_labels_async(&self, owner: &str, repo: &str, issue_number: i32, body: PutIssuesSetLabels) -> Result<Vec<Label>, IssuesSetLabelsError> {
@@ -5004,7 +5030,7 @@ impl<'api> Issues<'api> {
     ///
     /// Removes any previous labels and sets the new labels for an issue.
     /// 
-    /// [GitHub API docs for set_labels](https://docs.github.com/rest/reference/issues#set-labels-for-an-issue)    
+    /// [GitHub API docs for set_labels](https://docs.github.com/rest/reference/issues#set-labels-for-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5045,7 +5071,7 @@ impl<'api> Issues<'api> {
     ///
     /// Users with push access can unlock an issue's conversation.
     /// 
-    /// [GitHub API docs for unlock](https://docs.github.com/rest/reference/issues/#unlock-an-issue)    
+    /// [GitHub API docs for unlock](https://docs.github.com/rest/reference/issues/#unlock-an-issue)
     ///
     /// ---
     pub async fn unlock_async(&self, owner: &str, repo: &str, issue_number: i32) -> Result<(), IssuesUnlockError> {
@@ -5085,7 +5111,7 @@ impl<'api> Issues<'api> {
     ///
     /// Users with push access can unlock an issue's conversation.
     /// 
-    /// [GitHub API docs for unlock](https://docs.github.com/rest/reference/issues/#unlock-an-issue)    
+    /// [GitHub API docs for unlock](https://docs.github.com/rest/reference/issues/#unlock-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5126,7 +5152,7 @@ impl<'api> Issues<'api> {
     ///
     /// Issue owners and users with push access can edit an issue.
     /// 
-    /// [GitHub API docs for update](https://docs.github.com/rest/reference/issues/#update-an-issue)    
+    /// [GitHub API docs for update](https://docs.github.com/rest/reference/issues/#update-an-issue)
     ///
     /// ---
     pub async fn update_async(&self, owner: &str, repo: &str, issue_number: i32, body: PatchIssuesUpdate) -> Result<Issue, IssuesUpdateError> {
@@ -5170,7 +5196,7 @@ impl<'api> Issues<'api> {
     ///
     /// Issue owners and users with push access can edit an issue.
     /// 
-    /// [GitHub API docs for update](https://docs.github.com/rest/reference/issues/#update-an-issue)    
+    /// [GitHub API docs for update](https://docs.github.com/rest/reference/issues/#update-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5213,7 +5239,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Update an issue comment
     /// 
-    /// [GitHub API docs for update_comment](https://docs.github.com/rest/reference/issues#update-an-issue-comment)    
+    /// [GitHub API docs for update_comment](https://docs.github.com/rest/reference/issues#update-an-issue-comment)
     ///
     /// ---
     pub async fn update_comment_async(&self, owner: &str, repo: &str, comment_id: i32, body: PatchIssuesUpdateComment) -> Result<IssueComment, IssuesUpdateCommentError> {
@@ -5250,7 +5276,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Update an issue comment
     /// 
-    /// [GitHub API docs for update_comment](https://docs.github.com/rest/reference/issues#update-an-issue-comment)    
+    /// [GitHub API docs for update_comment](https://docs.github.com/rest/reference/issues#update-an-issue-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5288,7 +5314,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Update a label
     /// 
-    /// [GitHub API docs for update_label](https://docs.github.com/rest/reference/issues#update-a-label)    
+    /// [GitHub API docs for update_label](https://docs.github.com/rest/reference/issues#update-a-label)
     ///
     /// ---
     pub async fn update_label_async(&self, owner: &str, repo: &str, name: &str, body: PatchIssuesUpdateLabel) -> Result<Label, IssuesUpdateLabelError> {
@@ -5324,7 +5350,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Update a label
     /// 
-    /// [GitHub API docs for update_label](https://docs.github.com/rest/reference/issues#update-a-label)    
+    /// [GitHub API docs for update_label](https://docs.github.com/rest/reference/issues#update-a-label)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5361,7 +5387,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Update a milestone
     /// 
-    /// [GitHub API docs for update_milestone](https://docs.github.com/rest/reference/issues#update-a-milestone)    
+    /// [GitHub API docs for update_milestone](https://docs.github.com/rest/reference/issues#update-a-milestone)
     ///
     /// ---
     pub async fn update_milestone_async(&self, owner: &str, repo: &str, milestone_number: i32, body: PatchIssuesUpdateMilestone) -> Result<Milestone, IssuesUpdateMilestoneError> {
@@ -5397,7 +5423,7 @@ impl<'api> Issues<'api> {
     ///
     /// # Update a milestone
     /// 
-    /// [GitHub API docs for update_milestone](https://docs.github.com/rest/reference/issues#update-a-milestone)    
+    /// [GitHub API docs for update_milestone](https://docs.github.com/rest/reference/issues#update-a-milestone)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
