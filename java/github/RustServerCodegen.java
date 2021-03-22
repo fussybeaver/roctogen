@@ -150,13 +150,8 @@ public class RustServerCodegen extends DefaultCodegenConfig {
          * entire object tree available. If the input file has a suffix of `.mustache it
          * will be processed by the template engine. Otherwise, it will be copied
          */
-        //supportingFiles.clear();
-        // supportingFiles.add(new SupportingFile("lib.mustache", "src", "lib.rs"));
         supportingFiles.add(new SupportingFile("models.mustache", "src", "models.rs"));
         supportingFiles.add(new SupportingFile("endpoints.mustache", "src/endpoints", "mod.rs"));
-        //supportingFiles.add(new SupportingFile("api.mustache", "src", "api.rs"));
-        // supportingFiles.add(new SupportingFile("client.mustache", "src",
-        // "client.rs"));
 
     }
 

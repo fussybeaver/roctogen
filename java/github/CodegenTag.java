@@ -9,6 +9,7 @@ import io.swagger.codegen.v3.CodegenOperation;
 
 public class CodegenTag extends CodegenObject {
     public String baseName;
+	public String classname;
     public List<CodegenOperation> operations;
     public List<CodegenContent> contents = new ArrayList<>();
 	public String getBaseName() {
@@ -28,6 +29,8 @@ public class CodegenTag extends CodegenObject {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((baseName == null) ? 0 : baseName.hashCode());
+		result = prime * result + ((classname == null) ? 0 : classname.hashCode());
+		result = prime * result + ((contents == null) ? 0 : contents.hashCode());
 		result = prime * result + ((operations == null) ? 0 : operations.hashCode());
 		return result;
 	}
@@ -45,6 +48,16 @@ public class CodegenTag extends CodegenObject {
 				return false;
 		} else if (!baseName.equals(other.baseName))
 			return false;
+		if (classname == null) {
+			if (other.classname != null)
+				return false;
+		} else if (!classname.equals(other.classname))
+			return false;
+		if (contents == null) {
+			if (other.contents != null)
+				return false;
+		} else if (!contents.equals(other.contents))
+			return false;
 		if (operations == null) {
 			if (other.operations != null)
 				return false;
@@ -57,5 +70,11 @@ public class CodegenTag extends CodegenObject {
 	}
 	public void setContents(List<CodegenContent> contents) {
 		this.contents = contents;
+	}
+	public String getClassname() {
+		return classname;
+	}
+	public void setClassname(String classname) {
+		this.classname = classname;
 	}
 }

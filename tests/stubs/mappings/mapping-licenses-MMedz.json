@@ -1,0 +1,33 @@
+{
+  "id" : "f5d2ef28-b141-32d7-ac0c-6907899cde20",
+  "request" : {
+    "url" : "/licenses",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-licenses-MMedz.json",
+    "headers" : {
+      "Server" : "GitHub.com",
+      "Date" : "Sat, 20 Mar 2021 17:04:25 GMT",
+      "Content-Type" : "application/json; charset=utf-8",
+      "Cache-Control" : "public, max-age=60, s-maxage=60",
+      "Vary" : "Accept, Accept-Encoding, Accept, X-Requested-With",
+      "ETag" : "W/\"b6f5a3a0b8ed763226ed6856647955f7dfa893171b55672cad676bd28d7b5a42\"",
+      "X-GitHub-Media-Type" : "github.v3; format=json",
+      "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
+      "X-Frame-Options" : "deny",
+      "X-Content-Type-Options" : "nosniff",
+      "X-XSS-Protection" : "0",
+      "Referrer-Policy" : "origin-when-cross-origin, strict-origin-when-cross-origin",
+      "Content-Security-Policy" : "default-src 'none'",
+      "X-RateLimit-Limit" : "60",
+      "X-RateLimit-Remaining" : "30",
+      "X-RateLimit-Reset" : "1616263342",
+      "X-RateLimit-Used" : "30",
+      "Accept-Ranges" : "bytes",
+      "X-GitHub-Request-Id" : "3875:B275:6CCBD3:74C456:60562B19"
+    }
+  },
+  "uuid" : "f5d2ef28-b141-32d7-ac0c-6907899cde20"
+}

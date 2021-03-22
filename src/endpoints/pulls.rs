@@ -1072,7 +1072,7 @@ impl<'api> Pulls<'api> {
     ///
     /// # Check if a pull request has been merged
     /// 
-    /// [GitHub API docs for check_if_merged](https://docs.github.com/rest/reference/pulls/#check-if-a-pull-request-has-been-merged)    
+    /// [GitHub API docs for check_if_merged](https://docs.github.com/rest/reference/pulls/#check-if-a-pull-request-has-been-merged)
     ///
     /// ---
     pub async fn check_if_merged_async(&self, owner: &str, repo: &str, pull_number: i32) -> Result<(), PullsCheckIfMergedError> {
@@ -1109,7 +1109,7 @@ impl<'api> Pulls<'api> {
     ///
     /// # Check if a pull request has been merged
     /// 
-    /// [GitHub API docs for check_if_merged](https://docs.github.com/rest/reference/pulls/#check-if-a-pull-request-has-been-merged)    
+    /// [GitHub API docs for check_if_merged](https://docs.github.com/rest/reference/pulls/#check-if-a-pull-request-has-been-merged)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1155,7 +1155,7 @@ impl<'api> Pulls<'api> {
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for create](https://docs.github.com/rest/reference/pulls/#create-a-pull-request)    
+    /// [GitHub API docs for create](https://docs.github.com/rest/reference/pulls/#create-a-pull-request)
     ///
     /// ---
     pub async fn create_async(&self, owner: &str, repo: &str, body: PostPullsCreate) -> Result<PullRequest, PullsCreateError> {
@@ -1201,7 +1201,7 @@ impl<'api> Pulls<'api> {
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for create](https://docs.github.com/rest/reference/pulls/#create-a-pull-request)    
+    /// [GitHub API docs for create](https://docs.github.com/rest/reference/pulls/#create-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1244,7 +1244,7 @@ impl<'api> Pulls<'api> {
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for create_reply_for_review_comment](https://docs.github.com/rest/reference/pulls#create-a-reply-for-a-review-comment)    
+    /// [GitHub API docs for create_reply_for_review_comment](https://docs.github.com/rest/reference/pulls#create-a-reply-for-a-review-comment)
     ///
     /// ---
     pub async fn create_reply_for_review_comment_async(&self, owner: &str, repo: &str, pull_number: i32, comment_id: i32, body: PostPullsCreateReplyForReviewComment) -> Result<PullRequestReviewComment, PullsCreateReplyForReviewCommentError> {
@@ -1285,7 +1285,7 @@ impl<'api> Pulls<'api> {
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for create_reply_for_review_comment](https://docs.github.com/rest/reference/pulls#create-a-reply-for-a-review-comment)    
+    /// [GitHub API docs for create_reply_for_review_comment](https://docs.github.com/rest/reference/pulls#create-a-reply-for-a-review-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1331,7 +1331,7 @@ impl<'api> Pulls<'api> {
     /// 
     /// The `position` value equals the number of lines down from the first "@@" hunk header in the file you want to add a comment. The line just below the "@@" line is position 1, the next line is position 2, and so on. The position in the diff continues to increase through lines of whitespace and additional hunks until the beginning of a new file.
     /// 
-    /// [GitHub API docs for create_review](https://docs.github.com/rest/reference/pulls#create-a-review-for-a-pull-request)    
+    /// [GitHub API docs for create_review](https://docs.github.com/rest/reference/pulls#create-a-review-for-a-pull-request)
     ///
     /// ---
     pub async fn create_review_async(&self, owner: &str, repo: &str, pull_number: i32, body: PostPullsCreateReview) -> Result<PullRequestReview, PullsCreateReviewError> {
@@ -1377,7 +1377,7 @@ impl<'api> Pulls<'api> {
     /// 
     /// The `position` value equals the number of lines down from the first "@@" hunk header in the file you want to add a comment. The line just below the "@@" line is position 1, the next line is position 2, and so on. The position in the diff continues to increase through lines of whitespace and additional hunks until the beginning of a new file.
     /// 
-    /// [GitHub API docs for create_review](https://docs.github.com/rest/reference/pulls#create-a-review-for-a-pull-request)    
+    /// [GitHub API docs for create_review](https://docs.github.com/rest/reference/pulls#create-a-review-for-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1425,7 +1425,8 @@ impl<'api> Pulls<'api> {
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for create_review_comment](https://docs.github.com/rest/reference/pulls#create-a-review-comment-for-a-pull-request)///
+    /// [GitHub API docs for create_review_comment](https://docs.github.com/rest/reference/pulls#create-a-review-comment-for-a-pull-request)
+    ///
     /// The `create_review_comment_async` endpoint is enabled with the `comfort-fade` cargo feature.
     ///
     /// ---
@@ -1439,7 +1440,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: Some(PostPullsCreateReviewComment::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1474,7 +1475,8 @@ impl<'api> Pulls<'api> {
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for create_review_comment](https://docs.github.com/rest/reference/pulls#create-a-review-comment-for-a-pull-request)///
+    /// [GitHub API docs for create_review_comment](https://docs.github.com/rest/reference/pulls#create-a-review-comment-for-a-pull-request)
+    ///
     /// The `create_review_comment` endpoint is enabled with the `comfort-fade` cargo feature.
     ///
     /// ---
@@ -1489,7 +1491,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: Some(PostPullsCreateReviewComment::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1515,7 +1517,7 @@ impl<'api> Pulls<'api> {
     ///
     /// # Delete a pending review for a pull request
     /// 
-    /// [GitHub API docs for delete_pending_review](https://docs.github.com/rest/reference/pulls#delete-a-pending-review-for-a-pull-request)    
+    /// [GitHub API docs for delete_pending_review](https://docs.github.com/rest/reference/pulls#delete-a-pending-review-for-a-pull-request)
     ///
     /// ---
     pub async fn delete_pending_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32) -> Result<PullRequestReview, PullsDeletePendingReviewError> {
@@ -1553,7 +1555,7 @@ impl<'api> Pulls<'api> {
     ///
     /// # Delete a pending review for a pull request
     /// 
-    /// [GitHub API docs for delete_pending_review](https://docs.github.com/rest/reference/pulls#delete-a-pending-review-for-a-pull-request)    
+    /// [GitHub API docs for delete_pending_review](https://docs.github.com/rest/reference/pulls#delete-a-pending-review-for-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1594,7 +1596,7 @@ impl<'api> Pulls<'api> {
     ///
     /// Deletes a review comment.
     /// 
-    /// [GitHub API docs for delete_review_comment](https://docs.github.com/rest/reference/pulls#delete-a-review-comment-for-a-pull-request)    
+    /// [GitHub API docs for delete_review_comment](https://docs.github.com/rest/reference/pulls#delete-a-review-comment-for-a-pull-request)
     ///
     /// ---
     pub async fn delete_review_comment_async(&self, owner: &str, repo: &str, comment_id: i32) -> Result<(), PullsDeleteReviewCommentError> {
@@ -1633,7 +1635,7 @@ impl<'api> Pulls<'api> {
     ///
     /// Deletes a review comment.
     /// 
-    /// [GitHub API docs for delete_review_comment](https://docs.github.com/rest/reference/pulls#delete-a-review-comment-for-a-pull-request)    
+    /// [GitHub API docs for delete_review_comment](https://docs.github.com/rest/reference/pulls#delete-a-review-comment-for-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1673,7 +1675,7 @@ impl<'api> Pulls<'api> {
     ///
     /// **Note:** To dismiss a pull request review on a [protected branch](https://docs.github.com/rest/reference/repos#branches), you must be a repository administrator or be included in the list of people or teams who can dismiss pull request reviews.
     /// 
-    /// [GitHub API docs for dismiss_review](https://docs.github.com/rest/reference/pulls#dismiss-a-review-for-a-pull-request)    
+    /// [GitHub API docs for dismiss_review](https://docs.github.com/rest/reference/pulls#dismiss-a-review-for-a-pull-request)
     ///
     /// ---
     pub async fn dismiss_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, body: PutPullsDismissReview) -> Result<PullRequestReview, PullsDismissReviewError> {
@@ -1713,7 +1715,7 @@ impl<'api> Pulls<'api> {
     ///
     /// **Note:** To dismiss a pull request review on a [protected branch](https://docs.github.com/rest/reference/repos#branches), you must be a repository administrator or be included in the list of people or teams who can dismiss pull request reviews.
     /// 
-    /// [GitHub API docs for dismiss_review](https://docs.github.com/rest/reference/pulls#dismiss-a-review-for-a-pull-request)    
+    /// [GitHub API docs for dismiss_review](https://docs.github.com/rest/reference/pulls#dismiss-a-review-for-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1768,7 +1770,7 @@ impl<'api> Pulls<'api> {
     /// 
     /// Pass the appropriate [media type](https://docs.github.com/rest/overview/media-types/#commits-commit-comparison-and-pull-requests) to fetch diff and patch formats.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/pulls/#get-a-pull-request)    
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/pulls/#get-a-pull-request)
     ///
     /// ---
     pub async fn get_async(&self, owner: &str, repo: &str, pull_number: i32) -> Result<PullRequest, PullsGetError> {
@@ -1823,7 +1825,7 @@ impl<'api> Pulls<'api> {
     /// 
     /// Pass the appropriate [media type](https://docs.github.com/rest/overview/media-types/#commits-commit-comparison-and-pull-requests) to fetch diff and patch formats.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/pulls/#get-a-pull-request)    
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/pulls/#get-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1863,7 +1865,7 @@ impl<'api> Pulls<'api> {
     ///
     /// # Get a review for a pull request
     /// 
-    /// [GitHub API docs for get_review](https://docs.github.com/rest/reference/pulls#get-a-review-for-a-pull-request)    
+    /// [GitHub API docs for get_review](https://docs.github.com/rest/reference/pulls#get-a-review-for-a-pull-request)
     ///
     /// ---
     pub async fn get_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32) -> Result<PullRequestReview, PullsGetReviewError> {
@@ -1900,7 +1902,7 @@ impl<'api> Pulls<'api> {
     ///
     /// # Get a review for a pull request
     /// 
-    /// [GitHub API docs for get_review](https://docs.github.com/rest/reference/pulls#get-a-review-for-a-pull-request)    
+    /// [GitHub API docs for get_review](https://docs.github.com/rest/reference/pulls#get-a-review-for-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1940,8 +1942,10 @@ impl<'api> Pulls<'api> {
     ///
     /// Provides details for a review comment.
     /// 
-    /// [GitHub API docs for get_review_comment](https://docs.github.com/rest/reference/pulls#get-a-review-comment-for-a-pull-request)///
-    /// The `get_review_comment_async` endpoint is enabled with the `comfort-fade` cargo feature./// The `get_review_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    /// [GitHub API docs for get_review_comment](https://docs.github.com/rest/reference/pulls#get-a-review-comment-for-a-pull-request)
+    ///
+    /// The `get_review_comment_async` endpoint is enabled with the `comfort-fade` cargo feature.
+    /// The `get_review_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
     #[cfg(feature = "comfort-fade")]
@@ -1955,7 +1959,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json")("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1982,8 +1986,10 @@ impl<'api> Pulls<'api> {
     ///
     /// Provides details for a review comment.
     /// 
-    /// [GitHub API docs for get_review_comment](https://docs.github.com/rest/reference/pulls#get-a-review-comment-for-a-pull-request)///
-    /// The `get_review_comment` endpoint is enabled with the `comfort-fade` cargo feature./// The `get_review_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
+    /// [GitHub API docs for get_review_comment](https://docs.github.com/rest/reference/pulls#get-a-review-comment-for-a-pull-request)
+    ///
+    /// The `get_review_comment` endpoint is enabled with the `comfort-fade` cargo feature.
+    /// The `get_review_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1998,7 +2004,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json")("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2025,7 +2031,7 @@ impl<'api> Pulls<'api> {
     ///
     /// Draft pull requests are available in public repositories with GitHub Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing plans, and in public and private repositories with GitHub Team and GitHub Enterprise Cloud. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/pulls/#list-pull-requests)    
+    /// [GitHub API docs for list](https://docs.github.com/rest/reference/pulls/#list-pull-requests)
     ///
     /// ---
     pub async fn list_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<PullsListParams<'api>>>) -> Result<Vec<PullRequestSimple>, PullsListError> {
@@ -2069,7 +2075,7 @@ impl<'api> Pulls<'api> {
     ///
     /// Draft pull requests are available in public repositories with GitHub Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing plans, and in public and private repositories with GitHub Team and GitHub Enterprise Cloud. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/pulls/#list-pull-requests)    
+    /// [GitHub API docs for list](https://docs.github.com/rest/reference/pulls/#list-pull-requests)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2115,7 +2121,7 @@ impl<'api> Pulls<'api> {
     ///
     /// List comments for a specific pull request review.
     /// 
-    /// [GitHub API docs for list_comments_for_review](https://docs.github.com/rest/reference/pulls#list-comments-for-a-pull-request-review)    
+    /// [GitHub API docs for list_comments_for_review](https://docs.github.com/rest/reference/pulls#list-comments-for-a-pull-request-review)
     ///
     /// ---
     pub async fn list_comments_for_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, query_params: Option<impl Into<PullsListCommentsForReviewParams>>) -> Result<Vec<ReviewComment>, PullsListCommentsForReviewError> {
@@ -2158,7 +2164,7 @@ impl<'api> Pulls<'api> {
     ///
     /// List comments for a specific pull request review.
     /// 
-    /// [GitHub API docs for list_comments_for_review](https://docs.github.com/rest/reference/pulls#list-comments-for-a-pull-request-review)    
+    /// [GitHub API docs for list_comments_for_review](https://docs.github.com/rest/reference/pulls#list-comments-for-a-pull-request-review)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2203,7 +2209,7 @@ impl<'api> Pulls<'api> {
     ///
     /// Lists a maximum of 250 commits for a pull request. To receive a complete commit list for pull requests with more than 250 commits, use the [List commits](https://docs.github.com/rest/reference/repos#list-commits) endpoint.
     /// 
-    /// [GitHub API docs for list_commits](https://docs.github.com/rest/reference/pulls/#list-commits-on-a-pull-request)    
+    /// [GitHub API docs for list_commits](https://docs.github.com/rest/reference/pulls/#list-commits-on-a-pull-request)
     ///
     /// ---
     pub async fn list_commits_async(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListCommitsParams>>) -> Result<Vec<Commit>, PullsListCommitsError> {
@@ -2245,7 +2251,7 @@ impl<'api> Pulls<'api> {
     ///
     /// Lists a maximum of 250 commits for a pull request. To receive a complete commit list for pull requests with more than 250 commits, use the [List commits](https://docs.github.com/rest/reference/repos#list-commits) endpoint.
     /// 
-    /// [GitHub API docs for list_commits](https://docs.github.com/rest/reference/pulls/#list-commits-on-a-pull-request)    
+    /// [GitHub API docs for list_commits](https://docs.github.com/rest/reference/pulls/#list-commits-on-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2289,7 +2295,7 @@ impl<'api> Pulls<'api> {
     ///
     /// **Note:** Responses include a maximum of 3000 files. The paginated response returns 30 files per page by default.
     /// 
-    /// [GitHub API docs for list_files](https://docs.github.com/rest/reference/pulls/#list-pull-requests-files)    
+    /// [GitHub API docs for list_files](https://docs.github.com/rest/reference/pulls/#list-pull-requests-files)
     ///
     /// ---
     pub async fn list_files_async(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListFilesParams>>) -> Result<Vec<DiffEntry>, PullsListFilesError> {
@@ -2333,7 +2339,7 @@ impl<'api> Pulls<'api> {
     ///
     /// **Note:** Responses include a maximum of 3000 files. The paginated response returns 30 files per page by default.
     /// 
-    /// [GitHub API docs for list_files](https://docs.github.com/rest/reference/pulls/#list-pull-requests-files)    
+    /// [GitHub API docs for list_files](https://docs.github.com/rest/reference/pulls/#list-pull-requests-files)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2377,7 +2383,7 @@ impl<'api> Pulls<'api> {
     ///
     /// # List requested reviewers for a pull request
     /// 
-    /// [GitHub API docs for list_requested_reviewers](https://docs.github.com/rest/reference/pulls#list-requested-reviewers-for-a-pull-request)    
+    /// [GitHub API docs for list_requested_reviewers](https://docs.github.com/rest/reference/pulls#list-requested-reviewers-for-a-pull-request)
     ///
     /// ---
     pub async fn list_requested_reviewers_async(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListRequestedReviewersParams>>) -> Result<PullRequestReviewRequest, PullsListRequestedReviewersError> {
@@ -2417,7 +2423,7 @@ impl<'api> Pulls<'api> {
     ///
     /// # List requested reviewers for a pull request
     /// 
-    /// [GitHub API docs for list_requested_reviewers](https://docs.github.com/rest/reference/pulls#list-requested-reviewers-for-a-pull-request)    
+    /// [GitHub API docs for list_requested_reviewers](https://docs.github.com/rest/reference/pulls#list-requested-reviewers-for-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2461,8 +2467,10 @@ impl<'api> Pulls<'api> {
     ///
     /// Lists all review comments for a pull request. By default, review comments are in ascending order by ID.
     /// 
-    /// [GitHub API docs for list_review_comments](https://docs.github.com/rest/reference/pulls#list-review-comments-on-a-pull-request)///
-    /// The `list_review_comments_async` endpoint is enabled with the `comfort-fade` cargo feature./// The `list_review_comments_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    /// [GitHub API docs for list_review_comments](https://docs.github.com/rest/reference/pulls#list-review-comments-on-a-pull-request)
+    ///
+    /// The `list_review_comments_async` endpoint is enabled with the `comfort-fade` cargo feature.
+    /// The `list_review_comments_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
     #[cfg(feature = "comfort-fade")]
@@ -2480,7 +2488,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json")("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2506,8 +2514,10 @@ impl<'api> Pulls<'api> {
     ///
     /// Lists all review comments for a pull request. By default, review comments are in ascending order by ID.
     /// 
-    /// [GitHub API docs for list_review_comments](https://docs.github.com/rest/reference/pulls#list-review-comments-on-a-pull-request)///
-    /// The `list_review_comments` endpoint is enabled with the `comfort-fade` cargo feature./// The `list_review_comments` endpoint is enabled with the `squirrel-girl` cargo feature.
+    /// [GitHub API docs for list_review_comments](https://docs.github.com/rest/reference/pulls#list-review-comments-on-a-pull-request)
+    ///
+    /// The `list_review_comments` endpoint is enabled with the `comfort-fade` cargo feature.
+    /// The `list_review_comments` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2527,7 +2537,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json")("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2553,8 +2563,10 @@ impl<'api> Pulls<'api> {
     ///
     /// Lists review comments for all pull requests in a repository. By default, review comments are in ascending order by ID.
     /// 
-    /// [GitHub API docs for list_review_comments_for_repo](https://docs.github.com/rest/reference/pulls#list-review-comments-in-a-repository)///
-    /// The `list_review_comments_for_repo_async` endpoint is enabled with the `comfort-fade` cargo feature./// The `list_review_comments_for_repo_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    /// [GitHub API docs for list_review_comments_for_repo](https://docs.github.com/rest/reference/pulls#list-review-comments-in-a-repository)
+    ///
+    /// The `list_review_comments_for_repo_async` endpoint is enabled with the `comfort-fade` cargo feature.
+    /// The `list_review_comments_for_repo_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
     #[cfg(feature = "comfort-fade")]
@@ -2572,7 +2584,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json")("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2598,8 +2610,10 @@ impl<'api> Pulls<'api> {
     ///
     /// Lists review comments for all pull requests in a repository. By default, review comments are in ascending order by ID.
     /// 
-    /// [GitHub API docs for list_review_comments_for_repo](https://docs.github.com/rest/reference/pulls#list-review-comments-in-a-repository)///
-    /// The `list_review_comments_for_repo` endpoint is enabled with the `comfort-fade` cargo feature./// The `list_review_comments_for_repo` endpoint is enabled with the `squirrel-girl` cargo feature.
+    /// [GitHub API docs for list_review_comments_for_repo](https://docs.github.com/rest/reference/pulls#list-review-comments-in-a-repository)
+    ///
+    /// The `list_review_comments_for_repo` endpoint is enabled with the `comfort-fade` cargo feature.
+    /// The `list_review_comments_for_repo` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2619,7 +2633,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json")("Accept", "application/vnd.github.squirrel-girl-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2645,7 +2659,7 @@ impl<'api> Pulls<'api> {
     ///
     /// The list of reviews returns in chronological order.
     /// 
-    /// [GitHub API docs for list_reviews](https://docs.github.com/rest/reference/pulls#list-reviews-for-a-pull-request)    
+    /// [GitHub API docs for list_reviews](https://docs.github.com/rest/reference/pulls#list-reviews-for-a-pull-request)
     ///
     /// ---
     pub async fn list_reviews_async(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListReviewsParams>>) -> Result<Vec<PullRequestReview>, PullsListReviewsError> {
@@ -2687,7 +2701,7 @@ impl<'api> Pulls<'api> {
     ///
     /// The list of reviews returns in chronological order.
     /// 
-    /// [GitHub API docs for list_reviews](https://docs.github.com/rest/reference/pulls#list-reviews-for-a-pull-request)    
+    /// [GitHub API docs for list_reviews](https://docs.github.com/rest/reference/pulls#list-reviews-for-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2731,7 +2745,7 @@ impl<'api> Pulls<'api> {
     ///
     /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-abuse-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for merge](https://docs.github.com/rest/reference/pulls/#merge-a-pull-request)    
+    /// [GitHub API docs for merge](https://docs.github.com/rest/reference/pulls/#merge-a-pull-request)
     ///
     /// ---
     pub async fn merge_async(&self, owner: &str, repo: &str, pull_number: i32, body: PutPullsMerge) -> Result<PullRequestMergeResult, PullsMergeError> {
@@ -2774,7 +2788,7 @@ impl<'api> Pulls<'api> {
     ///
     /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-abuse-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for merge](https://docs.github.com/rest/reference/pulls/#merge-a-pull-request)    
+    /// [GitHub API docs for merge](https://docs.github.com/rest/reference/pulls/#merge-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2816,7 +2830,7 @@ impl<'api> Pulls<'api> {
     ///
     /// # Remove requested reviewers from a pull request
     /// 
-    /// [GitHub API docs for remove_requested_reviewers](https://docs.github.com/rest/reference/pulls#remove-requested-reviewers-from-a-pull-request)    
+    /// [GitHub API docs for remove_requested_reviewers](https://docs.github.com/rest/reference/pulls#remove-requested-reviewers-from-a-pull-request)
     ///
     /// ---
     pub async fn remove_requested_reviewers_async(&self, owner: &str, repo: &str, pull_number: i32, body: DeletePullsRemoveRequestedReviewers) -> Result<(), PullsRemoveRequestedReviewersError> {
@@ -2853,7 +2867,7 @@ impl<'api> Pulls<'api> {
     ///
     /// # Remove requested reviewers from a pull request
     /// 
-    /// [GitHub API docs for remove_requested_reviewers](https://docs.github.com/rest/reference/pulls#remove-requested-reviewers-from-a-pull-request)    
+    /// [GitHub API docs for remove_requested_reviewers](https://docs.github.com/rest/reference/pulls#remove-requested-reviewers-from-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2893,7 +2907,7 @@ impl<'api> Pulls<'api> {
     ///
     /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-abuse-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for request_reviewers](https://docs.github.com/rest/reference/pulls#request-reviewers-for-a-pull-request)    
+    /// [GitHub API docs for request_reviewers](https://docs.github.com/rest/reference/pulls#request-reviewers-for-a-pull-request)
     ///
     /// ---
     pub async fn request_reviewers_async(&self, owner: &str, repo: &str, pull_number: i32, body: PostPullsRequestReviewers) -> Result<PullRequestSimple, PullsRequestReviewersError> {
@@ -2933,7 +2947,7 @@ impl<'api> Pulls<'api> {
     ///
     /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-abuse-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for request_reviewers](https://docs.github.com/rest/reference/pulls#request-reviewers-for-a-pull-request)    
+    /// [GitHub API docs for request_reviewers](https://docs.github.com/rest/reference/pulls#request-reviewers-for-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2972,7 +2986,7 @@ impl<'api> Pulls<'api> {
     ///
     /// # Submit a review for a pull request
     /// 
-    /// [GitHub API docs for submit_review](https://docs.github.com/rest/reference/pulls#submit-a-review-for-a-pull-request)    
+    /// [GitHub API docs for submit_review](https://docs.github.com/rest/reference/pulls#submit-a-review-for-a-pull-request)
     ///
     /// ---
     pub async fn submit_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, body: PostPullsSubmitReview) -> Result<PullRequestReview, PullsSubmitReviewError> {
@@ -3011,7 +3025,7 @@ impl<'api> Pulls<'api> {
     ///
     /// # Submit a review for a pull request
     /// 
-    /// [GitHub API docs for submit_review](https://docs.github.com/rest/reference/pulls#submit-a-review-for-a-pull-request)    
+    /// [GitHub API docs for submit_review](https://docs.github.com/rest/reference/pulls#submit-a-review-for-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3055,7 +3069,7 @@ impl<'api> Pulls<'api> {
     /// 
     /// To open or update a pull request in a public repository, you must have write access to the head or the source branch. For organization-owned repositories, you must be a member of the organization that owns the repository to open or update a pull request.
     /// 
-    /// [GitHub API docs for update](https://docs.github.com/rest/reference/pulls/#update-a-pull-request)    
+    /// [GitHub API docs for update](https://docs.github.com/rest/reference/pulls/#update-a-pull-request)
     ///
     /// ---
     pub async fn update_async(&self, owner: &str, repo: &str, pull_number: i32, body: PatchPullsUpdate) -> Result<PullRequest, PullsUpdateError> {
@@ -3097,7 +3111,7 @@ impl<'api> Pulls<'api> {
     /// 
     /// To open or update a pull request in a public repository, you must have write access to the head or the source branch. For organization-owned repositories, you must be a member of the organization that owns the repository to open or update a pull request.
     /// 
-    /// [GitHub API docs for update](https://docs.github.com/rest/reference/pulls/#update-a-pull-request)    
+    /// [GitHub API docs for update](https://docs.github.com/rest/reference/pulls/#update-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3138,7 +3152,8 @@ impl<'api> Pulls<'api> {
     ///
     /// Updates the pull request branch with the latest upstream changes by merging HEAD from the base branch into the pull request branch.
     /// 
-    /// [GitHub API docs for update_branch](https://docs.github.com/rest/reference/pulls/#update-a-pull-request-branch)///
+    /// [GitHub API docs for update_branch](https://docs.github.com/rest/reference/pulls/#update-a-pull-request-branch)
+    ///
     /// The `update_branch_async` endpoint is enabled with the `lydian` cargo feature.
     ///
     /// ---
@@ -3152,7 +3167,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: Some(PutPullsUpdateBranch::from_json(body)?),
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.lydian-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.lydian-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3181,7 +3196,8 @@ impl<'api> Pulls<'api> {
     ///
     /// Updates the pull request branch with the latest upstream changes by merging HEAD from the base branch into the pull request branch.
     /// 
-    /// [GitHub API docs for update_branch](https://docs.github.com/rest/reference/pulls/#update-a-pull-request-branch)///
+    /// [GitHub API docs for update_branch](https://docs.github.com/rest/reference/pulls/#update-a-pull-request-branch)
+    ///
     /// The `update_branch` endpoint is enabled with the `lydian` cargo feature.
     ///
     /// ---
@@ -3196,7 +3212,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: Some(PutPullsUpdateBranch::from_json(body)?),
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.lydian-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.lydian-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3225,7 +3241,7 @@ impl<'api> Pulls<'api> {
     ///
     /// Update the review summary comment with new text.
     /// 
-    /// [GitHub API docs for update_review](https://docs.github.com/rest/reference/pulls#update-a-review-for-a-pull-request)    
+    /// [GitHub API docs for update_review](https://docs.github.com/rest/reference/pulls#update-a-review-for-a-pull-request)
     ///
     /// ---
     pub async fn update_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, body: PutPullsUpdateReview) -> Result<PullRequestReview, PullsUpdateReviewError> {
@@ -3264,7 +3280,7 @@ impl<'api> Pulls<'api> {
     ///
     /// Update the review summary comment with new text.
     /// 
-    /// [GitHub API docs for update_review](https://docs.github.com/rest/reference/pulls#update-a-review-for-a-pull-request)    
+    /// [GitHub API docs for update_review](https://docs.github.com/rest/reference/pulls#update-a-review-for-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3304,7 +3320,8 @@ impl<'api> Pulls<'api> {
     ///
     /// Enables you to edit a review comment.
     /// 
-    /// [GitHub API docs for update_review_comment](https://docs.github.com/rest/reference/pulls#update-a-review-comment-for-a-pull-request)///
+    /// [GitHub API docs for update_review_comment](https://docs.github.com/rest/reference/pulls#update-a-review-comment-for-a-pull-request)
+    ///
     /// The `update_review_comment_async` endpoint is enabled with the `comfort-fade` cargo feature.
     ///
     /// ---
@@ -3318,7 +3335,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: Some(PatchPullsUpdateReviewComment::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3344,7 +3361,8 @@ impl<'api> Pulls<'api> {
     ///
     /// Enables you to edit a review comment.
     /// 
-    /// [GitHub API docs for update_review_comment](https://docs.github.com/rest/reference/pulls#update-a-review-comment-for-a-pull-request)///
+    /// [GitHub API docs for update_review_comment](https://docs.github.com/rest/reference/pulls#update-a-review-comment-for-a-pull-request)
+    ///
     /// The `update_review_comment` endpoint is enabled with the `comfort-fade` cargo feature.
     ///
     /// ---
@@ -3359,7 +3377,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: Some(PatchPullsUpdateReviewComment::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;

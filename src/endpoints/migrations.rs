@@ -725,7 +725,7 @@ impl<'api> Migrations<'api> {
     ///
     /// Stop an import for a repository.
     /// 
-    /// [GitHub API docs for cancel_import](https://docs.github.com/rest/reference/migrations#cancel-an-import)    
+    /// [GitHub API docs for cancel_import](https://docs.github.com/rest/reference/migrations#cancel-an-import)
     ///
     /// ---
     pub async fn cancel_import_async(&self, owner: &str, repo: &str) -> Result<(), MigrationsCancelImportError> {
@@ -763,7 +763,7 @@ impl<'api> Migrations<'api> {
     ///
     /// Stop an import for a repository.
     /// 
-    /// [GitHub API docs for cancel_import](https://docs.github.com/rest/reference/migrations#cancel-an-import)    
+    /// [GitHub API docs for cancel_import](https://docs.github.com/rest/reference/migrations#cancel-an-import)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -802,7 +802,8 @@ impl<'api> Migrations<'api> {
     ///
     /// Deletes a previous migration archive. Downloadable migration archives are automatically deleted after seven days. Migration metadata, which is returned in the [List user migrations](https://docs.github.com/rest/reference/migrations#list-user-migrations) and [Get a user migration status](https://docs.github.com/rest/reference/migrations#get-a-user-migration-status) endpoints, will continue to be available even after an archive is deleted.
     /// 
-    /// [GitHub API docs for delete_archive_for_authenticated_user](https://docs.github.com/rest/reference/migrations#delete-a-user-migration-archive)///
+    /// [GitHub API docs for delete_archive_for_authenticated_user](https://docs.github.com/rest/reference/migrations#delete-a-user-migration-archive)
+    ///
     /// The `delete_archive_for_authenticated_user_async` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -816,7 +817,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -846,7 +847,8 @@ impl<'api> Migrations<'api> {
     ///
     /// Deletes a previous migration archive. Downloadable migration archives are automatically deleted after seven days. Migration metadata, which is returned in the [List user migrations](https://docs.github.com/rest/reference/migrations#list-user-migrations) and [Get a user migration status](https://docs.github.com/rest/reference/migrations#get-a-user-migration-status) endpoints, will continue to be available even after an archive is deleted.
     /// 
-    /// [GitHub API docs for delete_archive_for_authenticated_user](https://docs.github.com/rest/reference/migrations#delete-a-user-migration-archive)///
+    /// [GitHub API docs for delete_archive_for_authenticated_user](https://docs.github.com/rest/reference/migrations#delete-a-user-migration-archive)
+    ///
     /// The `delete_archive_for_authenticated_user` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -861,7 +863,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -891,7 +893,8 @@ impl<'api> Migrations<'api> {
     ///
     /// Deletes a previous migration archive. Migration archives are automatically deleted after seven days.
     /// 
-    /// [GitHub API docs for delete_archive_for_org](https://docs.github.com/rest/reference/migrations#delete-an-organization-migration-archive)///
+    /// [GitHub API docs for delete_archive_for_org](https://docs.github.com/rest/reference/migrations#delete-an-organization-migration-archive)
+    ///
     /// The `delete_archive_for_org_async` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -905,7 +908,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -932,7 +935,8 @@ impl<'api> Migrations<'api> {
     ///
     /// Deletes a previous migration archive. Migration archives are automatically deleted after seven days.
     /// 
-    /// [GitHub API docs for delete_archive_for_org](https://docs.github.com/rest/reference/migrations#delete-an-organization-migration-archive)///
+    /// [GitHub API docs for delete_archive_for_org](https://docs.github.com/rest/reference/migrations#delete-an-organization-migration-archive)
+    ///
     /// The `delete_archive_for_org` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -947,7 +951,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -974,7 +978,8 @@ impl<'api> Migrations<'api> {
     ///
     /// Fetches the URL to a migration archive.
     /// 
-    /// [GitHub API docs for download_archive_for_org](https://docs.github.com/rest/reference/migrations#download-an-organization-migration-archive)///
+    /// [GitHub API docs for download_archive_for_org](https://docs.github.com/rest/reference/migrations#download-an-organization-migration-archive)
+    ///
     /// The `download_archive_for_org_async` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -988,7 +993,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1016,7 +1021,8 @@ impl<'api> Migrations<'api> {
     ///
     /// Fetches the URL to a migration archive.
     /// 
-    /// [GitHub API docs for download_archive_for_org](https://docs.github.com/rest/reference/migrations#download-an-organization-migration-archive)///
+    /// [GitHub API docs for download_archive_for_org](https://docs.github.com/rest/reference/migrations#download-an-organization-migration-archive)
+    ///
     /// The `download_archive_for_org` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -1031,7 +1037,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1079,7 +1085,8 @@ impl<'api> Migrations<'api> {
     /// 
     /// The archive will also contain an `attachments` directory that includes all attachment files uploaded to GitHub.com and a `repositories` directory that contains the repository's Git data.
     /// 
-    /// [GitHub API docs for get_archive_for_authenticated_user](https://docs.github.com/rest/reference/migrations#download-a-user-migration-archive)///
+    /// [GitHub API docs for get_archive_for_authenticated_user](https://docs.github.com/rest/reference/migrations#download-a-user-migration-archive)
+    ///
     /// The `get_archive_for_authenticated_user_async` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -1093,7 +1100,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1143,7 +1150,8 @@ impl<'api> Migrations<'api> {
     /// 
     /// The archive will also contain an `attachments` directory that includes all attachment files uploaded to GitHub.com and a `repositories` directory that contains the repository's Git data.
     /// 
-    /// [GitHub API docs for get_archive_for_authenticated_user](https://docs.github.com/rest/reference/migrations#download-a-user-migration-archive)///
+    /// [GitHub API docs for get_archive_for_authenticated_user](https://docs.github.com/rest/reference/migrations#download-a-user-migration-archive)
+    ///
     /// The `get_archive_for_authenticated_user` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -1158,7 +1166,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1190,7 +1198,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// This endpoint and the [Map a commit author](https://docs.github.com/rest/reference/migrations#map-a-commit-author) endpoint allow you to provide correct Git author information.
     /// 
-    /// [GitHub API docs for get_commit_authors](https://docs.github.com/rest/reference/migrations#get-commit-authors)    
+    /// [GitHub API docs for get_commit_authors](https://docs.github.com/rest/reference/migrations#get-commit-authors)
     ///
     /// ---
     pub async fn get_commit_authors_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<MigrationsGetCommitAuthorsParams>>) -> Result<Vec<PorterAuthor>, MigrationsGetCommitAuthorsError> {
@@ -1235,7 +1243,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// This endpoint and the [Map a commit author](https://docs.github.com/rest/reference/migrations#map-a-commit-author) endpoint allow you to provide correct Git author information.
     /// 
-    /// [GitHub API docs for get_commit_authors](https://docs.github.com/rest/reference/migrations#get-commit-authors)    
+    /// [GitHub API docs for get_commit_authors](https://docs.github.com/rest/reference/migrations#get-commit-authors)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1313,7 +1321,7 @@ impl<'api> Migrations<'api> {
     /// *   `large_files_size` - the total size in gigabytes of files larger than 100MB found in the originating repository.
     /// *   `large_files_count` - the total number of files larger than 100MB found in the originating repository. To see a list of these files, make a "Get Large Files" request.
     /// 
-    /// [GitHub API docs for get_import_status](https://docs.github.com/rest/reference/migrations#get-an-import-status)    
+    /// [GitHub API docs for get_import_status](https://docs.github.com/rest/reference/migrations#get-an-import-status)
     ///
     /// ---
     pub async fn get_import_status_async(&self, owner: &str, repo: &str) -> Result<Import, MigrationsGetImportStatusError> {
@@ -1385,7 +1393,7 @@ impl<'api> Migrations<'api> {
     /// *   `large_files_size` - the total size in gigabytes of files larger than 100MB found in the originating repository.
     /// *   `large_files_count` - the total number of files larger than 100MB found in the originating repository. To see a list of these files, make a "Get Large Files" request.
     /// 
-    /// [GitHub API docs for get_import_status](https://docs.github.com/rest/reference/migrations#get-an-import-status)    
+    /// [GitHub API docs for get_import_status](https://docs.github.com/rest/reference/migrations#get-an-import-status)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1425,7 +1433,7 @@ impl<'api> Migrations<'api> {
     ///
     /// List files larger than 100MB found during the import
     /// 
-    /// [GitHub API docs for get_large_files](https://docs.github.com/rest/reference/migrations#get-large-files)    
+    /// [GitHub API docs for get_large_files](https://docs.github.com/rest/reference/migrations#get-large-files)
     ///
     /// ---
     pub async fn get_large_files_async(&self, owner: &str, repo: &str) -> Result<Vec<PorterLargeFile>, MigrationsGetLargeFilesError> {
@@ -1463,7 +1471,7 @@ impl<'api> Migrations<'api> {
     ///
     /// List files larger than 100MB found during the import
     /// 
-    /// [GitHub API docs for get_large_files](https://docs.github.com/rest/reference/migrations#get-large-files)    
+    /// [GitHub API docs for get_large_files](https://docs.github.com/rest/reference/migrations#get-large-files)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1509,7 +1517,8 @@ impl<'api> Migrations<'api> {
     /// 
     /// Once the migration has been `exported` you can [download the migration archive](https://docs.github.com/rest/reference/migrations#download-a-user-migration-archive).
     /// 
-    /// [GitHub API docs for get_status_for_authenticated_user](https://docs.github.com/rest/reference/migrations#get-a-user-migration-status)///
+    /// [GitHub API docs for get_status_for_authenticated_user](https://docs.github.com/rest/reference/migrations#get-a-user-migration-status)
+    ///
     /// The `get_status_for_authenticated_user_async` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -1527,7 +1536,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1564,7 +1573,8 @@ impl<'api> Migrations<'api> {
     /// 
     /// Once the migration has been `exported` you can [download the migration archive](https://docs.github.com/rest/reference/migrations#download-a-user-migration-archive).
     /// 
-    /// [GitHub API docs for get_status_for_authenticated_user](https://docs.github.com/rest/reference/migrations#get-a-user-migration-status)///
+    /// [GitHub API docs for get_status_for_authenticated_user](https://docs.github.com/rest/reference/migrations#get-a-user-migration-status)
+    ///
     /// The `get_status_for_authenticated_user` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -1584,7 +1594,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1621,7 +1631,8 @@ impl<'api> Migrations<'api> {
     /// *   `exported`, which means the migration finished successfully.
     /// *   `failed`, which means the migration failed.
     /// 
-    /// [GitHub API docs for get_status_for_org](https://docs.github.com/rest/reference/migrations#get-an-organization-migration-status)///
+    /// [GitHub API docs for get_status_for_org](https://docs.github.com/rest/reference/migrations#get-an-organization-migration-status)
+    ///
     /// The `get_status_for_org_async` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -1639,7 +1650,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1673,7 +1684,8 @@ impl<'api> Migrations<'api> {
     /// *   `exported`, which means the migration finished successfully.
     /// *   `failed`, which means the migration failed.
     /// 
-    /// [GitHub API docs for get_status_for_org](https://docs.github.com/rest/reference/migrations#get-an-organization-migration-status)///
+    /// [GitHub API docs for get_status_for_org](https://docs.github.com/rest/reference/migrations#get-an-organization-migration-status)
+    ///
     /// The `get_status_for_org` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -1693,7 +1705,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1720,7 +1732,8 @@ impl<'api> Migrations<'api> {
     ///
     /// Lists all migrations a user has started.
     /// 
-    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/migrations#list-user-migrations)///
+    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/migrations#list-user-migrations)
+    ///
     /// The `list_for_authenticated_user_async` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -1738,7 +1751,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1767,7 +1780,8 @@ impl<'api> Migrations<'api> {
     ///
     /// Lists all migrations a user has started.
     /// 
-    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/migrations#list-user-migrations)///
+    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/migrations#list-user-migrations)
+    ///
     /// The `list_for_authenticated_user` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -1787,7 +1801,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1816,7 +1830,8 @@ impl<'api> Migrations<'api> {
     ///
     /// Lists the most recent migrations.
     /// 
-    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/migrations#list-organization-migrations)///
+    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/migrations#list-organization-migrations)
+    ///
     /// The `list_for_org_async` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -1834,7 +1849,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1860,7 +1875,8 @@ impl<'api> Migrations<'api> {
     ///
     /// Lists the most recent migrations.
     /// 
-    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/migrations#list-organization-migrations)///
+    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/migrations#list-organization-migrations)
+    ///
     /// The `list_for_org` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -1880,7 +1896,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1906,7 +1922,8 @@ impl<'api> Migrations<'api> {
     ///
     /// List all the repositories for this organization migration.
     /// 
-    /// [GitHub API docs for list_repos_for_org](https://docs.github.com/rest/reference/migrations#list-repositories-in-an-organization-migration)///
+    /// [GitHub API docs for list_repos_for_org](https://docs.github.com/rest/reference/migrations#list-repositories-in-an-organization-migration)
+    ///
     /// The `list_repos_for_org_async` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -1924,7 +1941,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1951,7 +1968,8 @@ impl<'api> Migrations<'api> {
     ///
     /// List all the repositories for this organization migration.
     /// 
-    /// [GitHub API docs for list_repos_for_org](https://docs.github.com/rest/reference/migrations#list-repositories-in-an-organization-migration)///
+    /// [GitHub API docs for list_repos_for_org](https://docs.github.com/rest/reference/migrations#list-repositories-in-an-organization-migration)
+    ///
     /// The `list_repos_for_org` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -1971,7 +1989,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1998,7 +2016,8 @@ impl<'api> Migrations<'api> {
     ///
     /// Lists all the repositories for this user migration.
     /// 
-    /// [GitHub API docs for list_repos_for_user](https://docs.github.com/rest/reference/migrations#list-repositories-for-a-user-migration)///
+    /// [GitHub API docs for list_repos_for_user](https://docs.github.com/rest/reference/migrations#list-repositories-for-a-user-migration)
+    ///
     /// The `list_repos_for_user_async` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -2016,7 +2035,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2043,7 +2062,8 @@ impl<'api> Migrations<'api> {
     ///
     /// Lists all the repositories for this user migration.
     /// 
-    /// [GitHub API docs for list_repos_for_user](https://docs.github.com/rest/reference/migrations#list-repositories-for-a-user-migration)///
+    /// [GitHub API docs for list_repos_for_user](https://docs.github.com/rest/reference/migrations#list-repositories-for-a-user-migration)
+    ///
     /// The `list_repos_for_user` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -2063,7 +2083,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2090,7 +2110,7 @@ impl<'api> Migrations<'api> {
     ///
     /// Update an author's identity for the import. Your application can continue updating authors any time before you push new commits to the repository.
     /// 
-    /// [GitHub API docs for map_commit_author](https://docs.github.com/rest/reference/migrations#map-a-commit-author)    
+    /// [GitHub API docs for map_commit_author](https://docs.github.com/rest/reference/migrations#map-a-commit-author)
     ///
     /// ---
     pub async fn map_commit_author_async(&self, owner: &str, repo: &str, author_id: i32, body: PatchMigrationsMapCommitAuthor) -> Result<PorterAuthor, MigrationsMapCommitAuthorError> {
@@ -2130,7 +2150,7 @@ impl<'api> Migrations<'api> {
     ///
     /// Update an author's identity for the import. Your application can continue updating authors any time before you push new commits to the repository.
     /// 
-    /// [GitHub API docs for map_commit_author](https://docs.github.com/rest/reference/migrations#map-a-commit-author)    
+    /// [GitHub API docs for map_commit_author](https://docs.github.com/rest/reference/migrations#map-a-commit-author)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2171,7 +2191,7 @@ impl<'api> Migrations<'api> {
     ///
     /// You can import repositories from Subversion, Mercurial, and TFS that include files larger than 100MB. This ability is powered by [Git LFS](https://git-lfs.github.com). You can learn more about our LFS feature and working with large files [on our help site](https://help.github.com/articles/versioning-large-files/).
     /// 
-    /// [GitHub API docs for set_lfs_preference](https://docs.github.com/rest/reference/migrations#update-git-lfs-preference)    
+    /// [GitHub API docs for set_lfs_preference](https://docs.github.com/rest/reference/migrations#update-git-lfs-preference)
     ///
     /// ---
     pub async fn set_lfs_preference_async(&self, owner: &str, repo: &str, body: PatchMigrationsSetLfsPreference) -> Result<Import, MigrationsSetLfsPreferenceError> {
@@ -2210,7 +2230,7 @@ impl<'api> Migrations<'api> {
     ///
     /// You can import repositories from Subversion, Mercurial, and TFS that include files larger than 100MB. This ability is powered by [Git LFS](https://git-lfs.github.com). You can learn more about our LFS feature and working with large files [on our help site](https://help.github.com/articles/versioning-large-files/).
     /// 
-    /// [GitHub API docs for set_lfs_preference](https://docs.github.com/rest/reference/migrations#update-git-lfs-preference)    
+    /// [GitHub API docs for set_lfs_preference](https://docs.github.com/rest/reference/migrations#update-git-lfs-preference)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2250,7 +2270,7 @@ impl<'api> Migrations<'api> {
     ///
     /// Initiates the generation of a user migration archive.
     /// 
-    /// [GitHub API docs for start_for_authenticated_user](https://docs.github.com/rest/reference/migrations#start-a-user-migration)    
+    /// [GitHub API docs for start_for_authenticated_user](https://docs.github.com/rest/reference/migrations#start-a-user-migration)
     ///
     /// ---
     pub async fn start_for_authenticated_user_async(&self, body: PostMigrationsStartForAuthenticatedUser) -> Result<Migration, MigrationsStartForAuthenticatedUserError> {
@@ -2292,7 +2312,7 @@ impl<'api> Migrations<'api> {
     ///
     /// Initiates the generation of a user migration archive.
     /// 
-    /// [GitHub API docs for start_for_authenticated_user](https://docs.github.com/rest/reference/migrations#start-a-user-migration)    
+    /// [GitHub API docs for start_for_authenticated_user](https://docs.github.com/rest/reference/migrations#start-a-user-migration)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2335,7 +2355,7 @@ impl<'api> Migrations<'api> {
     ///
     /// Initiates the generation of a migration archive.
     /// 
-    /// [GitHub API docs for start_for_org](https://docs.github.com/rest/reference/migrations#start-an-organization-migration)    
+    /// [GitHub API docs for start_for_org](https://docs.github.com/rest/reference/migrations#start-an-organization-migration)
     ///
     /// ---
     pub async fn start_for_org_async(&self, org: &str, body: PostMigrationsStartForOrg) -> Result<Migration, MigrationsStartForOrgError> {
@@ -2375,7 +2395,7 @@ impl<'api> Migrations<'api> {
     ///
     /// Initiates the generation of a migration archive.
     /// 
-    /// [GitHub API docs for start_for_org](https://docs.github.com/rest/reference/migrations#start-an-organization-migration)    
+    /// [GitHub API docs for start_for_org](https://docs.github.com/rest/reference/migrations#start-an-organization-migration)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2416,7 +2436,7 @@ impl<'api> Migrations<'api> {
     ///
     /// Start a source import to a GitHub repository using GitHub Importer.
     /// 
-    /// [GitHub API docs for start_import](https://docs.github.com/rest/reference/migrations#start-an-import)    
+    /// [GitHub API docs for start_import](https://docs.github.com/rest/reference/migrations#start-an-import)
     ///
     /// ---
     pub async fn start_import_async(&self, owner: &str, repo: &str, body: PutMigrationsStartImport) -> Result<Import, MigrationsStartImportError> {
@@ -2456,7 +2476,7 @@ impl<'api> Migrations<'api> {
     ///
     /// Start a source import to a GitHub repository using GitHub Importer.
     /// 
-    /// [GitHub API docs for start_import](https://docs.github.com/rest/reference/migrations#start-an-import)    
+    /// [GitHub API docs for start_import](https://docs.github.com/rest/reference/migrations#start-an-import)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2497,7 +2517,8 @@ impl<'api> Migrations<'api> {
     ///
     /// Unlocks a repository. You can lock repositories when you [start a user migration](https://docs.github.com/rest/reference/migrations#start-a-user-migration). Once the migration is complete you can unlock each repository to begin using it again or [delete the repository](https://docs.github.com/rest/reference/repos#delete-a-repository) if you no longer need the source data. Returns a status of `404 Not Found` if the repository is not locked.
     /// 
-    /// [GitHub API docs for unlock_repo_for_authenticated_user](https://docs.github.com/rest/reference/migrations#unlock-a-user-repository)///
+    /// [GitHub API docs for unlock_repo_for_authenticated_user](https://docs.github.com/rest/reference/migrations#unlock-a-user-repository)
+    ///
     /// The `unlock_repo_for_authenticated_user_async` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -2511,7 +2532,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2541,7 +2562,8 @@ impl<'api> Migrations<'api> {
     ///
     /// Unlocks a repository. You can lock repositories when you [start a user migration](https://docs.github.com/rest/reference/migrations#start-a-user-migration). Once the migration is complete you can unlock each repository to begin using it again or [delete the repository](https://docs.github.com/rest/reference/repos#delete-a-repository) if you no longer need the source data. Returns a status of `404 Not Found` if the repository is not locked.
     /// 
-    /// [GitHub API docs for unlock_repo_for_authenticated_user](https://docs.github.com/rest/reference/migrations#unlock-a-user-repository)///
+    /// [GitHub API docs for unlock_repo_for_authenticated_user](https://docs.github.com/rest/reference/migrations#unlock-a-user-repository)
+    ///
     /// The `unlock_repo_for_authenticated_user` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -2556,7 +2578,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2586,7 +2608,8 @@ impl<'api> Migrations<'api> {
     ///
     /// Unlocks a repository that was locked for migration. You should unlock each migrated repository and [delete them](https://docs.github.com/rest/reference/repos#delete-a-repository) when the migration is complete and you no longer need the source data.
     /// 
-    /// [GitHub API docs for unlock_repo_for_org](https://docs.github.com/rest/reference/migrations#unlock-an-organization-repository)///
+    /// [GitHub API docs for unlock_repo_for_org](https://docs.github.com/rest/reference/migrations#unlock-an-organization-repository)
+    ///
     /// The `unlock_repo_for_org_async` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -2600,7 +2623,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2627,7 +2650,8 @@ impl<'api> Migrations<'api> {
     ///
     /// Unlocks a repository that was locked for migration. You should unlock each migrated repository and [delete them](https://docs.github.com/rest/reference/repos#delete-a-repository) when the migration is complete and you no longer need the source data.
     /// 
-    /// [GitHub API docs for unlock_repo_for_org](https://docs.github.com/rest/reference/migrations#unlock-an-organization-repository)///
+    /// [GitHub API docs for unlock_repo_for_org](https://docs.github.com/rest/reference/migrations#unlock-an-organization-repository)
+    ///
     /// The `unlock_repo_for_org` endpoint is enabled with the `wyandotte` cargo feature.
     ///
     /// ---
@@ -2642,7 +2666,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json")]
+            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2670,7 +2694,7 @@ impl<'api> Migrations<'api> {
     /// An import can be updated with credentials or a project choice by passing in the appropriate parameters in this API
     /// request. If no parameters are provided, the import will be restarted.
     /// 
-    /// [GitHub API docs for update_import](https://docs.github.com/rest/reference/migrations#update-an-import)    
+    /// [GitHub API docs for update_import](https://docs.github.com/rest/reference/migrations#update-an-import)
     ///
     /// ---
     pub async fn update_import_async(&self, owner: &str, repo: &str, body: PatchMigrationsUpdateImport) -> Result<Import, MigrationsUpdateImportError> {
@@ -2709,7 +2733,7 @@ impl<'api> Migrations<'api> {
     /// An import can be updated with credentials or a project choice by passing in the appropriate parameters in this API
     /// request. If no parameters are provided, the import will be restarted.
     /// 
-    /// [GitHub API docs for update_import](https://docs.github.com/rest/reference/migrations#update-an-import)    
+    /// [GitHub API docs for update_import](https://docs.github.com/rest/reference/migrations#update-an-import)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

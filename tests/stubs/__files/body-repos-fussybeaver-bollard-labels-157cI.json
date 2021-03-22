@@ -1,0 +1,11 @@
+[
+  {
+    "id": 969236722,
+    "node_id": "MDU6TGFiZWw5NjkyMzY3MjI=",
+    "url": "https://api.github.com/repos/fussybeaver/bollard/labels/bug",
+    "name": "bug",
+    "color": "d73a4a",
+    "default": true,
+    "description": "Something isn't working"
+  }
+]

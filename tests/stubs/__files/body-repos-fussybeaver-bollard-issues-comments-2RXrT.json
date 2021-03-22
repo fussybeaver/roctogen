@@ -1,0 +1,46 @@
+[
+  {
+    "url": "https://api.github.com/repos/fussybeaver/bollard/issues/comments/452023502",
+    "html_url": "https://github.com/fussybeaver/bollard/issues/10#issuecomment-452023502",
+    "issue_url": "https://api.github.com/repos/fussybeaver/bollard/issues/10",
+    "id": 452023502,
+    "node_id": "MDEyOklzc3VlQ29tbWVudDQ1MjAyMzUwMg==",
+    "user": {
+      "login": "fussybeaver",
+      "id": 8981974,
+      "node_id": "MDQ6VXNlcjg5ODE5NzQ=",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8981974?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/fussybeaver",
+      "html_url": "https://github.com/fussybeaver",
+      "followers_url": "https://api.github.com/users/fussybeaver/followers",
+      "following_url": "https://api.github.com/users/fussybeaver/following{/other_user}",
+      "gists_url": "https://api.github.com/users/fussybeaver/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/fussybeaver/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/fussybeaver/subscriptions",
+      "organizations_url": "https://api.github.com/users/fussybeaver/orgs",
+      "repos_url": "https://api.github.com/users/fussybeaver/repos",
+      "events_url": "https://api.github.com/users/fussybeaver/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/fussybeaver/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "created_at": "2019-01-07T17:58:25Z",
+    "updated_at": "2019-01-07T17:58:25Z",
+    "author_association": "OWNER",
+    "body": "Thanks for reporting. Yep, it looks like it should be a list.",
+    "reactions": {
+      "url": "https://api.github.com/repos/fussybeaver/bollard/issues/comments/452023502/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "performed_via_github_app": null
+  }
+]

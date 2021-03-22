@@ -392,7 +392,7 @@ impl<'api> OauthAuthorizations<'api> {
     /// 
     /// Organizations that enforce SAML SSO require personal access tokens to be allowed. Read more about allowing tokens in [the GitHub Help documentation](https://help.github.com/articles/about-identity-and-access-management-with-saml-single-sign-on).
     /// 
-    /// [GitHub API docs for create_authorization](https://docs.github.com/rest/reference/oauth-authorizations#create-a-new-authorization)    
+    /// [GitHub API docs for create_authorization](https://docs.github.com/rest/reference/oauth-authorizations#create-a-new-authorization)
     ///
     /// ---
     pub async fn create_authorization_async(&self, body: PostOauthAuthorizationsCreateAuthorization) -> Result<Authorization, OauthAuthorizationsCreateAuthorizationError> {
@@ -445,7 +445,7 @@ impl<'api> OauthAuthorizations<'api> {
     /// 
     /// Organizations that enforce SAML SSO require personal access tokens to be allowed. Read more about allowing tokens in [the GitHub Help documentation](https://help.github.com/articles/about-identity-and-access-management-with-saml-single-sign-on).
     /// 
-    /// [GitHub API docs for create_authorization](https://docs.github.com/rest/reference/oauth-authorizations#create-a-new-authorization)    
+    /// [GitHub API docs for create_authorization](https://docs.github.com/rest/reference/oauth-authorizations#create-a-new-authorization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -489,7 +489,7 @@ impl<'api> OauthAuthorizations<'api> {
     ///
     /// **Deprecation Notice:** GitHub will discontinue the [OAuth Authorizations API](https://docs.github.com/rest/reference/oauth-authorizations), which is used by integrations to create personal access tokens and OAuth tokens, and you must now create these tokens using our [web application flow](https://docs.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#web-application-flow). The [OAuth Authorizations API](https://docs.github.com/rest/reference/oauth-authorizations) will be removed on November, 13, 2020. For more information, including scheduled brownouts, see the [blog post](https://developer.github.com/changes/2020-02-14-deprecating-oauth-auth-endpoint/).
     /// 
-    /// [GitHub API docs for delete_authorization](https://docs.github.com/rest/reference/oauth-authorizations#delete-an-authorization)    
+    /// [GitHub API docs for delete_authorization](https://docs.github.com/rest/reference/oauth-authorizations#delete-an-authorization)
     ///
     /// ---
     pub async fn delete_authorization_async(&self, authorization_id: i32) -> Result<(), OauthAuthorizationsDeleteAuthorizationError> {
@@ -530,7 +530,7 @@ impl<'api> OauthAuthorizations<'api> {
     ///
     /// **Deprecation Notice:** GitHub will discontinue the [OAuth Authorizations API](https://docs.github.com/rest/reference/oauth-authorizations), which is used by integrations to create personal access tokens and OAuth tokens, and you must now create these tokens using our [web application flow](https://docs.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#web-application-flow). The [OAuth Authorizations API](https://docs.github.com/rest/reference/oauth-authorizations) will be removed on November, 13, 2020. For more information, including scheduled brownouts, see the [blog post](https://developer.github.com/changes/2020-02-14-deprecating-oauth-auth-endpoint/).
     /// 
-    /// [GitHub API docs for delete_authorization](https://docs.github.com/rest/reference/oauth-authorizations#delete-an-authorization)    
+    /// [GitHub API docs for delete_authorization](https://docs.github.com/rest/reference/oauth-authorizations#delete-an-authorization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -574,7 +574,7 @@ impl<'api> OauthAuthorizations<'api> {
     /// 
     /// Deleting an OAuth application's grant will also delete all OAuth tokens associated with the application for your user. Once deleted, the application has no access to your account and is no longer listed on [the application authorizations settings screen within GitHub](https://github.com/settings/applications#authorized).
     /// 
-    /// [GitHub API docs for delete_grant](https://docs.github.com/rest/reference/oauth-authorizations#delete-a-grant)    
+    /// [GitHub API docs for delete_grant](https://docs.github.com/rest/reference/oauth-authorizations#delete-a-grant)
     ///
     /// ---
     pub async fn delete_grant_async(&self, grant_id: i32) -> Result<(), OauthAuthorizationsDeleteGrantError> {
@@ -617,7 +617,7 @@ impl<'api> OauthAuthorizations<'api> {
     /// 
     /// Deleting an OAuth application's grant will also delete all OAuth tokens associated with the application for your user. Once deleted, the application has no access to your account and is no longer listed on [the application authorizations settings screen within GitHub](https://github.com/settings/applications#authorized).
     /// 
-    /// [GitHub API docs for delete_grant](https://docs.github.com/rest/reference/oauth-authorizations#delete-a-grant)    
+    /// [GitHub API docs for delete_grant](https://docs.github.com/rest/reference/oauth-authorizations#delete-a-grant)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -659,7 +659,7 @@ impl<'api> OauthAuthorizations<'api> {
     ///
     /// **Deprecation Notice:** GitHub will discontinue the [OAuth Authorizations API](https://docs.github.com/rest/reference/oauth-authorizations), which is used by integrations to create personal access tokens and OAuth tokens, and you must now create these tokens using our [web application flow](https://docs.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#web-application-flow). The [OAuth Authorizations API](https://docs.github.com/rest/reference/oauth-authorizations) will be removed on November, 13, 2020. For more information, including scheduled brownouts, see the [blog post](https://developer.github.com/changes/2020-02-14-deprecating-oauth-auth-endpoint/).
     /// 
-    /// [GitHub API docs for get_authorization](https://docs.github.com/rest/reference/oauth-authorizations#get-a-single-authorization)    
+    /// [GitHub API docs for get_authorization](https://docs.github.com/rest/reference/oauth-authorizations#get-a-single-authorization)
     ///
     /// ---
     pub async fn get_authorization_async(&self, authorization_id: i32) -> Result<Authorization, OauthAuthorizationsGetAuthorizationError> {
@@ -700,7 +700,7 @@ impl<'api> OauthAuthorizations<'api> {
     ///
     /// **Deprecation Notice:** GitHub will discontinue the [OAuth Authorizations API](https://docs.github.com/rest/reference/oauth-authorizations), which is used by integrations to create personal access tokens and OAuth tokens, and you must now create these tokens using our [web application flow](https://docs.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#web-application-flow). The [OAuth Authorizations API](https://docs.github.com/rest/reference/oauth-authorizations) will be removed on November, 13, 2020. For more information, including scheduled brownouts, see the [blog post](https://developer.github.com/changes/2020-02-14-deprecating-oauth-auth-endpoint/).
     /// 
-    /// [GitHub API docs for get_authorization](https://docs.github.com/rest/reference/oauth-authorizations#get-a-single-authorization)    
+    /// [GitHub API docs for get_authorization](https://docs.github.com/rest/reference/oauth-authorizations#get-a-single-authorization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -742,7 +742,7 @@ impl<'api> OauthAuthorizations<'api> {
     ///
     /// **Deprecation Notice:** GitHub will discontinue the [OAuth Authorizations API](https://docs.github.com/rest/reference/oauth-authorizations), which is used by integrations to create personal access tokens and OAuth tokens, and you must now create these tokens using our [web application flow](https://docs.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#web-application-flow). The [OAuth Authorizations API](https://docs.github.com/rest/reference/oauth-authorizations) will be removed on November, 13, 2020. For more information, including scheduled brownouts, see the [blog post](https://developer.github.com/changes/2020-02-14-deprecating-oauth-auth-endpoint/).
     /// 
-    /// [GitHub API docs for get_grant](https://docs.github.com/rest/reference/oauth-authorizations#get-a-single-grant)    
+    /// [GitHub API docs for get_grant](https://docs.github.com/rest/reference/oauth-authorizations#get-a-single-grant)
     ///
     /// ---
     pub async fn get_grant_async(&self, grant_id: i32) -> Result<ApplicationGrant, OauthAuthorizationsGetGrantError> {
@@ -783,7 +783,7 @@ impl<'api> OauthAuthorizations<'api> {
     ///
     /// **Deprecation Notice:** GitHub will discontinue the [OAuth Authorizations API](https://docs.github.com/rest/reference/oauth-authorizations), which is used by integrations to create personal access tokens and OAuth tokens, and you must now create these tokens using our [web application flow](https://docs.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#web-application-flow). The [OAuth Authorizations API](https://docs.github.com/rest/reference/oauth-authorizations) will be removed on November, 13, 2020. For more information, including scheduled brownouts, see the [blog post](https://developer.github.com/changes/2020-02-14-deprecating-oauth-auth-endpoint/).
     /// 
-    /// [GitHub API docs for get_grant](https://docs.github.com/rest/reference/oauth-authorizations#get-a-single-grant)    
+    /// [GitHub API docs for get_grant](https://docs.github.com/rest/reference/oauth-authorizations#get-a-single-grant)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -833,7 +833,7 @@ impl<'api> OauthAuthorizations<'api> {
     /// 
     /// **Deprecation Notice:** GitHub will discontinue the [OAuth Authorizations API](https://docs.github.com/rest/reference/oauth-authorizations/), which is used by integrations to create personal access tokens and OAuth tokens, and you must now create these tokens using our [web application flow](https://docs.github.com/developers/apps/authorizing-oauth-apps#web-application-flow). The [OAuth Authorizations API](https://docs.github.com/rest/reference/oauth-authorizations) will be removed on November, 13, 2020. For more information, including scheduled brownouts, see the [blog post](https://developer.github.com/changes/2020-02-14-deprecating-oauth-auth-endpoint/).
     /// 
-    /// [GitHub API docs for get_or_create_authorization_for_app](https://docs.github.com/rest/reference/oauth-authorizations#get-or-create-an-authorization-for-a-specific-app)    
+    /// [GitHub API docs for get_or_create_authorization_for_app](https://docs.github.com/rest/reference/oauth-authorizations#get-or-create-an-authorization-for-a-specific-app)
     ///
     /// ---
     pub async fn get_or_create_authorization_for_app_async(&self, client_id: &str, body: PutOauthAuthorizationsGetOrCreateAuthorizationForApp) -> Result<Authorization, OauthAuthorizationsGetOrCreateAuthorizationForAppError> {
@@ -884,7 +884,7 @@ impl<'api> OauthAuthorizations<'api> {
     /// 
     /// **Deprecation Notice:** GitHub will discontinue the [OAuth Authorizations API](https://docs.github.com/rest/reference/oauth-authorizations/), which is used by integrations to create personal access tokens and OAuth tokens, and you must now create these tokens using our [web application flow](https://docs.github.com/developers/apps/authorizing-oauth-apps#web-application-flow). The [OAuth Authorizations API](https://docs.github.com/rest/reference/oauth-authorizations) will be removed on November, 13, 2020. For more information, including scheduled brownouts, see the [blog post](https://developer.github.com/changes/2020-02-14-deprecating-oauth-auth-endpoint/).
     /// 
-    /// [GitHub API docs for get_or_create_authorization_for_app](https://docs.github.com/rest/reference/oauth-authorizations#get-or-create-an-authorization-for-a-specific-app)    
+    /// [GitHub API docs for get_or_create_authorization_for_app](https://docs.github.com/rest/reference/oauth-authorizations#get-or-create-an-authorization-for-a-specific-app)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -934,7 +934,7 @@ impl<'api> OauthAuthorizations<'api> {
     /// 
     /// If you have two-factor authentication setup, Basic Authentication for this endpoint requires that you use a one-time password (OTP) and your username and password instead of tokens. For more information, see "[Working with two-factor authentication](https://docs.github.com/rest/overview/other-authentication-methods#working-with-two-factor-authentication)."
     /// 
-    /// [GitHub API docs for get_or_create_authorization_for_app_and_fingerprint](https://docs.github.com/rest/reference/oauth-authorizations#get-or-create-an-authorization-for-a-specific-app-and-fingerprint)    
+    /// [GitHub API docs for get_or_create_authorization_for_app_and_fingerprint](https://docs.github.com/rest/reference/oauth-authorizations#get-or-create-an-authorization-for-a-specific-app-and-fingerprint)
     ///
     /// ---
     pub async fn get_or_create_authorization_for_app_and_fingerprint_async(&self, client_id: &str, fingerprint: &str, body: PutOauthAuthorizationsGetOrCreateAuthorizationForAppAndFingerprint) -> Result<Authorization, OauthAuthorizationsGetOrCreateAuthorizationForAppAndFingerprintError> {
@@ -980,7 +980,7 @@ impl<'api> OauthAuthorizations<'api> {
     /// 
     /// If you have two-factor authentication setup, Basic Authentication for this endpoint requires that you use a one-time password (OTP) and your username and password instead of tokens. For more information, see "[Working with two-factor authentication](https://docs.github.com/rest/overview/other-authentication-methods#working-with-two-factor-authentication)."
     /// 
-    /// [GitHub API docs for get_or_create_authorization_for_app_and_fingerprint](https://docs.github.com/rest/reference/oauth-authorizations#get-or-create-an-authorization-for-a-specific-app-and-fingerprint)    
+    /// [GitHub API docs for get_or_create_authorization_for_app_and_fingerprint](https://docs.github.com/rest/reference/oauth-authorizations#get-or-create-an-authorization-for-a-specific-app-and-fingerprint)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1021,7 +1021,7 @@ impl<'api> OauthAuthorizations<'api> {
     ///
     /// **Deprecation Notice:** GitHub will discontinue the [OAuth Authorizations API](https://docs.github.com/rest/reference/oauth-authorizations), which is used by integrations to create personal access tokens and OAuth tokens, and you must now create these tokens using our [web application flow](https://docs.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#web-application-flow). The [OAuth Authorizations API](https://docs.github.com/rest/reference/oauth-authorizations) will be removed on November, 13, 2020. For more information, including scheduled brownouts, see the [blog post](https://developer.github.com/changes/2020-02-14-deprecating-oauth-auth-endpoint/).
     /// 
-    /// [GitHub API docs for list_authorizations](https://docs.github.com/rest/reference/oauth-authorizations#list-your-authorizations)    
+    /// [GitHub API docs for list_authorizations](https://docs.github.com/rest/reference/oauth-authorizations#list-your-authorizations)
     ///
     /// ---
     pub async fn list_authorizations_async(&self, query_params: Option<impl Into<OauthAuthorizationsListAuthorizationsParams<'api>>>) -> Result<Vec<Authorization>, OauthAuthorizationsListAuthorizationsError> {
@@ -1067,7 +1067,7 @@ impl<'api> OauthAuthorizations<'api> {
     ///
     /// **Deprecation Notice:** GitHub will discontinue the [OAuth Authorizations API](https://docs.github.com/rest/reference/oauth-authorizations), which is used by integrations to create personal access tokens and OAuth tokens, and you must now create these tokens using our [web application flow](https://docs.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#web-application-flow). The [OAuth Authorizations API](https://docs.github.com/rest/reference/oauth-authorizations) will be removed on November, 13, 2020. For more information, including scheduled brownouts, see the [blog post](https://developer.github.com/changes/2020-02-14-deprecating-oauth-auth-endpoint/).
     /// 
-    /// [GitHub API docs for list_authorizations](https://docs.github.com/rest/reference/oauth-authorizations#list-your-authorizations)    
+    /// [GitHub API docs for list_authorizations](https://docs.github.com/rest/reference/oauth-authorizations#list-your-authorizations)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1117,7 +1117,7 @@ impl<'api> OauthAuthorizations<'api> {
     /// 
     /// You can use this API to list the set of OAuth applications that have been granted access to your account. Unlike the [list your authorizations](https://docs.github.com/rest/reference/oauth-authorizations#list-your-authorizations) API, this API does not manage individual tokens. This API will return one entry for each OAuth application that has been granted access to your account, regardless of the number of tokens an application has generated for your user. The list of OAuth applications returned matches what is shown on [the application authorizations settings screen within GitHub](https://github.com/settings/applications#authorized). The `scopes` returned are the union of scopes authorized for the application. For example, if an application has one token with `repo` scope and another token with `user` scope, the grant will return `["repo", "user"]`.
     /// 
-    /// [GitHub API docs for list_grants](https://docs.github.com/rest/reference/oauth-authorizations#list-your-grants)    
+    /// [GitHub API docs for list_grants](https://docs.github.com/rest/reference/oauth-authorizations#list-your-grants)
     ///
     /// ---
     pub async fn list_grants_async(&self, query_params: Option<impl Into<OauthAuthorizationsListGrantsParams<'api>>>) -> Result<Vec<ApplicationGrant>, OauthAuthorizationsListGrantsError> {
@@ -1165,7 +1165,7 @@ impl<'api> OauthAuthorizations<'api> {
     /// 
     /// You can use this API to list the set of OAuth applications that have been granted access to your account. Unlike the [list your authorizations](https://docs.github.com/rest/reference/oauth-authorizations#list-your-authorizations) API, this API does not manage individual tokens. This API will return one entry for each OAuth application that has been granted access to your account, regardless of the number of tokens an application has generated for your user. The list of OAuth applications returned matches what is shown on [the application authorizations settings screen within GitHub](https://github.com/settings/applications#authorized). The `scopes` returned are the union of scopes authorized for the application. For example, if an application has one token with `repo` scope and another token with `user` scope, the grant will return `["repo", "user"]`.
     /// 
-    /// [GitHub API docs for list_grants](https://docs.github.com/rest/reference/oauth-authorizations#list-your-grants)    
+    /// [GitHub API docs for list_grants](https://docs.github.com/rest/reference/oauth-authorizations#list-your-grants)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1217,7 +1217,7 @@ impl<'api> OauthAuthorizations<'api> {
     /// 
     /// You can only send one of these scope keys at a time.
     /// 
-    /// [GitHub API docs for update_authorization](https://docs.github.com/rest/reference/oauth-authorizations#update-an-existing-authorization)    
+    /// [GitHub API docs for update_authorization](https://docs.github.com/rest/reference/oauth-authorizations#update-an-existing-authorization)
     ///
     /// ---
     pub async fn update_authorization_async(&self, authorization_id: i32, body: PatchOauthAuthorizationsUpdateAuthorization) -> Result<Authorization, OauthAuthorizationsUpdateAuthorizationError> {
@@ -1260,7 +1260,7 @@ impl<'api> OauthAuthorizations<'api> {
     /// 
     /// You can only send one of these scope keys at a time.
     /// 
-    /// [GitHub API docs for update_authorization](https://docs.github.com/rest/reference/oauth-authorizations#update-an-existing-authorization)    
+    /// [GitHub API docs for update_authorization](https://docs.github.com/rest/reference/oauth-authorizations#update-an-existing-authorization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

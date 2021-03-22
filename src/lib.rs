@@ -1,5 +1,6 @@
 //! [![license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 //! [![docs](https://docs.rs/roctogen/badge.svg)](https://docs.rs/roctogen/)
+//! [![GitHub workflow](https://github.com/github/docs/actions/workflows/default.yml/badge.svg)](https://github.com/fussybeaver/roctogen/actions/workflows/default.yml)
 //!
 //! # Roctogen: a rust client library for the GitHub v3 API  
 //!
@@ -20,6 +21,44 @@
 //! ## Documentation
 //!
 //! [API docs](https://docs.rs/roctogen/latest).
+//! 
+//! [Endpoints](https://docs.rs/roctogen/latest/roctogen/endpoints/index.html).
+//!
+//! Supported endpoints:
+//! ---
+//! 
+//!   - [Meta](https://docs.rs/roctogen/latest/roctogen/endpoints/meta/struct.Meta.html)
+//!   - [Issues](https://docs.rs/roctogen/latest/roctogen/endpoints/issues/struct.Issues.html)
+//!   - [Licenses](https://docs.rs/roctogen/latest/roctogen/endpoints/licenses/struct.Licenses.html)
+//!   - [Reactions](https://docs.rs/roctogen/latest/roctogen/endpoints/reactions/struct.Reactions.html)
+//!   - [Activity](https://docs.rs/roctogen/latest/roctogen/endpoints/activity/struct.Activity.html)
+//!   - [Projects](https://docs.rs/roctogen/latest/roctogen/endpoints/projects/struct.Projects.html)
+//!   - [Orgs](https://docs.rs/roctogen/latest/roctogen/endpoints/orgs/struct.Orgs.html)
+//!   - [Users](https://docs.rs/roctogen/latest/roctogen/endpoints/users/struct.Users.html)
+//!   - [Apps](https://docs.rs/roctogen/latest/roctogen/endpoints/apps/struct.Apps.html)
+//!   - [AuditLog](https://docs.rs/roctogen/latest/roctogen/endpoints/audit_log/struct.AuditLog.html)
+//!   - [RateLimit](https://docs.rs/roctogen/latest/roctogen/endpoints/rate_limit/struct.RateLimit.html)
+//!   - [Repos](https://docs.rs/roctogen/latest/roctogen/endpoints/repos/struct.Repos.html)
+//!   - [SecretScanning](https://docs.rs/roctogen/latest/roctogen/endpoints/secret_scanning/struct.SecretScanning.html)
+//!   - [Packages](https://docs.rs/roctogen/latest/roctogen/endpoints/packages/struct.Packages.html)
+//!   - [Search](https://docs.rs/roctogen/latest/roctogen/endpoints/search/struct.Search.html)
+//!   - [Teams](https://docs.rs/roctogen/latest/roctogen/endpoints/teams/struct.Teams.html)
+//!   - [Markdown](https://docs.rs/roctogen/latest/roctogen/endpoints/markdown/struct.Markdown.html)
+//!   - [OauthAuthorizations](https://docs.rs/roctogen/latest/roctogen/endpoints/oauth_authorizations/struct.OauthAuthorizations.html)
+//!   - [Actions](https://docs.rs/roctogen/latest/roctogen/endpoints/actions/struct.Actions.html)
+//!   - [Migrations](https://docs.rs/roctogen/latest/roctogen/endpoints/migrations/struct.Migrations.html)
+//!   - [Gists](https://docs.rs/roctogen/latest/roctogen/endpoints/gists/struct.Gists.html)
+//!   - [CodesOfConduct](https://docs.rs/roctogen/latest/roctogen/endpoints/codes_of_conduct/struct.CodesOfConduct.html)
+//!   - [Pulls](https://docs.rs/roctogen/latest/roctogen/endpoints/pulls/struct.Pulls.html)
+//!   - [Gitignore](https://docs.rs/roctogen/latest/roctogen/endpoints/gitignore/struct.Gitignore.html)
+//!   - [EnterpriseAdmin](https://docs.rs/roctogen/latest/roctogen/endpoints/enterprise_admin/struct.EnterpriseAdmin.html)
+//!   - [Git](https://docs.rs/roctogen/latest/roctogen/endpoints/git/struct.Git.html)
+//!   - [Scim](https://docs.rs/roctogen/latest/roctogen/endpoints/scim/struct.Scim.html)
+//!   - [CodeScanning](https://docs.rs/roctogen/latest/roctogen/endpoints/code_scanning/struct.CodeScanning.html)
+//!   - [Checks](https://docs.rs/roctogen/latest/roctogen/endpoints/checks/struct.Checks.html)
+//!   - [Billing](https://docs.rs/roctogen/latest/roctogen/endpoints/billing/struct.Billing.html)
+//!   - [Interactions](https://docs.rs/roctogen/latest/roctogen/endpoints/interactions/struct.Interactions.html)
+//!   - [Emojis](https://docs.rs/roctogen/latest/roctogen/endpoints/emojis/struct.Emojis.html)
 //!
 //! # Usage
 //!
@@ -97,7 +136,7 @@
 //!
 //! # Tests 
 //!
-//! Beware, tests are currently still doing real HTTP requests to the GitHub API.
+//! Beware, tests that are not run with the `mock` feature are currently still doing real HTTP requests to the GitHub API.
 //!
 //! Run the wasm tests:
 //!
@@ -110,6 +149,23 @@
 //! ```nocompile
 //! $ cargo test --features isahc,mercy,squirrel-girl,inertia,starfox --target x86_64-unknown-linux-gnu -- --nocapture
 //! ```
+//!
+//! In order to avoid GitHub's API rate limiting, you can run the non-wasm tests using wiremock.
+//! You'll need to start wiremock in the background:
+//!
+//! ```nocompile
+//! $ docker run -d --name wiremock -p 8080:8080 -v $PWD/tests/stubs:/home/wiremock
+//! rodolpheche/wiremock
+//! ```
+//!
+//! ### Regenerate the wiremock stubs
+//!
+//! You should regenerate the stubs if the remote API has changed:
+//!
+//! ```nocompile
+//! $ docker run -d --name wiremock -p 8080:8080 -v $PWD/tests/stubs:/home/wiremock -u (id -u):(id -g) rodolpheche/wiremock --verbose --proxy-all="https://api.github.com" --record-mappings
+//! ```
+//!
 #![allow(
     missing_docs,
     unused_imports,

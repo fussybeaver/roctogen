@@ -160,7 +160,7 @@ impl<'api> SecretScanning<'api> {
     /// 
     /// GitHub Apps must have the `secret_scanning_alerts` read permission to use this endpoint.
     /// 
-    /// [GitHub API docs for get_alert](https://docs.github.com/rest/reference/secret-scanning#get-a-secret-scanning-alert)    
+    /// [GitHub API docs for get_alert](https://docs.github.com/rest/reference/secret-scanning#get-a-secret-scanning-alert)
     ///
     /// ---
     pub async fn get_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber) -> Result<SecretScanningAlert, SecretScanningGetAlertError> {
@@ -202,7 +202,7 @@ impl<'api> SecretScanning<'api> {
     /// 
     /// GitHub Apps must have the `secret_scanning_alerts` read permission to use this endpoint.
     /// 
-    /// [GitHub API docs for get_alert](https://docs.github.com/rest/reference/secret-scanning#get-a-secret-scanning-alert)    
+    /// [GitHub API docs for get_alert](https://docs.github.com/rest/reference/secret-scanning#get-a-secret-scanning-alert)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -245,7 +245,7 @@ impl<'api> SecretScanning<'api> {
     /// 
     /// GitHub Apps must have the `secret_scanning_alerts` read permission to use this endpoint.
     /// 
-    /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/reference/secret-scanning#list-secret-scanning-alerts-for-a-repository)    
+    /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/reference/secret-scanning#list-secret-scanning-alerts-for-a-repository)
     ///
     /// ---
     pub async fn list_alerts_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<SecretScanningListAlertsForRepoParams<'api>>>) -> Result<Vec<SecretScanningAlert>, SecretScanningListAlertsForRepoError> {
@@ -291,7 +291,7 @@ impl<'api> SecretScanning<'api> {
     /// 
     /// GitHub Apps must have the `secret_scanning_alerts` read permission to use this endpoint.
     /// 
-    /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/reference/secret-scanning#list-secret-scanning-alerts-for-a-repository)    
+    /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/reference/secret-scanning#list-secret-scanning-alerts-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -339,7 +339,7 @@ impl<'api> SecretScanning<'api> {
     /// 
     /// GitHub Apps must have the `secret_scanning_alerts` write permission to use this endpoint.
     /// 
-    /// [GitHub API docs for update_alert](https://docs.github.com/rest/reference/secret-scanning#update-a-secret-scanning-alert)    
+    /// [GitHub API docs for update_alert](https://docs.github.com/rest/reference/secret-scanning#update-a-secret-scanning-alert)
     ///
     /// ---
     pub async fn update_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber, body: PatchSecretScanningUpdateAlert) -> Result<SecretScanningAlert, SecretScanningUpdateAlertError> {
@@ -382,7 +382,7 @@ impl<'api> SecretScanning<'api> {
     /// 
     /// GitHub Apps must have the `secret_scanning_alerts` write permission to use this endpoint.
     /// 
-    /// [GitHub API docs for update_alert](https://docs.github.com/rest/reference/secret-scanning#update-a-secret-scanning-alert)    
+    /// [GitHub API docs for update_alert](https://docs.github.com/rest/reference/secret-scanning#update-a-secret-scanning-alert)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

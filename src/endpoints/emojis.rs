@@ -59,7 +59,7 @@ impl<'api> Emojis<'api> {
     ///
     /// Lists all the emojis available to use on GitHub.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/emojis/#get-emojis)    
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/emojis/#get-emojis)
     ///
     /// ---
     pub async fn get_async(&self) -> Result<HashMap<String, String>, EmojisGetError> {
@@ -98,7 +98,7 @@ impl<'api> Emojis<'api> {
     ///
     /// Lists all the emojis available to use on GitHub.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/emojis/#get-emojis)    
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/emojis/#get-emojis)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
