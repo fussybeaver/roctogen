@@ -97,7 +97,7 @@
 //!
 //! # Tests 
 //!
-//! Beware, tests are currently still doing real HTTP requests to the GitHub API.
+//! Beware, tests that are not run with the `mock` feature are currently still doing real HTTP requests to the GitHub API.
 //!
 //! Run the wasm tests:
 //!
@@ -110,6 +110,23 @@
 //! ```nocompile
 //! $ cargo test --features isahc,mercy,squirrel-girl,inertia,starfox --target x86_64-unknown-linux-gnu -- --nocapture
 //! ```
+//!
+//! In order to avoid GitHub's API rate limiting, you can run the non-wasm tests using wiremock.
+//! You'll need to start wiremock in the background:
+//!
+//! ```nocompile
+//! $ docker run -d --name wiremock -p 8080:8080 -v $PWD/tests/stubs:/home/wiremock
+//! rodolpheche/wiremock
+//! ```
+//!
+//! ### Regenerate the wiremock stubs
+//!
+//! You should regenerate the stubs if the remote API has changed:
+//!
+//! ```nocompile
+//! $ docker run -d --name wiremock -p 8080:8080 -v $PWD/tests/stubs:/home/wiremock -u (id -u):(id -g) rodolpheche/wiremock --verbose --proxy-all="https://api.github.com" --record-mappings
+//! ```
+//!
 #![allow(
     missing_docs,
     unused_imports,
