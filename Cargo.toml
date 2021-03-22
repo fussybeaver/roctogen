@@ -1,6 +1,6 @@
 [package]
 name = "roctogen"
-version = "0.1.1"
+version = "0.1.2"
 authors = [ "Roctogen contributors" ]
 description = "Github API and models generated from the official swagger OpenAPI specification"
 license = "Apache-2.0"
