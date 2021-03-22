@@ -1,0 +1,6 @@
+{
+    "dataSource": "prs",
+    "tags": "all",
+    "override": true,
+    "generate": true
+}
