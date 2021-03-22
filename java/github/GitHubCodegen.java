@@ -22,7 +22,7 @@ import io.swagger.codegen.v3.CodegenOperation;
 import io.swagger.codegen.v3.CodegenParameter;
 import io.swagger.codegen.v3.CodegenProperty;
 import io.swagger.codegen.v3.CodegenResponse;
-import io.swagger.codegen.v3.generators.handlebars.java.JavaHelper;
+import io.swagger.codegen.v3.SupportingFile;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.info.Info;
@@ -39,7 +39,7 @@ public class GitHubCodegen extends RustServerCodegen {
         super();
 
         additionalProperties.put("tags", tagList.values());
-        // supportingFiles.add(new SupportingFile("api_impl.rs", "src", "api_impl.rs"));
+        supportingFiles.add(new SupportingFile("lib.mustache", "src", "lib.rs"));
     }
 
     private static HashMap<String, Object> patchOperationBodyNames = new HashMap();
@@ -186,6 +186,7 @@ public class GitHubCodegen extends RustServerCodegen {
         } else {
             codegenTag = new CodegenTag();
             codegenTag.baseName = underscore(tag);
+            codegenTag.classname = tag;
             codegenTag.operations = new ArrayList<CodegenOperation>();
             tagList.put(tag, codegenTag);
         }
