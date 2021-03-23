@@ -1,0 +1,33 @@
+{
+  "id" : "336a3ba3-6526-35da-b998-beb780aa07dc",
+  "request" : {
+    "url" : "/users/fussybeaver/gpg_keys?per_page=1&page=0",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-users-fussybeaver-gpg_keys-H9I34.json",
+    "headers" : {
+      "Server" : "GitHub.com",
+      "Date" : "Tue, 23 Mar 2021 10:57:35 GMT",
+      "Content-Type" : "application/json; charset=utf-8",
+      "Cache-Control" : "public, max-age=60, s-maxage=60",
+      "Vary" : "Accept, Accept-Encoding, Accept, X-Requested-With",
+      "ETag" : "\"d41c935eb5c029c094b396655d6701ed2035fea14feb9434d73918c953bbc336\"",
+      "X-GitHub-Media-Type" : "github.v3; format=json",
+      "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
+      "X-Frame-Options" : "deny",
+      "X-Content-Type-Options" : "nosniff",
+      "X-XSS-Protection" : "0",
+      "Referrer-Policy" : "origin-when-cross-origin, strict-origin-when-cross-origin",
+      "Content-Security-Policy" : "default-src 'none'",
+      "X-RateLimit-Limit" : "60",
+      "X-RateLimit-Remaining" : "59",
+      "X-RateLimit-Reset" : "1616500655",
+      "X-RateLimit-Used" : "1",
+      "Accept-Ranges" : "bytes",
+      "X-GitHub-Request-Id" : "414D:D403:B5C96:BAC66:6059C99F"
+    }
+  },
+  "uuid" : "336a3ba3-6526-35da-b998-beb780aa07dc"
+}
