@@ -83,6 +83,7 @@ impl GitHubRequestBuilder for Request<Body>
                 )
             }
             Auth::OAuth { token } => builder.header(AUTHORIZATION, format!("token {}", token)),
+            Auth::JWT { bearer } => builder.header(AUTHORIZATION, format!("Bearer {}", bearer)),
             Auth::None => builder,
         };
 

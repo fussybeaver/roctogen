@@ -184,6 +184,7 @@ pub mod auth {
     pub enum Auth {
         Basic { user: String, pass: String },
         OAuth { token: String },
+        JWT { bearer: String },
         None,
     }
 }
