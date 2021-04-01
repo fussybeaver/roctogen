@@ -1,13 +1,15 @@
 use crate::auth::Auth;
 use super::{FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
 
-use serde::{Deserialize, ser};
-
+use chrono::{DateTime, Duration, Utc};
+use log::debug;
 use js_sys::{Object, Promise, Reflect};
+use serde::{Deserialize, ser};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::JsFuture;
 use web_sys::{Request, RequestInit, Response, ServiceWorkerGlobalScope, Window};
+
 
 trait WasmScope {
     fn fetch(&self, request: &Request) -> Promise;
@@ -28,35 +30,51 @@ impl WasmScope for ServiceWorkerGlobalScope {
 fn scope() -> Result<Box<dyn WasmScope>, AdapterError> {
     let global = js_sys::global();
     if Reflect::has(&global, &JsValue::from_str("document"))? {
+        debug!("Found document, using Window for scope");
         Ok(Box::new(global.dyn_into::<Window>()?))
     } else {
+        debug!("Using ServiceWorkerGlobalScope for scope");
         Ok(Box::new(global.dyn_into::<ServiceWorkerGlobalScope>()?))
     }
 }
 
 #[derive(thiserror::Error, Debug)]
 pub enum AdapterError {
-    #[error("wasm_bindgen JsValue error")]
-    Value(JsValue),
-    #[error("js_sys Object error")]
-    Object(Object),
+    #[error(transparent)]
+    Value(JsValueError),
+    #[error(transparent)]
+    Object(ObjectError),
+}
+
+#[derive(thiserror::Error, Debug)]
+#[error("{msg}")]
+pub struct JsValueError {
+    msg: String,
+    origin: JsValue
+}
+
+#[derive(thiserror::Error, Debug)]
+#[error("{msg}")]
+pub struct ObjectError {
+    msg: String,
+    origin: Object
 }
 
 impl From<JsValue> for AdapterError {
     fn from(js_value: JsValue) -> Self {
-        AdapterError::Value(js_value)
+        AdapterError::Value(JsValueError {
+            msg: format!("{:#?}", js_value),
+            origin: js_value
+        })
     }
 }
 
 impl From<Object> for AdapterError {
     fn from(js_obj: Object) -> Self {
-        AdapterError::Object(js_obj)
-    }
-}
-// A macro to provide `println!(..)`-style syntax for `console.log` logging.
-macro_rules! log {
-    ( $( $t:tt )* ) => {
-        web_sys::console::log_1(&format!( $( $t )* ).into());
+        AdapterError::Object(ObjectError {
+            msg: format!("{:#?}", js_obj),
+            origin: js_obj
+        })
     }
 }
 
@@ -64,10 +82,13 @@ pub(crate) async fn fetch_async(request: Request) -> Result<GitHubResponse, Adap
     let scope = scope()?;
 
     let resp_value = JsFuture::from(scope.fetch(&request)).await?;
-    log!("{:?}", resp_value);
+    
+    debug!("Response: {:?}", &resp_value);
 
     let resp: Response = resp_value.dyn_into()?;
     let json: JsValue = JsFuture::from(resp.json()?).await?;
+
+    debug!("Body: {:?}", &json); 
 
     Ok(GitHubResponse {
         json,
@@ -110,6 +131,13 @@ where
     }
 }
 
+#[derive(Debug, Serialize)]
+struct JWTClaim<'claim> {
+    iat: DateTime<Utc>,
+    exp: DateTime<Utc>,
+    iss: &'claim str
+}
+
 impl GitHubRequestBuilder for Request
 {
     fn build(req: GitHubRequest, auth: &Auth) -> Result<Self, AdapterError> {
@@ -138,10 +166,14 @@ impl GitHubRequestBuilder for Request
                     &format!("Basic {}", base64::encode(creds.as_bytes())),
                 )?;
             }
-            Auth::OAuth { token } => headers.set("Authorization", &format!("token {}", token))?,
-            Auth::JWT { bearer } => headers.set("Authorization", &format!("Bearer {}", bearer))?,
+            Auth::Token(token) => headers.set("Authorization", &format!("token {}", token))?,
+            Auth::Bearer(bearer) => headers.set("Authorization", &format!("Bearer {}", bearer))?,
             Auth::None => (),
         }
+
+
+        debug!("Built request object: {:?}", &request);
+
 
         Ok(request)
     }

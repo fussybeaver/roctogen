@@ -182,9 +182,12 @@ pub mod models;
 
 pub mod auth {
     pub enum Auth {
-        Basic { user: String, pass: String },
-        OAuth { token: String },
-        JWT { bearer: String },
+        Basic {
+            user: String,
+            pass: String,
+        },
+        Token(String),
+        Bearer(String),
         None,
     }
 }
