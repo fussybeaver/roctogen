@@ -12,6 +12,7 @@ use web_sys::ServiceWorkerGlobalScope;
 
 use roctogen::api::apps;
 use roctogen::auth::Auth;
+use roctogen::models;
 
 use log::{debug, info, Level, error};
 use serde::{Deserialize, Serialize};
@@ -142,15 +143,38 @@ pub async fn run(jwt_js: JsValue, app_id_js: JsValue) -> Result<JsValue, JsValue
 
     let auth = Auth::Bearer(token);
 
-    let req = apps::new(&auth).get_authenticated_async().await;
+    let apps = apps::new(&auth);
+
+    let req = apps.list_installations_async(None::<apps::AppsListInstallationsParams>).await;
+    let installation_id = match req {
+        Ok(ref installations) => {
+            info!("installations: {:?}", installations);
+
+            // Just use the first one...
+            if let Some(models::Installation { id: Some(id), ..}) = installations.get(0) {
+                id
+            } else {
+                return Err(Error::new("Installation id not found").into());
+            }
+        }
+        Err(ref e) => {
+            error!("error fetching installations: {}", e);
+            return Err(Error::new(&e.to_string()).into());
+        },
+    };
+
+    let post_apps = models::PostAppsCreateInstallationAccessToken::default();
+    let req = apps.create_installation_access_token_async(*installation_id as i32, post_apps).await;
     match req {
-        Ok(ref plans) => {
-            info!("ok: {:?}", plans);
-            Ok(JsValue::from_serde(&plans).map_err(to_js_error)?)
+        Ok(ref installation_token) => {
+            info!("ok: {:?}", installation_token);
+
+            Ok(installation_token.token.as_ref().unwrap().into())
         }
         Err(ref e) => {
             error!("err: {}", e);
-            Ok(JsValue::NULL)
+            return Err(Error::new(&e.to_string()).into());
         },
     }
+
 }

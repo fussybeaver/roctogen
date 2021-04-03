@@ -2,10 +2,6 @@ addEventListener('fetch', event => {
   event.respondWith(handleRequest(event.request));
 })
 
-/**
- * Fetch and log a request
- * @param {Request} request
- */
 async function handleRequest(request) {
   const { run } = wasm_bindgen;
   await wasm_bindgen(wasm);
@@ -17,6 +13,5 @@ async function handleRequest(request) {
   // Trigger Rust entrypoint
   const resp = await run(JWT, APP_ID);
 
-  // Stringify JsValue response value
-  return new Response(JSON.stringify(resp, null, 2), {status: 200});
+  return new Response(resp, {status: 200});
 }
