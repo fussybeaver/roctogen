@@ -145,7 +145,10 @@ impl GitHubRequestBuilder for Request
         let mut opts = RequestInit::new();
         opts.method(&req.method);
         if let Some(body) = req.body {
-            opts.body(Some(&body));
+
+            debug!("Adding request body: {:?}", &body);
+
+            opts.body(Some(&js_sys::JSON::stringify(&body)?.into()));
         }
 
         let request = Request::new_with_str_and_init(&req.uri, &opts)?;
@@ -171,9 +174,7 @@ impl GitHubRequestBuilder for Request
             Auth::None => (),
         }
 
-
         debug!("Built request object: {:?}", &request);
-
 
         Ok(request)
     }
