@@ -6,6 +6,15 @@ using an [existing GitHub
 App](https://docs.github.com/en/developers/apps/authenticating-with-github-apps#authenticating-as-a-github-app)
 and associated private key. 
 
+Once the application creates a JWT token, it fetches a list of installations
+for the associated GitHub App and uses the first installation id to [create an
+installation access
+token](https://docs.github.com/en/rest/reference/apps#create-an-installation-access-token-for-an-app)
+for the API endpoints that the GitHub App installation has given access to.
+
+The resulting token could then be used to access GitHub endpoints that require
+token-level access.
+
 ## Requirements
 
 These instructions assume an existing Cloudflare account and a GitHub App with
