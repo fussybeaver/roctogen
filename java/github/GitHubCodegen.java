@@ -26,6 +26,7 @@ import io.swagger.codegen.v3.SupportingFile;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.media.MapSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
@@ -34,6 +35,7 @@ public class GitHubCodegen extends RustServerCodegen {
     private static final Logger LOGGER = LoggerFactory.getLogger(GitHubCodegen.class);
 
     protected Map<String, CodegenTag> tagList = new HashMap<String, CodegenTag>();
+    protected Map<String, List<CodegenProperty>> mapLikeModels = new HashMap<String, List<CodegenProperty>>();
 
     public GitHubCodegen() {
         super();
@@ -64,7 +66,7 @@ public class GitHubCodegen extends RustServerCodegen {
     public String getTypeDeclaration(Schema p) {
         String type = super.getTypeDeclaration(p);
 
-        // This is a "fallback" type, and allows some parts of the Docker API
+        // This is a "fallback" type, and allows some parts of the API
         // that receive an empty JSON '{}' value.
         if ("object".equals(type)) {
             type = "HashMap<(), ()>";
@@ -80,6 +82,24 @@ public class GitHubCodegen extends RustServerCodegen {
         // Remove extraneous references
         if (property.datatype.startsWith("models::")) {
             property.datatype = property.datatype.replace("models::", "");
+        }
+
+        // Deal with Map-like Models
+        if (p instanceof MapSchema) {
+            MapSchema mp = (MapSchema) p;
+            Object inner = mp.getAdditionalProperties();
+            if (!(inner instanceof Schema) && (Boolean) inner && mp.getProperties() != null && !mapLikeModels.containsKey(name)) {
+                Map<String, Schema> props = mp.getProperties();
+                List<CodegenProperty> listProps = new ArrayList<CodegenProperty>();
+                for (Entry<String, Schema> entry: props.entrySet()) {
+                    CodegenProperty prop = fromProperty(entry.getKey(), entry.getValue());
+                    if ((prop.dataFormat == null || !prop.dataFormat.equals("date-time")) && !languageSpecificPrimitives.contains(prop.datatype)) {
+                        prop.datatype = toModelName(prop.datatype);
+                    }
+                    listProps.add(prop);
+                }
+                mapLikeModels.put(name, listProps);
+            }
         }
 
         return property;
@@ -163,6 +183,7 @@ public class GitHubCodegen extends RustServerCodegen {
                 }
                 if (prop.datatype != null && prop.datatype.equals("String")) {
                     prop.vendorExtensions.put("x-rustgen-is-string", true);
+                    model.vendorExtensions.put("x-rustgen-has-string", true);
                 }
                 
                 if (prop.baseName.equals("score") && prop.datatype.equals("i64")) {
@@ -170,6 +191,9 @@ public class GitHubCodegen extends RustServerCodegen {
                 }
             }
 
+            if (mapLikeModels.containsKey(model.name)) {
+                model.vars = mapLikeModels.get(model.name);
+            }
         }
 
         return newObjs;
@@ -208,6 +232,7 @@ public class GitHubCodegen extends RustServerCodegen {
             String opName = (String) patchOperationBodyNames.get(camelize(cm.getName()));
             if (opName != null) {
                 cm.setClassname(toModelName(opName));
+                cm.getVendorExtensions().put("x-rustgen-body-model", "true");
             }
             String resName = (String) patchOperationResponseNames.get(camelize(cm.getName()));
             if (resName != null) {

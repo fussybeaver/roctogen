@@ -1,0 +1,29 @@
+{
+  "id" : "77937cfe-d417-3020-8f6b-be11a4f3b2e6",
+  "request" : {
+    "url" : "/rate_limit",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-rate_limit-WEcsT.json",
+    "headers" : {
+      "Cache-Control" : "no-cache",
+      "Content-Security-Policy" : "default-src 'none'",
+      "Content-Type" : "application/json; charset=utf-8",
+      "Referrer-Policy" : "origin-when-cross-origin, strict-origin-when-cross-origin",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Frame-Options" : "deny",
+      "X-GitHub-Media-Type" : "github.v3; format=json",
+      "X-RateLimit-Limit" : "60",
+      "X-RateLimit-Remaining" : "60",
+      "X-RateLimit-Reset" : "1616500240",
+      "X-RateLimit-Used" : "0",
+      "X-XSS-Protection" : "1; mode=block",
+      "Date" : "Tue, 23 Mar 2021 10:50:40 GMT",
+      "Accept-Ranges" : "bytes",
+      "X-GitHub-Request-Id" : "40EB:DECA:196F88:19D20F:6059C800"
+    }
+  },
+  "uuid" : "77937cfe-d417-3020-8f6b-be11a4f3b2e6"
+}

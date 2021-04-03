@@ -56,7 +56,7 @@ public class RustServerCodegen extends DefaultCodegenConfig {
     protected String packageVersion;
     protected String externCrateName;
     protected Map<String, Map<String, String>> pathSetMap = new HashMap<String, Map<String, String>>();
-
+ 
     public RustServerCodegen() {
         super();
 
@@ -750,7 +750,7 @@ public class RustServerCodegen extends DefaultCodegenConfig {
                 property.setComplexType(innerType);
             }
         }
-
+ 
         if (getSchemaType(p) != null && getSchemaType(p).contains(" ")) {
             property.datatype = toModelName(getSchemaType(p));
         }
@@ -792,7 +792,6 @@ public class RustServerCodegen extends DefaultCodegenConfig {
     public CodegenModel fromModel(String name, Schema schema, Map<String, Schema> allDefinitions) {
         CodegenModel mdl = super.fromModel(name, schema, allDefinitions);
         mdl.vendorExtensions.put("upperCaseName", name.toUpperCase());
-
         return mdl;
     }
 

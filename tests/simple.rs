@@ -4,7 +4,7 @@ use {
 };
 
 #[cfg(target_arch = "x86_64")]
-use roctogen::api::{self, activity, gists, issues, licenses, meta, projects, reactions, repos, search, users};
+use roctogen::api::{self, activity, gists, issues, licenses, meta, projects, rate_limit, reactions, repos, search, users};
 
 #[cfg(target_arch = "wasm32")]
 use roctogen::api::{self, repos};
@@ -136,6 +136,11 @@ fn users_sync_ok() {
     let req = users.list(Some(users::UsersListParams::new().per_page(1)));
 
     assert!(req.is_ok());
+
+    let req = users.list_gpg_keys_for_user("fussybeaver", Some(&api::PerPage::new(1)));
+
+    assert!(req.is_ok());
+
 }
 
 #[cfg(target_arch = "x86_64")]
@@ -234,12 +239,12 @@ fn actions_sync_ok() {
 
 #[cfg(target_arch = "x86_64")]
 #[test]
-fn projects_sync_ok() {
+fn rate_limit_sync_ok() {
 
     let auth = Auth::None;
     let per_page = api::PerPage::new(1);
-    let projects = projects::new(&auth);
-    let req = projects.list_for_user("fussybeaver", Some(&per_page));
+    let rate_limit = rate_limit::new(&auth);
+    let req = rate_limit.get();
 
     match &req {
         Ok(x) => {

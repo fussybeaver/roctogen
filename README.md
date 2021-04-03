@@ -14,7 +14,7 @@ Add the following to your `Cargo.toml` file
 
 ```nocompile
 [dependencies]
-roctogen = "0.1.0"
+roctogen = "0.2"
 ```
 
 ## API

@@ -82,7 +82,8 @@ impl GitHubRequestBuilder for Request<Body>
                     format!("Basic {}", base64::encode(creds.as_bytes())),
                 )
             }
-            Auth::OAuth { token } => builder.header(AUTHORIZATION, format!("token {}", token)),
+            Auth::Token(token) => builder.header(AUTHORIZATION, format!("token {}", token)),
+            Auth::Bearer(bearer) => builder.header(AUTHORIZATION, format!("Bearer {}", bearer)),
             Auth::None => builder,
         };
 

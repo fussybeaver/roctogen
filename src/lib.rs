@@ -14,7 +14,7 @@
 //!
 //! ```nocompile
 //! [dependencies]
-//! roctogen = "0.1.0"
+//! roctogen = "0.2"
 //! ```
 //!
 //! # API
@@ -182,8 +182,12 @@ pub mod models;
 
 pub mod auth {
     pub enum Auth {
-        Basic { user: String, pass: String },
-        OAuth { token: String },
+        Basic {
+            user: String,
+            pass: String,
+        },
+        Token(String),
+        Bearer(String),
         None,
     }
 }
