@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.2.0 (03/04/2021)
+- [**closed**] Add JWT auth mechanism [#3](https://github.com/fussybeaver/roctogen/pull/3)
+
+---
+
 ## v0.1.2 (22/03/2021)
 - [**closed**] Add wiremock and github action [#2](https://github.com/fussybeaver/roctogen/pull/2)
 
