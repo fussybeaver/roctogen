@@ -183,6 +183,7 @@ public class GitHubCodegen extends RustServerCodegen {
                 }
                 if (prop.datatype != null && prop.datatype.equals("String")) {
                     prop.vendorExtensions.put("x-rustgen-is-string", true);
+                    model.vendorExtensions.put("x-rustgen-has-string", true);
                 }
                 
                 if (prop.baseName.equals("score") && prop.datatype.equals("i64")) {
@@ -231,6 +232,7 @@ public class GitHubCodegen extends RustServerCodegen {
             String opName = (String) patchOperationBodyNames.get(camelize(cm.getName()));
             if (opName != null) {
                 cm.setClassname(toModelName(opName));
+                cm.getVendorExtensions().put("x-rustgen-body-model", "true");
             }
             String resName = (String) patchOperationResponseNames.get(camelize(cm.getName()));
             if (resName != null) {
