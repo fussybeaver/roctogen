@@ -68,7 +68,7 @@ pub type {{classname}} = i32;
 pub type {{classname}} = String;
 {{/vendorExtensions.x-rustgen-is-string}}{{#vendorExtensions.x-rustgen-is-datetime}}
 pub type {{classname}} = DateTime<Utc>;
-{{/vendorExtensions.x-rustgen-is-datetime}}{{^vendorExtensions.has-vars}}{{! general struct}}#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]{{#xmlName}}
+{{/vendorExtensions.x-rustgen-is-datetime}}{{^vendorExtensions.has-vars}}{{! general struct}}#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]{{#xmlName}}
 #[serde(rename = "{{xmlName}}")]{{/xmlName}}
 pub struct {{classname}} {     
 {{#vars}}{{#description}}    /// {{{.}}}

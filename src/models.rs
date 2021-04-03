@@ -23,7 +23,7 @@ use std::hash::Hash;
 use chrono::DateTime;
 use chrono::Utc;
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ActionsBillingUsage {     
     /// The sum of the free and paid GitHub Actions minutes used.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -41,7 +41,7 @@ pub struct ActionsBillingUsage {
 /// Whether GitHub Actions is enabled on the repository.
 pub type ActionsEnabled = bool;
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ActionsEnterprisePermissions {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub enabled_organizations: Option<EnabledOrganizations>,
@@ -54,7 +54,7 @@ pub struct ActionsEnterprisePermissions {
     pub selected_actions_url: Option<SelectedActionsUrl>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ActionsOrganizationPermissions {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub enabled_repositories: Option<EnabledRepositories>,
@@ -68,7 +68,7 @@ pub struct ActionsOrganizationPermissions {
 }
 
 /// The public key used for setting Actions Secrets.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ActionsPublicKey {     
     /// The identifier for the key.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -86,7 +86,7 @@ pub struct ActionsPublicKey {
     pub created_at: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ActionsRepositoryPermissions {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub enabled: Option<ActionsEnabled>,
@@ -97,7 +97,7 @@ pub struct ActionsRepositoryPermissions {
 }
 
 /// Set secrets for GitHub Actions.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ActionsSecret {     
     /// The name of the secret.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -108,7 +108,7 @@ pub struct ActionsSecret {
     pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ActionsbillingusageMinutesUsedBreakdown {     
     /// Total minutes used on Ubuntu runner machines.
     #[serde(rename = "UBUNTU")]
@@ -125,7 +125,7 @@ pub struct ActionsbillingusageMinutesUsedBreakdown {
 }
 
 /// Actor
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Actor {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -145,12 +145,12 @@ pub struct Actor {
 pub type AlertCreatedAt = DateTime<Utc>;
 
 /// The GitHub URL of the alert resource.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AlertHtmlUrl {     
 }
 
 /// The REST API URL for fetching the list of instances for an alert.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AlertInstancesUrl {     
 }
 
@@ -158,7 +158,7 @@ pub struct AlertInstancesUrl {
 pub type AlertNumber = i32;
 
 /// The REST API URL of the alert resource.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AlertUrl {     
 }
 
@@ -201,7 +201,7 @@ impl std::str::FromStr for AllowedActions {
 }
 
 /// Api Overview
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ApiOverview {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub verifiable_password_authentication: Option<bool>,
@@ -223,7 +223,7 @@ pub struct ApiOverview {
     pub actions: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ApioverviewSshKeyFingerprints {     
     #[serde(rename = "SHA256_RSA")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -234,7 +234,7 @@ pub struct ApioverviewSshKeyFingerprints {
 }
 
 /// The permissions granted to the user-to-server access token.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AppPermissions {     
     /// The level of permission to grant the access token for GitHub Actions workflows, workflow runs, and artifacts. Can be one of: `read` or `write`.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -329,7 +329,7 @@ pub struct AppPermissions {
 }
 
 /// The authorization associated with an OAuth Access.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ApplicationGrant {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -347,7 +347,7 @@ pub struct ApplicationGrant {
     pub user: Option<SimpleUser>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ApplicationgrantApp {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub client_id: Option<String>,
@@ -358,7 +358,7 @@ pub struct ApplicationgrantApp {
 }
 
 /// An artifact
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Artifact {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -385,7 +385,7 @@ pub struct Artifact {
     pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AuditLogEvent {     
     /// The time the audit log event occurred, given as a [Unix timestamp](http://en.wikipedia.org/wiki/Unix_time).
     #[serde(rename = "@timestamp")]
@@ -472,7 +472,7 @@ pub struct AuditLogEvent {
 }
 
 /// Authentication Token
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AuthenticationToken {     
     /// The token used for authentication
     #[serde(skip_serializing_if="Option::is_none")]
@@ -551,7 +551,7 @@ impl std::str::FromStr for AuthorAssociation {
 }
 
 /// The authorization for an OAuth app, GitHub App, or a Personal Access Token.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Authorization {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -585,7 +585,7 @@ pub struct Authorization {
 }
 
 /// The status of auto merging a pull request.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AutoMerge {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub enabled_by: Option<SimpleUser>,
@@ -601,7 +601,7 @@ pub struct AutoMerge {
 }
 
 /// Base Gist
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BaseGist {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -645,7 +645,7 @@ pub struct BaseGist {
     pub history: Option<Vec<Value>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BasegistFiles {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub filename: Option<String>,
@@ -661,7 +661,7 @@ pub struct BasegistFiles {
 }
 
 /// Basic Error
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BasicError {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub message: Option<String>,
@@ -670,7 +670,7 @@ pub struct BasicError {
 }
 
 /// Blob
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Blob {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub content: Option<String>,
@@ -688,7 +688,7 @@ pub struct Blob {
     pub highlighted_content: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchAppsUpdateWebhookConfigForApp {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<WebhookConfigUrl>,
@@ -700,7 +700,7 @@ pub struct PatchAppsUpdateWebhookConfigForApp {
     pub insecure_ssl: Option<WebhookConfigInsecureSsl>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostAppsCreateInstallationAccessToken {     
     /// List of repository names that the token should have access to
     #[serde(skip_serializing_if="Option::is_none")]
@@ -712,7 +712,7 @@ pub struct PostAppsCreateInstallationAccessToken {
     pub permissions: Option<AppPermissions>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchOauthAuthorizationsUpdateAuthorization {     
     /// A list of scopes that this authorization is in.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -734,7 +734,7 @@ pub struct PatchOauthAuthorizationsUpdateAuthorization {
     pub fingerprint: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostGitCreateBlob {     
     /// The new blob's content.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -744,7 +744,7 @@ pub struct PostGitCreateBlob {
     pub encoding: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostGitCreateCommit {     
     /// The commit message
     #[serde(skip_serializing_if="Option::is_none")]
@@ -764,7 +764,7 @@ pub struct PostGitCreateCommit {
     pub signature: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostGitCreateRef {     
     /// The name of the fully qualified reference (ie: `refs/heads/master`). If it doesn't start with 'refs' and have at least two slashes, it will be rejected.
     #[serde(rename = "ref")]
@@ -777,7 +777,7 @@ pub struct PostGitCreateRef {
     pub key: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchGitUpdateRef {     
     /// The SHA1 value to set this reference to
     #[serde(skip_serializing_if="Option::is_none")]
@@ -787,7 +787,7 @@ pub struct PatchGitUpdateRef {
     pub force: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostGitCreateTag {     
     /// The tag's name. This is typically a version (e.g., \"v0.0.1\").
     #[serde(skip_serializing_if="Option::is_none")]
@@ -806,7 +806,7 @@ pub struct PostGitCreateTag {
     pub tagger: Option<ReposownerrepogittagsTagger>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostGitCreateTree {     
     /// Objects (of `path`, `mode`, `type`, and `sha`) specifying a tree structure.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -816,7 +816,7 @@ pub struct PostGitCreateTree {
     pub base_tree: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateWebhook {     
     /// Use `web` to create a webhook. Default: `web`. This parameter only accepts the value `web`.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -831,7 +831,7 @@ pub struct PostReposCreateWebhook {
     pub active: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchReposUpdateWebhook {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub config: Option<ReposownerrepohookshookIdConfig>,
@@ -849,7 +849,7 @@ pub struct PatchReposUpdateWebhook {
     pub active: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchReposUpdateWebhookConfigForRepo {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<WebhookConfigUrl>,
@@ -861,7 +861,7 @@ pub struct PatchReposUpdateWebhookConfigForRepo {
     pub insecure_ssl: Option<WebhookConfigInsecureSsl>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutMigrationsStartImport {     
     /// The URL of the originating repository.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -880,7 +880,7 @@ pub struct PutMigrationsStartImport {
     pub tfvc_project: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostAppsCreateContentAttachment {     
     /// The title of the attachment
     #[serde(skip_serializing_if="Option::is_none")]
@@ -890,7 +890,7 @@ pub struct PostAppsCreateContentAttachment {
     pub body: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchMigrationsUpdateImport {     
     /// The username to provide to the originating repository.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -904,7 +904,7 @@ pub struct PatchMigrationsUpdateImport {
     pub tfvc_project: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchMigrationsMapCommitAuthor {     
     /// The new Git author email.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -916,21 +916,21 @@ pub struct PatchMigrationsMapCommitAuthor {
     pub remote_id: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchMigrationsSetLfsPreference {     
     /// Can be one of `opt_in` (large files will be stored using Git LFS) or `opt_out` (large files will be removed during the import).
     #[serde(skip_serializing_if="Option::is_none")]
     pub use_lfs: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchReposUpdateInvitation {     
     /// The permissions that the associated user will have on the repository. Valid values are `read`, `write`, `maintain`, `triage`, and `admin`.
     #[serde(skip_serializing_if="Option::is_none")]
     pub permissions: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostIssuesCreate {     
     /// The title of the issue.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -951,21 +951,21 @@ pub struct PostIssuesCreate {
     pub assignees: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchIssuesUpdateComment {     
     /// The contents of the comment.
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReactionsCreateForIssueComment {     
     /// The [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types) to add to the issue comment.
     #[serde(skip_serializing_if="Option::is_none")]
     pub content: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchIssuesUpdate {     
     /// The title of the issue.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -989,21 +989,21 @@ pub struct PatchIssuesUpdate {
     pub assignees: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostIssuesAddAssignees {     
     /// Usernames of people to assign this issue to. _NOTE: Only users with push access can add assignees to an issue. Assignees are silently ignored otherwise._
     #[serde(skip_serializing_if="Option::is_none")]
     pub assignees: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeleteIssuesRemoveAssignees {     
     /// Usernames of assignees to remove from an issue. _NOTE: Only users with push access can remove assignees from an issue. Assignees are silently ignored otherwise._
     #[serde(skip_serializing_if="Option::is_none")]
     pub assignees: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutEnterpriseAdminSetGithubActionsPermissionsEnterprise {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub enabled_organizations: Option<EnabledOrganizations>,
@@ -1011,42 +1011,42 @@ pub struct PutEnterpriseAdminSetGithubActionsPermissionsEnterprise {
     pub allowed_actions: Option<AllowedActions>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostIssuesCreateComment {     
     /// The contents of the comment.
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutIssuesSetLabels {     
     /// The names of the labels to add to the issue. You can pass an empty array to remove all labels. **Note:** Alternatively, you can pass a single label as a `string` or an `array` of labels directly, but GitHub recommends passing an object with the `labels` key.
     #[serde(skip_serializing_if="Option::is_none")]
     pub labels: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostIssuesAddLabels {     
     /// The name of the label to add to the issue. Must contain at least one label. **Note:** Alternatively, you can pass a single label as a `string` or an `array` of labels directly, but GitHub recommends passing an object with the `labels` key.
     #[serde(skip_serializing_if="Option::is_none")]
     pub labels: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutIssuesLock {     
     /// The reason for locking the issue or pull request conversation. Lock will fail if you don't use one of these reasons:   \\* `off-topic`   \\* `too heated`   \\* `resolved`   \\* `spam`
     #[serde(skip_serializing_if="Option::is_none")]
     pub lock_reason: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReactionsCreateForIssue {     
     /// The [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types) to add to the issue.
     #[serde(skip_serializing_if="Option::is_none")]
     pub content: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateDeployKey {     
     /// A name for the key.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1059,7 +1059,7 @@ pub struct PostReposCreateDeployKey {
     pub read_only: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostIssuesCreateLabel {     
     /// The name of the label. Emoji can be added to label names, using either native emoji or colon-style markup. For example, typing `:strawberry:` will render the emoji ![:strawberry:](https://github.githubassets.com/images/icons/emoji/unicode/1f353.png \":strawberry:\"). For a full list of available emoji and codes, see [emoji-cheat-sheet.com](http://emoji-cheat-sheet.com/).
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1072,7 +1072,7 @@ pub struct PostIssuesCreateLabel {
     pub description: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchIssuesUpdateLabel {     
     /// The new name of the label. Emoji can be added to label names, using either native emoji or colon-style markup. For example, typing `:strawberry:` will render the emoji ![:strawberry:](https://github.githubassets.com/images/icons/emoji/unicode/1f353.png \":strawberry:\"). For a full list of available emoji and codes, see [emoji-cheat-sheet.com](http://emoji-cheat-sheet.com/).
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1085,7 +1085,7 @@ pub struct PatchIssuesUpdateLabel {
     pub description: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposMerge {     
     /// The name of the base branch that the head will be merged into.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1098,7 +1098,7 @@ pub struct PostReposMerge {
     pub commit_message: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostIssuesCreateMilestone {     
     /// The title of the milestone.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1114,14 +1114,14 @@ pub struct PostIssuesCreateMilestone {
     pub due_on: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutEnterpriseAdminSetSelectedOrganizationsEnabledGithubActionsEnterprise {     
     /// List of organization IDs to enable for GitHub Actions.
     #[serde(skip_serializing_if="Option::is_none")]
     pub selected_organization_ids: Option<Vec<i32>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchIssuesUpdateMilestone {     
     /// The title of the milestone.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1137,14 +1137,14 @@ pub struct PatchIssuesUpdateMilestone {
     pub due_on: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutActivityMarkRepoNotificationsAsRead {     
     /// Describes the last point that notifications were checked. Anything updated since this time will not be marked as read. If you omit this parameter, all notifications are marked as read. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`. Default: The current timestamp.
     #[serde(skip_serializing_if="Option::is_none")]
     pub last_read_at: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutReposUpdateInformationAboutPagesSite {     
     /// Specify a custom domain for the repository. Sending a `null` value will remove the custom domain. For more about custom domains, see \"[Using a custom domain with GitHub Pages](https://help.github.com/articles/using-a-custom-domain-with-github-pages/).\"
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1157,13 +1157,13 @@ pub struct PutReposUpdateInformationAboutPagesSite {
 }
 
 /// The source branch and directory used to publish your Pages site.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreatePagesSite {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub source: Option<ReposownerrepopagesSource>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostProjectsCreateForRepo {     
     /// The name of the project.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1173,7 +1173,7 @@ pub struct PostProjectsCreateForRepo {
     pub body: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostPullsCreate {     
     /// The title of the new pull request.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1197,21 +1197,21 @@ pub struct PostPullsCreate {
     pub issue: Option<i64>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchPullsUpdateReviewComment {     
     /// The text of the reply to the review comment.
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReactionsCreateForPullRequestReviewComment {     
     /// The [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types) to add to the pull request review comment.
     #[serde(skip_serializing_if="Option::is_none")]
     pub content: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchPullsUpdate {     
     /// The title of the pull request.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1230,7 +1230,7 @@ pub struct PatchPullsUpdate {
     pub maintainer_can_modify: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostPullsCreateReviewComment {     
     /// The text of the review comment.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1260,7 +1260,7 @@ pub struct PostPullsCreateReviewComment {
     pub in_reply_to: Option<i64>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostEnterpriseAdminCreateSelfHostedRunnerGroupForEnterprise {     
     /// Name of the runner group.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1276,14 +1276,14 @@ pub struct PostEnterpriseAdminCreateSelfHostedRunnerGroupForEnterprise {
     pub runners: Option<Vec<i32>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostPullsCreateReplyForReviewComment {     
     /// The text of the review comment.
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutPullsMerge {     
     /// Title for the automatic commit message.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1299,7 +1299,7 @@ pub struct PutPullsMerge {
     pub merge_method: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostPullsRequestReviewers {     
     /// An array of user `login`s that will be requested.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1309,7 +1309,7 @@ pub struct PostPullsRequestReviewers {
     pub team_reviewers: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeletePullsRemoveRequestedReviewers {     
     /// An array of user `login`s that will be removed.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1319,7 +1319,7 @@ pub struct DeletePullsRemoveRequestedReviewers {
     pub team_reviewers: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostPullsCreateReview {     
     /// The SHA of the commit that needs a review. Not using the latest commit SHA may render your review comment outdated if a subsequent commit modifies the line you specify as the `position`. Defaults to the most recent commit in the pull request when you do not specify a value.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1335,14 +1335,14 @@ pub struct PostPullsCreateReview {
     pub comments: Option<Vec<ReposownerrepopullspullNumberreviewsComments>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutPullsUpdateReview {     
     /// The body text of the pull request review.
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutPullsDismissReview {     
     /// The message for the pull request review dismissal
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1351,7 +1351,7 @@ pub struct PutPullsDismissReview {
     pub event: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostPullsSubmitReview {     
     /// The body text of the pull request review
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1361,14 +1361,14 @@ pub struct PostPullsSubmitReview {
     pub event: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutPullsUpdateBranch {     
     /// The expected SHA of the pull request's HEAD ref. This is the most recent commit on the pull request's branch. If the expected SHA does not match the pull request's HEAD, you will receive a `422 Unprocessable Entity` status. You can use the \"[List commits](https://docs.github.com/rest/reference/repos#list-commits)\" endpoint to find the most recent commit SHA. Default: SHA of the pull request's current HEAD ref.
     #[serde(skip_serializing_if="Option::is_none")]
     pub expected_head_sha: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateRelease {     
     /// The name of the tag.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1390,7 +1390,7 @@ pub struct PostReposCreateRelease {
     pub prerelease: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchEnterpriseAdminUpdateSelfHostedRunnerGroupForEnterprise {     
     /// Name of the runner group.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1400,7 +1400,7 @@ pub struct PatchEnterpriseAdminUpdateSelfHostedRunnerGroupForEnterprise {
     pub visibility: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchReposUpdateReleaseAsset {     
     /// The file name of the asset.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1412,7 +1412,7 @@ pub struct PatchReposUpdateReleaseAsset {
     pub state: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchReposUpdateRelease {     
     /// The name of the tag.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1434,7 +1434,7 @@ pub struct PatchReposUpdateRelease {
     pub prerelease: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchSecretScanningUpdateAlert {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub state: Option<SecretScanningAlertState>,
@@ -1442,7 +1442,7 @@ pub struct PatchSecretScanningUpdateAlert {
     pub resolution: Option<SecretScanningAlertResolution>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateCommitStatus {     
     /// The state of the status. Can be one of `error`, `failure`, `pending`, or `success`.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1458,7 +1458,7 @@ pub struct PostReposCreateCommitStatus {
     pub context: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutActivitySetRepoSubscription {     
     /// Determines if notifications should be received from this repository.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1468,14 +1468,14 @@ pub struct PutActivitySetRepoSubscription {
     pub ignored: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutReposReplaceAllTopics {     
     /// An array of topics to add to the repository. Pass one or more topics to _replace_ the set of existing topics. Send an empty array (`[]`) to clear all topics from the repository. **Note:** Topic `names` cannot contain uppercase letters.
     #[serde(skip_serializing_if="Option::is_none")]
     pub names: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposTransfer {     
     /// The username or organization name the repository will be transferred to.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1485,7 +1485,7 @@ pub struct PostReposTransfer {
     pub team_ids: Option<Vec<i32>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateUsingTemplate {     
     /// The organization or person who will own the new repository. To create a new repository in an organization, the authenticated user must be a member of the specified organization.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1504,7 +1504,7 @@ pub struct PostReposCreateUsingTemplate {
     pub private: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutActionsCreateOrUpdateEnvironmentSecret {     
     /// Value for your secret, encrypted with [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages) using the public key retrieved from the [Get an environment public key](https://docs.github.com/rest/reference/actions#get-an-environment-public-key) endpoint.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1514,7 +1514,7 @@ pub struct PutActionsCreateOrUpdateEnvironmentSecret {
     pub key_id: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostEnterpriseAdminProvisionAndInviteEnterpriseGroup {     
     /// The SCIM schema URIs.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1527,14 +1527,14 @@ pub struct PostEnterpriseAdminProvisionAndInviteEnterpriseGroup {
     pub members: Option<Vec<Scimv2enterprisesenterpriseGroupsMembers>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutEnterpriseAdminSetOrgAccessToSelfHostedRunnerGroupInEnterprise {     
     /// List of organization IDs that can access the runner group.
     #[serde(skip_serializing_if="Option::is_none")]
     pub selected_organization_ids: Option<Vec<i32>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutEnterpriseAdminSetInformationForProvisionedEnterpriseGroup {     
     /// The SCIM schema URIs.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1547,7 +1547,7 @@ pub struct PutEnterpriseAdminSetInformationForProvisionedEnterpriseGroup {
     pub members: Option<Vec<Scimv2enterprisesenterpriseGroupsMembers>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchEnterpriseAdminUpdateAttributeForEnterpriseGroup {     
     /// The SCIM schema URIs.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1558,7 +1558,7 @@ pub struct PatchEnterpriseAdminUpdateAttributeForEnterpriseGroup {
     pub operations: Option<Vec<Scimv2enterprisesenterpriseGroupsscimGroupIdOperations>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostEnterpriseAdminProvisionAndInviteEnterpriseUser {     
     /// The SCIM schema URIs.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1577,7 +1577,7 @@ pub struct PostEnterpriseAdminProvisionAndInviteEnterpriseUser {
     pub groups: Option<Vec<Scimv2enterprisesenterpriseUsersGroups>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutEnterpriseAdminSetInformationForProvisionedEnterpriseUser {     
     /// The SCIM schema URIs.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1596,7 +1596,7 @@ pub struct PutEnterpriseAdminSetInformationForProvisionedEnterpriseUser {
     pub groups: Option<Vec<Scimv2enterprisesenterpriseUsersGroups>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchEnterpriseAdminUpdateAttributeForEnterpriseUser {     
     /// The SCIM schema URIs.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1607,7 +1607,7 @@ pub struct PatchEnterpriseAdminUpdateAttributeForEnterpriseUser {
     pub operations: Option<Vec<Value>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostScimProvisionAndInviteUser {     
     /// Configured by the admin. Could be an email, login, or username
     #[serde(rename = "userName")]
@@ -1633,7 +1633,7 @@ pub struct PostScimProvisionAndInviteUser {
     pub active: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutScimSetInformationForProvisionedUser {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub schemas: Option<Vec<String>>,
@@ -1659,7 +1659,7 @@ pub struct PutScimSetInformationForProvisionedUser {
     pub emails: Option<Vec<Scimv2organizationsorgUsersscimUserIdEmails>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchScimUpdateAttributeForUser {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub schemas: Option<Vec<String>>,
@@ -1669,7 +1669,7 @@ pub struct PatchScimUpdateAttributeForUser {
     pub operations: Option<Vec<Scimv2organizationsorgUsersscimUserIdOperations>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchTeamsUpdateLegacy {     
     /// The name of the team.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1688,7 +1688,7 @@ pub struct PatchTeamsUpdateLegacy {
     pub parent_team_id: Option<i64>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostTeamsCreateDiscussionLegacy {     
     /// The discussion post's title.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1701,14 +1701,14 @@ pub struct PostTeamsCreateDiscussionLegacy {
     pub private: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutEnterpriseAdminSetSelfHostedRunnersInGroupForEnterprise {     
     /// List of runner IDs to add to the runner group.
     #[serde(skip_serializing_if="Option::is_none")]
     pub runners: Option<Vec<i32>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchTeamsUpdateDiscussionLegacy {     
     /// The discussion post's title.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1718,56 +1718,56 @@ pub struct PatchTeamsUpdateDiscussionLegacy {
     pub body: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostTeamsCreateDiscussionCommentLegacy {     
     /// The discussion comment's body text.
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchTeamsUpdateDiscussionCommentLegacy {     
     /// The discussion comment's body text.
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReactionsCreateForTeamDiscussionCommentLegacy {     
     /// The [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types) to add to the team discussion comment.
     #[serde(skip_serializing_if="Option::is_none")]
     pub content: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReactionsCreateForTeamDiscussionLegacy {     
     /// The [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types) to add to the team discussion.
     #[serde(skip_serializing_if="Option::is_none")]
     pub content: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutTeamsAddOrUpdateMembershipForUserLegacy {     
     /// The role that this user should have in the team. Can be one of:   \\* `member` - a normal member of the team.   \\* `maintainer` - a team maintainer. Able to add/remove other team members, promote other team members to team maintainer, and edit the team's name and description.
     #[serde(skip_serializing_if="Option::is_none")]
     pub role: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutTeamsAddOrUpdateProjectPermissionsLegacy {     
     /// The permission to grant to the team for this project. Can be one of:   \\* `read` - team members can read, but not write to or administer this project.   \\* `write` - team members can read and write, but not administer this project.   \\* `admin` - team members can read, write and administer this project.   Default: the team's `permission` attribute will be used to determine what permission to grant the team on this project. Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see \"[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs).\"
     #[serde(skip_serializing_if="Option::is_none")]
     pub permission: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutTeamsAddOrUpdateRepoPermissionsLegacy {     
     /// The permission to grant the team on this repository. Can be one of:   \\* `pull` - team members can pull, but not push to or administer this repository.   \\* `push` - team members can pull and push, but not administer this repository.   \\* `admin` - team members can pull, push and administer this repository.      If no permission is specified, the team's `permission` attribute will be used to determine what permission to grant the team on this repository.
     #[serde(skip_serializing_if="Option::is_none")]
     pub permission: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchTeamsCreateOrUpdateIdpGroupConnectionsLegacy {     
     /// The IdP groups you want to connect to a GitHub team. When updating, the new `groups` object will replace the original one. You must include any existing groups that you don't want to remove.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1776,7 +1776,7 @@ pub struct PatchTeamsCreateOrUpdateIdpGroupConnectionsLegacy {
     pub synced_at: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchUsersUpdateAuthenticated {     
     /// The new name of the user.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1804,7 +1804,7 @@ pub struct PatchUsersUpdateAuthenticated {
     pub bio: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostGistsCreate {     
     /// Description of the gist
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1816,7 +1816,7 @@ pub struct PostGistsCreate {
     pub public: Option<Value>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchUsersSetPrimaryEmailVisibilityForAuthenticated {     
     /// An email address associated with the GitHub user account to manage.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1826,22 +1826,22 @@ pub struct PatchUsersSetPrimaryEmailVisibilityForAuthenticated {
     pub visibility: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostUsersAddEmailForAuthenticated {     
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeleteUsersDeleteEmailForAuthenticated {     
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostUsersCreateGpgKeyForAuthenticated {     
     /// A GPG key in ASCII-armored format.
     #[serde(skip_serializing_if="Option::is_none")]
     pub armored_public_key: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostUsersCreatePublicSshKeyForAuthenticated {     
     /// A descriptive name for the new key.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1851,14 +1851,14 @@ pub struct PostUsersCreatePublicSshKeyForAuthenticated {
     pub key: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchOrgsUpdateMembershipForAuthenticatedUser {     
     /// The state that the membership should be in. Only `\"active\"` will be accepted.
     #[serde(skip_serializing_if="Option::is_none")]
     pub state: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostMigrationsStartForAuthenticatedUser {     
     /// Lock the repositories being migrated at the start of the migration
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1873,7 +1873,7 @@ pub struct PostMigrationsStartForAuthenticatedUser {
     pub repositories: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostProjectsCreateForAuthenticatedUser {     
     /// Name of the project
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1883,7 +1883,7 @@ pub struct PostProjectsCreateForAuthenticatedUser {
     pub body: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateForAuthenticatedUser {     
     /// The name of the repository.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1938,7 +1938,7 @@ pub struct PostReposCreateForAuthenticatedUser {
     pub is_template: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchGistsUpdate {     
     /// Description of the gist
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1948,28 +1948,28 @@ pub struct PatchGistsUpdate {
     pub files: Option<HashMap<String, GistsgistIdFiles>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeleteAppsDeleteAuthorization {     
     /// The OAuth access token used to authenticate to the GitHub API.
     #[serde(skip_serializing_if="Option::is_none")]
     pub access_token: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostGistsCreateComment {     
     /// The comment text.
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchGistsUpdateComment {     
     /// The comment text.
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostMarkdownRender {     
     /// The Markdown text to render in HTML.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1982,7 +1982,7 @@ pub struct PostMarkdownRender {
     pub context: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutActivityMarkNotificationsAsRead {     
     /// Describes the last point that notifications were checked.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1992,14 +1992,14 @@ pub struct PutActivityMarkNotificationsAsRead {
     pub read: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutActivitySetThreadSubscription {     
     /// Whether to block all notifications from a thread.
     #[serde(skip_serializing_if="Option::is_none")]
     pub ignored: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchOrgsUpdate {     
     /// Billing email address. This address is not publicized.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2059,7 +2059,7 @@ pub struct PatchOrgsUpdate {
     pub blog: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutActionsSetGithubActionsPermissionsOrganization {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub enabled_repositories: Option<EnabledRepositories>,
@@ -2067,14 +2067,14 @@ pub struct PutActionsSetGithubActionsPermissionsOrganization {
     pub allowed_actions: Option<AllowedActions>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutActionsSetSelectedRepositoriesEnabledGithubActionsOrganization {     
     /// List of repository IDs to enable for GitHub Actions.
     #[serde(skip_serializing_if="Option::is_none")]
     pub selected_repository_ids: Option<Vec<i32>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostActionsCreateSelfHostedRunnerGroupForOrg {     
     /// Name of the runner group.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2090,7 +2090,7 @@ pub struct PostActionsCreateSelfHostedRunnerGroupForOrg {
     pub runners: Option<Vec<i32>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchActionsUpdateSelfHostedRunnerGroupForOrg {     
     /// Name of the runner group.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2100,28 +2100,28 @@ pub struct PatchActionsUpdateSelfHostedRunnerGroupForOrg {
     pub visibility: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostAppsCheckToken {     
     /// The access_token of the OAuth application.
     #[serde(skip_serializing_if="Option::is_none")]
     pub access_token: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutActionsSetRepoAccessToSelfHostedRunnerGroupInOrg {     
     /// List of repository IDs that can access the runner group.
     #[serde(skip_serializing_if="Option::is_none")]
     pub selected_repository_ids: Option<Vec<i32>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutActionsSetSelfHostedRunnersInGroupForOrg {     
     /// List of runner IDs to add to the runner group.
     #[serde(skip_serializing_if="Option::is_none")]
     pub runners: Option<Vec<i32>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutActionsCreateOrUpdateOrgSecret {     
     /// Value for your secret, encrypted with [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages) using the public key retrieved from the [Get an organization public key](https://docs.github.com/rest/reference/actions#get-an-organization-public-key) endpoint.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2137,14 +2137,14 @@ pub struct PutActionsCreateOrUpdateOrgSecret {
     pub selected_repository_ids: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutActionsSetSelectedReposForOrgSecret {     
     /// An array of repository ids that can access the organization secret. You can only provide a list of repository ids when the `visibility` is set to `selected`. You can add and remove individual repositories using the [Set selected repositories for an organization secret](https://docs.github.com/rest/reference/actions#set-selected-repositories-for-an-organization-secret) and [Remove selected repository from an organization secret](https://docs.github.com/rest/reference/actions#remove-selected-repository-from-an-organization-secret) endpoints.
     #[serde(skip_serializing_if="Option::is_none")]
     pub selected_repository_ids: Option<Vec<i32>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostOrgsCreateWebhook {     
     /// Must be passed as \"web\".
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2159,7 +2159,7 @@ pub struct PostOrgsCreateWebhook {
     pub active: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchOrgsUpdateWebhook {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub config: Option<OrgsorghookshookIdConfig>,
@@ -2173,7 +2173,7 @@ pub struct PatchOrgsUpdateWebhook {
     pub name: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchOrgsUpdateWebhookConfigForOrg {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<WebhookConfigUrl>,
@@ -2185,7 +2185,7 @@ pub struct PatchOrgsUpdateWebhookConfigForOrg {
     pub insecure_ssl: Option<WebhookConfigInsecureSsl>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostOrgsCreateInvitation {     
     /// **Required unless you provide `email`**. GitHub user ID for the person you are inviting.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2201,14 +2201,14 @@ pub struct PostOrgsCreateInvitation {
     pub team_ids: Option<Vec<i32>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutOrgsSetMembershipForUser {     
     /// The role to give the user in the organization. Can be one of:   \\* `admin` - The user will become an owner of the organization.   \\* `member` - The user will become a non-owner member of the organization.
     #[serde(skip_serializing_if="Option::is_none")]
     pub role: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostMigrationsStartForOrg {     
     /// A list of arrays indicating which repositories should be migrated.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2223,14 +2223,14 @@ pub struct PostMigrationsStartForOrg {
     pub exclude: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeleteAppsDeleteToken {     
     /// The OAuth access token used to authenticate to the GitHub API.
     #[serde(skip_serializing_if="Option::is_none")]
     pub access_token: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostProjectsCreateForOrg {     
     /// The name of the project.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2240,7 +2240,7 @@ pub struct PostProjectsCreateForOrg {
     pub body: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateInOrg {     
     /// The name of the repository.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2295,7 +2295,7 @@ pub struct PostReposCreateInOrg {
     pub delete_branch_on_merge: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostTeamsCreate {     
     /// The name of the team.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2320,7 +2320,7 @@ pub struct PostTeamsCreate {
     pub parent_team_id: Option<i64>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchTeamsUpdateInOrg {     
     /// The name of the team.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2339,7 +2339,7 @@ pub struct PatchTeamsUpdateInOrg {
     pub parent_team_id: Option<i64>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostTeamsCreateDiscussionInOrg {     
     /// The discussion post's title.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2352,7 +2352,7 @@ pub struct PostTeamsCreateDiscussionInOrg {
     pub private: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchTeamsUpdateDiscussionInOrg {     
     /// The discussion post's title.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2362,70 +2362,70 @@ pub struct PatchTeamsUpdateDiscussionInOrg {
     pub body: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostTeamsCreateDiscussionCommentInOrg {     
     /// The discussion comment's body text.
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchTeamsUpdateDiscussionCommentInOrg {     
     /// The discussion comment's body text.
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReactionsCreateForTeamDiscussionCommentInOrg {     
     /// The [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types) to add to the team discussion comment.
     #[serde(skip_serializing_if="Option::is_none")]
     pub content: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReactionsCreateForTeamDiscussionInOrg {     
     /// The [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types) to add to the team discussion.
     #[serde(skip_serializing_if="Option::is_none")]
     pub content: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchAppsResetToken {     
     /// The access_token of the OAuth application.
     #[serde(skip_serializing_if="Option::is_none")]
     pub access_token: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutTeamsAddOrUpdateMembershipForUserInOrg {     
     /// The role that this user should have in the team. Can be one of:   \\* `member` - a normal member of the team.   \\* `maintainer` - a team maintainer. Able to add/remove other team members, promote other team members to team maintainer, and edit the team's name and description.
     #[serde(skip_serializing_if="Option::is_none")]
     pub role: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutTeamsAddOrUpdateProjectPermissionsInOrg {     
     /// The permission to grant to the team for this project. Can be one of:   \\* `read` - team members can read, but not write to or administer this project.   \\* `write` - team members can read and write, but not administer this project.   \\* `admin` - team members can read, write and administer this project.   Default: the team's `permission` attribute will be used to determine what permission to grant the team on this project. Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see \"[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs).\"
     #[serde(skip_serializing_if="Option::is_none")]
     pub permission: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutTeamsAddOrUpdateRepoPermissionsInOrg {     
     /// The permission to grant the team on this repository. Can be one of:   \\* `pull` - team members can pull, but not push to or administer this repository.   \\* `push` - team members can pull and push, but not administer this repository.   \\* `admin` - team members can pull, push and administer this repository.   \\* `maintain` - team members can manage the repository without access to sensitive or destructive actions. Recommended for project managers. Only applies to repositories owned by organizations.   \\* `triage` - team members can proactively manage issues and pull requests without write access. Recommended for contributors who triage a repository. Only applies to repositories owned by organizations.      If no permission is specified, the team's `permission` attribute will be used to determine what permission to grant the team on this repository.
     #[serde(skip_serializing_if="Option::is_none")]
     pub permission: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchTeamsCreateOrUpdateIdpGroupConnectionsInOrg {     
     /// The IdP groups you want to connect to a GitHub team. When updating, the new `groups` object will replace the original one. You must include any existing groups that you don't want to remove.
     #[serde(skip_serializing_if="Option::is_none")]
     pub groups: Option<Vec<OrgsorgteamsteamSlugteamsyncgroupmappingsGroups>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchProjectsUpdateCard {     
     /// The project card's note
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2435,7 +2435,7 @@ pub struct PatchProjectsUpdateCard {
     pub archived: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostProjectsMoveCard {     
     /// The position of the card in a column
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2445,25 +2445,25 @@ pub struct PostProjectsMoveCard {
     pub column_id: Option<i64>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchProjectsUpdateColumn {     
     /// Name of the project column
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostProjectsCreateCard {     
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostProjectsMoveColumn {     
     /// The position of the column in a project
     #[serde(skip_serializing_if="Option::is_none")]
     pub position: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchProjectsUpdate {     
     /// Name of the project
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2482,7 +2482,7 @@ pub struct PatchProjectsUpdate {
     pub private: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostAppsScopeToken {     
     /// **Required.** The OAuth access token used to authenticate to the GitHub API.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2503,21 +2503,21 @@ pub struct PostAppsScopeToken {
     pub permissions: Option<AppPermissions>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutProjectsAddCollaborator {     
     /// The permission to grant the collaborator.
     #[serde(skip_serializing_if="Option::is_none")]
     pub permission: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostProjectsCreateColumn {     
     /// Name of the project column
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchReposUpdate {     
     /// The name of the repository.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2566,7 +2566,7 @@ pub struct PatchReposUpdate {
     pub archived: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutActionsSetGithubActionsPermissionsRepository {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub enabled: Option<ActionsEnabled>,
@@ -2574,7 +2574,7 @@ pub struct PutActionsSetGithubActionsPermissionsRepository {
     pub allowed_actions: Option<AllowedActions>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostActionsReviewPendingDeploymentsForRun {     
     /// The list of environment ids to approve or reject
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2587,7 +2587,7 @@ pub struct PostActionsReviewPendingDeploymentsForRun {
     pub comment: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutActionsCreateOrUpdateRepoSecret {     
     /// Value for your secret, encrypted with [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages) using the public key retrieved from the [Get a repository public key](https://docs.github.com/rest/reference/actions#get-a-repository-public-key) endpoint.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2597,7 +2597,7 @@ pub struct PutActionsCreateOrUpdateRepoSecret {
     pub key_id: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostActionsCreateWorkflowDispatch {     
     /// The git reference for the workflow. The reference can be a branch or tag name.
     #[serde(rename = "ref")]
@@ -2608,7 +2608,7 @@ pub struct PostActionsCreateWorkflowDispatch {
     pub inputs: Option<HashMap<String, String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutReposUpdateBranchProtection {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub required_status_checks: Option<ReposownerrepobranchesbranchprotectionRequiredStatusChecks>,
@@ -2630,7 +2630,7 @@ pub struct PutReposUpdateBranchProtection {
     pub allow_deletions: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchReposUpdatePullRequestReviewProtection {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub dismissal_restrictions: Option<ReposownerrepobranchesbranchprotectionRequiredPullRequestReviewsDismissalRestrictions>,
@@ -2645,7 +2645,7 @@ pub struct PatchReposUpdatePullRequestReviewProtection {
     pub required_approving_review_count: Option<i64>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchReposUpdateStatusCheckProtection {     
     /// Require branches to be up to date before merging.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2655,7 +2655,7 @@ pub struct PatchReposUpdateStatusCheckProtection {
     pub contexts: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostOauthAuthorizationsCreateAuthorization {     
     /// A list of scopes that this authorization is in.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2677,77 +2677,77 @@ pub struct PostOauthAuthorizationsCreateAuthorization {
     pub fingerprint: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutReposSetStatusCheckContexts {     
     /// contexts parameter
     #[serde(skip_serializing_if="Option::is_none")]
     pub contexts: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposAddStatusCheckContexts {     
     /// contexts parameter
     #[serde(skip_serializing_if="Option::is_none")]
     pub contexts: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeleteReposRemoveStatusCheckContexts {     
     /// contexts parameter
     #[serde(skip_serializing_if="Option::is_none")]
     pub contexts: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutReposSetAppAccessRestrictions {     
     /// apps parameter
     #[serde(skip_serializing_if="Option::is_none")]
     pub apps: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposAddAppAccessRestrictions {     
     /// apps parameter
     #[serde(skip_serializing_if="Option::is_none")]
     pub apps: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeleteReposRemoveAppAccessRestrictions {     
     /// apps parameter
     #[serde(skip_serializing_if="Option::is_none")]
     pub apps: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutReposSetTeamAccessRestrictions {     
     /// teams parameter
     #[serde(skip_serializing_if="Option::is_none")]
     pub teams: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposAddTeamAccessRestrictions {     
     /// teams parameter
     #[serde(skip_serializing_if="Option::is_none")]
     pub teams: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeleteReposRemoveTeamAccessRestrictions {     
     /// teams parameter
     #[serde(skip_serializing_if="Option::is_none")]
     pub teams: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutReposSetUserAccessRestrictions {     
     /// users parameter
     #[serde(skip_serializing_if="Option::is_none")]
     pub users: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutOauthAuthorizationsGetOrCreateAuthorizationForApp {     
     /// The OAuth app client secret for which to create the token.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2766,28 +2766,28 @@ pub struct PutOauthAuthorizationsGetOrCreateAuthorizationForApp {
     pub fingerprint: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposAddUserAccessRestrictions {     
     /// users parameter
     #[serde(skip_serializing_if="Option::is_none")]
     pub users: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeleteReposRemoveUserAccessRestrictions {     
     /// users parameter
     #[serde(skip_serializing_if="Option::is_none")]
     pub users: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposRenameBranch {     
     /// The new name of the branch.
     #[serde(skip_serializing_if="Option::is_none")]
     pub new_name: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostChecksCreate {     
     /// The name of the check. For example, \"code-coverage\".
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2820,7 +2820,7 @@ pub struct PostChecksCreate {
     pub actions: Option<Vec<ReposownerrepocheckrunsActions>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchChecksUpdate {     
     /// The name of the check. For example, \"code-coverage\".
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2850,21 +2850,21 @@ pub struct PatchChecksUpdate {
     pub actions: Option<Vec<ReposownerrepocheckrunsActions>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostChecksCreateSuite {     
     /// The sha of the head commit.
     #[serde(skip_serializing_if="Option::is_none")]
     pub head_sha: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchChecksSetSuitesPreferences {     
     /// Enables or disables automatic creation of CheckSuite events upon pushes to the repository. Enabled by default. See the [`auto_trigger_checks` object](https://docs.github.com/rest/reference/checks#auto_trigger_checks-object) description for details.
     #[serde(skip_serializing_if="Option::is_none")]
     pub auto_trigger_checks: Option<Vec<ReposownerrepochecksuitespreferencesAutoTriggerChecks>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchCodeScanningUpdateAlert {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub state: Option<CodeScanningAlertSetState>,
@@ -2872,7 +2872,7 @@ pub struct PatchCodeScanningUpdateAlert {
     pub dismissed_reason: Option<CodeScanningAlertDismissedReason>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostCodeScanningUploadSarif {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub commit_sha: Option<CodeScanningAnalysisCommitSha>,
@@ -2892,7 +2892,7 @@ pub struct PostCodeScanningUploadSarif {
     pub tool_name: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutReposAddCollaborator {     
     /// The permission to grant the collaborator. **Only valid on organization-owned repositories.** Can be one of:   \\* `pull` - can pull, but not push to or administer this repository.   \\* `push` - can pull and push, but not administer this repository.   \\* `admin` - can pull, push and administer this repository.   \\* `maintain` - Recommended for project managers who need to manage the repository without access to sensitive or destructive actions.   \\* `triage` - Recommended for contributors who need to proactively manage issues and pull requests without write access.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2901,7 +2901,7 @@ pub struct PutReposAddCollaborator {
     pub permissions: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutOauthAuthorizationsGetOrCreateAuthorizationForAppAndFingerprint {     
     /// The OAuth app client secret for which to create the token.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2917,21 +2917,21 @@ pub struct PutOauthAuthorizationsGetOrCreateAuthorizationForAppAndFingerprint {
     pub note_url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchReposUpdateCommitComment {     
     /// The contents of the comment
     #[serde(skip_serializing_if="Option::is_none")]
     pub body: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReactionsCreateForCommitComment {     
     /// The [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types) to add to the commit comment.
     #[serde(skip_serializing_if="Option::is_none")]
     pub content: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateCommitComment {     
     /// The contents of the comment.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2947,7 +2947,7 @@ pub struct PostReposCreateCommitComment {
     pub line: Option<i64>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutReposCreateOrUpdateFileContents {     
     /// The commit message.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2967,7 +2967,7 @@ pub struct PutReposCreateOrUpdateFileContents {
     pub author: Option<ReposownerrepocontentspathAuthor>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeleteReposDeleteFile {     
     /// The commit message.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2984,7 +2984,7 @@ pub struct DeleteReposDeleteFile {
     pub author: Option<ReposownerrepocontentspathAuthor1>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateDeployment {     
     /// The ref to deploy. This can be a branch, tag, or SHA.
     #[serde(rename = "ref")]
@@ -3017,7 +3017,7 @@ pub struct PostReposCreateDeployment {
     pub created_at: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateDeploymentStatus {     
     /// The state of the status. Can be one of `error`, `failure`, `inactive`, `in_progress`, `queued` `pending`, or `success`. **Note:** To use the `inactive` state, you must provide the [`application/vnd.github.ant-man-preview+json`](https://docs.github.com/rest/overview/api-previews#enhanced-deployments) custom media type. To use the `in_progress` and `queued` states, you must provide the [`application/vnd.github.flash-preview+json`](https://docs.github.com/rest/overview/api-previews#deployment-statuses) custom media type. When you set a transient deployment to `inactive`, the deployment will be shown as `destroyed` in GitHub.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3042,7 +3042,7 @@ pub struct PostReposCreateDeploymentStatus {
     pub auto_inactive: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateDispatchEvent {     
     /// A custom webhook event name.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3052,7 +3052,7 @@ pub struct PostReposCreateDispatchEvent {
     pub client_payload: Option<HashMap<String, HashMap<(), ()>>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutReposCreateOrUpdateEnvironment {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub wait_timer: Option<WaitTimer>,
@@ -3063,7 +3063,7 @@ pub struct PutReposCreateOrUpdateEnvironment {
     pub deployment_branch_policy: Option<DeploymentBranchPolicy>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateFork {     
     /// Optional parameter to specify the organization name if forking into an organization.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3071,7 +3071,7 @@ pub struct PostReposCreateFork {
 }
 
 /// Branch Protection
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BranchProtection {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -3098,7 +3098,7 @@ pub struct BranchProtection {
 }
 
 /// Branch Restriction Policy
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BranchRestrictionPolicy {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -3117,7 +3117,7 @@ pub struct BranchRestrictionPolicy {
 }
 
 /// Branch Short
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BranchShort {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
@@ -3128,7 +3128,7 @@ pub struct BranchShort {
 }
 
 /// Branch With Protection
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BranchWithProtection {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
@@ -3148,13 +3148,13 @@ pub struct BranchWithProtection {
     pub required_approving_review_count: Option<i64>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BranchprotectionRequiredLinearHistory {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub enabled: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BranchprotectionRequiredStatusChecks {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -3166,7 +3166,7 @@ pub struct BranchprotectionRequiredStatusChecks {
     pub contexts_url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BranchrestrictionpolicyApps {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -3194,7 +3194,7 @@ pub struct BranchrestrictionpolicyApps {
     pub events: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BranchrestrictionpolicyOwner {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
@@ -3243,7 +3243,7 @@ pub struct BranchrestrictionpolicyOwner {
     pub _type: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BranchrestrictionpolicyPermissions {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub metadata: Option<String>,
@@ -3255,7 +3255,7 @@ pub struct BranchrestrictionpolicyPermissions {
     pub single_file: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BranchrestrictionpolicyTeams {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -3283,7 +3283,7 @@ pub struct BranchrestrictionpolicyTeams {
     pub parent: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BranchshortCommit {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub sha: Option<String>,
@@ -3291,7 +3291,7 @@ pub struct BranchshortCommit {
     pub url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BranchwithprotectionLinks {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub html: Option<String>,
@@ -3301,7 +3301,7 @@ pub struct BranchwithprotectionLinks {
 }
 
 /// Check Annotation
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CheckAnnotation {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub path: Option<String>,
@@ -3326,7 +3326,7 @@ pub struct CheckAnnotation {
 }
 
 /// A check performed on the code of a given code change
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CheckRun {     
     /// The id of the check.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3369,7 +3369,7 @@ pub struct CheckRun {
 }
 
 /// A suite of checks performed on the code of a given code change
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CheckSuite {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -3409,7 +3409,7 @@ pub struct CheckSuite {
 }
 
 /// Check suite configuration preferences for a repository.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CheckSuitePreference {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub preferences: Option<ChecksuitepreferencePreferences>,
@@ -3417,13 +3417,13 @@ pub struct CheckSuitePreference {
     pub repository: Option<Repository>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CheckrunCheckSuite {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CheckrunOutput {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub title: Option<String>,
@@ -3437,13 +3437,13 @@ pub struct CheckrunOutput {
     pub annotations_url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ChecksuitepreferencePreferences {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub auto_trigger_checks: Option<Vec<ChecksuitepreferencePreferencesAutoTriggerChecks>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ChecksuitepreferencePreferencesAutoTriggerChecks {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub app_id: Option<i64>,
@@ -3452,7 +3452,7 @@ pub struct ChecksuitepreferencePreferencesAutoTriggerChecks {
 }
 
 /// Clone Traffic
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CloneTraffic {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub count: Option<i64>,
@@ -3463,12 +3463,12 @@ pub struct CloneTraffic {
 }
 
 /// Code Frequency Stat
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeFrequencyStat {     
 }
 
 /// Code Of Conduct
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeOfConduct {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub key: Option<String>,
@@ -3483,7 +3483,7 @@ pub struct CodeOfConduct {
 }
 
 /// Code of Conduct Simple
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeOfConductSimple {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -3495,7 +3495,7 @@ pub struct CodeOfConductSimple {
     pub html_url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAlert {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub number: Option<AlertNumber>,
@@ -3569,16 +3569,16 @@ impl std::str::FromStr for CodeScanningAlertClassification {
 pub type CodeScanningAlertDismissedAt = DateTime<Utc>;
 
 /// **Required when the state is dismissed.** The reason for dismissing or closing the alert. Can be one of: `false positive`, `won't fix`, and `used in tests`.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAlertDismissedReason {     
 }
 
 /// Identifies the variable values associated with the environment in which the analysis that generated this alert instance was performed, such as the language that was analyzed.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAlertEnvironment {     
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAlertInstance {     
     #[serde(rename = "ref")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3602,7 +3602,7 @@ pub struct CodeScanningAlertInstance {
     pub classifications: Option<Vec<CodeScanningAlertClassification>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAlertItems {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub number: Option<AlertNumber>,
@@ -3631,7 +3631,7 @@ pub struct CodeScanningAlertItems {
 }
 
 /// Describe a region within a file for the alert.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAlertLocation {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub path: Option<String>,
@@ -3645,7 +3645,7 @@ pub struct CodeScanningAlertLocation {
     pub end_column: Option<i64>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAlertRule {     
     /// A unique identifier for the rule used to detect the alert.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3670,7 +3670,7 @@ pub struct CodeScanningAlertRule {
     pub help: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAlertRuleSummary {     
     /// A unique identifier for the rule used to detect the alert.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3762,7 +3762,7 @@ impl std::str::FromStr for CodeScanningAlertState {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAnalysis {     
     #[serde(rename = "ref")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3797,12 +3797,12 @@ pub struct CodeScanningAnalysis {
 }
 
 /// Identifies the configuration under which the analysis was executed. For example, in GitHub Actions this includes the workflow filename and job name.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAnalysisAnalysisKey {     
 }
 
 /// The SHA of the commit to which the analysis you are uploading relates.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAnalysisCommitSha {     
 }
 
@@ -3810,7 +3810,7 @@ pub struct CodeScanningAnalysisCommitSha {
 pub type CodeScanningAnalysisCreatedAt = DateTime<Utc>;
 
 /// Successful deletion of a code scanning analysis
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAnalysisDeletion {     
     /// Next deletable analysis in chain, without last analysis deletion confirmation
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3821,21 +3821,21 @@ pub struct CodeScanningAnalysisDeletion {
 }
 
 /// Identifies the variable values associated with the environment in which this analysis was performed.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAnalysisEnvironment {     
 }
 
 /// A Base64 string representing the SARIF file to upload. You must first compress your SARIF file using [`gzip`](http://www.gnu.org/software/gzip/manual/gzip.html) and then translate the contents of the file into a Base64 encoding string. For more information, see \"[SARIF support for code scanning](https://docs.github.com/github/finding-security-vulnerabilities-and-errors-in-your-code/sarif-support-for-code-scanning).\"
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAnalysisSarifFile {     
 }
 
 /// An identifier for the upload.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAnalysisSarifId {     
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAnalysisTool {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<CodeScanningAnalysisToolName>,
@@ -3846,31 +3846,31 @@ pub struct CodeScanningAnalysisTool {
 }
 
 /// The GUID of the tool used to generate the code scanning analysis, if provided in the uploaded SARIF data.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAnalysisToolGuid {     
 }
 
 /// The name of the tool used to generate the code scanning analysis.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAnalysisToolName {     
 }
 
 /// The version of the tool used to generate the code scanning analysis.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAnalysisToolVersion {     
 }
 
 /// The REST API URL of the analysis resource.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAnalysisUrl {     
 }
 
 /// The full Git reference, formatted as `refs/heads/<branch name>`, `refs/pull/<number>/merge`, or `refs/pull/<number>/head`.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningRef {     
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningSarifsReceipt {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<CodeScanningAnalysisSarifId>,
@@ -3879,7 +3879,7 @@ pub struct CodeScanningSarifsReceipt {
     pub url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningSarifsStatus {     
     /// `pending` files have not yet been processed, while `complete` means all results in the SARIF have been stored.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3890,7 +3890,7 @@ pub struct CodeScanningSarifsStatus {
 }
 
 /// Code Search Result Item
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeSearchResultItem {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
@@ -3920,14 +3920,14 @@ pub struct CodeSearchResultItem {
     pub text_matches: Option<SearchResultTextMatches>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodescanningalertinstanceMessage {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub text: Option<String>,
 }
 
 /// Collaborator
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Collaborator {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
@@ -3970,7 +3970,7 @@ pub struct Collaborator {
     pub permissions: Option<CollaboratorPermissions>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CollaboratorPermissions {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub pull: Option<bool>,
@@ -3980,7 +3980,7 @@ pub struct CollaboratorPermissions {
     pub admin: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CombinedBillingUsage {     
     /// Numbers of days left in billing cycle.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3994,7 +3994,7 @@ pub struct CombinedBillingUsage {
 }
 
 /// Combined Commit Status
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CombinedCommitStatus {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub state: Option<String>,
@@ -4013,7 +4013,7 @@ pub struct CombinedCommitStatus {
 }
 
 /// Commit
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Commit {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -4040,7 +4040,7 @@ pub struct Commit {
 }
 
 /// Commit Activity
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommitActivity {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub days: Option<Vec<i32>>,
@@ -4051,7 +4051,7 @@ pub struct CommitActivity {
 }
 
 /// Commit Comment
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommitComment {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub html_url: Option<String>,
@@ -4083,7 +4083,7 @@ pub struct CommitComment {
     pub reactions: Option<ReactionRollup>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommitCommit {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -4101,7 +4101,7 @@ pub struct CommitCommit {
     pub verification: Option<Verification>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommitCommitTree {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub sha: Option<String>,
@@ -4110,7 +4110,7 @@ pub struct CommitCommitTree {
 }
 
 /// Commit Comparison
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommitComparison {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -4140,7 +4140,7 @@ pub struct CommitComparison {
     pub files: Option<Vec<DiffEntry>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommitFiles {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub filename: Option<String>,
@@ -4166,7 +4166,7 @@ pub struct CommitFiles {
     pub previous_filename: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommitParents {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub sha: Option<String>,
@@ -4177,7 +4177,7 @@ pub struct CommitParents {
 }
 
 /// Commit Search Result Item
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommitSearchResultItem {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -4205,7 +4205,7 @@ pub struct CommitSearchResultItem {
     pub text_matches: Option<SearchResultTextMatches>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommitStats {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub additions: Option<i64>,
@@ -4215,7 +4215,7 @@ pub struct CommitStats {
     pub total: Option<i64>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommitsearchresultitemCommit {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub author: Option<CommitsearchresultitemCommitAuthor>,
@@ -4233,7 +4233,7 @@ pub struct CommitsearchresultitemCommit {
     pub verification: Option<Verification>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommitsearchresultitemCommitAuthor {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
@@ -4243,7 +4243,7 @@ pub struct CommitsearchresultitemCommitAuthor {
     pub date: Option<chrono::DateTime<chrono::Utc>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommunityHealthFile {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -4252,7 +4252,7 @@ pub struct CommunityHealthFile {
 }
 
 /// Community Profile
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommunityProfile {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub health_percentage: Option<i64>,
@@ -4268,7 +4268,7 @@ pub struct CommunityProfile {
     pub content_reports_enabled: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommunityprofileFiles {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub code_of_conduct: Option<CodeOfConductSimple>,
@@ -4284,19 +4284,19 @@ pub struct CommunityprofileFiles {
     pub pull_request_template: Option<CommunityHealthFile>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ContainerMetadata {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub tags: Option<Vec<Value>>,
 }
 
 /// A list of directory items
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ContentDirectory {     
 }
 
 /// Content File
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ContentFile {     
     #[serde(rename = "type")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -4330,7 +4330,7 @@ pub struct ContentFile {
 }
 
 /// Content Reference attachments allow you to provide context around URLs posted in comments
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ContentReferenceAttachment {     
     /// The ID of the attachment
     #[serde(skip_serializing_if="Option::is_none")]
@@ -4347,7 +4347,7 @@ pub struct ContentReferenceAttachment {
 }
 
 /// An object describing a symlink
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ContentSubmodule {     
     #[serde(rename = "type")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -4375,7 +4375,7 @@ pub struct ContentSubmodule {
 }
 
 /// An object describing a symlink
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ContentSymlink {     
     #[serde(rename = "type")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -4403,7 +4403,7 @@ pub struct ContentSymlink {
 }
 
 /// Content Traffic
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ContentTraffic {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub path: Option<String>,
@@ -4416,7 +4416,7 @@ pub struct ContentTraffic {
 }
 
 /// Content Tree
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ContentTree {     
     #[serde(rename = "type")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -4443,7 +4443,7 @@ pub struct ContentTree {
     pub _links: Option<ContenttreeLinks>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ContentdirectoryInner {     
     #[serde(rename = "type")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -4470,7 +4470,7 @@ pub struct ContentdirectoryInner {
     pub _links: Option<HashMap<(), ()>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ContenttreeEntries {     
     #[serde(rename = "type")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -4497,7 +4497,7 @@ pub struct ContenttreeEntries {
     pub _links: Option<ContenttreeLinks>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ContenttreeLinks {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub git: Option<String>,
@@ -4509,7 +4509,7 @@ pub struct ContenttreeLinks {
 }
 
 /// Contributor
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Contributor {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
@@ -4557,7 +4557,7 @@ pub struct Contributor {
 }
 
 /// Contributor Activity
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ContributorActivity {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub author: Option<SimpleUser>,
@@ -4567,7 +4567,7 @@ pub struct ContributorActivity {
     pub weeks: Option<Vec<ContributoractivityWeeks>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ContributoractivityWeeks {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub w: Option<String>,
@@ -4580,7 +4580,7 @@ pub struct ContributoractivityWeeks {
 }
 
 /// Credential Authorization
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CredentialAuthorization {     
     /// User login that owns the underlying credential.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -4617,7 +4617,7 @@ pub struct CredentialAuthorization {
 }
 
 /// An SSH key granting access to a single repository.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeployKey {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -4636,7 +4636,7 @@ pub struct DeployKey {
 }
 
 /// A request for a specific ref(branch,sha,tag) to be deployed
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Deployment {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -4684,7 +4684,7 @@ pub struct Deployment {
 }
 
 /// The type of deployment branch policy for this environment. To allow all branches to deploy, set to `null`.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeploymentBranchPolicy {     
     /// Whether only branches with branch protection rules can deploy to this environment. If `protected_branches` is `true`, `custom_branch_policies` must be `false`; if `protected_branches` is `false`, `custom_branch_policies` must be `true`.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -4729,7 +4729,7 @@ impl std::str::FromStr for DeploymentReviewerType {
 }
 
 /// A deployment created as the result of an Actions check run from a workflow that references an environment
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeploymentSimple {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -4767,7 +4767,7 @@ pub struct DeploymentSimple {
 }
 
 /// The status of a deployment.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeploymentStatus {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -4808,7 +4808,7 @@ pub struct DeploymentStatus {
 }
 
 /// Diff Entry
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DiffEntry {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub sha: Option<String>,
@@ -4834,14 +4834,14 @@ pub struct DiffEntry {
     pub previous_filename: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DockerMetadata {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub tag: Option<Vec<Value>>,
 }
 
 /// Email
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Email {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub email: Option<String>,
@@ -4930,7 +4930,7 @@ impl std::str::FromStr for EnabledRepositories {
 }
 
 /// An enterprise account
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Enterprise {     
     /// A short description of the enterprise.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -4960,7 +4960,7 @@ pub struct Enterprise {
 }
 
 /// Details of a deployment environment
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Environment {     
     /// The id of the environment.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -4987,7 +4987,7 @@ pub struct Environment {
 }
 
 /// An entry in the reviews log for environment deployments
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct EnvironmentApprovals {     
     /// The list of environments that were approved or rejected
     #[serde(skip_serializing_if="Option::is_none")]
@@ -5002,7 +5002,7 @@ pub struct EnvironmentApprovals {
     pub comment: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct EnvironmentapprovalsEnvironments {     
     /// The id of the environment.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -5025,7 +5025,7 @@ pub struct EnvironmentapprovalsEnvironments {
 }
 
 /// Event
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Event {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<String>,
@@ -5046,7 +5046,7 @@ pub struct Event {
     pub created_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct EventPayload {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub action: Option<String>,
@@ -5058,7 +5058,7 @@ pub struct EventPayload {
     pub pages: Option<Vec<EventPayloadPages>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct EventPayloadPages {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub page_name: Option<String>,
@@ -5074,7 +5074,7 @@ pub struct EventPayloadPages {
     pub html_url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct EventRepo {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -5085,7 +5085,7 @@ pub struct EventRepo {
 }
 
 /// Feed
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Feed {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub timeline_url: Option<String>,
@@ -5107,7 +5107,7 @@ pub struct Feed {
     pub _links: Option<FeedLinks>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FeedLinks {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub timeline: Option<LinkWithType>,
@@ -5128,7 +5128,7 @@ pub struct FeedLinks {
 }
 
 /// File Commit
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FileCommit {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub content: Option<FilecommitContent>,
@@ -5136,7 +5136,7 @@ pub struct FileCommit {
     pub commit: Option<FilecommitCommit>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FilecommitCommit {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub sha: Option<String>,
@@ -5160,7 +5160,7 @@ pub struct FilecommitCommit {
     pub verification: Option<FilecommitCommitVerification>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FilecommitCommitAuthor {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub date: Option<String>,
@@ -5170,7 +5170,7 @@ pub struct FilecommitCommitAuthor {
     pub email: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FilecommitCommitParents {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -5180,7 +5180,7 @@ pub struct FilecommitCommitParents {
     pub sha: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FilecommitCommitTree {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -5188,7 +5188,7 @@ pub struct FilecommitCommitTree {
     pub sha: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FilecommitCommitVerification {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub verified: Option<bool>,
@@ -5200,7 +5200,7 @@ pub struct FilecommitCommitVerification {
     pub payload: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FilecommitContent {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
@@ -5225,7 +5225,7 @@ pub struct FilecommitContent {
     pub _links: Option<FilecommitContentLinks>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FilecommitContentLinks {     
     #[serde(rename = "self")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -5237,7 +5237,7 @@ pub struct FilecommitContentLinks {
 }
 
 /// Full Repository
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FullRepository {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -5426,7 +5426,7 @@ pub struct FullRepository {
     pub code_of_conduct: Option<CodeOfConductSimple>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FullrepositoryPermissions {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub admin: Option<bool>,
@@ -5437,7 +5437,7 @@ pub struct FullrepositoryPermissions {
 }
 
 /// A comment made to a gist.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GistComment {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -5459,7 +5459,7 @@ pub struct GistComment {
 }
 
 /// Gist Commit
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GistCommit {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -5474,7 +5474,7 @@ pub struct GistCommit {
 }
 
 /// Gist Simple
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GistSimple {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -5514,7 +5514,7 @@ pub struct GistSimple {
     pub truncated: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GistcommitChangeStatus {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total: Option<i64>,
@@ -5524,14 +5524,14 @@ pub struct GistcommitChangeStatus {
     pub deletions: Option<i64>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GistsFiles {     
     /// Content of the file
     #[serde(skip_serializing_if="Option::is_none")]
     pub content: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GistsgistIdFiles {     
     /// The new content of the file
     #[serde(skip_serializing_if="Option::is_none")]
@@ -5541,7 +5541,7 @@ pub struct GistsgistIdFiles {
     pub filename: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GistsimpleFiles {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub filename: Option<String>,
@@ -5561,7 +5561,7 @@ pub struct GistsimpleFiles {
 }
 
 /// Low-level Git commit operations within a repository
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GitCommit {     
     /// SHA for the commit
     #[serde(skip_serializing_if="Option::is_none")]
@@ -5588,7 +5588,7 @@ pub struct GitCommit {
 }
 
 /// Git references within a repository
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GitRef {     
     #[serde(rename = "ref")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -5602,7 +5602,7 @@ pub struct GitRef {
 }
 
 /// Metadata for a Git tag
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GitTag {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub node_id: Option<String>,
@@ -5626,7 +5626,7 @@ pub struct GitTag {
 }
 
 /// The hierarchy between files in a Git repository.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GitTree {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub sha: Option<String>,
@@ -5640,7 +5640,7 @@ pub struct GitTree {
 }
 
 /// Metaproperties for Git author/committer information.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GitUser {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
@@ -5651,7 +5651,7 @@ pub struct GitUser {
 }
 
 /// Identifying information for the git-user
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GitcommitAuthor {     
     /// Timestamp of the commit
     #[serde(skip_serializing_if="Option::is_none")]
@@ -5664,7 +5664,7 @@ pub struct GitcommitAuthor {
     pub name: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GitcommitParents {     
     /// SHA for the commit
     #[serde(skip_serializing_if="Option::is_none")]
@@ -5675,7 +5675,7 @@ pub struct GitcommitParents {
     pub html_url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GitcommitTree {     
     /// SHA for the commit
     #[serde(skip_serializing_if="Option::is_none")]
@@ -5684,7 +5684,7 @@ pub struct GitcommitTree {
     pub url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GitcommitVerification {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub verified: Option<bool>,
@@ -5697,7 +5697,7 @@ pub struct GitcommitVerification {
 }
 
 /// Gitignore Template
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GitignoreTemplate {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
@@ -5705,7 +5705,7 @@ pub struct GitignoreTemplate {
     pub source: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GitrefObject {     
     #[serde(rename = "type")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -5717,7 +5717,7 @@ pub struct GitrefObject {
     pub url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GittagObject {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub sha: Option<String>,
@@ -5728,7 +5728,7 @@ pub struct GittagObject {
     pub url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GittagTagger {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub date: Option<String>,
@@ -5738,7 +5738,7 @@ pub struct GittagTagger {
     pub name: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GittreeTree {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub path: Option<String>,
@@ -5756,7 +5756,7 @@ pub struct GittreeTree {
 }
 
 /// A unique encryption key
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GpgKey {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -5786,7 +5786,7 @@ pub struct GpgKey {
     pub raw_key: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GpgkeyEmails {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub email: Option<String>,
@@ -5794,7 +5794,7 @@ pub struct GpgkeyEmails {
     pub verified: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GpgkeySubkeys {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -5825,14 +5825,14 @@ pub struct GpgkeySubkeys {
 }
 
 /// External Groups to be mapped to a team for membership
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GroupMapping {     
     /// Array of groups to be mapped to this team
     #[serde(skip_serializing_if="Option::is_none")]
     pub groups: Option<Vec<GroupmappingGroups>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GroupmappingGroups {     
     /// The ID of the group
     #[serde(skip_serializing_if="Option::is_none")]
@@ -5852,7 +5852,7 @@ pub struct GroupmappingGroups {
 }
 
 /// Webhooks for repositories.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Hook {     
     #[serde(rename = "type")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -5885,7 +5885,7 @@ pub struct Hook {
     pub last_response: Option<HookResponse>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct HookConfig {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub email: Option<String>,
@@ -5909,7 +5909,7 @@ pub struct HookConfig {
     pub token: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct HookResponse {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub code: Option<i64>,
@@ -5920,13 +5920,13 @@ pub struct HookResponse {
 }
 
 /// Hovercard
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Hovercard {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub contexts: Option<Vec<HovercardContexts>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct HovercardContexts {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub message: Option<String>,
@@ -5935,7 +5935,7 @@ pub struct HovercardContexts {
 }
 
 /// A repository import from an external source.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Import {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub vcs: Option<String>,
@@ -5986,7 +5986,7 @@ pub struct Import {
     pub svn_root: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ImportProjectChoices {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub vcs: Option<String>,
@@ -5996,7 +5996,7 @@ pub struct ImportProjectChoices {
     pub human_name: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetMetaRootResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub current_user_url: Option<String>,
@@ -6066,7 +6066,7 @@ pub struct GetMetaRootResponse200 {
     pub user_search_url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetAppsCheckAuthorizationResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -6099,7 +6099,7 @@ pub struct GetAppsCheckAuthorizationResponse200 {
     pub installation: Option<ScopedInstallation>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetActionsListOrgSecretsResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<i64>,
@@ -6107,7 +6107,7 @@ pub struct GetActionsListOrgSecretsResponse200 {
     pub secrets: Option<Vec<OrganizationActionsSecret>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetActionsListSelectedReposForOrgSecretResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<i64>,
@@ -6115,7 +6115,7 @@ pub struct GetActionsListSelectedReposForOrgSecretResponse200 {
     pub repositories: Option<Vec<MinimalRepository>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetAppsListInstallationsForAuthenticatedUserResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<i64>,
@@ -6123,7 +6123,7 @@ pub struct GetAppsListInstallationsForAuthenticatedUserResponse200 {
     pub installations: Option<Vec<Installation>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetActionsListWorkflowRunArtifactsResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<i64>,
@@ -6131,7 +6131,7 @@ pub struct GetActionsListWorkflowRunArtifactsResponse200 {
     pub artifacts: Option<Vec<Artifact>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetActionsListWorkflowRunsResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<i64>,
@@ -6139,7 +6139,7 @@ pub struct GetActionsListWorkflowRunsResponse200 {
     pub workflow_runs: Option<Vec<WorkflowRun>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetActionsListJobsForWorkflowRunResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<i64>,
@@ -6147,7 +6147,7 @@ pub struct GetActionsListJobsForWorkflowRunResponse200 {
     pub jobs: Option<Vec<Job>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetActionsListEnvironmentSecretsResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<i64>,
@@ -6155,7 +6155,7 @@ pub struct GetActionsListEnvironmentSecretsResponse200 {
     pub secrets: Option<Vec<ActionsSecret>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetActionsListRepoWorkflowsResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<i64>,
@@ -6163,7 +6163,7 @@ pub struct GetActionsListRepoWorkflowsResponse200 {
     pub workflows: Option<Vec<Workflow>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetChecksListForRefResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<i64>,
@@ -6171,7 +6171,7 @@ pub struct GetChecksListForRefResponse200 {
     pub check_runs: Option<Vec<CheckRun>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetChecksListSuitesForRefResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<i64>,
@@ -6179,7 +6179,7 @@ pub struct GetChecksListSuitesForRefResponse200 {
     pub check_suites: Option<Vec<CheckSuite>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetEnterpriseAdminListOrgAccessToSelfHostedRunnerGroupInEnterpriseResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<f64>,
@@ -6187,11 +6187,11 @@ pub struct GetEnterpriseAdminListOrgAccessToSelfHostedRunnerGroupInEnterpriseRes
     pub organizations: Option<Vec<OrganizationSimple>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct InlineResponse20020 {     
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetReposGetAllEnvironmentsResponse200 {     
     /// The number of environments in this repository
     #[serde(skip_serializing_if="Option::is_none")]
@@ -6200,7 +6200,7 @@ pub struct GetReposGetAllEnvironmentsResponse200 {
     pub environments: Option<Vec<Environment>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetSearchCodeResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<i64>,
@@ -6210,7 +6210,7 @@ pub struct GetSearchCodeResponse200 {
     pub items: Option<Vec<CodeSearchResultItem>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetSearchCommitsResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<i64>,
@@ -6220,7 +6220,7 @@ pub struct GetSearchCommitsResponse200 {
     pub items: Option<Vec<CommitSearchResultItem>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetSearchIssuesAndPullRequestsResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<i64>,
@@ -6230,7 +6230,7 @@ pub struct GetSearchIssuesAndPullRequestsResponse200 {
     pub items: Option<Vec<IssueSearchResultItem>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetSearchLabelsResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<i64>,
@@ -6240,7 +6240,7 @@ pub struct GetSearchLabelsResponse200 {
     pub items: Option<Vec<LabelSearchResultItem>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetSearchReposResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<i64>,
@@ -6250,7 +6250,7 @@ pub struct GetSearchReposResponse200 {
     pub items: Option<Vec<RepoSearchResultItem>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetSearchTopicsResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<i64>,
@@ -6260,7 +6260,7 @@ pub struct GetSearchTopicsResponse200 {
     pub items: Option<Vec<TopicSearchResultItem>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetSearchUsersResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<i64>,
@@ -6270,11 +6270,11 @@ pub struct GetSearchUsersResponse200 {
     pub items: Option<Vec<UserSearchResultItem>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetUsersGetByUsernameResponse200 {     
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetEnterpriseAdminListSelfHostedRunnerGroupsForEnterpriseResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<f64>,
@@ -6282,7 +6282,7 @@ pub struct GetEnterpriseAdminListSelfHostedRunnerGroupsForEnterpriseResponse200 
     pub runner_groups: Option<Vec<RunnerGroupsEnterprise>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetAppsListInstallationReposForAuthenticatedUserResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<i64>,
@@ -6292,7 +6292,7 @@ pub struct GetAppsListInstallationReposForAuthenticatedUserResponse200 {
     pub repositories: Option<Vec<Repository>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetActionsListSelfHostedRunnersInGroupForOrgResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<f64>,
@@ -6300,7 +6300,7 @@ pub struct GetActionsListSelfHostedRunnersInGroupForOrgResponse200 {
     pub runners: Option<Vec<Runner>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetEnterpriseAdminListSelfHostedRunnersForEnterpriseResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<f64>,
@@ -6308,7 +6308,7 @@ pub struct GetEnterpriseAdminListSelfHostedRunnersForEnterpriseResponse200 {
     pub runners: Option<Vec<Runner>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetAppsListReposAccessibleToInstallationResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<i64>,
@@ -6318,7 +6318,7 @@ pub struct GetAppsListReposAccessibleToInstallationResponse200 {
     pub repository_selection: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetActionsListRepoAccessToSelfHostedRunnerGroupInOrgResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<f64>,
@@ -6326,7 +6326,7 @@ pub struct GetActionsListRepoAccessToSelfHostedRunnerGroupInOrgResponse200 {
     pub repositories: Option<Vec<Repository>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetActionsListSelfHostedRunnerGroupsForOrgResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<f64>,
@@ -6334,7 +6334,7 @@ pub struct GetActionsListSelfHostedRunnerGroupsForOrgResponse200 {
     pub runner_groups: Option<Vec<RunnerGroupsOrg>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetActionsListSelfHostedRunnersForRepoResponse200 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_count: Option<i64>,
@@ -6342,7 +6342,7 @@ pub struct GetActionsListSelfHostedRunnersForRepoResponse200 {
     pub runners: Option<Vec<Runner>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostAppsCreateFromManifestResponse201 {     
     /// Unique identifier of the GitHub app
     #[serde(skip_serializing_if="Option::is_none")]
@@ -6385,13 +6385,13 @@ pub struct PostAppsCreateFromManifestResponse201 {
     pub pem: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateDeploymentResponse202 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub message: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutPullsUpdateBranchResponse202 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub message: Option<String>,
@@ -6399,7 +6399,7 @@ pub struct PutPullsUpdateBranchResponse202 {
     pub url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetGistsGetCommentResponse403 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub block: Option<InlineResponse403Block>,
@@ -6409,7 +6409,7 @@ pub struct GetGistsGetCommentResponse403 {
     pub documentation_url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutTeamsAddOrUpdateProjectPermissionsLegacyResponse403 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub message: Option<String>,
@@ -6417,7 +6417,7 @@ pub struct PutTeamsAddOrUpdateProjectPermissionsLegacyResponse403 {
     pub documentation_url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchProjectsUpdateResponse403 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub message: Option<String>,
@@ -6427,7 +6427,7 @@ pub struct PatchProjectsUpdateResponse403 {
     pub errors: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostProjectsMoveCardResponse403 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub message: Option<String>,
@@ -6437,7 +6437,7 @@ pub struct PostProjectsMoveCardResponse403 {
     pub errors: Option<Vec<InlineResponse4033Errors>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct InlineResponse4033Errors {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub code: Option<String>,
@@ -6449,7 +6449,7 @@ pub struct InlineResponse4033Errors {
     pub field: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct InlineResponse403Block {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub reason: Option<String>,
@@ -6459,7 +6459,7 @@ pub struct InlineResponse403Block {
     pub html_url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposMergeResponse409 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub message: Option<String>,
@@ -6467,7 +6467,7 @@ pub struct PostReposMergeResponse409 {
     pub documentation_url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostReposCreateDeploymentResponse409 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub message: Option<String>,
@@ -6475,7 +6475,7 @@ pub struct PostReposCreateDeploymentResponse409 {
     pub documentation_url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetProjectsListForUserResponse415 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub message: Option<String>,
@@ -6483,11 +6483,11 @@ pub struct GetProjectsListForUserResponse415 {
     pub documentation_url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostProjectsCreateCardResponse422 {     
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutTeamsAddOrUpdateMembershipForUserInOrgResponse422 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub message: Option<String>,
@@ -6495,7 +6495,7 @@ pub struct PutTeamsAddOrUpdateMembershipForUserInOrgResponse422 {
     pub errors: Option<Vec<InlineResponse4221Errors>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct InlineResponse4221Errors {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub code: Option<String>,
@@ -6505,7 +6505,7 @@ pub struct InlineResponse4221Errors {
     pub resource: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutTeamsAddMemberLegacyResponse422 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub message: Option<String>,
@@ -6515,7 +6515,7 @@ pub struct PutTeamsAddMemberLegacyResponse422 {
     pub documentation_url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutTeamsAddOrUpdateMembershipForUserLegacyResponse422 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub message: Option<String>,
@@ -6525,7 +6525,7 @@ pub struct PutTeamsAddOrUpdateMembershipForUserLegacyResponse422 {
     pub documentation_url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetSearchUsersResponse503 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub code: Option<String>,
@@ -6535,7 +6535,7 @@ pub struct GetSearchUsersResponse503 {
     pub documentation_url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PostProjectsCreateCardResponse503 {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub code: Option<String>,
@@ -6547,7 +6547,7 @@ pub struct PostProjectsCreateCardResponse503 {
     pub errors: Option<Vec<InlineResponse5031Errors>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct InlineResponse5031Errors {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub code: Option<String>,
@@ -6556,7 +6556,7 @@ pub struct InlineResponse5031Errors {
 }
 
 /// Installation
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Installation {     
     /// The ID of the installation.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -6603,7 +6603,7 @@ pub struct Installation {
     pub contact_email: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct InstallationPermissions {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub deployments: Option<String>,
@@ -6624,7 +6624,7 @@ pub struct InstallationPermissions {
 }
 
 /// Authentication token for a GitHub App installed on a user or org.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct InstallationToken {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub token: Option<String>,
@@ -6644,7 +6644,7 @@ pub struct InstallationToken {
     pub single_file_paths: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct InstallationtokenPermissions {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub issues: Option<String>,
@@ -6657,7 +6657,7 @@ pub struct InstallationtokenPermissions {
 }
 
 /// GitHub apps are a new way to extend GitHub. They can be installed directly on organizations and user accounts and granted access to specific repositories. They come with granular permissions and built-in webhooks. GitHub apps are first class actors within GitHub.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Integration {     
     /// Unique identifier of the GitHub app
     #[serde(rename = "id")]
@@ -6718,7 +6718,7 @@ pub struct Integration {
 }
 
 /// The set of permissions for the GitHub app
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IntegrationPermissions {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub issues: Option<String>,
@@ -6817,7 +6817,7 @@ impl std::str::FromStr for InteractionGroup {
 }
 
 /// Limit interactions to a specific type of user for a specified duration
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutInteractionsSetRestrictionsForAuthenticatedUser {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub limit: Option<InteractionGroup>,
@@ -6826,7 +6826,7 @@ pub struct PutInteractionsSetRestrictionsForAuthenticatedUser {
 }
 
 /// Interaction limit settings.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct InteractionLimitResponse {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub limit: Option<InteractionGroup>,
@@ -6837,7 +6837,7 @@ pub struct InteractionLimitResponse {
 }
 
 /// Issues are a great way to keep track of tasks, enhancements, and bugs for your projects.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Issue {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -6912,7 +6912,7 @@ pub struct Issue {
 }
 
 /// Comments provide a way for people to collaborate on an issue.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IssueComment {     
     /// Unique identifier of the issue comment
     #[serde(skip_serializing_if="Option::is_none")]
@@ -6948,7 +6948,7 @@ pub struct IssueComment {
 }
 
 /// Issue Event
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IssueEvent {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -6994,7 +6994,7 @@ pub struct IssueEvent {
     pub lock_reason: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IssueEventDismissedReview {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub state: Option<String>,
@@ -7007,7 +7007,7 @@ pub struct IssueEventDismissedReview {
 }
 
 /// Issue Event for Issue
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IssueEventForIssue {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -7054,7 +7054,7 @@ pub struct IssueEventForIssue {
 }
 
 /// Issue Event Label
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IssueEventLabel {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
@@ -7063,14 +7063,14 @@ pub struct IssueEventLabel {
 }
 
 /// Issue Event Milestone
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IssueEventMilestone {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub title: Option<String>,
 }
 
 /// Issue Event Project Card
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IssueEventProjectCard {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -7087,7 +7087,7 @@ pub struct IssueEventProjectCard {
 }
 
 /// Issue Event Rename
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IssueEventRename {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub from: Option<String>,
@@ -7096,7 +7096,7 @@ pub struct IssueEventRename {
 }
 
 /// Issue Search Result Item
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IssueSearchResultItem {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -7167,7 +7167,7 @@ pub struct IssueSearchResultItem {
 }
 
 /// Issue Simple
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IssueSimple {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -7231,7 +7231,7 @@ pub struct IssueSimple {
     pub performed_via_github_app: Option<Integration>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IssuesearchresultitemLabels {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -7249,7 +7249,7 @@ pub struct IssuesearchresultitemLabels {
     pub description: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IssuesimplePullRequest {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub merged_at: Option<chrono::DateTime<chrono::Utc>>,
@@ -7264,7 +7264,7 @@ pub struct IssuesimplePullRequest {
 }
 
 /// Information of a job execution in a workflow run
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Job {     
     /// The id of the job.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -7305,7 +7305,7 @@ pub struct Job {
     pub check_run_url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct JobSteps {     
     /// The phase of the lifecycle that the job is currently in.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -7327,7 +7327,7 @@ pub struct JobSteps {
 }
 
 /// Key
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Key {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub key_id: Option<String>,
@@ -7348,7 +7348,7 @@ pub struct Key {
 }
 
 /// Key Simple
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct KeySimple {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -7357,7 +7357,7 @@ pub struct KeySimple {
 }
 
 /// Color-coded labels help you categorize and filter your issues (just like labels in Gmail).
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Label {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -7379,7 +7379,7 @@ pub struct Label {
 }
 
 /// Label Search Result Item
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct LabelSearchResultItem {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -7402,12 +7402,12 @@ pub struct LabelSearchResultItem {
 }
 
 /// Language
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Language {     
 }
 
 /// License
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct License {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub key: Option<String>,
@@ -7438,7 +7438,7 @@ pub struct License {
 }
 
 /// License Content
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct LicenseContent {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
@@ -7470,7 +7470,7 @@ pub struct LicenseContent {
 }
 
 /// License Simple
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct LicenseSimple {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub key: Option<String>,
@@ -7487,14 +7487,14 @@ pub struct LicenseSimple {
 }
 
 /// Hypermedia Link
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Link {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub href: Option<String>,
 }
 
 /// Hypermedia Link with Type
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct LinkWithType {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub href: Option<String>,
@@ -7503,7 +7503,7 @@ pub struct LinkWithType {
     pub _type: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct MarketplaceAccount {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -7523,7 +7523,7 @@ pub struct MarketplaceAccount {
 }
 
 /// Marketplace Listing Plan
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct MarketplaceListingPlan {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -7554,7 +7554,7 @@ pub struct MarketplaceListingPlan {
 }
 
 /// Marketplace Purchase
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct MarketplacePurchase {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -7573,7 +7573,7 @@ pub struct MarketplacePurchase {
     pub marketplace_purchase: Option<MarketplacepurchaseMarketplacePurchase>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct MarketplacepurchaseMarketplacePendingChange {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub is_installed: Option<bool>,
@@ -7587,7 +7587,7 @@ pub struct MarketplacepurchaseMarketplacePendingChange {
     pub plan: Option<MarketplaceListingPlan>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct MarketplacepurchaseMarketplacePurchase {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub billing_cycle: Option<String>,
@@ -7608,7 +7608,7 @@ pub struct MarketplacepurchaseMarketplacePurchase {
 }
 
 /// A migration.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Migration {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -7639,7 +7639,7 @@ pub struct Migration {
 }
 
 /// A collection of related issues and pull requests.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Milestone {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -7679,7 +7679,7 @@ pub struct Milestone {
 }
 
 /// Minimal Repository
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct MinimalRepository {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -7847,7 +7847,7 @@ pub struct MinimalRepository {
     pub watchers: Option<i64>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct MinimalrepositoryLicense {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub key: Option<String>,
@@ -7862,7 +7862,7 @@ pub struct MinimalrepositoryLicense {
 }
 
 /// Org Hook
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OrgHook {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -7888,7 +7888,7 @@ pub struct OrgHook {
 }
 
 /// Org Membership
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OrgMembership {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -7907,7 +7907,7 @@ pub struct OrgMembership {
 }
 
 /// Secrets for GitHub Actions for an organization.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OrganizationActionsSecret {     
     /// The name of the secret.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -7924,7 +7924,7 @@ pub struct OrganizationActionsSecret {
 }
 
 /// Organization Full
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OrganizationFull {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
@@ -8018,7 +8018,7 @@ pub struct OrganizationFull {
 }
 
 /// Organization Invitation
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OrganizationInvitation {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -8047,7 +8047,7 @@ pub struct OrganizationInvitation {
 }
 
 /// Organization Simple
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OrganizationSimple {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
@@ -8075,7 +8075,7 @@ pub struct OrganizationSimple {
     pub description: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OrganizationfullPlan {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
@@ -8089,7 +8089,7 @@ pub struct OrganizationfullPlan {
     pub seats: Option<i64>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OrghookConfig {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -8101,14 +8101,14 @@ pub struct OrghookConfig {
     pub secret: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OrgmembershipPermissions {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub can_create_repository: Option<bool>,
 }
 
 /// Key/value pairs to provide settings for this webhook. [These are defined below](https://docs.github.com/rest/reference/orgs#create-hook-config-params).
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OrgsorghooksConfig {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<WebhookConfigUrl>,
@@ -8125,7 +8125,7 @@ pub struct OrgsorghooksConfig {
 }
 
 /// Key/value pairs to provide settings for this webhook. [These are defined below](https://docs.github.com/rest/reference/orgs#update-hook-config-params).
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OrgsorghookshookIdConfig {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<WebhookConfigUrl>,
@@ -8137,7 +8137,7 @@ pub struct OrgsorghookshookIdConfig {
     pub insecure_ssl: Option<WebhookConfigInsecureSsl>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OrgsorgteamsteamSlugteamsyncgroupmappingsGroups {     
     /// ID of the IdP group.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -8151,7 +8151,7 @@ pub struct OrgsorgteamsteamSlugteamsyncgroupmappingsGroups {
 }
 
 /// A software package
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Package {     
     /// Unique identifier of the package.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -8181,7 +8181,7 @@ pub struct Package {
 }
 
 /// A version of a software package
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PackageVersion {     
     /// Unique identifier of the package version.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -8209,7 +8209,7 @@ pub struct PackageVersion {
     pub metadata: Option<PackageVersionMetadata>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PackageVersionMetadata {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub package_type: Option<String>,
@@ -8219,7 +8219,7 @@ pub struct PackageVersionMetadata {
     pub docker: Option<DockerMetadata>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PackagesBillingUsage {     
     /// Sum of the free and paid storage space (GB) for GitHuub Packages.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -8233,7 +8233,7 @@ pub struct PackagesBillingUsage {
 }
 
 /// The configuration for GitHub Pages for a repository.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Page {     
     /// The API address for accessing this Page resource.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -8258,7 +8258,7 @@ pub struct Page {
 }
 
 /// Page Build
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PageBuild {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -8279,7 +8279,7 @@ pub struct PageBuild {
 }
 
 /// Page Build Status
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PageBuildStatus {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -8287,13 +8287,13 @@ pub struct PageBuildStatus {
     pub status: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PagebuildError {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub message: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PagesSourceHash {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub branch: Option<String>,
@@ -8301,7 +8301,7 @@ pub struct PagesSourceHash {
     pub path: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ParticipationStats {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub all: Option<Vec<i32>>,
@@ -8310,7 +8310,7 @@ pub struct ParticipationStats {
 }
 
 /// Details of a deployment that is waiting for protection rules to pass
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PendingDeployment {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub environment: Option<PendingdeploymentEnvironment>,
@@ -8328,7 +8328,7 @@ pub struct PendingDeployment {
     pub reviewers: Option<Vec<PendingdeploymentReviewers>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PendingdeploymentEnvironment {     
     /// The id of the environment.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -8344,7 +8344,7 @@ pub struct PendingdeploymentEnvironment {
     pub html_url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PendingdeploymentReviewers {     
     #[serde(rename = "type")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -8354,7 +8354,7 @@ pub struct PendingdeploymentReviewers {
 }
 
 /// Porter Author
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PorterAuthor {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -8373,7 +8373,7 @@ pub struct PorterAuthor {
 }
 
 /// Porter Large File
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PorterLargeFile {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub ref_name: Option<String>,
@@ -8386,7 +8386,7 @@ pub struct PorterLargeFile {
 }
 
 /// Private User
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PrivateUser {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
@@ -8475,7 +8475,7 @@ pub struct PrivateUser {
     pub ldap_dn: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PrivateuserPlan {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub collaborators: Option<i64>,
@@ -8488,7 +8488,7 @@ pub struct PrivateuserPlan {
 }
 
 /// Projects are a way to organize columns and cards of work.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Project {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub owner_url: Option<String>,
@@ -8528,7 +8528,7 @@ pub struct Project {
 }
 
 /// Project cards represent a scope of work.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProjectCard {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -8557,7 +8557,7 @@ pub struct ProjectCard {
 }
 
 /// Project columns contain cards of work.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProjectColumn {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -8580,7 +8580,7 @@ pub struct ProjectColumn {
 }
 
 /// Branch protections protect branches
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProtectedBranch {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -8603,7 +8603,7 @@ pub struct ProtectedBranch {
 }
 
 /// Protected Branch Admin Enforced
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProtectedBranchAdminEnforced {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -8612,7 +8612,7 @@ pub struct ProtectedBranchAdminEnforced {
 }
 
 /// Protected Branch Pull Request Review
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProtectedBranchPullRequestReview {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -8626,7 +8626,7 @@ pub struct ProtectedBranchPullRequestReview {
     pub required_approving_review_count: Option<u8>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProtectedbranchEnforceAdmins {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -8634,13 +8634,13 @@ pub struct ProtectedbranchEnforceAdmins {
     pub enabled: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProtectedbranchRequiredLinearHistory {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub enabled: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProtectedbranchRequiredPullRequestReviews {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -8654,7 +8654,7 @@ pub struct ProtectedbranchRequiredPullRequestReviews {
     pub dismissal_restrictions: Option<ProtectedbranchRequiredPullRequestReviewsDismissalRestrictions>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProtectedbranchRequiredPullRequestReviewsDismissalRestrictions {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -8668,7 +8668,7 @@ pub struct ProtectedbranchRequiredPullRequestReviewsDismissalRestrictions {
     pub teams: Option<Vec<Team>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProtectedbranchRequiredSignatures {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -8676,7 +8676,7 @@ pub struct ProtectedbranchRequiredSignatures {
     pub enabled: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProtectedbranchpullrequestreviewDismissalRestrictions {     
     /// The list of users with review dismissal access.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -8693,7 +8693,7 @@ pub struct ProtectedbranchpullrequestreviewDismissalRestrictions {
 }
 
 /// Public User
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PublicUser {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
@@ -8777,7 +8777,7 @@ pub struct PublicUser {
 }
 
 /// Pull requests let you tell others about changes you've pushed to a repository on GitHub. Once a pull request is sent, interested parties can review the set of changes, discuss potential modifications, and even push follow-up commits if necessary.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullRequest {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -8883,7 +8883,7 @@ pub struct PullRequest {
 }
 
 /// Pull Request Merge Result
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullRequestMergeResult {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub sha: Option<String>,
@@ -8893,7 +8893,7 @@ pub struct PullRequestMergeResult {
     pub message: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullRequestMinimal {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -8908,7 +8908,7 @@ pub struct PullRequestMinimal {
 }
 
 /// Pull Request Reviews are reviews on pull requests.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullRequestReview {     
     /// Unique identifier of the review
     #[serde(skip_serializing_if="Option::is_none")]
@@ -8942,7 +8942,7 @@ pub struct PullRequestReview {
 }
 
 /// Pull Request Review Comments are comments on a portion of the Pull Request's diff.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullRequestReviewComment {     
     /// URL for the pull request review comment
     #[serde(skip_serializing_if="Option::is_none")]
@@ -9023,7 +9023,7 @@ pub struct PullRequestReviewComment {
 }
 
 /// Pull Request Review Request
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullRequestReviewRequest {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub users: Option<Vec<SimpleUser>>,
@@ -9032,7 +9032,7 @@ pub struct PullRequestReviewRequest {
 }
 
 /// Pull Request Simple
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullRequestSimple {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -9109,7 +9109,7 @@ pub struct PullRequestSimple {
     pub draft: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestBase {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub label: Option<String>,
@@ -9124,7 +9124,7 @@ pub struct PullrequestBase {
     pub user: Option<PullrequestHeadRepoOwner>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestBaseRepo {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub archive_url: Option<String>,
@@ -9288,7 +9288,7 @@ pub struct PullrequestBaseRepo {
     pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestHead {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub label: Option<String>,
@@ -9303,7 +9303,7 @@ pub struct PullrequestHead {
     pub user: Option<PullrequestHeadRepoOwner>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestHeadRepo {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub archive_url: Option<String>,
@@ -9467,7 +9467,7 @@ pub struct PullrequestHeadRepo {
     pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestHeadRepoLicense {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub key: Option<String>,
@@ -9481,7 +9481,7 @@ pub struct PullrequestHeadRepoLicense {
     pub node_id: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestHeadRepoOwner {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub avatar_url: Option<String>,
@@ -9522,7 +9522,7 @@ pub struct PullrequestHeadRepoOwner {
     pub url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestLabels {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -9540,7 +9540,7 @@ pub struct PullrequestLabels {
     pub default: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestminimalHead {     
     #[serde(rename = "ref")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -9551,7 +9551,7 @@ pub struct PullrequestminimalHead {
     pub repo: Option<PullrequestminimalHeadRepo>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestminimalHeadRepo {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -9561,7 +9561,7 @@ pub struct PullrequestminimalHeadRepo {
     pub name: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestreviewLinks {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub html: Option<PullrequestreviewLinksHtml>,
@@ -9569,13 +9569,13 @@ pub struct PullrequestreviewLinks {
     pub pull_request: Option<PullrequestreviewLinksHtml>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestreviewLinksHtml {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub href: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestreviewcommentLinks {     
     #[serde(rename = "self")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -9586,25 +9586,25 @@ pub struct PullrequestreviewcommentLinks {
     pub pull_request: Option<PullrequestreviewcommentLinksPullRequest>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestreviewcommentLinksHtml {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub href: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestreviewcommentLinksPullRequest {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub href: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestreviewcommentLinksSelf {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub href: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestsimpleHead {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub label: Option<String>,
@@ -9619,7 +9619,7 @@ pub struct PullrequestsimpleHead {
     pub user: Option<SimpleUser>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestsimpleLabels {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -9637,7 +9637,7 @@ pub struct PullrequestsimpleLabels {
     pub default: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestsimpleLinks {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub comments: Option<Link>,
@@ -9658,7 +9658,7 @@ pub struct PullrequestsimpleLinks {
     pub _self: Option<Link>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RateLimit {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub limit: Option<i64>,
@@ -9669,7 +9669,7 @@ pub struct RateLimit {
 }
 
 /// Rate Limit Overview
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RateLimitOverview {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub resources: Option<RatelimitoverviewResources>,
@@ -9677,7 +9677,7 @@ pub struct RateLimitOverview {
     pub rate: Option<RateLimit>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RatelimitoverviewResources {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub core: Option<RateLimit>,
@@ -9694,7 +9694,7 @@ pub struct RatelimitoverviewResources {
 }
 
 /// Reactions to conversations provide a way to help people express their feelings more simply and effectively.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Reaction {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -9709,7 +9709,7 @@ pub struct Reaction {
     pub created_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReactionRollup {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -9736,7 +9736,7 @@ pub struct ReactionRollup {
 }
 
 /// Referrer Traffic
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReferrerTraffic {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub referrer: Option<String>,
@@ -9747,7 +9747,7 @@ pub struct ReferrerTraffic {
 }
 
 /// A release.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Release {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -9796,7 +9796,7 @@ pub struct Release {
 }
 
 /// Data related to a release.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReleaseAsset {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -9829,7 +9829,7 @@ pub struct ReleaseAsset {
 }
 
 /// Repo Search Result Item
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RepoSearchResultItem {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -10001,7 +10001,7 @@ pub struct RepoSearchResultItem {
 }
 
 /// A git repository
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Repository {     
     /// Unique identifier of the repository
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10196,7 +10196,7 @@ pub struct Repository {
 }
 
 /// Repository Collaborator Permission
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RepositoryCollaboratorPermission {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub permission: Option<String>,
@@ -10205,7 +10205,7 @@ pub struct RepositoryCollaboratorPermission {
 }
 
 /// Repository invitations let you manage who you collaborate with.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RepositoryInvitation {     
     /// Unique identifier of the repository invitation.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10233,7 +10233,7 @@ pub struct RepositoryInvitation {
     pub node_id: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RepositoryPermissions {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub admin: Option<bool>,
@@ -10248,7 +10248,7 @@ pub struct RepositoryPermissions {
 }
 
 /// Repository invitations let you manage who you collaborate with.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RepositorySubscription {     
     /// Determines if notifications should be received from this repository.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10266,7 +10266,7 @@ pub struct RepositorySubscription {
     pub repository_url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RepositoryTemplateRepository {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -10430,7 +10430,7 @@ pub struct RepositoryTemplateRepository {
     pub network_count: Option<i64>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RepositoryTemplateRepositoryOwner {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
@@ -10471,7 +10471,7 @@ pub struct RepositoryTemplateRepositoryOwner {
     pub site_admin: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RepositoryTemplateRepositoryPermissions {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub admin: Option<bool>,
@@ -10482,7 +10482,7 @@ pub struct RepositoryTemplateRepositoryPermissions {
 }
 
 /// Require at least one approving review on a pull request, before merging. Set to `null` to disable.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepobranchesbranchprotectionRequiredPullRequestReviews {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub dismissal_restrictions: Option<ReposownerrepobranchesbranchprotectionRequiredPullRequestReviewsDismissalRestrictions>,
@@ -10498,7 +10498,7 @@ pub struct ReposownerrepobranchesbranchprotectionRequiredPullRequestReviews {
 }
 
 /// Specify which users and teams can dismiss pull request reviews. Pass an empty `dismissal_restrictions` object to disable. User and team `dismissal_restrictions` are only available for organization-owned repositories. Omit this parameter for personal repositories.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepobranchesbranchprotectionRequiredPullRequestReviewsDismissalRestrictions {     
     /// The list of user `login`s with dismissal access
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10509,7 +10509,7 @@ pub struct ReposownerrepobranchesbranchprotectionRequiredPullRequestReviewsDismi
 }
 
 /// Require status checks to pass before merging. Set to `null` to disable.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepobranchesbranchprotectionRequiredStatusChecks {     
     /// Require branches to be up to date before merging.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10520,7 +10520,7 @@ pub struct ReposownerrepobranchesbranchprotectionRequiredStatusChecks {
 }
 
 /// Restrict who can push to the protected branch. User, app, and team `restrictions` are only available for organization-owned repositories. Set to `null` to disable.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepobranchesbranchprotectionRestrictions {     
     /// The list of user `login`s with push access
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10533,7 +10533,7 @@ pub struct ReposownerrepobranchesbranchprotectionRestrictions {
     pub apps: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepocheckrunsActions {     
     /// The text to be displayed on a button in the web UI. The maximum size is 20 characters.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10547,7 +10547,7 @@ pub struct ReposownerrepocheckrunsActions {
 }
 
 /// Check runs can accept a variety of data in the `output` object, including a `title` and `summary` and can optionally provide descriptive details about the run. See the [`output` object](https://docs.github.com/rest/reference/checks#output-object) description.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepocheckrunsOutput {     
     /// The title of the check run.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10566,7 +10566,7 @@ pub struct ReposownerrepocheckrunsOutput {
     pub images: Option<Vec<ReposownerrepocheckrunsOutputImages>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepocheckrunsOutputAnnotations {     
     /// The path of the file to add an annotation to. For example, `assets/css/main.css`.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10597,7 +10597,7 @@ pub struct ReposownerrepocheckrunsOutputAnnotations {
     pub raw_details: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepocheckrunsOutputImages {     
     /// The alternative text for the image.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10611,7 +10611,7 @@ pub struct ReposownerrepocheckrunsOutputImages {
 }
 
 /// Check runs can accept a variety of data in the `output` object, including a `title` and `summary` and can optionally provide descriptive details about the run. See the [`output` object](https://docs.github.com/rest/reference/checks#output-object-1) description.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepocheckrunscheckRunIdOutput {     
     /// **Required**.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10630,7 +10630,7 @@ pub struct ReposownerrepocheckrunscheckRunIdOutput {
     pub images: Option<Vec<ReposownerrepocheckrunsOutputImages>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepochecksuitespreferencesAutoTriggerChecks {     
     /// The `id` of the GitHub App.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10641,7 +10641,7 @@ pub struct ReposownerrepochecksuitespreferencesAutoTriggerChecks {
 }
 
 /// The author of the file. Default: The `committer` or the authenticated user if you omit `committer`.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepocontentspathAuthor {     
     /// The name of the author or committer of the commit. You'll receive a `422` status code if `name` is omitted.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10654,7 +10654,7 @@ pub struct ReposownerrepocontentspathAuthor {
 }
 
 /// object containing information about the author.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepocontentspathAuthor1 {     
     /// The name of the author (or committer) of the commit
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10665,7 +10665,7 @@ pub struct ReposownerrepocontentspathAuthor1 {
 }
 
 /// The person that committed the file. Default: the authenticated user.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepocontentspathCommitter {     
     /// The name of the author or committer of the commit. You'll receive a `422` status code if `name` is omitted.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10678,7 +10678,7 @@ pub struct ReposownerrepocontentspathCommitter {
 }
 
 /// object containing information about the committer.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepocontentspathCommitter1 {     
     /// The name of the author (or committer) of the commit
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10688,7 +10688,7 @@ pub struct ReposownerrepocontentspathCommitter1 {
     pub email: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepoenvironmentsenvironmentNameReviewers {     
     #[serde(rename = "type")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10699,7 +10699,7 @@ pub struct ReposownerrepoenvironmentsenvironmentNameReviewers {
 }
 
 /// Information about the author of the commit. By default, the `author` will be the authenticated user and the current date. See the `author` and `committer` object below for details.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepogitcommitsAuthor {     
     /// The name of the author (or committer) of the commit
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10713,7 +10713,7 @@ pub struct ReposownerrepogitcommitsAuthor {
 }
 
 /// Information about the person who is making the commit. By default, `committer` will use the information set in `author`. See the `author` and `committer` object below for details.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepogitcommitsCommitter {     
     /// The name of the author (or committer) of the commit
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10727,7 +10727,7 @@ pub struct ReposownerrepogitcommitsCommitter {
 }
 
 /// An object with information about the individual creating the tag.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepogittagsTagger {     
     /// The name of the author of the tag
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10740,7 +10740,7 @@ pub struct ReposownerrepogittagsTagger {
     pub date: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepogittreesTree {     
     /// The file referenced in the tree.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10761,7 +10761,7 @@ pub struct ReposownerrepogittreesTree {
 }
 
 /// Key/value pairs to provide settings for this webhook. [These are defined below](https://docs.github.com/rest/reference/repos#create-hook-config-params).
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepohooksConfig {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<WebhookConfigUrl>,
@@ -10778,7 +10778,7 @@ pub struct ReposownerrepohooksConfig {
 }
 
 /// Key/value pairs to provide settings for this webhook. [These are defined below](https://docs.github.com/rest/reference/repos#create-hook-config-params).
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepohookshookIdConfig {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<WebhookConfigUrl>,
@@ -10795,7 +10795,7 @@ pub struct ReposownerrepohookshookIdConfig {
 }
 
 /// The source branch and directory used to publish your Pages site.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepopagesSource {     
     /// The repository branch used to publish your site's source files.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10805,7 +10805,7 @@ pub struct ReposownerrepopagesSource {
     pub path: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepopullspullNumberreviewsComments {     
     /// The relative path to the file that necessitates a review comment.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10827,7 +10827,7 @@ pub struct ReposownerrepopullspullNumberreviewsComments {
 }
 
 /// Legacy Review Comment
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReviewComment {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -10891,7 +10891,7 @@ pub struct ReviewComment {
     pub original_start_line: Option<i64>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReviewcommentLinks {     
     #[serde(rename = "self")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10903,7 +10903,7 @@ pub struct ReviewcommentLinks {
 }
 
 /// A self hosted runner
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Runner {     
     /// The id of the runner.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10924,7 +10924,7 @@ pub struct Runner {
 }
 
 /// Runner Application
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RunnerApplication {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub os: Option<String>,
@@ -10936,7 +10936,7 @@ pub struct RunnerApplication {
     pub filename: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RunnerGroupsEnterprise {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<f64>,
@@ -10954,7 +10954,7 @@ pub struct RunnerGroupsEnterprise {
     pub allows_public_repositories: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RunnerGroupsOrg {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<f64>,
@@ -10977,7 +10977,7 @@ pub struct RunnerGroupsOrg {
     pub allows_public_repositories: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RunnerLabels {     
     /// Unique identifier of the label.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10991,7 +10991,7 @@ pub struct RunnerLabels {
     pub _type: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimEnterpriseGroup {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub schemas: Option<Vec<String>>,
@@ -11009,7 +11009,7 @@ pub struct ScimEnterpriseGroup {
     pub meta: Option<ScimgrouplistenterpriseMeta>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimEnterpriseUser {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub schemas: Option<Vec<String>>,
@@ -11034,7 +11034,7 @@ pub struct ScimEnterpriseUser {
 }
 
 /// Scim Error
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimError {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub message: Option<String>,
@@ -11051,7 +11051,7 @@ pub struct ScimError {
     pub schemas: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimGroupListEnterprise {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub schemas: Option<Vec<String>>,
@@ -11070,7 +11070,7 @@ pub struct ScimGroupListEnterprise {
 }
 
 /// SCIM /Users provisioning endpoints
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimUser {     
     /// SCIM schema used.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -11112,7 +11112,7 @@ pub struct ScimUser {
 }
 
 /// SCIM User List
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimUserList {     
     /// SCIM schema used.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -11131,7 +11131,7 @@ pub struct ScimUserList {
     pub resources: Option<Vec<ScimUser>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimUserListEnterprise {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub schemas: Option<Vec<String>>,
@@ -11149,7 +11149,7 @@ pub struct ScimUserListEnterprise {
     pub resources: Option<Vec<ScimuserlistenterpriseResources>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimenterpriseuserEmails {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub value: Option<String>,
@@ -11160,7 +11160,7 @@ pub struct ScimenterpriseuserEmails {
     pub primary: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimgrouplistenterpriseMembers {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub value: Option<String>,
@@ -11171,7 +11171,7 @@ pub struct ScimgrouplistenterpriseMembers {
     pub display: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimgrouplistenterpriseMeta {     
     #[serde(rename = "resourceType")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -11185,7 +11185,7 @@ pub struct ScimgrouplistenterpriseMeta {
     pub location: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimgrouplistenterpriseResources {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub schemas: Option<Vec<String>>,
@@ -11203,7 +11203,7 @@ pub struct ScimgrouplistenterpriseResources {
     pub meta: Option<ScimgrouplistenterpriseMeta>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimuserEmails {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub value: Option<String>,
@@ -11211,7 +11211,7 @@ pub struct ScimuserEmails {
     pub primary: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimuserGroups {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub value: Option<String>,
@@ -11219,7 +11219,7 @@ pub struct ScimuserGroups {
     pub display: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimuserMeta {     
     #[serde(rename = "resourceType")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -11233,7 +11233,7 @@ pub struct ScimuserMeta {
     pub location: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimuserName {     
     #[serde(rename = "givenName")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -11245,7 +11245,7 @@ pub struct ScimuserName {
     pub formatted: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimuserOperations {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub op: Option<String>,
@@ -11255,7 +11255,7 @@ pub struct ScimuserOperations {
     pub value: Option<Value>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimuserlistenterpriseEmails {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub value: Option<String>,
@@ -11266,7 +11266,7 @@ pub struct ScimuserlistenterpriseEmails {
     pub _type: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimuserlistenterpriseName {     
     #[serde(rename = "givenName")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -11276,7 +11276,7 @@ pub struct ScimuserlistenterpriseName {
     pub family_name: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScimuserlistenterpriseResources {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub schemas: Option<Vec<String>>,
@@ -11300,14 +11300,14 @@ pub struct ScimuserlistenterpriseResources {
     pub meta: Option<ScimgrouplistenterpriseMeta>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Scimv2enterprisesenterpriseGroupsMembers {     
     /// The SCIM user ID for a user.
     #[serde(skip_serializing_if="Option::is_none")]
     pub value: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Scimv2enterprisesenterpriseGroupsscimGroupIdOperations {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub op: Option<String>,
@@ -11317,7 +11317,7 @@ pub struct Scimv2enterprisesenterpriseGroupsscimGroupIdOperations {
     pub value: Option<Value>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Scimv2enterprisesenterpriseUsersEmails {     
     /// The email address.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -11331,13 +11331,13 @@ pub struct Scimv2enterprisesenterpriseUsersEmails {
     pub primary: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Scimv2enterprisesenterpriseUsersGroups {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub value: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Scimv2enterprisesenterpriseUsersName {     
     /// The first name of the user.
     #[serde(rename = "givenName")]
@@ -11349,7 +11349,7 @@ pub struct Scimv2enterprisesenterpriseUsersName {
     pub family_name: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Scimv2organizationsorgUsersEmails {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub value: Option<String>,
@@ -11360,7 +11360,7 @@ pub struct Scimv2organizationsorgUsersEmails {
     pub _type: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Scimv2organizationsorgUsersName {     
     #[serde(rename = "givenName")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -11372,7 +11372,7 @@ pub struct Scimv2organizationsorgUsersName {
     pub formatted: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Scimv2organizationsorgUsersscimUserIdEmails {     
     #[serde(rename = "type")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -11383,7 +11383,7 @@ pub struct Scimv2organizationsorgUsersscimUserIdEmails {
     pub primary: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Scimv2organizationsorgUsersscimUserIdOperations {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub op: Option<String>,
@@ -11393,7 +11393,7 @@ pub struct Scimv2organizationsorgUsersscimUserIdOperations {
     pub value: Option<Value>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScopedInstallation {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub permissions: Option<AppPermissions>,
@@ -11412,11 +11412,11 @@ pub struct ScopedInstallation {
     pub account: Option<SimpleUser>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SearchResultTextMatches {     
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SearchresulttextmatchesInner {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub object_url: Option<String>,
@@ -11430,7 +11430,7 @@ pub struct SearchresulttextmatchesInner {
     pub matches: Option<Vec<Value>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SecretScanningAlert {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub number: Option<AlertNumber>,
@@ -11458,7 +11458,7 @@ pub struct SecretScanningAlert {
 }
 
 /// **Required when the `state` is `resolved`.** The reason for resolving the alert. Can be one of `false_positive`, `wont_fix`, `revoked`, or `used_in_tests`.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SecretScanningAlertResolution {     
 }
 
@@ -11496,7 +11496,7 @@ impl std::str::FromStr for SecretScanningAlertState {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutActionsSetAllowedActionsRepository {     
     /// Whether GitHub-owned actions are allowed. For example, this includes the actions in the `actions` organization.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -11510,12 +11510,12 @@ pub struct PutActionsSetAllowedActionsRepository {
 }
 
 /// The API URL to use to get or set the actions that are allowed to run, when `allowed_actions` is set to `selected`.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SelectedActionsUrl {     
 }
 
 /// Short Blob
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ShortBlob {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -11524,7 +11524,7 @@ pub struct ShortBlob {
 }
 
 /// Short Branch
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ShortBranch {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
@@ -11538,7 +11538,7 @@ pub struct ShortBranch {
     pub protection_url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ShortbranchCommit {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub sha: Option<String>,
@@ -11547,7 +11547,7 @@ pub struct ShortbranchCommit {
 }
 
 /// Simple Commit
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SimpleCommit {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<String>,
@@ -11563,7 +11563,7 @@ pub struct SimpleCommit {
     pub committer: Option<SimplecommitAuthor>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SimpleCommitStatus {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub description: Option<String>,
@@ -11590,7 +11590,7 @@ pub struct SimpleCommitStatus {
 }
 
 /// Simple User
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SimpleUser {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
@@ -11633,7 +11633,7 @@ pub struct SimpleUser {
     pub starred_at: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SimplecommitAuthor {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
@@ -11642,7 +11642,7 @@ pub struct SimplecommitAuthor {
 }
 
 /// Stargazer
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Stargazer {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub starred_at: Option<chrono::DateTime<chrono::Utc>>,
@@ -11651,7 +11651,7 @@ pub struct Stargazer {
 }
 
 /// Starred Repository
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct StarredRepository {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub starred_at: Option<chrono::DateTime<chrono::Utc>>,
@@ -11660,7 +11660,7 @@ pub struct StarredRepository {
 }
 
 /// The status of a commit.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Status {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -11687,7 +11687,7 @@ pub struct Status {
 }
 
 /// Status Check Policy
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct StatusCheckPolicy {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -11700,7 +11700,7 @@ pub struct StatusCheckPolicy {
 }
 
 /// Tag
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Tag {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
@@ -11715,7 +11715,7 @@ pub struct Tag {
 }
 
 /// Groups of organization members that gives permissions on specified repositories.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Team {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -11744,7 +11744,7 @@ pub struct Team {
 }
 
 /// A team discussion is a persistent record of a free-form conversation within a team.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TeamDiscussion {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub author: Option<SimpleUser>,
@@ -11791,7 +11791,7 @@ pub struct TeamDiscussion {
 }
 
 /// A reply to a discussion within a team.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TeamDiscussionComment {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub author: Option<SimpleUser>,
@@ -11825,7 +11825,7 @@ pub struct TeamDiscussionComment {
 }
 
 /// Groups of organization members that gives permissions on specified repositories.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TeamFull {     
     /// Unique identifier of the team
     #[serde(skip_serializing_if="Option::is_none")]
@@ -11872,7 +11872,7 @@ pub struct TeamFull {
 }
 
 /// Team Membership
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TeamMembership {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -11884,7 +11884,7 @@ pub struct TeamMembership {
 }
 
 /// A team's access to a project.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TeamProject {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub owner_url: Option<String>,
@@ -11923,7 +11923,7 @@ pub struct TeamProject {
 }
 
 /// A team's access to a repository.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TeamRepository {     
     /// Unique identifier of the repository
     #[serde(skip_serializing_if="Option::is_none")]
@@ -12116,7 +12116,7 @@ pub struct TeamRepository {
 }
 
 /// Groups of organization members that gives permissions on specified repositories.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TeamSimple {     
     /// Unique identifier of the team
     #[serde(skip_serializing_if="Option::is_none")]
@@ -12151,7 +12151,7 @@ pub struct TeamSimple {
     pub ldap_dn: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TeamprojectPermissions {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub read: Option<bool>,
@@ -12161,7 +12161,7 @@ pub struct TeamprojectPermissions {
     pub admin: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TeamsteamIdteamsyncgroupmappingsGroups {     
     /// ID of the IdP group.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -12181,7 +12181,7 @@ pub struct TeamsteamIdteamsyncgroupmappingsGroups {
 }
 
 /// Thread
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Thread {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<String>,
@@ -12203,7 +12203,7 @@ pub struct Thread {
     pub subscription_url: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ThreadSubject {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub title: Option<String>,
@@ -12217,7 +12217,7 @@ pub struct ThreadSubject {
 }
 
 /// Thread Subscription
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ThreadSubscription {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub subscribed: Option<bool>,
@@ -12236,14 +12236,14 @@ pub struct ThreadSubscription {
 }
 
 /// A topic aggregates entities that are related to a subject.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Topic {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub names: Option<Vec<String>>,
 }
 
 /// Topic Search Result Item
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TopicSearchResultItem {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
@@ -12279,13 +12279,13 @@ pub struct TopicSearchResultItem {
     pub aliases: Option<Vec<TopicsearchresultitemRelated>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TopicsearchresultitemRelated {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub topic_relation: Option<TopicsearchresultitemTopicRelation>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TopicsearchresultitemTopicRelation {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -12297,7 +12297,7 @@ pub struct TopicsearchresultitemTopicRelation {
     pub relation_type: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Traffic {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub timestamp: Option<chrono::DateTime<chrono::Utc>>,
@@ -12308,7 +12308,7 @@ pub struct Traffic {
 }
 
 /// User Marketplace Purchase
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct UserMarketplacePurchase {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub billing_cycle: Option<String>,
@@ -12329,7 +12329,7 @@ pub struct UserMarketplacePurchase {
 }
 
 /// User Search Result Item
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct UserSearchResultItem {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
@@ -12403,7 +12403,7 @@ pub struct UserSearchResultItem {
 }
 
 /// Validation Error
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ValidationError {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub message: Option<String>,
@@ -12414,7 +12414,7 @@ pub struct ValidationError {
 }
 
 /// Validation Error Simple
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ValidationErrorSimple {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub message: Option<String>,
@@ -12424,7 +12424,7 @@ pub struct ValidationErrorSimple {
     pub errors: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ValidationerrorErrors {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub resource: Option<String>,
@@ -12440,7 +12440,7 @@ pub struct ValidationerrorErrors {
     pub value: Option<Value>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Verification {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub verified: Option<bool>,
@@ -12453,7 +12453,7 @@ pub struct Verification {
 }
 
 /// View Traffic
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ViewTraffic {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub count: Option<i64>,
@@ -12467,7 +12467,7 @@ pub struct ViewTraffic {
 pub type WaitTimer = i32;
 
 /// Configuration object of the webhook
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WebhookConfig {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<WebhookConfigUrl>,
@@ -12480,27 +12480,27 @@ pub struct WebhookConfig {
 }
 
 /// The media type used to serialize the payloads. Supported values include `json` and `form`. The default is `form`.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WebhookConfigContentType {     
 }
 
 /// Determines whether the SSL certificate of the host for `url` will be verified when delivering payloads. Supported values include `0` (verification is performed) and `1` (verification is not performed). The default is `0`. **We strongly recommend not setting this to `1` as you are subject to man-in-the-middle and other attacks.**
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WebhookConfigInsecureSsl {     
 }
 
 /// If provided, the `secret` will be used as the `key` to generate the HMAC hex digest value for [delivery signature headers](https://docs.github.com/webhooks/event-payloads/#delivery-headers).
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WebhookConfigSecret {     
 }
 
 /// The URL to which the payloads will be delivered.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WebhookConfigUrl {     
 }
 
 /// A GitHub Actions workflow
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Workflow {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -12548,7 +12548,7 @@ impl Display for WorkflowId {
 }
 
 /// An invocation of a workflow
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WorkflowRun {     
     /// The ID of the workflow run.
     #[serde(skip_serializing_if="Option::is_none")]
@@ -12618,7 +12618,7 @@ pub struct WorkflowRun {
 }
 
 /// Workflow Run Usage
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WorkflowRunUsage {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub billable: Option<WorkflowrunusageBillable>,
@@ -12627,13 +12627,13 @@ pub struct WorkflowRunUsage {
 }
 
 /// Workflow Usage
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WorkflowUsage {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub billable: Option<WorkflowusageBillable>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WorkflowrunusageBillable {     
     #[serde(rename = "UBUNTU")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -12646,7 +12646,7 @@ pub struct WorkflowrunusageBillable {
     pub windows: Option<WorkflowrunusageBillableUbuntu>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WorkflowrunusageBillableUbuntu {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_ms: Option<i64>,
@@ -12654,7 +12654,7 @@ pub struct WorkflowrunusageBillableUbuntu {
     pub jobs: Option<i64>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WorkflowusageBillable {     
     #[serde(rename = "UBUNTU")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -12667,7 +12667,7 @@ pub struct WorkflowusageBillable {
     pub windows: Option<WorkflowusageBillableUbuntu>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WorkflowusageBillableUbuntu {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total_ms: Option<i64>,
