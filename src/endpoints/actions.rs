@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
+use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -2261,7 +2261,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsAddRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }),
@@ -2306,7 +2306,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsAddRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }),
@@ -2344,7 +2344,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 409 => Err(ActionsAddSelectedRepoToOrgSecretError::Status409),
@@ -2384,7 +2384,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 409 => Err(ActionsAddSelectedRepoToOrgSecretError::Status409),
@@ -2429,7 +2429,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsAddSelfHostedRunnerToGroupForOrgError::Generic { code }),
@@ -2474,7 +2474,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsAddSelfHostedRunnerToGroupForOrgError::Generic { code }),
@@ -2512,7 +2512,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsCancelWorkflowRunError::Generic { code }),
@@ -2551,7 +2551,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsCancelWorkflowRunError::Generic { code }),
@@ -2663,7 +2663,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 204 => Err(ActionsCreateOrUpdateEnvironmentSecretError::Status204),
@@ -2777,7 +2777,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 204 => Err(ActionsCreateOrUpdateEnvironmentSecretError::Status204),
@@ -2890,7 +2890,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 204 => Err(ActionsCreateOrUpdateOrgSecretError::Status204),
@@ -3004,7 +3004,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 204 => Err(ActionsCreateOrUpdateOrgSecretError::Status204),
@@ -3117,7 +3117,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 204 => Err(ActionsCreateOrUpdateRepoSecretError::Status204),
@@ -3231,7 +3231,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 204 => Err(ActionsCreateOrUpdateRepoSecretError::Status204),
@@ -3280,7 +3280,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsCreateRegistrationTokenForOrgError::Generic { code }),
@@ -3329,7 +3329,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsCreateRegistrationTokenForOrgError::Generic { code }),
@@ -3376,7 +3376,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsCreateRegistrationTokenForRepoError::Generic { code }),
@@ -3424,7 +3424,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsCreateRegistrationTokenForRepoError::Generic { code }),
@@ -3473,7 +3473,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsCreateRemoveTokenForOrgError::Generic { code }),
@@ -3523,7 +3523,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsCreateRemoveTokenForOrgError::Generic { code }),
@@ -3570,7 +3570,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsCreateRemoveTokenForRepoError::Generic { code }),
@@ -3618,7 +3618,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsCreateRemoveTokenForRepoError::Generic { code }),
@@ -3660,7 +3660,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsCreateSelfHostedRunnerGroupForOrgError::Generic { code }),
@@ -3703,7 +3703,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsCreateSelfHostedRunnerGroupForOrgError::Generic { code }),
@@ -3745,7 +3745,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsCreateWorkflowDispatchError::Generic { code }),
@@ -3788,7 +3788,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsCreateWorkflowDispatchError::Generic { code }),
@@ -3826,7 +3826,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteArtifactError::Generic { code }),
@@ -3865,7 +3865,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteArtifactError::Generic { code }),
@@ -3903,7 +3903,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteEnvironmentSecretError::Generic { code }),
@@ -3942,7 +3942,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteEnvironmentSecretError::Generic { code }),
@@ -3980,7 +3980,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteOrgSecretError::Generic { code }),
@@ -4019,7 +4019,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteOrgSecretError::Generic { code }),
@@ -4057,7 +4057,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteRepoSecretError::Generic { code }),
@@ -4096,7 +4096,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteRepoSecretError::Generic { code }),
@@ -4136,7 +4136,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteSelfHostedRunnerFromOrgError::Generic { code }),
@@ -4177,7 +4177,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteSelfHostedRunnerFromOrgError::Generic { code }),
@@ -4218,7 +4218,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteSelfHostedRunnerFromRepoError::Generic { code }),
@@ -4260,7 +4260,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteSelfHostedRunnerFromRepoError::Generic { code }),
@@ -4302,7 +4302,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteSelfHostedRunnerGroupFromOrgError::Generic { code }),
@@ -4345,7 +4345,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteSelfHostedRunnerGroupFromOrgError::Generic { code }),
@@ -4385,7 +4385,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteWorkflowRunError::Generic { code }),
@@ -4426,7 +4426,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteWorkflowRunError::Generic { code }),
@@ -4464,7 +4464,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteWorkflowRunLogsError::Generic { code }),
@@ -4503,7 +4503,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteWorkflowRunLogsError::Generic { code }),
@@ -4543,7 +4543,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDisableSelectedRepositoryGithubActionsOrganizationError::Generic { code }),
@@ -4584,7 +4584,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDisableSelectedRepositoryGithubActionsOrganizationError::Generic { code }),
@@ -4624,7 +4624,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDisableWorkflowError::Generic { code }),
@@ -4665,7 +4665,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDisableWorkflowError::Generic { code }),
@@ -4706,7 +4706,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 302 => Err(ActionsDownloadArtifactError::Status302),
@@ -4749,7 +4749,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 302 => Err(ActionsDownloadArtifactError::Status302),
@@ -4791,7 +4791,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 302 => Err(ActionsDownloadJobLogsForWorkflowRunError::Status302),
@@ -4834,7 +4834,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 302 => Err(ActionsDownloadJobLogsForWorkflowRunError::Status302),
@@ -4876,7 +4876,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 302 => Err(ActionsDownloadWorkflowRunLogsError::Status302),
@@ -4919,7 +4919,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 302 => Err(ActionsDownloadWorkflowRunLogsError::Status302),
@@ -4960,7 +4960,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsEnableSelectedRepositoryGithubActionsOrganizationError::Generic { code }),
@@ -5001,7 +5001,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsEnableSelectedRepositoryGithubActionsOrganizationError::Generic { code }),
@@ -5041,7 +5041,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsEnableWorkflowError::Generic { code }),
@@ -5082,7 +5082,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsEnableWorkflowError::Generic { code }),
@@ -5122,7 +5122,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetAllowedActionsOrganizationError::Generic { code }),
@@ -5163,7 +5163,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetAllowedActionsOrganizationError::Generic { code }),
@@ -5203,7 +5203,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetAllowedActionsRepositoryError::Generic { code }),
@@ -5244,7 +5244,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetAllowedActionsRepositoryError::Generic { code }),
@@ -5282,7 +5282,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetArtifactError::Generic { code }),
@@ -5321,7 +5321,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetArtifactError::Generic { code }),
@@ -5359,7 +5359,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetEnvironmentPublicKeyError::Generic { code }),
@@ -5398,7 +5398,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetEnvironmentPublicKeyError::Generic { code }),
@@ -5436,7 +5436,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetEnvironmentSecretError::Generic { code }),
@@ -5475,7 +5475,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetEnvironmentSecretError::Generic { code }),
@@ -5515,7 +5515,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetGithubActionsPermissionsOrganizationError::Generic { code }),
@@ -5556,7 +5556,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetGithubActionsPermissionsOrganizationError::Generic { code }),
@@ -5597,7 +5597,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetGithubActionsPermissionsRepositoryError::Generic { code }),
@@ -5639,7 +5639,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetGithubActionsPermissionsRepositoryError::Generic { code }),
@@ -5677,7 +5677,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetJobForWorkflowRunError::Generic { code }),
@@ -5716,7 +5716,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetJobForWorkflowRunError::Generic { code }),
@@ -5754,7 +5754,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetOrgPublicKeyError::Generic { code }),
@@ -5793,7 +5793,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetOrgPublicKeyError::Generic { code }),
@@ -5831,7 +5831,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetOrgSecretError::Generic { code }),
@@ -5870,7 +5870,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetOrgSecretError::Generic { code }),
@@ -5910,7 +5910,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetPendingDeploymentsForRunError::Generic { code }),
@@ -5951,7 +5951,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetPendingDeploymentsForRunError::Generic { code }),
@@ -5989,7 +5989,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetRepoPublicKeyError::Generic { code }),
@@ -6028,7 +6028,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetRepoPublicKeyError::Generic { code }),
@@ -6066,7 +6066,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetRepoSecretError::Generic { code }),
@@ -6105,7 +6105,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetRepoSecretError::Generic { code }),
@@ -6143,7 +6143,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetReviewsForRunError::Generic { code }),
@@ -6182,7 +6182,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetReviewsForRunError::Generic { code }),
@@ -6222,7 +6222,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetSelfHostedRunnerForOrgError::Generic { code }),
@@ -6263,7 +6263,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetSelfHostedRunnerForOrgError::Generic { code }),
@@ -6304,7 +6304,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetSelfHostedRunnerForRepoError::Generic { code }),
@@ -6346,7 +6346,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetSelfHostedRunnerForRepoError::Generic { code }),
@@ -6388,7 +6388,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetSelfHostedRunnerGroupForOrgError::Generic { code }),
@@ -6431,7 +6431,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetSelfHostedRunnerGroupForOrgError::Generic { code }),
@@ -6469,7 +6469,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetWorkflowError::Generic { code }),
@@ -6508,7 +6508,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetWorkflowError::Generic { code }),
@@ -6546,7 +6546,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetWorkflowRunError::Generic { code }),
@@ -6585,7 +6585,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetWorkflowRunError::Generic { code }),
@@ -6625,7 +6625,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetWorkflowRunUsageError::Generic { code }),
@@ -6666,7 +6666,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetWorkflowRunUsageError::Generic { code }),
@@ -6706,7 +6706,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetWorkflowUsageError::Generic { code }),
@@ -6747,7 +6747,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetWorkflowUsageError::Generic { code }),
@@ -6789,7 +6789,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListArtifactsForRepoError::Generic { code }),
@@ -6833,7 +6833,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListArtifactsForRepoError::Generic { code }),
@@ -6875,7 +6875,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListEnvironmentSecretsError::Generic { code }),
@@ -6919,7 +6919,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListEnvironmentSecretsError::Generic { code }),
@@ -6961,7 +6961,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListJobsForWorkflowRunError::Generic { code }),
@@ -7005,7 +7005,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListJobsForWorkflowRunError::Generic { code }),
@@ -7047,7 +7047,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListOrgSecretsError::Generic { code }),
@@ -7091,7 +7091,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListOrgSecretsError::Generic { code }),
@@ -7137,7 +7137,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }),
@@ -7185,7 +7185,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }),
@@ -7227,7 +7227,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListRepoSecretsError::Generic { code }),
@@ -7271,7 +7271,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListRepoSecretsError::Generic { code }),
@@ -7313,7 +7313,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListRepoWorkflowsError::Generic { code }),
@@ -7357,7 +7357,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListRepoWorkflowsError::Generic { code }),
@@ -7397,7 +7397,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListRunnerApplicationsForOrgError::Generic { code }),
@@ -7438,7 +7438,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListRunnerApplicationsForOrgError::Generic { code }),
@@ -7478,7 +7478,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListRunnerApplicationsForRepoError::Generic { code }),
@@ -7519,7 +7519,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListRunnerApplicationsForRepoError::Generic { code }),
@@ -7561,7 +7561,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListSelectedReposForOrgSecretError::Generic { code }),
@@ -7605,7 +7605,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListSelectedReposForOrgSecretError::Generic { code }),
@@ -7649,7 +7649,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationError::Generic { code }),
@@ -7695,7 +7695,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationError::Generic { code }),
@@ -7741,7 +7741,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListSelfHostedRunnerGroupsForOrgError::Generic { code }),
@@ -7789,7 +7789,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListSelfHostedRunnerGroupsForOrgError::Generic { code }),
@@ -7833,7 +7833,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListSelfHostedRunnersForOrgError::Generic { code }),
@@ -7879,7 +7879,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListSelfHostedRunnersForOrgError::Generic { code }),
@@ -7921,7 +7921,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListSelfHostedRunnersForRepoError::Generic { code }),
@@ -7965,7 +7965,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListSelfHostedRunnersForRepoError::Generic { code }),
@@ -8011,7 +8011,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListSelfHostedRunnersInGroupForOrgError::Generic { code }),
@@ -8059,7 +8059,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListSelfHostedRunnersInGroupForOrgError::Generic { code }),
@@ -8101,7 +8101,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListWorkflowRunArtifactsError::Generic { code }),
@@ -8145,7 +8145,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListWorkflowRunArtifactsError::Generic { code }),
@@ -8189,7 +8189,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListWorkflowRunsError::Generic { code }),
@@ -8235,7 +8235,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListWorkflowRunsError::Generic { code }),
@@ -8279,7 +8279,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListWorkflowRunsForRepoError::Generic { code }),
@@ -8325,7 +8325,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListWorkflowRunsForRepoError::Generic { code }),
@@ -8363,7 +8363,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsReRunWorkflowError::Generic { code }),
@@ -8402,7 +8402,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsReRunWorkflowError::Generic { code }),
@@ -8445,7 +8445,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsRemoveRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }),
@@ -8489,7 +8489,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsRemoveRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }),
@@ -8527,7 +8527,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 409 => Err(ActionsRemoveSelectedRepoFromOrgSecretError::Status409),
@@ -8567,7 +8567,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 409 => Err(ActionsRemoveSelectedRepoFromOrgSecretError::Status409),
@@ -8611,7 +8611,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsRemoveSelfHostedRunnerFromGroupForOrgError::Generic { code }),
@@ -8655,7 +8655,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsRemoveSelfHostedRunnerFromGroupForOrgError::Generic { code }),
@@ -8695,7 +8695,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsReviewPendingDeploymentsForRunError::Generic { code }),
@@ -8736,7 +8736,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsReviewPendingDeploymentsForRunError::Generic { code }),
@@ -8780,7 +8780,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetAllowedActionsOrganizationError::Generic { code }),
@@ -8825,7 +8825,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetAllowedActionsOrganizationError::Generic { code }),
@@ -8869,7 +8869,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetAllowedActionsRepositoryError::Generic { code }),
@@ -8914,7 +8914,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetAllowedActionsRepositoryError::Generic { code }),
@@ -8956,7 +8956,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetGithubActionsPermissionsOrganizationError::Generic { code }),
@@ -8999,7 +8999,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetGithubActionsPermissionsOrganizationError::Generic { code }),
@@ -9041,7 +9041,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetGithubActionsPermissionsRepositoryError::Generic { code }),
@@ -9084,7 +9084,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetGithubActionsPermissionsRepositoryError::Generic { code }),
@@ -9126,7 +9126,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }),
@@ -9169,7 +9169,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }),
@@ -9207,7 +9207,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetSelectedReposForOrgSecretError::Generic { code }),
@@ -9246,7 +9246,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetSelectedReposForOrgSecretError::Generic { code }),
@@ -9286,7 +9286,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetSelectedRepositoriesEnabledGithubActionsOrganizationError::Generic { code }),
@@ -9327,7 +9327,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetSelectedRepositoriesEnabledGithubActionsOrganizationError::Generic { code }),
@@ -9369,7 +9369,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetSelfHostedRunnersInGroupForOrgError::Generic { code }),
@@ -9412,7 +9412,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetSelfHostedRunnersInGroupForOrgError::Generic { code }),
@@ -9454,7 +9454,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsUpdateSelfHostedRunnerGroupForOrgError::Generic { code }),
@@ -9497,7 +9497,7 @@ impl<'api> Actions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActionsUpdateSelfHostedRunnerGroupForOrgError::Generic { code }),

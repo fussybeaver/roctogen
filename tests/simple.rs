@@ -12,20 +12,20 @@ use roctogen::api::{self, repos};
 use roctogen::auth::Auth;
 use roctogen::models;
 
+use log::{info, debug};
+
 #[cfg(target_arch = "wasm32")]
 wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
 
 #[cfg(target_arch = "wasm32")]
-// A macro to provide `println!(..)`-style syntax for `console.log` logging.
-macro_rules! log {
-    ( $( $t:tt )* ) => {
-        web_sys::console::log_1(&format!( $( $t )* ).into());
-    }
+fn init_log() {
+    console_log::init_with_level(log::Level::Debug).expect("error initializing logger");
 }
 
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen_test]
 async fn get_wasm_fail() {
+    init_log();
 
     let auth = Auth::None;
 
@@ -35,7 +35,7 @@ async fn get_wasm_fail() {
     match &req {
         Ok(_) => {},
         Err(repos::ReposListCommitsError::Status404(e)) => {
-            log!("{}", e.message.as_ref().unwrap());
+            debug!("{}", e.message.as_ref().unwrap());
         }
         Err(_) => {
             assert!(false);
@@ -57,7 +57,7 @@ fn get_sync_fail() {
     match &req {
         Ok(_) => {},
         Err(repos::ReposListCommitsError::Status404(e)) => {
-            println!("{}", e.message.as_ref().unwrap());
+            debug!("{}", e.message.as_ref().unwrap());
         }
         Err(_) => {
             assert!(false);
@@ -70,6 +70,7 @@ fn get_sync_fail() {
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen_test]
 async fn get_wasm_ok() {
+    init_log();
 
     let auth = Auth::None;
     let per_page = api::PerPage::new(1);
@@ -82,7 +83,31 @@ async fn get_wasm_ok() {
         Ok(ref repos) => {
             assert!(!&repos.is_empty());
         },
-        Err(ref e) => log!("err: {}", e)
+        Err(ref e) => debug!("err: {}", e)
+    };
+
+    assert!(req.is_ok());
+}
+
+#[cfg(target_arch = "x86_64")]
+#[test]
+fn get_async_ok() {
+
+    let req = futures_lite::future::block_on(async {
+
+        let auth = Auth::None;
+        let per_page = api::PerPage::new(1);
+        
+        let mut params: repos::ReposListCommitsParams = per_page.as_ref().into();
+        params = params.author("fussybeaver").page(2);
+        repos::new(&auth).list_commits_async("fussybeaver", "bollard", Some(params)).await
+    });
+
+    match req {
+        Ok(ref repos) => {
+            assert!(!&repos.is_empty());
+        },
+        Err(ref e) => debug!("err: {}", e)
     };
 
     assert!(req.is_ok());
@@ -242,16 +267,15 @@ fn actions_sync_ok() {
 fn rate_limit_sync_ok() {
 
     let auth = Auth::None;
-    let per_page = api::PerPage::new(1);
     let rate_limit = rate_limit::new(&auth);
     let req = rate_limit.get();
 
     match &req {
         Ok(x) => {
-            println!("{:#?}", x);
+            info!("{:#?}", x);
         },
         Err(x) => {
-            println!("{:#?}", x);
+            debug!("{:#?}", x);
             assert!(false);
         }
     };
@@ -263,6 +287,7 @@ fn rate_limit_sync_ok() {
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen_test]
 async fn post_wasm_fail() {
+    init_log();
 
     let auth = Auth::None;
 

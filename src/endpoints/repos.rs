@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
+use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -4666,12 +4666,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposAcceptInvitationError::Status403(github_response.to_json()?)),
-                409 => Err(ReposAcceptInvitationError::Status409(github_response.to_json()?)),
-                404 => Err(ReposAcceptInvitationError::Status404(github_response.to_json()?)),
+                403 => Err(ReposAcceptInvitationError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(ReposAcceptInvitationError::Status409(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReposAcceptInvitationError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(ReposAcceptInvitationError::Status304),
                 code => Err(ReposAcceptInvitationError::Generic { code }),
             }
@@ -4707,12 +4707,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposAcceptInvitationError::Status403(github_response.to_json()?)),
-                409 => Err(ReposAcceptInvitationError::Status409(github_response.to_json()?)),
-                404 => Err(ReposAcceptInvitationError::Status404(github_response.to_json()?)),
+                403 => Err(ReposAcceptInvitationError::Status403(crate::adapters::to_json(github_response)?)),
+                409 => Err(ReposAcceptInvitationError::Status409(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReposAcceptInvitationError::Status404(crate::adapters::to_json(github_response)?)),
                 304 => Err(ReposAcceptInvitationError::Status304),
                 code => Err(ReposAcceptInvitationError::Generic { code }),
             }
@@ -4755,10 +4755,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposAddAppAccessRestrictionsError::Status422(github_response.to_json()?)),
+                422 => Err(ReposAddAppAccessRestrictionsError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposAddAppAccessRestrictionsError::Generic { code }),
             }
         }
@@ -4801,10 +4801,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposAddAppAccessRestrictionsError::Status422(github_response.to_json()?)),
+                422 => Err(ReposAddAppAccessRestrictionsError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposAddAppAccessRestrictionsError::Generic { code }),
             }
         }
@@ -4850,12 +4850,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 204 => Err(ReposAddCollaboratorError::Status204),
-                422 => Err(ReposAddCollaboratorError::Status422(github_response.to_json()?)),
-                403 => Err(ReposAddCollaboratorError::Status403(github_response.to_json()?)),
+                422 => Err(ReposAddCollaboratorError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(ReposAddCollaboratorError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposAddCollaboratorError::Generic { code }),
             }
         }
@@ -4902,12 +4902,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 204 => Err(ReposAddCollaboratorError::Status204),
-                422 => Err(ReposAddCollaboratorError::Status422(github_response.to_json()?)),
-                403 => Err(ReposAddCollaboratorError::Status403(github_response.to_json()?)),
+                422 => Err(ReposAddCollaboratorError::Status422(crate::adapters::to_json(github_response)?)),
+                403 => Err(ReposAddCollaboratorError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposAddCollaboratorError::Generic { code }),
             }
         }
@@ -4943,12 +4943,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposAddStatusCheckContextsError::Status422(github_response.to_json()?)),
-                403 => Err(ReposAddStatusCheckContextsError::Status403(github_response.to_json()?)),
-                404 => Err(ReposAddStatusCheckContextsError::Status404(github_response.to_json()?)),
+                422 => Err(ReposAddStatusCheckContextsError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(ReposAddStatusCheckContextsError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReposAddStatusCheckContextsError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposAddStatusCheckContextsError::Generic { code }),
             }
         }
@@ -4985,12 +4985,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposAddStatusCheckContextsError::Status422(github_response.to_json()?)),
-                403 => Err(ReposAddStatusCheckContextsError::Status403(github_response.to_json()?)),
-                404 => Err(ReposAddStatusCheckContextsError::Status404(github_response.to_json()?)),
+                422 => Err(ReposAddStatusCheckContextsError::Status422(crate::adapters::to_json(github_response)?)),
+                403 => Err(ReposAddStatusCheckContextsError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReposAddStatusCheckContextsError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposAddStatusCheckContextsError::Generic { code }),
             }
         }
@@ -5032,10 +5032,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposAddTeamAccessRestrictionsError::Status422(github_response.to_json()?)),
+                422 => Err(ReposAddTeamAccessRestrictionsError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposAddTeamAccessRestrictionsError::Generic { code }),
             }
         }
@@ -5078,10 +5078,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposAddTeamAccessRestrictionsError::Status422(github_response.to_json()?)),
+                422 => Err(ReposAddTeamAccessRestrictionsError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposAddTeamAccessRestrictionsError::Generic { code }),
             }
         }
@@ -5123,10 +5123,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposAddUserAccessRestrictionsError::Status422(github_response.to_json()?)),
+                422 => Err(ReposAddUserAccessRestrictionsError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposAddUserAccessRestrictionsError::Generic { code }),
             }
         }
@@ -5169,10 +5169,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposAddUserAccessRestrictionsError::Status422(github_response.to_json()?)),
+                422 => Err(ReposAddUserAccessRestrictionsError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposAddUserAccessRestrictionsError::Generic { code }),
             }
         }
@@ -5210,7 +5210,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 404 => Err(ReposCheckCollaboratorError::Status404),
@@ -5252,7 +5252,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 404 => Err(ReposCheckCollaboratorError::Status404),
@@ -5294,7 +5294,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 404 => Err(ReposCheckVulnerabilityAlertsError::Status404),
@@ -5337,7 +5337,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 404 => Err(ReposCheckVulnerabilityAlertsError::Status404),
@@ -5416,11 +5416,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                500 => Err(ReposCompareCommitsError::Status500(github_response.to_json()?)),
-                404 => Err(ReposCompareCommitsError::Status404(github_response.to_json()?)),
+                500 => Err(ReposCompareCommitsError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReposCompareCommitsError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposCompareCommitsError::Generic { code }),
             }
         }
@@ -5497,11 +5497,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                500 => Err(ReposCompareCommitsError::Status500(github_response.to_json()?)),
-                404 => Err(ReposCompareCommitsError::Status404(github_response.to_json()?)),
+                500 => Err(ReposCompareCommitsError::Status500(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReposCompareCommitsError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposCompareCommitsError::Generic { code }),
             }
         }
@@ -5539,11 +5539,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposCreateCommitCommentError::Status403(github_response.to_json()?)),
-                422 => Err(ReposCreateCommitCommentError::Status422(github_response.to_json()?)),
+                403 => Err(ReposCreateCommitCommentError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReposCreateCommitCommentError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposCreateCommitCommentError::Generic { code }),
             }
         }
@@ -5582,11 +5582,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposCreateCommitCommentError::Status403(github_response.to_json()?)),
-                422 => Err(ReposCreateCommitCommentError::Status422(github_response.to_json()?)),
+                403 => Err(ReposCreateCommitCommentError::Status403(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReposCreateCommitCommentError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposCreateCommitCommentError::Generic { code }),
             }
         }
@@ -5627,10 +5627,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCreateCommitSignatureProtectionError::Status404(github_response.to_json()?)),
+                404 => Err(ReposCreateCommitSignatureProtectionError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposCreateCommitSignatureProtectionError::Generic { code }),
             }
         }
@@ -5672,10 +5672,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCreateCommitSignatureProtectionError::Status404(github_response.to_json()?)),
+                404 => Err(ReposCreateCommitSignatureProtectionError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposCreateCommitSignatureProtectionError::Generic { code }),
             }
         }
@@ -5713,7 +5713,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposCreateCommitStatusError::Generic { code }),
@@ -5754,7 +5754,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposCreateCommitStatusError::Generic { code }),
@@ -5792,10 +5792,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCreateDeployKeyError::Status422(github_response.to_json()?)),
+                422 => Err(ReposCreateDeployKeyError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposCreateDeployKeyError::Generic { code }),
             }
         }
@@ -5832,10 +5832,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCreateDeployKeyError::Status422(github_response.to_json()?)),
+                422 => Err(ReposCreateDeployKeyError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposCreateDeployKeyError::Generic { code }),
             }
         }
@@ -5918,12 +5918,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                202 => Err(ReposCreateDeploymentError::Status202(github_response.to_json()?)),
-                409 => Err(ReposCreateDeploymentError::Status409(github_response.to_json()?)),
-                422 => Err(ReposCreateDeploymentError::Status422(github_response.to_json()?)),
+                202 => Err(ReposCreateDeploymentError::Status202(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(ReposCreateDeploymentError::Status409(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReposCreateDeploymentError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposCreateDeploymentError::Generic { code }),
             }
         }
@@ -6007,12 +6007,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                202 => Err(ReposCreateDeploymentError::Status202(github_response.to_json()?)),
-                409 => Err(ReposCreateDeploymentError::Status409(github_response.to_json()?)),
-                422 => Err(ReposCreateDeploymentError::Status422(github_response.to_json()?)),
+                202 => Err(ReposCreateDeploymentError::Status202(crate::adapters::to_json(github_response)?)),
+                409 => Err(ReposCreateDeploymentError::Status409(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReposCreateDeploymentError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposCreateDeploymentError::Generic { code }),
             }
         }
@@ -6055,10 +6055,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCreateDeploymentStatusError::Status422(github_response.to_json()?)),
+                422 => Err(ReposCreateDeploymentStatusError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposCreateDeploymentStatusError::Generic { code }),
             }
         }
@@ -6102,10 +6102,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCreateDeploymentStatusError::Status422(github_response.to_json()?)),
+                422 => Err(ReposCreateDeploymentStatusError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposCreateDeploymentStatusError::Generic { code }),
             }
         }
@@ -6150,10 +6150,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCreateDispatchEventError::Status422(github_response.to_json()?)),
+                422 => Err(ReposCreateDispatchEventError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposCreateDispatchEventError::Generic { code }),
             }
         }
@@ -6199,10 +6199,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCreateDispatchEventError::Status422(github_response.to_json()?)),
+                422 => Err(ReposCreateDispatchEventError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposCreateDispatchEventError::Generic { code }),
             }
         }
@@ -6250,15 +6250,15 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                401 => Err(ReposCreateForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                401 => Err(ReposCreateForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(ReposCreateForAuthenticatedUserError::Status304),
-                404 => Err(ReposCreateForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(ReposCreateForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                422 => Err(ReposCreateForAuthenticatedUserError::Status422(github_response.to_json()?)),
-                400 => Err(ReposCreateForAuthenticatedUserError::Status400(github_response.to_json()?)),
+                404 => Err(ReposCreateForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(ReposCreateForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReposCreateForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                400 => Err(ReposCreateForAuthenticatedUserError::Status400(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposCreateForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -6307,15 +6307,15 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                401 => Err(ReposCreateForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                401 => Err(ReposCreateForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 304 => Err(ReposCreateForAuthenticatedUserError::Status304),
-                404 => Err(ReposCreateForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(ReposCreateForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                422 => Err(ReposCreateForAuthenticatedUserError::Status422(github_response.to_json()?)),
-                400 => Err(ReposCreateForAuthenticatedUserError::Status400(github_response.to_json()?)),
+                404 => Err(ReposCreateForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(ReposCreateForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReposCreateForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
+                400 => Err(ReposCreateForAuthenticatedUserError::Status400(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposCreateForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -6357,13 +6357,13 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                400 => Err(ReposCreateForkError::Status400(github_response.to_json()?)),
-                422 => Err(ReposCreateForkError::Status422(github_response.to_json()?)),
-                403 => Err(ReposCreateForkError::Status403(github_response.to_json()?)),
-                404 => Err(ReposCreateForkError::Status404(github_response.to_json()?)),
+                400 => Err(ReposCreateForkError::Status400(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReposCreateForkError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(ReposCreateForkError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReposCreateForkError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposCreateForkError::Generic { code }),
             }
         }
@@ -6407,13 +6407,13 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                400 => Err(ReposCreateForkError::Status400(github_response.to_json()?)),
-                422 => Err(ReposCreateForkError::Status422(github_response.to_json()?)),
-                403 => Err(ReposCreateForkError::Status403(github_response.to_json()?)),
-                404 => Err(ReposCreateForkError::Status404(github_response.to_json()?)),
+                400 => Err(ReposCreateForkError::Status400(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReposCreateForkError::Status422(crate::adapters::to_json(github_response)?)),
+                403 => Err(ReposCreateForkError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReposCreateForkError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposCreateForkError::Generic { code }),
             }
         }
@@ -6461,11 +6461,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposCreateInOrgError::Status403(github_response.to_json()?)),
-                422 => Err(ReposCreateInOrgError::Status422(github_response.to_json()?)),
+                403 => Err(ReposCreateInOrgError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReposCreateInOrgError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposCreateInOrgError::Generic { code }),
             }
         }
@@ -6514,11 +6514,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposCreateInOrgError::Status403(github_response.to_json()?)),
-                422 => Err(ReposCreateInOrgError::Status422(github_response.to_json()?)),
+                403 => Err(ReposCreateInOrgError::Status403(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReposCreateInOrgError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposCreateInOrgError::Generic { code }),
             }
         }
@@ -6560,10 +6560,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCreateOrUpdateEnvironmentError::Status422(github_response.to_json()?)),
+                422 => Err(ReposCreateOrUpdateEnvironmentError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposCreateOrUpdateEnvironmentError::Generic { code }),
             }
         }
@@ -6606,10 +6606,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCreateOrUpdateEnvironmentError::Status422(github_response.to_json()?)),
+                422 => Err(ReposCreateOrUpdateEnvironmentError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposCreateOrUpdateEnvironmentError::Generic { code }),
             }
         }
@@ -6645,13 +6645,13 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReposCreateOrUpdateFileContentsError::Status201(github_response.to_json()?)),
-                404 => Err(ReposCreateOrUpdateFileContentsError::Status404(github_response.to_json()?)),
-                422 => Err(ReposCreateOrUpdateFileContentsError::Status422(github_response.to_json()?)),
-                409 => Err(ReposCreateOrUpdateFileContentsError::Status409(github_response.to_json()?)),
+                201 => Err(ReposCreateOrUpdateFileContentsError::Status201(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReposCreateOrUpdateFileContentsError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReposCreateOrUpdateFileContentsError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(ReposCreateOrUpdateFileContentsError::Status409(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposCreateOrUpdateFileContentsError::Generic { code }),
             }
         }
@@ -6688,13 +6688,13 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReposCreateOrUpdateFileContentsError::Status201(github_response.to_json()?)),
-                404 => Err(ReposCreateOrUpdateFileContentsError::Status404(github_response.to_json()?)),
-                422 => Err(ReposCreateOrUpdateFileContentsError::Status422(github_response.to_json()?)),
-                409 => Err(ReposCreateOrUpdateFileContentsError::Status409(github_response.to_json()?)),
+                201 => Err(ReposCreateOrUpdateFileContentsError::Status201(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReposCreateOrUpdateFileContentsError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReposCreateOrUpdateFileContentsError::Status422(crate::adapters::to_json(github_response)?)),
+                409 => Err(ReposCreateOrUpdateFileContentsError::Status409(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposCreateOrUpdateFileContentsError::Generic { code }),
             }
         }
@@ -6733,12 +6733,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCreatePagesSiteError::Status422(github_response.to_json()?)),
-                415 => Err(ReposCreatePagesSiteError::Status415(github_response.to_json()?)),
-                409 => Err(ReposCreatePagesSiteError::Status409(github_response.to_json()?)),
+                422 => Err(ReposCreatePagesSiteError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                415 => Err(ReposCreatePagesSiteError::Status415(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(ReposCreatePagesSiteError::Status409(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposCreatePagesSiteError::Generic { code }),
             }
         }
@@ -6778,12 +6778,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCreatePagesSiteError::Status422(github_response.to_json()?)),
-                415 => Err(ReposCreatePagesSiteError::Status415(github_response.to_json()?)),
-                409 => Err(ReposCreatePagesSiteError::Status409(github_response.to_json()?)),
+                422 => Err(ReposCreatePagesSiteError::Status422(crate::adapters::to_json(github_response)?)),
+                415 => Err(ReposCreatePagesSiteError::Status415(crate::adapters::to_json(github_response)?)),
+                409 => Err(ReposCreatePagesSiteError::Status409(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposCreatePagesSiteError::Generic { code }),
             }
         }
@@ -6821,10 +6821,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCreateReleaseError::Status422(github_response.to_json()?)),
+                422 => Err(ReposCreateReleaseError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposCreateReleaseError::Generic { code }),
             }
         }
@@ -6863,10 +6863,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCreateReleaseError::Status422(github_response.to_json()?)),
+                422 => Err(ReposCreateReleaseError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposCreateReleaseError::Generic { code }),
             }
         }
@@ -6912,7 +6912,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposCreateUsingTemplateError::Generic { code }),
@@ -6961,7 +6961,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposCreateUsingTemplateError::Generic { code }),
@@ -7000,12 +7000,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCreateWebhookError::Status404(github_response.to_json()?)),
-                422 => Err(ReposCreateWebhookError::Status422(github_response.to_json()?)),
-                403 => Err(ReposCreateWebhookError::Status403(github_response.to_json()?)),
+                404 => Err(ReposCreateWebhookError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReposCreateWebhookError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(ReposCreateWebhookError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposCreateWebhookError::Generic { code }),
             }
         }
@@ -7043,12 +7043,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCreateWebhookError::Status404(github_response.to_json()?)),
-                422 => Err(ReposCreateWebhookError::Status422(github_response.to_json()?)),
-                403 => Err(ReposCreateWebhookError::Status403(github_response.to_json()?)),
+                404 => Err(ReposCreateWebhookError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReposCreateWebhookError::Status422(crate::adapters::to_json(github_response)?)),
+                403 => Err(ReposCreateWebhookError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposCreateWebhookError::Generic { code }),
             }
         }
@@ -7082,13 +7082,13 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                409 => Err(ReposDeclineInvitationError::Status409(github_response.to_json()?)),
+                409 => Err(ReposDeclineInvitationError::Status409(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(ReposDeclineInvitationError::Status304),
-                404 => Err(ReposDeclineInvitationError::Status404(github_response.to_json()?)),
-                403 => Err(ReposDeclineInvitationError::Status403(github_response.to_json()?)),
+                404 => Err(ReposDeclineInvitationError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(ReposDeclineInvitationError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposDeclineInvitationError::Generic { code }),
             }
         }
@@ -7123,13 +7123,13 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                409 => Err(ReposDeclineInvitationError::Status409(github_response.to_json()?)),
+                409 => Err(ReposDeclineInvitationError::Status409(crate::adapters::to_json(github_response)?)),
                 304 => Err(ReposDeclineInvitationError::Status304),
-                404 => Err(ReposDeclineInvitationError::Status404(github_response.to_json()?)),
-                403 => Err(ReposDeclineInvitationError::Status403(github_response.to_json()?)),
+                404 => Err(ReposDeclineInvitationError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(ReposDeclineInvitationError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposDeclineInvitationError::Generic { code }),
             }
         }
@@ -7168,11 +7168,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposDeleteError::Status403(github_response.to_json()?)),
-                404 => Err(ReposDeleteError::Status404(github_response.to_json()?)),
+                403 => Err(ReposDeleteError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReposDeleteError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposDeleteError::Generic { code }),
             }
         }
@@ -7212,11 +7212,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposDeleteError::Status403(github_response.to_json()?)),
-                404 => Err(ReposDeleteError::Status404(github_response.to_json()?)),
+                403 => Err(ReposDeleteError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReposDeleteError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposDeleteError::Generic { code }),
             }
         }
@@ -7254,7 +7254,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteAccessRestrictionsError::Generic { code }),
@@ -7295,7 +7295,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteAccessRestrictionsError::Generic { code }),
@@ -7335,10 +7335,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteAdminBranchProtectionError::Status404(github_response.to_json()?)),
+                404 => Err(ReposDeleteAdminBranchProtectionError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposDeleteAdminBranchProtectionError::Generic { code }),
             }
         }
@@ -7377,10 +7377,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteAdminBranchProtectionError::Status404(github_response.to_json()?)),
+                404 => Err(ReposDeleteAdminBranchProtectionError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposDeleteAdminBranchProtectionError::Generic { code }),
             }
         }
@@ -7416,7 +7416,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteAnEnvironmentError::Generic { code }),
@@ -7455,7 +7455,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteAnEnvironmentError::Generic { code }),
@@ -7493,10 +7493,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposDeleteBranchProtectionError::Status403(github_response.to_json()?)),
+                403 => Err(ReposDeleteBranchProtectionError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposDeleteBranchProtectionError::Generic { code }),
             }
         }
@@ -7533,10 +7533,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposDeleteBranchProtectionError::Status403(github_response.to_json()?)),
+                403 => Err(ReposDeleteBranchProtectionError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposDeleteBranchProtectionError::Generic { code }),
             }
         }
@@ -7570,10 +7570,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteCommitCommentError::Status404(github_response.to_json()?)),
+                404 => Err(ReposDeleteCommitCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposDeleteCommitCommentError::Generic { code }),
             }
         }
@@ -7608,10 +7608,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteCommitCommentError::Status404(github_response.to_json()?)),
+                404 => Err(ReposDeleteCommitCommentError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposDeleteCommitCommentError::Generic { code }),
             }
         }
@@ -7652,10 +7652,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteCommitSignatureProtectionError::Status404(github_response.to_json()?)),
+                404 => Err(ReposDeleteCommitSignatureProtectionError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposDeleteCommitSignatureProtectionError::Generic { code }),
             }
         }
@@ -7697,10 +7697,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteCommitSignatureProtectionError::Status404(github_response.to_json()?)),
+                404 => Err(ReposDeleteCommitSignatureProtectionError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposDeleteCommitSignatureProtectionError::Generic { code }),
             }
         }
@@ -7736,7 +7736,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteDeployKeyError::Generic { code }),
@@ -7775,7 +7775,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteDeployKeyError::Generic { code }),
@@ -7820,11 +7820,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteDeploymentError::Status404(github_response.to_json()?)),
-                422 => Err(ReposDeleteDeploymentError::Status422(github_response.to_json()?)),
+                404 => Err(ReposDeleteDeploymentError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReposDeleteDeploymentError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposDeleteDeploymentError::Generic { code }),
             }
         }
@@ -7868,11 +7868,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteDeploymentError::Status404(github_response.to_json()?)),
-                422 => Err(ReposDeleteDeploymentError::Status422(github_response.to_json()?)),
+                404 => Err(ReposDeleteDeploymentError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReposDeleteDeploymentError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposDeleteDeploymentError::Generic { code }),
             }
         }
@@ -7914,13 +7914,13 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposDeleteFileError::Status422(github_response.to_json()?)),
-                404 => Err(ReposDeleteFileError::Status404(github_response.to_json()?)),
-                409 => Err(ReposDeleteFileError::Status409(github_response.to_json()?)),
-                503 => Err(ReposDeleteFileError::Status503(github_response.to_json()?)),
+                422 => Err(ReposDeleteFileError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReposDeleteFileError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(ReposDeleteFileError::Status409(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(ReposDeleteFileError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposDeleteFileError::Generic { code }),
             }
         }
@@ -7963,13 +7963,13 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposDeleteFileError::Status422(github_response.to_json()?)),
-                404 => Err(ReposDeleteFileError::Status404(github_response.to_json()?)),
-                409 => Err(ReposDeleteFileError::Status409(github_response.to_json()?)),
-                503 => Err(ReposDeleteFileError::Status503(github_response.to_json()?)),
+                422 => Err(ReposDeleteFileError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReposDeleteFileError::Status404(crate::adapters::to_json(github_response)?)),
+                409 => Err(ReposDeleteFileError::Status409(crate::adapters::to_json(github_response)?)),
+                503 => Err(ReposDeleteFileError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposDeleteFileError::Generic { code }),
             }
         }
@@ -8003,7 +8003,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteInvitationError::Generic { code }),
@@ -8040,7 +8040,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteInvitationError::Generic { code }),
@@ -8079,12 +8079,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposDeletePagesSiteError::Status422(github_response.to_json()?)),
-                415 => Err(ReposDeletePagesSiteError::Status415(github_response.to_json()?)),
-                404 => Err(ReposDeletePagesSiteError::Status404(github_response.to_json()?)),
+                422 => Err(ReposDeletePagesSiteError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                415 => Err(ReposDeletePagesSiteError::Status415(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReposDeletePagesSiteError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposDeletePagesSiteError::Generic { code }),
             }
         }
@@ -8122,12 +8122,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposDeletePagesSiteError::Status422(github_response.to_json()?)),
-                415 => Err(ReposDeletePagesSiteError::Status415(github_response.to_json()?)),
-                404 => Err(ReposDeletePagesSiteError::Status404(github_response.to_json()?)),
+                422 => Err(ReposDeletePagesSiteError::Status422(crate::adapters::to_json(github_response)?)),
+                415 => Err(ReposDeletePagesSiteError::Status415(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReposDeletePagesSiteError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposDeletePagesSiteError::Generic { code }),
             }
         }
@@ -8163,10 +8163,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeletePullRequestReviewProtectionError::Status404(github_response.to_json()?)),
+                404 => Err(ReposDeletePullRequestReviewProtectionError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposDeletePullRequestReviewProtectionError::Generic { code }),
             }
         }
@@ -8203,10 +8203,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeletePullRequestReviewProtectionError::Status404(github_response.to_json()?)),
+                404 => Err(ReposDeletePullRequestReviewProtectionError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposDeletePullRequestReviewProtectionError::Generic { code }),
             }
         }
@@ -8242,7 +8242,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteReleaseError::Generic { code }),
@@ -8281,7 +8281,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteReleaseError::Generic { code }),
@@ -8317,7 +8317,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteReleaseAssetError::Generic { code }),
@@ -8354,7 +8354,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteReleaseAssetError::Generic { code }),
@@ -8390,10 +8390,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteWebhookError::Status404(github_response.to_json()?)),
+                404 => Err(ReposDeleteWebhookError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposDeleteWebhookError::Generic { code }),
             }
         }
@@ -8428,10 +8428,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteWebhookError::Status404(github_response.to_json()?)),
+                404 => Err(ReposDeleteWebhookError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposDeleteWebhookError::Generic { code }),
             }
         }
@@ -8470,7 +8470,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposDisableAutomatedSecurityFixesError::Generic { code }),
@@ -8512,7 +8512,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposDisableAutomatedSecurityFixesError::Generic { code }),
@@ -8553,7 +8553,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposDisableVulnerabilityAlertsError::Generic { code }),
@@ -8595,7 +8595,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposDisableVulnerabilityAlertsError::Generic { code }),
@@ -8636,7 +8636,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 302 => Err(ReposDownloadTarballArchiveError::Status302),
@@ -8679,7 +8679,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 302 => Err(ReposDownloadTarballArchiveError::Status302),
@@ -8721,7 +8721,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 302 => Err(ReposDownloadZipballArchiveError::Status302),
@@ -8764,7 +8764,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 302 => Err(ReposDownloadZipballArchiveError::Status302),
@@ -8806,7 +8806,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposEnableAutomatedSecurityFixesError::Generic { code }),
@@ -8848,7 +8848,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposEnableAutomatedSecurityFixesError::Generic { code }),
@@ -8889,7 +8889,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposEnableVulnerabilityAlertsError::Generic { code }),
@@ -8931,7 +8931,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposEnableVulnerabilityAlertsError::Generic { code }),
@@ -8976,11 +8976,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposGetError::Status403(github_response.to_json()?)),
-                404 => Err(ReposGetError::Status404(github_response.to_json()?)),
+                403 => Err(ReposGetError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReposGetError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 301 => Err(ReposGetError::Status301),
                 code => Err(ReposGetError::Generic { code }),
             }
@@ -9025,11 +9025,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposGetError::Status403(github_response.to_json()?)),
-                404 => Err(ReposGetError::Status404(github_response.to_json()?)),
+                403 => Err(ReposGetError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReposGetError::Status404(crate::adapters::to_json(github_response)?)),
                 301 => Err(ReposGetError::Status301),
                 code => Err(ReposGetError::Generic { code }),
             }
@@ -9070,10 +9070,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetAccessRestrictionsError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetAccessRestrictionsError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetAccessRestrictionsError::Generic { code }),
             }
         }
@@ -9114,10 +9114,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetAccessRestrictionsError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetAccessRestrictionsError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetAccessRestrictionsError::Generic { code }),
             }
         }
@@ -9153,7 +9153,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetAdminBranchProtectionError::Generic { code }),
@@ -9192,7 +9192,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetAdminBranchProtectionError::Generic { code }),
@@ -9232,7 +9232,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetAllEnvironmentsError::Generic { code }),
@@ -9273,7 +9273,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetAllEnvironmentsError::Generic { code }),
@@ -9311,10 +9311,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetAllStatusCheckContextsError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetAllStatusCheckContextsError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetAllStatusCheckContextsError::Generic { code }),
             }
         }
@@ -9351,10 +9351,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetAllStatusCheckContextsError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetAllStatusCheckContextsError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetAllStatusCheckContextsError::Generic { code }),
             }
         }
@@ -9395,11 +9395,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                415 => Err(ReposGetAllTopicsError::Status415(github_response.to_json()?)),
-                404 => Err(ReposGetAllTopicsError::Status404(github_response.to_json()?)),
+                415 => Err(ReposGetAllTopicsError::Status415(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReposGetAllTopicsError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetAllTopicsError::Generic { code }),
             }
         }
@@ -9442,11 +9442,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                415 => Err(ReposGetAllTopicsError::Status415(github_response.to_json()?)),
-                404 => Err(ReposGetAllTopicsError::Status404(github_response.to_json()?)),
+                415 => Err(ReposGetAllTopicsError::Status415(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReposGetAllTopicsError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetAllTopicsError::Generic { code }),
             }
         }
@@ -9484,10 +9484,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetAppsWithAccessToProtectedBranchError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetAppsWithAccessToProtectedBranchError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetAppsWithAccessToProtectedBranchError::Generic { code }),
             }
         }
@@ -9526,10 +9526,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetAppsWithAccessToProtectedBranchError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetAppsWithAccessToProtectedBranchError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetAppsWithAccessToProtectedBranchError::Generic { code }),
             }
         }
@@ -9563,11 +9563,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                415 => Err(ReposGetBranchError::Status415(github_response.to_json()?)),
-                404 => Err(ReposGetBranchError::Status404(github_response.to_json()?)),
+                415 => Err(ReposGetBranchError::Status415(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReposGetBranchError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetBranchError::Generic { code }),
             }
         }
@@ -9602,11 +9602,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                415 => Err(ReposGetBranchError::Status415(github_response.to_json()?)),
-                404 => Err(ReposGetBranchError::Status404(github_response.to_json()?)),
+                415 => Err(ReposGetBranchError::Status415(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReposGetBranchError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetBranchError::Generic { code }),
             }
         }
@@ -9645,10 +9645,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetBranchProtectionError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetBranchProtectionError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetBranchProtectionError::Generic { code }),
             }
         }
@@ -9688,10 +9688,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetBranchProtectionError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetBranchProtectionError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetBranchProtectionError::Generic { code }),
             }
         }
@@ -9731,10 +9731,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposGetClonesError::Status403(github_response.to_json()?)),
+                403 => Err(ReposGetClonesError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetClonesError::Generic { code }),
             }
         }
@@ -9776,10 +9776,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposGetClonesError::Status403(github_response.to_json()?)),
+                403 => Err(ReposGetClonesError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetClonesError::Generic { code }),
             }
         }
@@ -9815,7 +9815,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetCodeFrequencyStatsError::Generic { code }),
@@ -9854,7 +9854,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetCodeFrequencyStatsError::Generic { code }),
@@ -9892,10 +9892,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetCollaboratorPermissionLevelError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetCollaboratorPermissionLevelError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetCollaboratorPermissionLevelError::Generic { code }),
             }
         }
@@ -9932,10 +9932,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetCollaboratorPermissionLevelError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetCollaboratorPermissionLevelError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetCollaboratorPermissionLevelError::Generic { code }),
             }
         }
@@ -9983,10 +9983,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetCombinedStatusForRefError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetCombinedStatusForRefError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetCombinedStatusForRefError::Generic { code }),
             }
         }
@@ -10036,10 +10036,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetCombinedStatusForRefError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetCombinedStatusForRefError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetCombinedStatusForRefError::Generic { code }),
             }
         }
@@ -10114,12 +10114,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposGetCommitError::Status422(github_response.to_json()?)),
-                404 => Err(ReposGetCommitError::Status404(github_response.to_json()?)),
-                500 => Err(ReposGetCommitError::Status500(github_response.to_json()?)),
+                422 => Err(ReposGetCommitError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReposGetCommitError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                500 => Err(ReposGetCommitError::Status500(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetCommitError::Generic { code }),
             }
         }
@@ -10196,12 +10196,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposGetCommitError::Status422(github_response.to_json()?)),
-                404 => Err(ReposGetCommitError::Status404(github_response.to_json()?)),
-                500 => Err(ReposGetCommitError::Status500(github_response.to_json()?)),
+                422 => Err(ReposGetCommitError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReposGetCommitError::Status404(crate::adapters::to_json(github_response)?)),
+                500 => Err(ReposGetCommitError::Status500(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetCommitError::Generic { code }),
             }
         }
@@ -10237,7 +10237,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetCommitActivityStatsError::Generic { code }),
@@ -10276,7 +10276,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetCommitActivityStatsError::Generic { code }),
@@ -10315,10 +10315,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetCommitCommentError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetCommitCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetCommitCommentError::Generic { code }),
             }
         }
@@ -10356,10 +10356,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetCommitCommentError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetCommitCommentError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetCommitCommentError::Generic { code }),
             }
         }
@@ -10402,10 +10402,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetCommitSignatureProtectionError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetCommitSignatureProtectionError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetCommitSignatureProtectionError::Generic { code }),
             }
         }
@@ -10449,10 +10449,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetCommitSignatureProtectionError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetCommitSignatureProtectionError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetCommitSignatureProtectionError::Generic { code }),
             }
         }
@@ -10499,7 +10499,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetCommunityProfileMetricsError::Generic { code }),
@@ -10549,7 +10549,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetCommunityProfileMetricsError::Generic { code }),
@@ -10622,11 +10622,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetContentError::Status404(github_response.to_json()?)),
-                403 => Err(ReposGetContentError::Status403(github_response.to_json()?)),
+                404 => Err(ReposGetContentError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(ReposGetContentError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 302 => Err(ReposGetContentError::Status302),
                 code => Err(ReposGetContentError::Generic { code }),
             }
@@ -10700,11 +10700,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetContentError::Status404(github_response.to_json()?)),
-                403 => Err(ReposGetContentError::Status403(github_response.to_json()?)),
+                404 => Err(ReposGetContentError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(ReposGetContentError::Status403(crate::adapters::to_json(github_response)?)),
                 302 => Err(ReposGetContentError::Status302),
                 code => Err(ReposGetContentError::Generic { code }),
             }
@@ -10747,7 +10747,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetContributorsStatsError::Generic { code }),
@@ -10792,7 +10792,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetContributorsStatsError::Generic { code }),
@@ -10828,10 +10828,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetDeployKeyError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetDeployKeyError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetDeployKeyError::Generic { code }),
             }
         }
@@ -10866,10 +10866,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetDeployKeyError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetDeployKeyError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetDeployKeyError::Generic { code }),
             }
         }
@@ -10906,10 +10906,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetDeploymentError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetDeploymentError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetDeploymentError::Generic { code }),
             }
         }
@@ -10947,10 +10947,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetDeploymentError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetDeploymentError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetDeploymentError::Generic { code }),
             }
         }
@@ -10991,11 +10991,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetDeploymentStatusError::Status404(github_response.to_json()?)),
-                415 => Err(ReposGetDeploymentStatusError::Status415(github_response.to_json()?)),
+                404 => Err(ReposGetDeploymentStatusError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                415 => Err(ReposGetDeploymentStatusError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetDeploymentStatusError::Generic { code }),
             }
         }
@@ -11037,11 +11037,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetDeploymentStatusError::Status404(github_response.to_json()?)),
-                415 => Err(ReposGetDeploymentStatusError::Status415(github_response.to_json()?)),
+                404 => Err(ReposGetDeploymentStatusError::Status404(crate::adapters::to_json(github_response)?)),
+                415 => Err(ReposGetDeploymentStatusError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetDeploymentStatusError::Generic { code }),
             }
         }
@@ -11077,7 +11077,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetEnvironmentError::Generic { code }),
@@ -11116,7 +11116,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetEnvironmentError::Generic { code }),
@@ -11152,7 +11152,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetLatestPagesBuildError::Generic { code }),
@@ -11189,7 +11189,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetLatestPagesBuildError::Generic { code }),
@@ -11229,7 +11229,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetLatestReleaseError::Generic { code }),
@@ -11270,7 +11270,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetLatestReleaseError::Generic { code }),
@@ -11306,10 +11306,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetPagesError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetPagesError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetPagesError::Generic { code }),
             }
         }
@@ -11344,10 +11344,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetPagesError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetPagesError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetPagesError::Generic { code }),
             }
         }
@@ -11381,7 +11381,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetPagesBuildError::Generic { code }),
@@ -11418,7 +11418,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetPagesBuildError::Generic { code }),
@@ -11458,10 +11458,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetParticipationStatsError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetParticipationStatsError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetParticipationStatsError::Generic { code }),
             }
         }
@@ -11500,10 +11500,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetParticipationStatsError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetParticipationStatsError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetParticipationStatsError::Generic { code }),
             }
         }
@@ -11542,7 +11542,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetPullRequestReviewProtectionError::Generic { code }),
@@ -11584,7 +11584,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetPullRequestReviewProtectionError::Generic { code }),
@@ -11628,7 +11628,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetPunchCardStatsError::Generic { code }),
@@ -11673,7 +11673,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetPunchCardStatsError::Generic { code }),
@@ -11717,11 +11717,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetReadmeError::Status404(github_response.to_json()?)),
-                422 => Err(ReposGetReadmeError::Status422(github_response.to_json()?)),
+                404 => Err(ReposGetReadmeError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReposGetReadmeError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetReadmeError::Generic { code }),
             }
         }
@@ -11765,11 +11765,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetReadmeError::Status404(github_response.to_json()?)),
-                422 => Err(ReposGetReadmeError::Status422(github_response.to_json()?)),
+                404 => Err(ReposGetReadmeError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReposGetReadmeError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetReadmeError::Generic { code }),
             }
         }
@@ -11811,11 +11811,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetReadmeFromAltPathError::Status404(github_response.to_json()?)),
-                422 => Err(ReposGetReadmeFromAltPathError::Status422(github_response.to_json()?)),
+                404 => Err(ReposGetReadmeFromAltPathError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReposGetReadmeFromAltPathError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetReadmeFromAltPathError::Generic { code }),
             }
         }
@@ -11859,11 +11859,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetReadmeFromAltPathError::Status404(github_response.to_json()?)),
-                422 => Err(ReposGetReadmeFromAltPathError::Status422(github_response.to_json()?)),
+                404 => Err(ReposGetReadmeFromAltPathError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReposGetReadmeFromAltPathError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetReadmeFromAltPathError::Generic { code }),
             }
         }
@@ -11899,10 +11899,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetReleaseError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetReleaseError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetReleaseError::Generic { code }),
             }
         }
@@ -11939,10 +11939,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetReleaseError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetReleaseError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetReleaseError::Generic { code }),
             }
         }
@@ -11978,11 +11978,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetReleaseAssetError::Status404(github_response.to_json()?)),
-                415 => Err(ReposGetReleaseAssetError::Status415(github_response.to_json()?)),
+                404 => Err(ReposGetReleaseAssetError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                415 => Err(ReposGetReleaseAssetError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 302 => Err(ReposGetReleaseAssetError::Status302),
                 code => Err(ReposGetReleaseAssetError::Generic { code }),
             }
@@ -12020,11 +12020,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetReleaseAssetError::Status404(github_response.to_json()?)),
-                415 => Err(ReposGetReleaseAssetError::Status415(github_response.to_json()?)),
+                404 => Err(ReposGetReleaseAssetError::Status404(crate::adapters::to_json(github_response)?)),
+                415 => Err(ReposGetReleaseAssetError::Status415(crate::adapters::to_json(github_response)?)),
                 302 => Err(ReposGetReleaseAssetError::Status302),
                 code => Err(ReposGetReleaseAssetError::Generic { code }),
             }
@@ -12061,10 +12061,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetReleaseByTagError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetReleaseByTagError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetReleaseByTagError::Generic { code }),
             }
         }
@@ -12101,10 +12101,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetReleaseByTagError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetReleaseByTagError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetReleaseByTagError::Generic { code }),
             }
         }
@@ -12140,10 +12140,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetStatusChecksProtectionError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetStatusChecksProtectionError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetStatusChecksProtectionError::Generic { code }),
             }
         }
@@ -12180,10 +12180,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetStatusChecksProtectionError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetStatusChecksProtectionError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetStatusChecksProtectionError::Generic { code }),
             }
         }
@@ -12221,10 +12221,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetTeamsWithAccessToProtectedBranchError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetTeamsWithAccessToProtectedBranchError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetTeamsWithAccessToProtectedBranchError::Generic { code }),
             }
         }
@@ -12263,10 +12263,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetTeamsWithAccessToProtectedBranchError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetTeamsWithAccessToProtectedBranchError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetTeamsWithAccessToProtectedBranchError::Generic { code }),
             }
         }
@@ -12302,10 +12302,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposGetTopPathsError::Status403(github_response.to_json()?)),
+                403 => Err(ReposGetTopPathsError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetTopPathsError::Generic { code }),
             }
         }
@@ -12342,10 +12342,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposGetTopPathsError::Status403(github_response.to_json()?)),
+                403 => Err(ReposGetTopPathsError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetTopPathsError::Generic { code }),
             }
         }
@@ -12381,10 +12381,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposGetTopReferrersError::Status403(github_response.to_json()?)),
+                403 => Err(ReposGetTopReferrersError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetTopReferrersError::Generic { code }),
             }
         }
@@ -12421,10 +12421,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposGetTopReferrersError::Status403(github_response.to_json()?)),
+                403 => Err(ReposGetTopReferrersError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetTopReferrersError::Generic { code }),
             }
         }
@@ -12462,10 +12462,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetUsersWithAccessToProtectedBranchError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetUsersWithAccessToProtectedBranchError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetUsersWithAccessToProtectedBranchError::Generic { code }),
             }
         }
@@ -12504,10 +12504,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetUsersWithAccessToProtectedBranchError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetUsersWithAccessToProtectedBranchError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetUsersWithAccessToProtectedBranchError::Generic { code }),
             }
         }
@@ -12547,10 +12547,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposGetViewsError::Status403(github_response.to_json()?)),
+                403 => Err(ReposGetViewsError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetViewsError::Generic { code }),
             }
         }
@@ -12592,10 +12592,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposGetViewsError::Status403(github_response.to_json()?)),
+                403 => Err(ReposGetViewsError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetViewsError::Generic { code }),
             }
         }
@@ -12631,10 +12631,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetWebhookError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetWebhookError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetWebhookError::Generic { code }),
             }
         }
@@ -12671,10 +12671,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetWebhookError::Status404(github_response.to_json()?)),
+                404 => Err(ReposGetWebhookError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetWebhookError::Generic { code }),
             }
         }
@@ -12712,7 +12712,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetWebhookConfigForRepoError::Generic { code }),
@@ -12753,7 +12753,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetWebhookConfigForRepoError::Generic { code }),
@@ -12793,10 +12793,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposListBranchesError::Status404(github_response.to_json()?)),
+                404 => Err(ReposListBranchesError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposListBranchesError::Generic { code }),
             }
         }
@@ -12836,10 +12836,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposListBranchesError::Status404(github_response.to_json()?)),
+                404 => Err(ReposListBranchesError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposListBranchesError::Generic { code }),
             }
         }
@@ -12880,11 +12880,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                415 => Err(ReposListBranchesForHeadCommitError::Status415(github_response.to_json()?)),
-                422 => Err(ReposListBranchesForHeadCommitError::Status422(github_response.to_json()?)),
+                415 => Err(ReposListBranchesForHeadCommitError::Status415(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReposListBranchesForHeadCommitError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposListBranchesForHeadCommitError::Generic { code }),
             }
         }
@@ -12926,11 +12926,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                415 => Err(ReposListBranchesForHeadCommitError::Status415(github_response.to_json()?)),
-                422 => Err(ReposListBranchesForHeadCommitError::Status422(github_response.to_json()?)),
+                415 => Err(ReposListBranchesForHeadCommitError::Status415(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReposListBranchesForHeadCommitError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposListBranchesForHeadCommitError::Generic { code }),
             }
         }
@@ -12972,10 +12972,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposListCollaboratorsError::Status404(github_response.to_json()?)),
+                404 => Err(ReposListCollaboratorsError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposListCollaboratorsError::Generic { code }),
             }
         }
@@ -13019,10 +13019,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposListCollaboratorsError::Status404(github_response.to_json()?)),
+                404 => Err(ReposListCollaboratorsError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposListCollaboratorsError::Generic { code }),
             }
         }
@@ -13065,7 +13065,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListCommentsForCommitError::Generic { code }),
@@ -13112,7 +13112,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListCommentsForCommitError::Generic { code }),
@@ -13159,7 +13159,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListCommitCommentsForRepoError::Generic { code }),
@@ -13208,7 +13208,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListCommitCommentsForRepoError::Generic { code }),
@@ -13252,7 +13252,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 301 => Err(ReposListCommitStatusesForRefError::Status301),
@@ -13299,7 +13299,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 301 => Err(ReposListCommitStatusesForRefError::Status301),
@@ -13369,13 +13369,13 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                500 => Err(ReposListCommitsError::Status500(github_response.to_json()?)),
-                400 => Err(ReposListCommitsError::Status400(github_response.to_json()?)),
-                404 => Err(ReposListCommitsError::Status404(github_response.to_json()?)),
-                409 => Err(ReposListCommitsError::Status409(github_response.to_json()?)),
+                500 => Err(ReposListCommitsError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                400 => Err(ReposListCommitsError::Status400(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReposListCommitsError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(ReposListCommitsError::Status409(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposListCommitsError::Generic { code }),
             }
         }
@@ -13444,13 +13444,13 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                500 => Err(ReposListCommitsError::Status500(github_response.to_json()?)),
-                400 => Err(ReposListCommitsError::Status400(github_response.to_json()?)),
-                404 => Err(ReposListCommitsError::Status404(github_response.to_json()?)),
-                409 => Err(ReposListCommitsError::Status409(github_response.to_json()?)),
+                500 => Err(ReposListCommitsError::Status500(crate::adapters::to_json(github_response)?)),
+                400 => Err(ReposListCommitsError::Status400(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReposListCommitsError::Status404(crate::adapters::to_json(github_response)?)),
+                409 => Err(ReposListCommitsError::Status409(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposListCommitsError::Generic { code }),
             }
         }
@@ -13492,12 +13492,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 204 => Err(ReposListContributorsError::Status204),
-                403 => Err(ReposListContributorsError::Status403(github_response.to_json()?)),
-                404 => Err(ReposListContributorsError::Status404(github_response.to_json()?)),
+                403 => Err(ReposListContributorsError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReposListContributorsError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposListContributorsError::Generic { code }),
             }
         }
@@ -13541,12 +13541,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 204 => Err(ReposListContributorsError::Status204),
-                403 => Err(ReposListContributorsError::Status403(github_response.to_json()?)),
-                404 => Err(ReposListContributorsError::Status404(github_response.to_json()?)),
+                403 => Err(ReposListContributorsError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReposListContributorsError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposListContributorsError::Generic { code }),
             }
         }
@@ -13584,7 +13584,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListDeployKeysError::Generic { code }),
@@ -13626,7 +13626,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListDeployKeysError::Generic { code }),
@@ -13673,10 +13673,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposListDeploymentStatusesError::Status404(github_response.to_json()?)),
+                404 => Err(ReposListDeploymentStatusesError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposListDeploymentStatusesError::Generic { code }),
             }
         }
@@ -13723,10 +13723,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposListDeploymentStatusesError::Status404(github_response.to_json()?)),
+                404 => Err(ReposListDeploymentStatusesError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposListDeploymentStatusesError::Generic { code }),
             }
         }
@@ -13769,7 +13769,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListDeploymentsError::Generic { code }),
@@ -13816,7 +13816,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListDeploymentsError::Generic { code }),
@@ -13860,13 +13860,13 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposListForAuthenticatedUserError::Status422(github_response.to_json()?)),
+                422 => Err(ReposListForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(ReposListForAuthenticatedUserError::Status304),
-                403 => Err(ReposListForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(ReposListForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(ReposListForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(ReposListForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposListForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -13910,13 +13910,13 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposListForAuthenticatedUserError::Status422(github_response.to_json()?)),
+                422 => Err(ReposListForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
                 304 => Err(ReposListForAuthenticatedUserError::Status304),
-                403 => Err(ReposListForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(ReposListForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(ReposListForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(ReposListForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposListForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -13961,7 +13961,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListForOrgError::Generic { code }),
@@ -14010,7 +14010,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListForOrgError::Generic { code }),
@@ -14055,7 +14055,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListForUserError::Generic { code }),
@@ -14102,7 +14102,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListForUserError::Generic { code }),
@@ -14142,10 +14142,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                400 => Err(ReposListForksError::Status400(github_response.to_json()?)),
+                400 => Err(ReposListForksError::Status400(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposListForksError::Generic { code }),
             }
         }
@@ -14185,10 +14185,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                400 => Err(ReposListForksError::Status400(github_response.to_json()?)),
+                400 => Err(ReposListForksError::Status400(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposListForksError::Generic { code }),
             }
         }
@@ -14228,7 +14228,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListInvitationsError::Generic { code }),
@@ -14272,7 +14272,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListInvitationsError::Generic { code }),
@@ -14314,13 +14314,13 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(ReposListInvitationsForAuthenticatedUserError::Status304),
-                404 => Err(ReposListInvitationsForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(ReposListInvitationsForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(ReposListInvitationsForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                404 => Err(ReposListInvitationsForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(ReposListInvitationsForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(ReposListInvitationsForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposListInvitationsForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -14362,13 +14362,13 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(ReposListInvitationsForAuthenticatedUserError::Status304),
-                404 => Err(ReposListInvitationsForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(ReposListInvitationsForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(ReposListInvitationsForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                404 => Err(ReposListInvitationsForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(ReposListInvitationsForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(ReposListInvitationsForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposListInvitationsForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -14404,7 +14404,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListLanguagesError::Generic { code }),
@@ -14443,7 +14443,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListLanguagesError::Generic { code }),
@@ -14483,7 +14483,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListPagesBuildsError::Generic { code }),
@@ -14525,7 +14525,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListPagesBuildsError::Generic { code }),
@@ -14571,10 +14571,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposListPublicError::Status422(github_response.to_json()?)),
+                422 => Err(ReposListPublicError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(ReposListPublicError::Status304),
                 code => Err(ReposListPublicError::Generic { code }),
             }
@@ -14621,10 +14621,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposListPublicError::Status422(github_response.to_json()?)),
+                422 => Err(ReposListPublicError::Status422(crate::adapters::to_json(github_response)?)),
                 304 => Err(ReposListPublicError::Status304),
                 code => Err(ReposListPublicError::Generic { code }),
             }
@@ -14668,10 +14668,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                415 => Err(ReposListPullRequestsAssociatedWithCommitError::Status415(github_response.to_json()?)),
+                415 => Err(ReposListPullRequestsAssociatedWithCommitError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposListPullRequestsAssociatedWithCommitError::Generic { code }),
             }
         }
@@ -14716,10 +14716,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                415 => Err(ReposListPullRequestsAssociatedWithCommitError::Status415(github_response.to_json()?)),
+                415 => Err(ReposListPullRequestsAssociatedWithCommitError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposListPullRequestsAssociatedWithCommitError::Generic { code }),
             }
         }
@@ -14757,7 +14757,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListReleaseAssetsError::Generic { code }),
@@ -14799,7 +14799,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListReleaseAssetsError::Generic { code }),
@@ -14843,10 +14843,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposListReleasesError::Status404(github_response.to_json()?)),
+                404 => Err(ReposListReleasesError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposListReleasesError::Generic { code }),
             }
         }
@@ -14890,10 +14890,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposListReleasesError::Status404(github_response.to_json()?)),
+                404 => Err(ReposListReleasesError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposListReleasesError::Generic { code }),
             }
         }
@@ -14931,7 +14931,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListTagsError::Generic { code }),
@@ -14973,7 +14973,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListTagsError::Generic { code }),
@@ -15013,7 +15013,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListTeamsError::Generic { code }),
@@ -15055,7 +15055,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposListTeamsError::Generic { code }),
@@ -15095,10 +15095,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposListWebhooksError::Status404(github_response.to_json()?)),
+                404 => Err(ReposListWebhooksError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposListWebhooksError::Generic { code }),
             }
         }
@@ -15138,10 +15138,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposListWebhooksError::Status404(github_response.to_json()?)),
+                404 => Err(ReposListWebhooksError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposListWebhooksError::Generic { code }),
             }
         }
@@ -15175,13 +15175,13 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposMergeError::Status404(github_response.to_json()?)),
-                409 => Err(ReposMergeError::Status409(github_response.to_json()?)),
-                403 => Err(ReposMergeError::Status403(github_response.to_json()?)),
-                422 => Err(ReposMergeError::Status422(github_response.to_json()?)),
+                404 => Err(ReposMergeError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(ReposMergeError::Status409(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(ReposMergeError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReposMergeError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposMergeError::Generic { code }),
             }
         }
@@ -15216,13 +15216,13 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposMergeError::Status404(github_response.to_json()?)),
-                409 => Err(ReposMergeError::Status409(github_response.to_json()?)),
-                403 => Err(ReposMergeError::Status403(github_response.to_json()?)),
-                422 => Err(ReposMergeError::Status422(github_response.to_json()?)),
+                404 => Err(ReposMergeError::Status404(crate::adapters::to_json(github_response)?)),
+                409 => Err(ReposMergeError::Status409(crate::adapters::to_json(github_response)?)),
+                403 => Err(ReposMergeError::Status403(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReposMergeError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposMergeError::Generic { code }),
             }
         }
@@ -15258,10 +15258,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposPingWebhookError::Status404(github_response.to_json()?)),
+                404 => Err(ReposPingWebhookError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposPingWebhookError::Generic { code }),
             }
         }
@@ -15298,10 +15298,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposPingWebhookError::Status404(github_response.to_json()?)),
+                404 => Err(ReposPingWebhookError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposPingWebhookError::Generic { code }),
             }
         }
@@ -15343,10 +15343,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposRemoveAppAccessRestrictionsError::Status422(github_response.to_json()?)),
+                422 => Err(ReposRemoveAppAccessRestrictionsError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposRemoveAppAccessRestrictionsError::Generic { code }),
             }
         }
@@ -15389,10 +15389,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposRemoveAppAccessRestrictionsError::Status422(github_response.to_json()?)),
+                422 => Err(ReposRemoveAppAccessRestrictionsError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposRemoveAppAccessRestrictionsError::Generic { code }),
             }
         }
@@ -15426,7 +15426,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposRemoveCollaboratorError::Generic { code }),
@@ -15463,7 +15463,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposRemoveCollaboratorError::Generic { code }),
@@ -15501,11 +15501,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposRemoveStatusCheckContextsError::Status404(github_response.to_json()?)),
-                422 => Err(ReposRemoveStatusCheckContextsError::Status422(github_response.to_json()?)),
+                404 => Err(ReposRemoveStatusCheckContextsError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReposRemoveStatusCheckContextsError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposRemoveStatusCheckContextsError::Generic { code }),
             }
         }
@@ -15542,11 +15542,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposRemoveStatusCheckContextsError::Status404(github_response.to_json()?)),
-                422 => Err(ReposRemoveStatusCheckContextsError::Status422(github_response.to_json()?)),
+                404 => Err(ReposRemoveStatusCheckContextsError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReposRemoveStatusCheckContextsError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposRemoveStatusCheckContextsError::Generic { code }),
             }
         }
@@ -15582,7 +15582,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposRemoveStatusCheckProtectionError::Generic { code }),
@@ -15621,7 +15621,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposRemoveStatusCheckProtectionError::Generic { code }),
@@ -15665,10 +15665,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposRemoveTeamAccessRestrictionsError::Status422(github_response.to_json()?)),
+                422 => Err(ReposRemoveTeamAccessRestrictionsError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposRemoveTeamAccessRestrictionsError::Generic { code }),
             }
         }
@@ -15711,10 +15711,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposRemoveTeamAccessRestrictionsError::Status422(github_response.to_json()?)),
+                422 => Err(ReposRemoveTeamAccessRestrictionsError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposRemoveTeamAccessRestrictionsError::Generic { code }),
             }
         }
@@ -15756,10 +15756,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposRemoveUserAccessRestrictionsError::Status422(github_response.to_json()?)),
+                422 => Err(ReposRemoveUserAccessRestrictionsError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposRemoveUserAccessRestrictionsError::Generic { code }),
             }
         }
@@ -15802,10 +15802,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposRemoveUserAccessRestrictionsError::Status422(github_response.to_json()?)),
+                422 => Err(ReposRemoveUserAccessRestrictionsError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposRemoveUserAccessRestrictionsError::Generic { code }),
             }
         }
@@ -15855,12 +15855,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposRenameBranchError::Status403(github_response.to_json()?)),
-                404 => Err(ReposRenameBranchError::Status404(github_response.to_json()?)),
-                422 => Err(ReposRenameBranchError::Status422(github_response.to_json()?)),
+                403 => Err(ReposRenameBranchError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReposRenameBranchError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReposRenameBranchError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposRenameBranchError::Generic { code }),
             }
         }
@@ -15911,12 +15911,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposRenameBranchError::Status403(github_response.to_json()?)),
-                404 => Err(ReposRenameBranchError::Status404(github_response.to_json()?)),
-                422 => Err(ReposRenameBranchError::Status422(github_response.to_json()?)),
+                403 => Err(ReposRenameBranchError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReposRenameBranchError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReposRenameBranchError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposRenameBranchError::Generic { code }),
             }
         }
@@ -15953,12 +15953,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                415 => Err(ReposReplaceAllTopicsError::Status415(github_response.to_json()?)),
-                404 => Err(ReposReplaceAllTopicsError::Status404(github_response.to_json()?)),
-                422 => Err(ReposReplaceAllTopicsError::Status422(github_response.to_json()?)),
+                415 => Err(ReposReplaceAllTopicsError::Status415(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReposReplaceAllTopicsError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReposReplaceAllTopicsError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposReplaceAllTopicsError::Generic { code }),
             }
         }
@@ -15996,12 +15996,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                415 => Err(ReposReplaceAllTopicsError::Status415(github_response.to_json()?)),
-                404 => Err(ReposReplaceAllTopicsError::Status404(github_response.to_json()?)),
-                422 => Err(ReposReplaceAllTopicsError::Status422(github_response.to_json()?)),
+                415 => Err(ReposReplaceAllTopicsError::Status415(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReposReplaceAllTopicsError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReposReplaceAllTopicsError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposReplaceAllTopicsError::Generic { code }),
             }
         }
@@ -16039,7 +16039,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposRequestPagesBuildError::Generic { code }),
@@ -16080,7 +16080,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposRequestPagesBuildError::Generic { code }),
@@ -16120,7 +16120,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposSetAdminBranchProtectionError::Generic { code }),
@@ -16161,7 +16161,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposSetAdminBranchProtectionError::Generic { code }),
@@ -16205,10 +16205,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposSetAppAccessRestrictionsError::Status422(github_response.to_json()?)),
+                422 => Err(ReposSetAppAccessRestrictionsError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposSetAppAccessRestrictionsError::Generic { code }),
             }
         }
@@ -16251,10 +16251,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposSetAppAccessRestrictionsError::Status422(github_response.to_json()?)),
+                422 => Err(ReposSetAppAccessRestrictionsError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposSetAppAccessRestrictionsError::Generic { code }),
             }
         }
@@ -16290,11 +16290,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposSetStatusCheckContextsError::Status422(github_response.to_json()?)),
-                404 => Err(ReposSetStatusCheckContextsError::Status404(github_response.to_json()?)),
+                422 => Err(ReposSetStatusCheckContextsError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReposSetStatusCheckContextsError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposSetStatusCheckContextsError::Generic { code }),
             }
         }
@@ -16331,11 +16331,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposSetStatusCheckContextsError::Status422(github_response.to_json()?)),
-                404 => Err(ReposSetStatusCheckContextsError::Status404(github_response.to_json()?)),
+                422 => Err(ReposSetStatusCheckContextsError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReposSetStatusCheckContextsError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposSetStatusCheckContextsError::Generic { code }),
             }
         }
@@ -16377,10 +16377,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposSetTeamAccessRestrictionsError::Status422(github_response.to_json()?)),
+                422 => Err(ReposSetTeamAccessRestrictionsError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposSetTeamAccessRestrictionsError::Generic { code }),
             }
         }
@@ -16423,10 +16423,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposSetTeamAccessRestrictionsError::Status422(github_response.to_json()?)),
+                422 => Err(ReposSetTeamAccessRestrictionsError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposSetTeamAccessRestrictionsError::Generic { code }),
             }
         }
@@ -16468,10 +16468,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposSetUserAccessRestrictionsError::Status422(github_response.to_json()?)),
+                422 => Err(ReposSetUserAccessRestrictionsError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposSetUserAccessRestrictionsError::Generic { code }),
             }
         }
@@ -16514,10 +16514,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposSetUserAccessRestrictionsError::Status422(github_response.to_json()?)),
+                422 => Err(ReposSetUserAccessRestrictionsError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposSetUserAccessRestrictionsError::Generic { code }),
             }
         }
@@ -16555,10 +16555,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposTestPushWebhookError::Status404(github_response.to_json()?)),
+                404 => Err(ReposTestPushWebhookError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposTestPushWebhookError::Generic { code }),
             }
         }
@@ -16597,10 +16597,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposTestPushWebhookError::Status404(github_response.to_json()?)),
+                404 => Err(ReposTestPushWebhookError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposTestPushWebhookError::Generic { code }),
             }
         }
@@ -16636,7 +16636,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposTransferError::Generic { code }),
@@ -16675,7 +16675,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposTransferError::Generic { code }),
@@ -16718,12 +16718,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposUpdateError::Status403(github_response.to_json()?)),
-                422 => Err(ReposUpdateError::Status422(github_response.to_json()?)),
-                404 => Err(ReposUpdateError::Status404(github_response.to_json()?)),
+                403 => Err(ReposUpdateError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReposUpdateError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReposUpdateError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposUpdateError::Generic { code }),
             }
         }
@@ -16765,12 +16765,12 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposUpdateError::Status403(github_response.to_json()?)),
-                422 => Err(ReposUpdateError::Status422(github_response.to_json()?)),
-                404 => Err(ReposUpdateError::Status404(github_response.to_json()?)),
+                403 => Err(ReposUpdateError::Status403(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReposUpdateError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReposUpdateError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposUpdateError::Generic { code }),
             }
         }
@@ -16815,13 +16815,13 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposUpdateBranchProtectionError::Status403(github_response.to_json()?)),
-                415 => Err(ReposUpdateBranchProtectionError::Status415(github_response.to_json()?)),
-                422 => Err(ReposUpdateBranchProtectionError::Status422(github_response.to_json()?)),
-                404 => Err(ReposUpdateBranchProtectionError::Status404(github_response.to_json()?)),
+                403 => Err(ReposUpdateBranchProtectionError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                415 => Err(ReposUpdateBranchProtectionError::Status415(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReposUpdateBranchProtectionError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReposUpdateBranchProtectionError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposUpdateBranchProtectionError::Generic { code }),
             }
         }
@@ -16867,13 +16867,13 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposUpdateBranchProtectionError::Status403(github_response.to_json()?)),
-                415 => Err(ReposUpdateBranchProtectionError::Status415(github_response.to_json()?)),
-                422 => Err(ReposUpdateBranchProtectionError::Status422(github_response.to_json()?)),
-                404 => Err(ReposUpdateBranchProtectionError::Status404(github_response.to_json()?)),
+                403 => Err(ReposUpdateBranchProtectionError::Status403(crate::adapters::to_json(github_response)?)),
+                415 => Err(ReposUpdateBranchProtectionError::Status415(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReposUpdateBranchProtectionError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReposUpdateBranchProtectionError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposUpdateBranchProtectionError::Generic { code }),
             }
         }
@@ -16907,10 +16907,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposUpdateCommitCommentError::Status404(github_response.to_json()?)),
+                404 => Err(ReposUpdateCommitCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposUpdateCommitCommentError::Generic { code }),
             }
         }
@@ -16945,10 +16945,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposUpdateCommitCommentError::Status404(github_response.to_json()?)),
+                404 => Err(ReposUpdateCommitCommentError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposUpdateCommitCommentError::Generic { code }),
             }
         }
@@ -16984,11 +16984,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposUpdateInformationAboutPagesSiteError::Status422(github_response.to_json()?)),
-                400 => Err(ReposUpdateInformationAboutPagesSiteError::Status400(github_response.to_json()?)),
+                422 => Err(ReposUpdateInformationAboutPagesSiteError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                400 => Err(ReposUpdateInformationAboutPagesSiteError::Status400(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposUpdateInformationAboutPagesSiteError::Generic { code }),
             }
         }
@@ -17025,11 +17025,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposUpdateInformationAboutPagesSiteError::Status422(github_response.to_json()?)),
-                400 => Err(ReposUpdateInformationAboutPagesSiteError::Status400(github_response.to_json()?)),
+                422 => Err(ReposUpdateInformationAboutPagesSiteError::Status422(crate::adapters::to_json(github_response)?)),
+                400 => Err(ReposUpdateInformationAboutPagesSiteError::Status400(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposUpdateInformationAboutPagesSiteError::Generic { code }),
             }
         }
@@ -17063,7 +17063,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposUpdateInvitationError::Generic { code }),
@@ -17100,7 +17100,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposUpdateInvitationError::Generic { code }),
@@ -17145,10 +17145,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposUpdatePullRequestReviewProtectionError::Status422(github_response.to_json()?)),
+                422 => Err(ReposUpdatePullRequestReviewProtectionError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposUpdatePullRequestReviewProtectionError::Generic { code }),
             }
         }
@@ -17192,10 +17192,10 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposUpdatePullRequestReviewProtectionError::Status422(github_response.to_json()?)),
+                422 => Err(ReposUpdatePullRequestReviewProtectionError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposUpdatePullRequestReviewProtectionError::Generic { code }),
             }
         }
@@ -17231,7 +17231,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposUpdateReleaseError::Generic { code }),
@@ -17270,7 +17270,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposUpdateReleaseError::Generic { code }),
@@ -17308,7 +17308,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposUpdateReleaseAssetError::Generic { code }),
@@ -17347,7 +17347,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposUpdateReleaseAssetError::Generic { code }),
@@ -17387,11 +17387,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposUpdateStatusCheckProtectionError::Status404(github_response.to_json()?)),
-                422 => Err(ReposUpdateStatusCheckProtectionError::Status422(github_response.to_json()?)),
+                404 => Err(ReposUpdateStatusCheckProtectionError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReposUpdateStatusCheckProtectionError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposUpdateStatusCheckProtectionError::Generic { code }),
             }
         }
@@ -17430,11 +17430,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposUpdateStatusCheckProtectionError::Status404(github_response.to_json()?)),
-                422 => Err(ReposUpdateStatusCheckProtectionError::Status422(github_response.to_json()?)),
+                404 => Err(ReposUpdateStatusCheckProtectionError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReposUpdateStatusCheckProtectionError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposUpdateStatusCheckProtectionError::Generic { code }),
             }
         }
@@ -17470,11 +17470,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposUpdateWebhookError::Status422(github_response.to_json()?)),
-                404 => Err(ReposUpdateWebhookError::Status404(github_response.to_json()?)),
+                422 => Err(ReposUpdateWebhookError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReposUpdateWebhookError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposUpdateWebhookError::Generic { code }),
             }
         }
@@ -17511,11 +17511,11 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposUpdateWebhookError::Status422(github_response.to_json()?)),
-                404 => Err(ReposUpdateWebhookError::Status404(github_response.to_json()?)),
+                422 => Err(ReposUpdateWebhookError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReposUpdateWebhookError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposUpdateWebhookError::Generic { code }),
             }
         }
@@ -17553,7 +17553,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposUpdateWebhookConfigForRepoError::Generic { code }),
@@ -17594,7 +17594,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposUpdateWebhookConfigForRepoError::Generic { code }),
@@ -17653,7 +17653,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposUploadReleaseAssetError::Generic { code }),
@@ -17714,7 +17714,7 @@ impl<'api> Repos<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReposUploadReleaseAssetError::Generic { code }),

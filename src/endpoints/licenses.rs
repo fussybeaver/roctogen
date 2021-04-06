@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
+use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -174,11 +174,11 @@ impl<'api> Licenses<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(LicensesGetError::Status403(github_response.to_json()?)),
-                404 => Err(LicensesGetError::Status404(github_response.to_json()?)),
+                403 => Err(LicensesGetError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(LicensesGetError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(LicensesGetError::Status304),
                 code => Err(LicensesGetError::Generic { code }),
             }
@@ -214,11 +214,11 @@ impl<'api> Licenses<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(LicensesGetError::Status403(github_response.to_json()?)),
-                404 => Err(LicensesGetError::Status404(github_response.to_json()?)),
+                403 => Err(LicensesGetError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(LicensesGetError::Status404(crate::adapters::to_json(github_response)?)),
                 304 => Err(LicensesGetError::Status304),
                 code => Err(LicensesGetError::Generic { code }),
             }
@@ -257,7 +257,7 @@ impl<'api> Licenses<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(LicensesGetAllCommonlyUsedError::Status304),
@@ -300,7 +300,7 @@ impl<'api> Licenses<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(LicensesGetAllCommonlyUsedError::Status304),
@@ -341,7 +341,7 @@ impl<'api> Licenses<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(LicensesGetForRepoError::Generic { code }),
@@ -382,7 +382,7 @@ impl<'api> Licenses<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(LicensesGetForRepoError::Generic { code }),

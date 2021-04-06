@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
+use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -184,11 +184,11 @@ impl<'api> SecretScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 404 => Err(SecretScanningGetAlertError::Status404),
-                503 => Err(SecretScanningGetAlertError::Status503(github_response.to_json()?)),
+                503 => Err(SecretScanningGetAlertError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(SecretScanningGetAlertError::Generic { code }),
             }
         }
@@ -227,11 +227,11 @@ impl<'api> SecretScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 404 => Err(SecretScanningGetAlertError::Status404),
-                503 => Err(SecretScanningGetAlertError::Status503(github_response.to_json()?)),
+                503 => Err(SecretScanningGetAlertError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(SecretScanningGetAlertError::Generic { code }),
             }
         }
@@ -273,11 +273,11 @@ impl<'api> SecretScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 404 => Err(SecretScanningListAlertsForRepoError::Status404),
-                503 => Err(SecretScanningListAlertsForRepoError::Status503(github_response.to_json()?)),
+                503 => Err(SecretScanningListAlertsForRepoError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(SecretScanningListAlertsForRepoError::Generic { code }),
             }
         }
@@ -321,11 +321,11 @@ impl<'api> SecretScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 404 => Err(SecretScanningListAlertsForRepoError::Status404),
-                503 => Err(SecretScanningListAlertsForRepoError::Status503(github_response.to_json()?)),
+                503 => Err(SecretScanningListAlertsForRepoError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(SecretScanningListAlertsForRepoError::Generic { code }),
             }
         }
@@ -363,12 +363,12 @@ impl<'api> SecretScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 404 => Err(SecretScanningUpdateAlertError::Status404),
                 422 => Err(SecretScanningUpdateAlertError::Status422),
-                503 => Err(SecretScanningUpdateAlertError::Status503(github_response.to_json()?)),
+                503 => Err(SecretScanningUpdateAlertError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(SecretScanningUpdateAlertError::Generic { code }),
             }
         }
@@ -407,12 +407,12 @@ impl<'api> SecretScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 404 => Err(SecretScanningUpdateAlertError::Status404),
                 422 => Err(SecretScanningUpdateAlertError::Status422),
-                503 => Err(SecretScanningUpdateAlertError::Status503(github_response.to_json()?)),
+                503 => Err(SecretScanningUpdateAlertError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(SecretScanningUpdateAlertError::Generic { code }),
             }
         }

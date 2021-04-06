@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
+use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -932,12 +932,12 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForCommitCommentError::Status201(github_response.to_json()?)),
-                415 => Err(ReactionsCreateForCommitCommentError::Status415(github_response.to_json()?)),
-                422 => Err(ReactionsCreateForCommitCommentError::Status422(github_response.to_json()?)),
+                201 => Err(ReactionsCreateForCommitCommentError::Status201(crate::adapters::to_json_async(github_response).await?)),
+                415 => Err(ReactionsCreateForCommitCommentError::Status415(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReactionsCreateForCommitCommentError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReactionsCreateForCommitCommentError::Generic { code }),
             }
         }
@@ -977,12 +977,12 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForCommitCommentError::Status201(github_response.to_json()?)),
-                415 => Err(ReactionsCreateForCommitCommentError::Status415(github_response.to_json()?)),
-                422 => Err(ReactionsCreateForCommitCommentError::Status422(github_response.to_json()?)),
+                201 => Err(ReactionsCreateForCommitCommentError::Status201(crate::adapters::to_json(github_response)?)),
+                415 => Err(ReactionsCreateForCommitCommentError::Status415(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReactionsCreateForCommitCommentError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReactionsCreateForCommitCommentError::Generic { code }),
             }
         }
@@ -1021,11 +1021,11 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                415 => Err(ReactionsCreateForIssueError::Status415(github_response.to_json()?)),
-                422 => Err(ReactionsCreateForIssueError::Status422(github_response.to_json()?)),
+                415 => Err(ReactionsCreateForIssueError::Status415(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReactionsCreateForIssueError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReactionsCreateForIssueError::Generic { code }),
             }
         }
@@ -1065,11 +1065,11 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                415 => Err(ReactionsCreateForIssueError::Status415(github_response.to_json()?)),
-                422 => Err(ReactionsCreateForIssueError::Status422(github_response.to_json()?)),
+                415 => Err(ReactionsCreateForIssueError::Status415(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReactionsCreateForIssueError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReactionsCreateForIssueError::Generic { code }),
             }
         }
@@ -1108,12 +1108,12 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForIssueCommentError::Status201(github_response.to_json()?)),
-                415 => Err(ReactionsCreateForIssueCommentError::Status415(github_response.to_json()?)),
-                422 => Err(ReactionsCreateForIssueCommentError::Status422(github_response.to_json()?)),
+                201 => Err(ReactionsCreateForIssueCommentError::Status201(crate::adapters::to_json_async(github_response).await?)),
+                415 => Err(ReactionsCreateForIssueCommentError::Status415(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReactionsCreateForIssueCommentError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReactionsCreateForIssueCommentError::Generic { code }),
             }
         }
@@ -1153,12 +1153,12 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForIssueCommentError::Status201(github_response.to_json()?)),
-                415 => Err(ReactionsCreateForIssueCommentError::Status415(github_response.to_json()?)),
-                422 => Err(ReactionsCreateForIssueCommentError::Status422(github_response.to_json()?)),
+                201 => Err(ReactionsCreateForIssueCommentError::Status201(crate::adapters::to_json(github_response)?)),
+                415 => Err(ReactionsCreateForIssueCommentError::Status415(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReactionsCreateForIssueCommentError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReactionsCreateForIssueCommentError::Generic { code }),
             }
         }
@@ -1197,12 +1197,12 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForPullRequestReviewCommentError::Status201(github_response.to_json()?)),
-                415 => Err(ReactionsCreateForPullRequestReviewCommentError::Status415(github_response.to_json()?)),
-                422 => Err(ReactionsCreateForPullRequestReviewCommentError::Status422(github_response.to_json()?)),
+                201 => Err(ReactionsCreateForPullRequestReviewCommentError::Status201(crate::adapters::to_json_async(github_response).await?)),
+                415 => Err(ReactionsCreateForPullRequestReviewCommentError::Status415(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReactionsCreateForPullRequestReviewCommentError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReactionsCreateForPullRequestReviewCommentError::Generic { code }),
             }
         }
@@ -1242,12 +1242,12 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForPullRequestReviewCommentError::Status201(github_response.to_json()?)),
-                415 => Err(ReactionsCreateForPullRequestReviewCommentError::Status415(github_response.to_json()?)),
-                422 => Err(ReactionsCreateForPullRequestReviewCommentError::Status422(github_response.to_json()?)),
+                201 => Err(ReactionsCreateForPullRequestReviewCommentError::Status201(crate::adapters::to_json(github_response)?)),
+                415 => Err(ReactionsCreateForPullRequestReviewCommentError::Status415(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReactionsCreateForPullRequestReviewCommentError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReactionsCreateForPullRequestReviewCommentError::Generic { code }),
             }
         }
@@ -1288,7 +1288,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsCreateForTeamDiscussionCommentInOrgError::Generic { code }),
@@ -1332,7 +1332,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsCreateForTeamDiscussionCommentInOrgError::Generic { code }),
@@ -1375,7 +1375,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsCreateForTeamDiscussionCommentLegacyError::Generic { code }),
@@ -1419,7 +1419,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsCreateForTeamDiscussionCommentLegacyError::Generic { code }),
@@ -1462,7 +1462,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsCreateForTeamDiscussionInOrgError::Generic { code }),
@@ -1506,7 +1506,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsCreateForTeamDiscussionInOrgError::Generic { code }),
@@ -1549,7 +1549,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsCreateForTeamDiscussionLegacyError::Generic { code }),
@@ -1593,7 +1593,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsCreateForTeamDiscussionLegacyError::Generic { code }),
@@ -1636,7 +1636,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForCommitCommentError::Generic { code }),
@@ -1680,7 +1680,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForCommitCommentError::Generic { code }),
@@ -1723,7 +1723,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForIssueError::Generic { code }),
@@ -1767,7 +1767,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForIssueError::Generic { code }),
@@ -1810,7 +1810,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForIssueCommentError::Generic { code }),
@@ -1854,7 +1854,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForIssueCommentError::Generic { code }),
@@ -1897,7 +1897,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForPullRequestCommentError::Generic { code }),
@@ -1941,7 +1941,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForPullRequestCommentError::Generic { code }),
@@ -1984,7 +1984,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForTeamDiscussionError::Generic { code }),
@@ -2028,7 +2028,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForTeamDiscussionError::Generic { code }),
@@ -2071,7 +2071,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForTeamDiscussionCommentError::Generic { code }),
@@ -2115,7 +2115,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForTeamDiscussionCommentError::Generic { code }),
@@ -2158,14 +2158,14 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(ReactionsDeleteLegacyError::Status304),
-                403 => Err(ReactionsDeleteLegacyError::Status403(github_response.to_json()?)),
-                401 => Err(ReactionsDeleteLegacyError::Status401(github_response.to_json()?)),
-                410 => Err(ReactionsDeleteLegacyError::Status410(github_response.to_json()?)),
-                415 => Err(ReactionsDeleteLegacyError::Status415(github_response.to_json()?)),
+                403 => Err(ReactionsDeleteLegacyError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(ReactionsDeleteLegacyError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                410 => Err(ReactionsDeleteLegacyError::Status410(crate::adapters::to_json_async(github_response).await?)),
+                415 => Err(ReactionsDeleteLegacyError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReactionsDeleteLegacyError::Generic { code }),
             }
         }
@@ -2207,14 +2207,14 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(ReactionsDeleteLegacyError::Status304),
-                403 => Err(ReactionsDeleteLegacyError::Status403(github_response.to_json()?)),
-                401 => Err(ReactionsDeleteLegacyError::Status401(github_response.to_json()?)),
-                410 => Err(ReactionsDeleteLegacyError::Status410(github_response.to_json()?)),
-                415 => Err(ReactionsDeleteLegacyError::Status415(github_response.to_json()?)),
+                403 => Err(ReactionsDeleteLegacyError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(ReactionsDeleteLegacyError::Status401(crate::adapters::to_json(github_response)?)),
+                410 => Err(ReactionsDeleteLegacyError::Status410(crate::adapters::to_json(github_response)?)),
+                415 => Err(ReactionsDeleteLegacyError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(ReactionsDeleteLegacyError::Generic { code }),
             }
         }
@@ -2257,11 +2257,11 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForCommitCommentError::Status404(github_response.to_json()?)),
-                415 => Err(ReactionsListForCommitCommentError::Status415(github_response.to_json()?)),
+                404 => Err(ReactionsListForCommitCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                415 => Err(ReactionsListForCommitCommentError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReactionsListForCommitCommentError::Generic { code }),
             }
         }
@@ -2306,11 +2306,11 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForCommitCommentError::Status404(github_response.to_json()?)),
-                415 => Err(ReactionsListForCommitCommentError::Status415(github_response.to_json()?)),
+                404 => Err(ReactionsListForCommitCommentError::Status404(crate::adapters::to_json(github_response)?)),
+                415 => Err(ReactionsListForCommitCommentError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(ReactionsListForCommitCommentError::Generic { code }),
             }
         }
@@ -2353,12 +2353,12 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForIssueError::Status404(github_response.to_json()?)),
-                410 => Err(ReactionsListForIssueError::Status410(github_response.to_json()?)),
-                415 => Err(ReactionsListForIssueError::Status415(github_response.to_json()?)),
+                404 => Err(ReactionsListForIssueError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                410 => Err(ReactionsListForIssueError::Status410(crate::adapters::to_json_async(github_response).await?)),
+                415 => Err(ReactionsListForIssueError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReactionsListForIssueError::Generic { code }),
             }
         }
@@ -2403,12 +2403,12 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForIssueError::Status404(github_response.to_json()?)),
-                410 => Err(ReactionsListForIssueError::Status410(github_response.to_json()?)),
-                415 => Err(ReactionsListForIssueError::Status415(github_response.to_json()?)),
+                404 => Err(ReactionsListForIssueError::Status404(crate::adapters::to_json(github_response)?)),
+                410 => Err(ReactionsListForIssueError::Status410(crate::adapters::to_json(github_response)?)),
+                415 => Err(ReactionsListForIssueError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(ReactionsListForIssueError::Generic { code }),
             }
         }
@@ -2451,11 +2451,11 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForIssueCommentError::Status404(github_response.to_json()?)),
-                415 => Err(ReactionsListForIssueCommentError::Status415(github_response.to_json()?)),
+                404 => Err(ReactionsListForIssueCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                415 => Err(ReactionsListForIssueCommentError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReactionsListForIssueCommentError::Generic { code }),
             }
         }
@@ -2500,11 +2500,11 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForIssueCommentError::Status404(github_response.to_json()?)),
-                415 => Err(ReactionsListForIssueCommentError::Status415(github_response.to_json()?)),
+                404 => Err(ReactionsListForIssueCommentError::Status404(crate::adapters::to_json(github_response)?)),
+                415 => Err(ReactionsListForIssueCommentError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(ReactionsListForIssueCommentError::Generic { code }),
             }
         }
@@ -2547,11 +2547,11 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForPullRequestReviewCommentError::Status404(github_response.to_json()?)),
-                415 => Err(ReactionsListForPullRequestReviewCommentError::Status415(github_response.to_json()?)),
+                404 => Err(ReactionsListForPullRequestReviewCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                415 => Err(ReactionsListForPullRequestReviewCommentError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReactionsListForPullRequestReviewCommentError::Generic { code }),
             }
         }
@@ -2596,11 +2596,11 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForPullRequestReviewCommentError::Status404(github_response.to_json()?)),
-                415 => Err(ReactionsListForPullRequestReviewCommentError::Status415(github_response.to_json()?)),
+                404 => Err(ReactionsListForPullRequestReviewCommentError::Status404(crate::adapters::to_json(github_response)?)),
+                415 => Err(ReactionsListForPullRequestReviewCommentError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(ReactionsListForPullRequestReviewCommentError::Generic { code }),
             }
         }
@@ -2645,7 +2645,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsListForTeamDiscussionCommentInOrgError::Generic { code }),
@@ -2694,7 +2694,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsListForTeamDiscussionCommentInOrgError::Generic { code }),
@@ -2741,7 +2741,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsListForTeamDiscussionCommentLegacyError::Generic { code }),
@@ -2790,7 +2790,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsListForTeamDiscussionCommentLegacyError::Generic { code }),
@@ -2837,7 +2837,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsListForTeamDiscussionInOrgError::Generic { code }),
@@ -2886,7 +2886,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsListForTeamDiscussionInOrgError::Generic { code }),
@@ -2933,7 +2933,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsListForTeamDiscussionLegacyError::Generic { code }),
@@ -2982,7 +2982,7 @@ impl<'api> Reactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsListForTeamDiscussionLegacyError::Generic { code }),

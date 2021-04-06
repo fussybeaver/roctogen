@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
+use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -1553,13 +1553,13 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status404(github_response.to_json()?)),
-                401 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status401(github_response.to_json()?)),
+                404 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status304),
-                403 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status403(github_response.to_json()?)),
+                403 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Generic { code }),
             }
         }
@@ -1594,13 +1594,13 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status404(github_response.to_json()?)),
-                401 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status401(github_response.to_json()?)),
+                404 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                401 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 304 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status304),
-                403 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status403(github_response.to_json()?)),
+                403 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Generic { code }),
             }
         }
@@ -1636,7 +1636,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityDeleteRepoSubscriptionError::Generic { code }),
@@ -1675,7 +1675,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityDeleteRepoSubscriptionError::Generic { code }),
@@ -1713,12 +1713,12 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(ActivityDeleteThreadSubscriptionError::Status304),
-                403 => Err(ActivityDeleteThreadSubscriptionError::Status403(github_response.to_json()?)),
-                401 => Err(ActivityDeleteThreadSubscriptionError::Status401(github_response.to_json()?)),
+                403 => Err(ActivityDeleteThreadSubscriptionError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(ActivityDeleteThreadSubscriptionError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ActivityDeleteThreadSubscriptionError::Generic { code }),
             }
         }
@@ -1755,12 +1755,12 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(ActivityDeleteThreadSubscriptionError::Status304),
-                403 => Err(ActivityDeleteThreadSubscriptionError::Status403(github_response.to_json()?)),
-                401 => Err(ActivityDeleteThreadSubscriptionError::Status401(github_response.to_json()?)),
+                403 => Err(ActivityDeleteThreadSubscriptionError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(ActivityDeleteThreadSubscriptionError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(ActivityDeleteThreadSubscriptionError::Generic { code }),
             }
         }
@@ -1806,7 +1806,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityGetFeedsError::Generic { code }),
@@ -1855,7 +1855,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityGetFeedsError::Generic { code }),
@@ -1891,11 +1891,11 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 404 => Err(ActivityGetRepoSubscriptionError::Status404),
-                403 => Err(ActivityGetRepoSubscriptionError::Status403(github_response.to_json()?)),
+                403 => Err(ActivityGetRepoSubscriptionError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ActivityGetRepoSubscriptionError::Generic { code }),
             }
         }
@@ -1930,11 +1930,11 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 404 => Err(ActivityGetRepoSubscriptionError::Status404),
-                403 => Err(ActivityGetRepoSubscriptionError::Status403(github_response.to_json()?)),
+                403 => Err(ActivityGetRepoSubscriptionError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(ActivityGetRepoSubscriptionError::Generic { code }),
             }
         }
@@ -1968,12 +1968,12 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(ActivityGetThreadError::Status304),
-                403 => Err(ActivityGetThreadError::Status403(github_response.to_json()?)),
-                401 => Err(ActivityGetThreadError::Status401(github_response.to_json()?)),
+                403 => Err(ActivityGetThreadError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(ActivityGetThreadError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ActivityGetThreadError::Generic { code }),
             }
         }
@@ -2008,12 +2008,12 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(ActivityGetThreadError::Status304),
-                403 => Err(ActivityGetThreadError::Status403(github_response.to_json()?)),
-                401 => Err(ActivityGetThreadError::Status401(github_response.to_json()?)),
+                403 => Err(ActivityGetThreadError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(ActivityGetThreadError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(ActivityGetThreadError::Generic { code }),
             }
         }
@@ -2051,12 +2051,12 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Status304),
-                403 => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2095,12 +2095,12 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Status304),
-                403 => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2140,7 +2140,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityListEventsForAuthenticatedUserError::Generic { code }),
@@ -2184,7 +2184,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityListEventsForAuthenticatedUserError::Generic { code }),
@@ -2226,13 +2226,13 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(ActivityListNotificationsForAuthenticatedUserError::Status304),
-                403 => Err(ActivityListNotificationsForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(ActivityListNotificationsForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                422 => Err(ActivityListNotificationsForAuthenticatedUserError::Status422(github_response.to_json()?)),
+                403 => Err(ActivityListNotificationsForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(ActivityListNotificationsForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ActivityListNotificationsForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ActivityListNotificationsForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2274,13 +2274,13 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(ActivityListNotificationsForAuthenticatedUserError::Status304),
-                403 => Err(ActivityListNotificationsForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(ActivityListNotificationsForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                422 => Err(ActivityListNotificationsForAuthenticatedUserError::Status422(github_response.to_json()?)),
+                403 => Err(ActivityListNotificationsForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(ActivityListNotificationsForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                422 => Err(ActivityListNotificationsForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ActivityListNotificationsForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2320,7 +2320,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityListOrgEventsForAuthenticatedUserError::Generic { code }),
@@ -2364,7 +2364,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityListOrgEventsForAuthenticatedUserError::Generic { code }),
@@ -2406,12 +2406,12 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(ActivityListPublicEventsError::Status304),
-                403 => Err(ActivityListPublicEventsError::Status403(github_response.to_json()?)),
-                503 => Err(ActivityListPublicEventsError::Status503(github_response.to_json()?)),
+                403 => Err(ActivityListPublicEventsError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(ActivityListPublicEventsError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ActivityListPublicEventsError::Generic { code }),
             }
         }
@@ -2453,12 +2453,12 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(ActivityListPublicEventsError::Status304),
-                403 => Err(ActivityListPublicEventsError::Status403(github_response.to_json()?)),
-                503 => Err(ActivityListPublicEventsError::Status503(github_response.to_json()?)),
+                403 => Err(ActivityListPublicEventsError::Status403(crate::adapters::to_json(github_response)?)),
+                503 => Err(ActivityListPublicEventsError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(ActivityListPublicEventsError::Generic { code }),
             }
         }
@@ -2496,11 +2496,11 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActivityListPublicEventsForRepoNetworkError::Status404(github_response.to_json()?)),
-                403 => Err(ActivityListPublicEventsForRepoNetworkError::Status403(github_response.to_json()?)),
+                404 => Err(ActivityListPublicEventsForRepoNetworkError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(ActivityListPublicEventsForRepoNetworkError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(ActivityListPublicEventsForRepoNetworkError::Status304),
                 301 => Err(ActivityListPublicEventsForRepoNetworkError::Status301),
                 code => Err(ActivityListPublicEventsForRepoNetworkError::Generic { code }),
@@ -2542,11 +2542,11 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActivityListPublicEventsForRepoNetworkError::Status404(github_response.to_json()?)),
-                403 => Err(ActivityListPublicEventsForRepoNetworkError::Status403(github_response.to_json()?)),
+                404 => Err(ActivityListPublicEventsForRepoNetworkError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(ActivityListPublicEventsForRepoNetworkError::Status403(crate::adapters::to_json(github_response)?)),
                 304 => Err(ActivityListPublicEventsForRepoNetworkError::Status304),
                 301 => Err(ActivityListPublicEventsForRepoNetworkError::Status301),
                 code => Err(ActivityListPublicEventsForRepoNetworkError::Generic { code }),
@@ -2586,7 +2586,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityListPublicEventsForUserError::Generic { code }),
@@ -2628,7 +2628,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityListPublicEventsForUserError::Generic { code }),
@@ -2668,7 +2668,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityListPublicOrgEventsError::Generic { code }),
@@ -2710,7 +2710,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityListPublicOrgEventsError::Generic { code }),
@@ -2752,7 +2752,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityListReceivedEventsForUserError::Generic { code }),
@@ -2796,7 +2796,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityListReceivedEventsForUserError::Generic { code }),
@@ -2836,7 +2836,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityListReceivedPublicEventsForUserError::Generic { code }),
@@ -2878,7 +2878,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityListReceivedPublicEventsForUserError::Generic { code }),
@@ -2918,7 +2918,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityListRepoEventsError::Generic { code }),
@@ -2960,7 +2960,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityListRepoEventsError::Generic { code }),
@@ -3002,7 +3002,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityListRepoNotificationsForAuthenticatedUserError::Generic { code }),
@@ -3046,7 +3046,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityListRepoNotificationsForAuthenticatedUserError::Generic { code }),
@@ -3090,12 +3090,12 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(ActivityListReposStarredByAuthenticatedUserError::Status304),
-                403 => Err(ActivityListReposStarredByAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(ActivityListReposStarredByAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(ActivityListReposStarredByAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(ActivityListReposStarredByAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ActivityListReposStarredByAuthenticatedUserError::Generic { code }),
             }
         }
@@ -3139,12 +3139,12 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(ActivityListReposStarredByAuthenticatedUserError::Status304),
-                403 => Err(ActivityListReposStarredByAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(ActivityListReposStarredByAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(ActivityListReposStarredByAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(ActivityListReposStarredByAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(ActivityListReposStarredByAuthenticatedUserError::Generic { code }),
             }
         }
@@ -3186,7 +3186,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityListReposStarredByUserError::Generic { code }),
@@ -3232,7 +3232,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityListReposStarredByUserError::Generic { code }),
@@ -3274,7 +3274,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityListReposWatchedByUserError::Generic { code }),
@@ -3318,7 +3318,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityListReposWatchedByUserError::Generic { code }),
@@ -3362,10 +3362,10 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ActivityListStargazersForRepoError::Status422(github_response.to_json()?)),
+                422 => Err(ActivityListStargazersForRepoError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ActivityListStargazersForRepoError::Generic { code }),
             }
         }
@@ -3409,10 +3409,10 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(ActivityListStargazersForRepoError::Status422(github_response.to_json()?)),
+                422 => Err(ActivityListStargazersForRepoError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ActivityListStargazersForRepoError::Generic { code }),
             }
         }
@@ -3452,12 +3452,12 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(ActivityListWatchedReposForAuthenticatedUserError::Status304),
-                403 => Err(ActivityListWatchedReposForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(ActivityListWatchedReposForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(ActivityListWatchedReposForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(ActivityListWatchedReposForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ActivityListWatchedReposForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -3499,12 +3499,12 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(ActivityListWatchedReposForAuthenticatedUserError::Status304),
-                403 => Err(ActivityListWatchedReposForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(ActivityListWatchedReposForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(ActivityListWatchedReposForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(ActivityListWatchedReposForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(ActivityListWatchedReposForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -3544,7 +3544,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityListWatchersForRepoError::Generic { code }),
@@ -3588,7 +3588,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityListWatchersForRepoError::Generic { code }),
@@ -3626,13 +3626,13 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 205 => Err(ActivityMarkNotificationsAsReadError::Status205),
                 304 => Err(ActivityMarkNotificationsAsReadError::Status304),
-                403 => Err(ActivityMarkNotificationsAsReadError::Status403(github_response.to_json()?)),
-                401 => Err(ActivityMarkNotificationsAsReadError::Status401(github_response.to_json()?)),
+                403 => Err(ActivityMarkNotificationsAsReadError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(ActivityMarkNotificationsAsReadError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ActivityMarkNotificationsAsReadError::Generic { code }),
             }
         }
@@ -3669,13 +3669,13 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 205 => Err(ActivityMarkNotificationsAsReadError::Status205),
                 304 => Err(ActivityMarkNotificationsAsReadError::Status304),
-                403 => Err(ActivityMarkNotificationsAsReadError::Status403(github_response.to_json()?)),
-                401 => Err(ActivityMarkNotificationsAsReadError::Status401(github_response.to_json()?)),
+                403 => Err(ActivityMarkNotificationsAsReadError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(ActivityMarkNotificationsAsReadError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(ActivityMarkNotificationsAsReadError::Generic { code }),
             }
         }
@@ -3711,7 +3711,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityMarkRepoNotificationsAsReadError::Generic { code }),
@@ -3750,7 +3750,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivityMarkRepoNotificationsAsReadError::Generic { code }),
@@ -3786,11 +3786,11 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(ActivityMarkThreadAsReadError::Status304),
-                403 => Err(ActivityMarkThreadAsReadError::Status403(github_response.to_json()?)),
+                403 => Err(ActivityMarkThreadAsReadError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ActivityMarkThreadAsReadError::Generic { code }),
             }
         }
@@ -3825,11 +3825,11 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(ActivityMarkThreadAsReadError::Status304),
-                403 => Err(ActivityMarkThreadAsReadError::Status403(github_response.to_json()?)),
+                403 => Err(ActivityMarkThreadAsReadError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(ActivityMarkThreadAsReadError::Generic { code }),
             }
         }
@@ -3865,7 +3865,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivitySetRepoSubscriptionError::Generic { code }),
@@ -3904,7 +3904,7 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(ActivitySetRepoSubscriptionError::Generic { code }),
@@ -3946,12 +3946,12 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(ActivitySetThreadSubscriptionError::Status304),
-                403 => Err(ActivitySetThreadSubscriptionError::Status403(github_response.to_json()?)),
-                401 => Err(ActivitySetThreadSubscriptionError::Status401(github_response.to_json()?)),
+                403 => Err(ActivitySetThreadSubscriptionError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(ActivitySetThreadSubscriptionError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ActivitySetThreadSubscriptionError::Generic { code }),
             }
         }
@@ -3992,12 +3992,12 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(ActivitySetThreadSubscriptionError::Status304),
-                403 => Err(ActivitySetThreadSubscriptionError::Status403(github_response.to_json()?)),
-                401 => Err(ActivitySetThreadSubscriptionError::Status401(github_response.to_json()?)),
+                403 => Err(ActivitySetThreadSubscriptionError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(ActivitySetThreadSubscriptionError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(ActivitySetThreadSubscriptionError::Generic { code }),
             }
         }
@@ -4033,12 +4033,12 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ActivityStarRepoForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(ActivityStarRepoForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                401 => Err(ActivityStarRepoForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(ActivityStarRepoForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ActivityStarRepoForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(ActivityStarRepoForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(ActivityStarRepoForAuthenticatedUserError::Status304),
                 code => Err(ActivityStarRepoForAuthenticatedUserError::Generic { code }),
             }
@@ -4076,12 +4076,12 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(ActivityStarRepoForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(ActivityStarRepoForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                401 => Err(ActivityStarRepoForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(ActivityStarRepoForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(ActivityStarRepoForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                401 => Err(ActivityStarRepoForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 304 => Err(ActivityStarRepoForAuthenticatedUserError::Status304),
                 code => Err(ActivityStarRepoForAuthenticatedUserError::Generic { code }),
             }
@@ -4116,13 +4116,13 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                401 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                404 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status304),
-                403 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                403 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ActivityUnstarRepoForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -4157,13 +4157,13 @@ impl<'api> Activity<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                401 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                404 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                401 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 304 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status304),
-                403 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                403 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(ActivityUnstarRepoForAuthenticatedUserError::Generic { code }),
             }
         }

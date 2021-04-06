@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
+use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -416,14 +416,14 @@ impl<'api> OauthAuthorizations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(OauthAuthorizationsCreateAuthorizationError::Status422(github_response.to_json()?)),
-                410 => Err(OauthAuthorizationsCreateAuthorizationError::Status410(github_response.to_json()?)),
+                422 => Err(OauthAuthorizationsCreateAuthorizationError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                410 => Err(OauthAuthorizationsCreateAuthorizationError::Status410(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(OauthAuthorizationsCreateAuthorizationError::Status304),
-                403 => Err(OauthAuthorizationsCreateAuthorizationError::Status403(github_response.to_json()?)),
-                401 => Err(OauthAuthorizationsCreateAuthorizationError::Status401(github_response.to_json()?)),
+                403 => Err(OauthAuthorizationsCreateAuthorizationError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(OauthAuthorizationsCreateAuthorizationError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OauthAuthorizationsCreateAuthorizationError::Generic { code }),
             }
         }
@@ -470,14 +470,14 @@ impl<'api> OauthAuthorizations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(OauthAuthorizationsCreateAuthorizationError::Status422(github_response.to_json()?)),
-                410 => Err(OauthAuthorizationsCreateAuthorizationError::Status410(github_response.to_json()?)),
+                422 => Err(OauthAuthorizationsCreateAuthorizationError::Status422(crate::adapters::to_json(github_response)?)),
+                410 => Err(OauthAuthorizationsCreateAuthorizationError::Status410(crate::adapters::to_json(github_response)?)),
                 304 => Err(OauthAuthorizationsCreateAuthorizationError::Status304),
-                403 => Err(OauthAuthorizationsCreateAuthorizationError::Status403(github_response.to_json()?)),
-                401 => Err(OauthAuthorizationsCreateAuthorizationError::Status401(github_response.to_json()?)),
+                403 => Err(OauthAuthorizationsCreateAuthorizationError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(OauthAuthorizationsCreateAuthorizationError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(OauthAuthorizationsCreateAuthorizationError::Generic { code }),
             }
         }
@@ -513,12 +513,12 @@ impl<'api> OauthAuthorizations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(OauthAuthorizationsDeleteAuthorizationError::Status304),
-                403 => Err(OauthAuthorizationsDeleteAuthorizationError::Status403(github_response.to_json()?)),
-                401 => Err(OauthAuthorizationsDeleteAuthorizationError::Status401(github_response.to_json()?)),
+                403 => Err(OauthAuthorizationsDeleteAuthorizationError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(OauthAuthorizationsDeleteAuthorizationError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OauthAuthorizationsDeleteAuthorizationError::Generic { code }),
             }
         }
@@ -555,12 +555,12 @@ impl<'api> OauthAuthorizations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(OauthAuthorizationsDeleteAuthorizationError::Status304),
-                403 => Err(OauthAuthorizationsDeleteAuthorizationError::Status403(github_response.to_json()?)),
-                401 => Err(OauthAuthorizationsDeleteAuthorizationError::Status401(github_response.to_json()?)),
+                403 => Err(OauthAuthorizationsDeleteAuthorizationError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(OauthAuthorizationsDeleteAuthorizationError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(OauthAuthorizationsDeleteAuthorizationError::Generic { code }),
             }
         }
@@ -598,12 +598,12 @@ impl<'api> OauthAuthorizations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(OauthAuthorizationsDeleteGrantError::Status304),
-                403 => Err(OauthAuthorizationsDeleteGrantError::Status403(github_response.to_json()?)),
-                401 => Err(OauthAuthorizationsDeleteGrantError::Status401(github_response.to_json()?)),
+                403 => Err(OauthAuthorizationsDeleteGrantError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(OauthAuthorizationsDeleteGrantError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OauthAuthorizationsDeleteGrantError::Generic { code }),
             }
         }
@@ -642,12 +642,12 @@ impl<'api> OauthAuthorizations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(OauthAuthorizationsDeleteGrantError::Status304),
-                403 => Err(OauthAuthorizationsDeleteGrantError::Status403(github_response.to_json()?)),
-                401 => Err(OauthAuthorizationsDeleteGrantError::Status401(github_response.to_json()?)),
+                403 => Err(OauthAuthorizationsDeleteGrantError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(OauthAuthorizationsDeleteGrantError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(OauthAuthorizationsDeleteGrantError::Generic { code }),
             }
         }
@@ -683,12 +683,12 @@ impl<'api> OauthAuthorizations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(OauthAuthorizationsGetAuthorizationError::Status304),
-                403 => Err(OauthAuthorizationsGetAuthorizationError::Status403(github_response.to_json()?)),
-                401 => Err(OauthAuthorizationsGetAuthorizationError::Status401(github_response.to_json()?)),
+                403 => Err(OauthAuthorizationsGetAuthorizationError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(OauthAuthorizationsGetAuthorizationError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OauthAuthorizationsGetAuthorizationError::Generic { code }),
             }
         }
@@ -725,12 +725,12 @@ impl<'api> OauthAuthorizations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(OauthAuthorizationsGetAuthorizationError::Status304),
-                403 => Err(OauthAuthorizationsGetAuthorizationError::Status403(github_response.to_json()?)),
-                401 => Err(OauthAuthorizationsGetAuthorizationError::Status401(github_response.to_json()?)),
+                403 => Err(OauthAuthorizationsGetAuthorizationError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(OauthAuthorizationsGetAuthorizationError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(OauthAuthorizationsGetAuthorizationError::Generic { code }),
             }
         }
@@ -766,12 +766,12 @@ impl<'api> OauthAuthorizations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(OauthAuthorizationsGetGrantError::Status304),
-                403 => Err(OauthAuthorizationsGetGrantError::Status403(github_response.to_json()?)),
-                401 => Err(OauthAuthorizationsGetGrantError::Status401(github_response.to_json()?)),
+                403 => Err(OauthAuthorizationsGetGrantError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(OauthAuthorizationsGetGrantError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OauthAuthorizationsGetGrantError::Generic { code }),
             }
         }
@@ -808,12 +808,12 @@ impl<'api> OauthAuthorizations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(OauthAuthorizationsGetGrantError::Status304),
-                403 => Err(OauthAuthorizationsGetGrantError::Status403(github_response.to_json()?)),
-                401 => Err(OauthAuthorizationsGetGrantError::Status401(github_response.to_json()?)),
+                403 => Err(OauthAuthorizationsGetGrantError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(OauthAuthorizationsGetGrantError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(OauthAuthorizationsGetGrantError::Generic { code }),
             }
         }
@@ -857,14 +857,14 @@ impl<'api> OauthAuthorizations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                201 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppError::Status201(github_response.to_json()?)),
-                422 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppError::Status422(github_response.to_json()?)),
+                201 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppError::Status201(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppError::Status304),
-                403 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppError::Status403(github_response.to_json()?)),
-                401 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppError::Status401(github_response.to_json()?)),
+                403 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppError::Generic { code }),
             }
         }
@@ -909,14 +909,14 @@ impl<'api> OauthAuthorizations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                201 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppError::Status201(github_response.to_json()?)),
-                422 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppError::Status422(github_response.to_json()?)),
+                201 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppError::Status201(crate::adapters::to_json(github_response)?)),
+                422 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppError::Status422(crate::adapters::to_json(github_response)?)),
                 304 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppError::Status304),
-                403 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppError::Status403(github_response.to_json()?)),
-                401 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppError::Status401(github_response.to_json()?)),
+                403 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppError::Generic { code }),
             }
         }
@@ -958,11 +958,11 @@ impl<'api> OauthAuthorizations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                201 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppAndFingerprintError::Status201(github_response.to_json()?)),
-                422 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppAndFingerprintError::Status422(github_response.to_json()?)),
+                201 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppAndFingerprintError::Status201(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppAndFingerprintError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppAndFingerprintError::Generic { code }),
             }
         }
@@ -1005,11 +1005,11 @@ impl<'api> OauthAuthorizations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                201 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppAndFingerprintError::Status201(github_response.to_json()?)),
-                422 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppAndFingerprintError::Status422(github_response.to_json()?)),
+                201 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppAndFingerprintError::Status201(crate::adapters::to_json(github_response)?)),
+                422 => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppAndFingerprintError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(OauthAuthorizationsGetOrCreateAuthorizationForAppAndFingerprintError::Generic { code }),
             }
         }
@@ -1049,13 +1049,13 @@ impl<'api> OauthAuthorizations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(OauthAuthorizationsListAuthorizationsError::Status304),
-                403 => Err(OauthAuthorizationsListAuthorizationsError::Status403(github_response.to_json()?)),
-                401 => Err(OauthAuthorizationsListAuthorizationsError::Status401(github_response.to_json()?)),
-                404 => Err(OauthAuthorizationsListAuthorizationsError::Status404(github_response.to_json()?)),
+                403 => Err(OauthAuthorizationsListAuthorizationsError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(OauthAuthorizationsListAuthorizationsError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OauthAuthorizationsListAuthorizationsError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OauthAuthorizationsListAuthorizationsError::Generic { code }),
             }
         }
@@ -1097,13 +1097,13 @@ impl<'api> OauthAuthorizations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(OauthAuthorizationsListAuthorizationsError::Status304),
-                403 => Err(OauthAuthorizationsListAuthorizationsError::Status403(github_response.to_json()?)),
-                401 => Err(OauthAuthorizationsListAuthorizationsError::Status401(github_response.to_json()?)),
-                404 => Err(OauthAuthorizationsListAuthorizationsError::Status404(github_response.to_json()?)),
+                403 => Err(OauthAuthorizationsListAuthorizationsError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(OauthAuthorizationsListAuthorizationsError::Status401(crate::adapters::to_json(github_response)?)),
+                404 => Err(OauthAuthorizationsListAuthorizationsError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(OauthAuthorizationsListAuthorizationsError::Generic { code }),
             }
         }
@@ -1145,13 +1145,13 @@ impl<'api> OauthAuthorizations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(OauthAuthorizationsListGrantsError::Status304),
-                403 => Err(OauthAuthorizationsListGrantsError::Status403(github_response.to_json()?)),
-                401 => Err(OauthAuthorizationsListGrantsError::Status401(github_response.to_json()?)),
-                404 => Err(OauthAuthorizationsListGrantsError::Status404(github_response.to_json()?)),
+                403 => Err(OauthAuthorizationsListGrantsError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(OauthAuthorizationsListGrantsError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OauthAuthorizationsListGrantsError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OauthAuthorizationsListGrantsError::Generic { code }),
             }
         }
@@ -1195,13 +1195,13 @@ impl<'api> OauthAuthorizations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(OauthAuthorizationsListGrantsError::Status304),
-                403 => Err(OauthAuthorizationsListGrantsError::Status403(github_response.to_json()?)),
-                401 => Err(OauthAuthorizationsListGrantsError::Status401(github_response.to_json()?)),
-                404 => Err(OauthAuthorizationsListGrantsError::Status404(github_response.to_json()?)),
+                403 => Err(OauthAuthorizationsListGrantsError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(OauthAuthorizationsListGrantsError::Status401(crate::adapters::to_json(github_response)?)),
+                404 => Err(OauthAuthorizationsListGrantsError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(OauthAuthorizationsListGrantsError::Generic { code }),
             }
         }
@@ -1241,10 +1241,10 @@ impl<'api> OauthAuthorizations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(OauthAuthorizationsUpdateAuthorizationError::Status422(github_response.to_json()?)),
+                422 => Err(OauthAuthorizationsUpdateAuthorizationError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OauthAuthorizationsUpdateAuthorizationError::Generic { code }),
             }
         }
@@ -1285,10 +1285,10 @@ impl<'api> OauthAuthorizations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(OauthAuthorizationsUpdateAuthorizationError::Status422(github_response.to_json()?)),
+                422 => Err(OauthAuthorizationsUpdateAuthorizationError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(OauthAuthorizationsUpdateAuthorizationError::Generic { code }),
             }
         }

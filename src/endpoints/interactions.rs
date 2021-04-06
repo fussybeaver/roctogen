@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
+use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -225,7 +225,7 @@ impl<'api> Interactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(InteractionsGetRestrictionsForAuthenticatedUserError::Generic { code }),
@@ -264,7 +264,7 @@ impl<'api> Interactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(InteractionsGetRestrictionsForAuthenticatedUserError::Generic { code }),
@@ -302,7 +302,7 @@ impl<'api> Interactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(InteractionsGetRestrictionsForOrgError::Generic { code }),
@@ -341,7 +341,7 @@ impl<'api> Interactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(InteractionsGetRestrictionsForOrgError::Generic { code }),
@@ -379,7 +379,7 @@ impl<'api> Interactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(InteractionsGetRestrictionsForRepoError::Generic { code }),
@@ -418,7 +418,7 @@ impl<'api> Interactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(InteractionsGetRestrictionsForRepoError::Generic { code }),
@@ -456,7 +456,7 @@ impl<'api> Interactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(InteractionsRemoveRestrictionsForAuthenticatedUserError::Generic { code }),
@@ -495,7 +495,7 @@ impl<'api> Interactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(InteractionsRemoveRestrictionsForAuthenticatedUserError::Generic { code }),
@@ -533,7 +533,7 @@ impl<'api> Interactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(InteractionsRemoveRestrictionsForOrgError::Generic { code }),
@@ -572,7 +572,7 @@ impl<'api> Interactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(InteractionsRemoveRestrictionsForOrgError::Generic { code }),
@@ -610,7 +610,7 @@ impl<'api> Interactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 409 => Err(InteractionsRemoveRestrictionsForRepoError::Status409),
@@ -650,7 +650,7 @@ impl<'api> Interactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 409 => Err(InteractionsRemoveRestrictionsForRepoError::Status409),
@@ -689,10 +689,10 @@ impl<'api> Interactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(InteractionsSetRestrictionsForAuthenticatedUserError::Status422(github_response.to_json()?)),
+                422 => Err(InteractionsSetRestrictionsForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(InteractionsSetRestrictionsForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -729,10 +729,10 @@ impl<'api> Interactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(InteractionsSetRestrictionsForAuthenticatedUserError::Status422(github_response.to_json()?)),
+                422 => Err(InteractionsSetRestrictionsForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(InteractionsSetRestrictionsForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -768,10 +768,10 @@ impl<'api> Interactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(InteractionsSetRestrictionsForOrgError::Status422(github_response.to_json()?)),
+                422 => Err(InteractionsSetRestrictionsForOrgError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(InteractionsSetRestrictionsForOrgError::Generic { code }),
             }
         }
@@ -808,10 +808,10 @@ impl<'api> Interactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(InteractionsSetRestrictionsForOrgError::Status422(github_response.to_json()?)),
+                422 => Err(InteractionsSetRestrictionsForOrgError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(InteractionsSetRestrictionsForOrgError::Generic { code }),
             }
         }
@@ -847,7 +847,7 @@ impl<'api> Interactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 409 => Err(InteractionsSetRestrictionsForRepoError::Status409),
@@ -887,7 +887,7 @@ impl<'api> Interactions<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 409 => Err(InteractionsSetRestrictionsForRepoError::Status409),

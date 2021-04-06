@@ -6,7 +6,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
+use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -139,11 +139,11 @@ impl<'api> {{classname}}<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
 {{#responses}}{{#vendorExtensions}}{{^x-is-default}}
-                {{code}} => {{#dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}(github_response.to_json()?)){{/dataType}}{{^dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}){{/dataType}},
+                {{code}} => {{#dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}(crate::adapters::to_json_async(github_response).await?)){{/dataType}}{{^dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}){{/dataType}},
 {{/x-is-default}}{{/vendorExtensions}}{{/responses}}
                 code => Err({{classname}}{{operationIdCamelCase}}Error::Generic { code }),
             }
@@ -203,11 +203,11 @@ impl<'api> {{classname}}<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
 {{#responses}}{{#vendorExtensions}}{{^x-is-default}}
-                {{code}} => {{#dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}(github_response.to_json()?)){{/dataType}}{{^dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}){{/dataType}},
+                {{code}} => {{#dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}(crate::adapters::to_json(github_response)?)){{/dataType}}{{^dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}){{/dataType}},
 {{/x-is-default}}{{/vendorExtensions}}{{/responses}}
                 code => Err({{classname}}{{operationIdCamelCase}}Error::Generic { code }),
             }

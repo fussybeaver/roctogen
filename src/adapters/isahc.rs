@@ -4,11 +4,10 @@ use http::response::Response;
 use http::request::Request;
 
 use isahc::prelude::*;
-use isahc::Body;
-use isahc::RequestExt;
+use isahc::{AsyncBody, Body, RequestExt, ResponseFuture, AsyncReadResponseExt};
 
 use crate::auth::Auth;
-use super::{FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
+use super::{FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 
 use serde::{ser, Deserialize};
 
@@ -24,11 +23,11 @@ pub(crate) fn fetch(request: Request<Body>) -> Result<Response<Body>, AdapterErr
     Ok(request.send()?)
 }
 
-pub(crate) async fn fetch_async(_request: Request<Body>) -> Result<Response<Body>, AdapterError> {
-    todo!()
+pub(crate) async fn fetch_async(request: Request<AsyncBody>) -> Result<Response<AsyncBody>, AdapterError> {
+    Ok(request.send_async().await?)
 }
 
-impl<T: std::io::Read> GitHubResponseExt for Response<T> {
+impl<T> GitHubResponseExt for Response<T> {
     fn is_success(&self) -> bool {
         self.status().is_success()
     }
@@ -38,31 +37,28 @@ impl<T: std::io::Read> GitHubResponseExt for Response<T> {
     }
 }
 
-impl<T, E> ToJson<E> for Response<T>
-where
-    T: std::io::Read,
-    E: for<'de> Deserialize<'de>,
-{
-    fn to_json(mut self) -> Result<E, serde_json::Error> {
-        self.json()
-    }
+pub(crate) fn to_json<E: for<'de> Deserialize<'de>>(mut res: Response<Body>) -> Result<E, serde_json::Error> {
+    res.json()
 }
 
-pub(crate) type FromJsonType = Body;
+pub(crate) async fn to_json_async<E: for<'de> Deserialize<'de> + Unpin>(mut res: Response<AsyncBody>) -> Result<E, serde_json::Error> {
+    Ok(res.json().await?)
+}
 
-impl<E> FromJson<E> for E
+impl<E, T> FromJson<E, T> for E
 where
+    T: From<Vec<u8>>,
     E: ser::Serialize + std::fmt::Debug,
 {
-    fn from_json(model: E) -> Result<FromJsonType, serde_json::Error> {
+    fn from_json(model: E) -> Result<T, serde_json::Error> {
 
         Ok(serde_json::to_vec(&model)?.into())
     }
 }
 
-impl GitHubRequestBuilder for Request<Body> 
+impl<T: From<()>> GitHubRequestBuilder<T> for Request<T> 
 {
-    fn build(req: GitHubRequest, auth: &Auth) -> Result<Self, AdapterError> {
+    fn build(req: GitHubRequest<T>, auth: &Auth) -> Result<Self, AdapterError> {
         let mut builder = http::Request::builder();
 
         builder = builder

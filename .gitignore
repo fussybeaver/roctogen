@@ -10,3 +10,4 @@ target/
 /api.github.com*
 /.project
 /generated-sources
+/.cargo

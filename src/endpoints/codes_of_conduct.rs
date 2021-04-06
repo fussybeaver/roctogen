@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
+use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -126,11 +126,11 @@ impl<'api> CodesOfConduct<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodesOfConductGetAllCodesOfConductError::Status304),
-                415 => Err(CodesOfConductGetAllCodesOfConductError::Status415(github_response.to_json()?)),
+                415 => Err(CodesOfConductGetAllCodesOfConductError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(CodesOfConductGetAllCodesOfConductError::Generic { code }),
             }
         }
@@ -168,11 +168,11 @@ impl<'api> CodesOfConduct<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodesOfConductGetAllCodesOfConductError::Status304),
-                415 => Err(CodesOfConductGetAllCodesOfConductError::Status415(github_response.to_json()?)),
+                415 => Err(CodesOfConductGetAllCodesOfConductError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(CodesOfConductGetAllCodesOfConductError::Generic { code }),
             }
         }
@@ -209,12 +209,12 @@ impl<'api> CodesOfConduct<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodesOfConductGetConductCodeError::Status404(github_response.to_json()?)),
+                404 => Err(CodesOfConductGetConductCodeError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(CodesOfConductGetConductCodeError::Status304),
-                415 => Err(CodesOfConductGetConductCodeError::Status415(github_response.to_json()?)),
+                415 => Err(CodesOfConductGetConductCodeError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(CodesOfConductGetConductCodeError::Generic { code }),
             }
         }
@@ -252,12 +252,12 @@ impl<'api> CodesOfConduct<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodesOfConductGetConductCodeError::Status404(github_response.to_json()?)),
+                404 => Err(CodesOfConductGetConductCodeError::Status404(crate::adapters::to_json(github_response)?)),
                 304 => Err(CodesOfConductGetConductCodeError::Status304),
-                415 => Err(CodesOfConductGetConductCodeError::Status415(github_response.to_json()?)),
+                415 => Err(CodesOfConductGetConductCodeError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(CodesOfConductGetConductCodeError::Generic { code }),
             }
         }
@@ -298,7 +298,7 @@ impl<'api> CodesOfConduct<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(CodesOfConductGetForRepoError::Generic { code }),
@@ -342,7 +342,7 @@ impl<'api> CodesOfConduct<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(CodesOfConductGetForRepoError::Generic { code }),
