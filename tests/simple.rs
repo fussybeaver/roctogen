@@ -90,8 +90,10 @@ async fn get_wasm_ok() {
 }
 
 #[cfg(target_arch = "x86_64")]
+#[cfg(feature = "isahc")]
 #[test]
 fn get_async_ok() {
+    env_logger::try_init();
 
     let req = futures_lite::future::block_on(async {
 
@@ -102,6 +104,29 @@ fn get_async_ok() {
         params = params.author("fussybeaver").page(2);
         repos::new(&auth).list_commits_async("fussybeaver", "bollard", Some(params)).await
     });
+
+    match req {
+        Ok(ref repos) => {
+            assert!(!&repos.is_empty());
+        },
+        Err(ref e) => debug!("err: {}", e)
+    };
+
+    assert!(req.is_ok());
+}
+
+#[cfg(target_arch = "x86_64")]
+#[cfg(feature = "reqwest")]
+#[tokio::test]
+async fn get_async_ok() {
+    env_logger::try_init().unwrap();
+
+    let auth = Auth::None;
+    let per_page = api::PerPage::new(1);
+    
+    let mut params: repos::ReposListCommitsParams = per_page.as_ref().into();
+    params = params.author("fussybeaver").page(2);
+    let req = repos::new(&auth).list_commits_async("fussybeaver", "bollard", Some(params)).await;
 
     match req {
         Ok(ref repos) => {

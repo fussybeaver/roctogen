@@ -16,6 +16,7 @@ crate-type = ["cdylib", "rlib"]
 path = "src/lib.rs"
 
 [features]
+# default = ["reqwest"]
 
 # Optional GitHub specific endpoints
 ant-man = []
@@ -44,9 +45,6 @@ zzzax = []
 # Activate mock base url
 mock = []
 
-# isahc
-roctogen-isahc = ["isahc", "futures-io", "futures-core"]
-
 [dependencies]
 base64 = "0.13"
 chrono = { version = "0.4", features = ["serde"] }
@@ -60,8 +58,9 @@ log = "0.4"
 
 # isahc 
 isahc = { version = "1.1.0", optional = true, features = ["json"] }
-futures-io = { version = "0.3.13", optional = true }
-futures-core = { version = "0.3.13", optional = true }
+
+# reqwest
+reqwest = { version = "0.11.2", optional = true, features = ["json"] }
 
 # wasm 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
@@ -91,6 +90,10 @@ console_log = { version = "0.2", features = ["color"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 futures-lite = { version = "1.11" }
+futures-io = { version = "0.3.13" }
+futures-core = { version = "0.3.13" }
+tokio = { version = "1.2", default-features = false, features = ["macros", "rt-multi-thread"] }
+env_logger = "0.8"
 
 [package.metadata.docs.rs]
 features = [

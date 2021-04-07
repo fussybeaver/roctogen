@@ -1,10 +1,6 @@
 use http::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE, USER_AGENT};
 
-use http::response::Response;
-use http::request::Request;
-
-use isahc::prelude::*;
-use isahc::{AsyncBody, Body, RequestExt, ResponseFuture, AsyncReadResponseExt};
+use reqwest::{Body, Client, Request, RequestBuilder, Response};
 use log::debug;
 
 use crate::auth::Auth;
@@ -12,23 +8,29 @@ use super::{FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 
 use serde::{ser, Deserialize};
 
+use std::convert::TryFrom;
+
 #[derive(thiserror::Error, Debug)]
 pub enum AdapterError {
     #[error(transparent)]
     Http(#[from] http::Error),
     #[error(transparent)]
-    Isahc(#[from] isahc::Error),
+    Reqwest(#[from] reqwest::Error),
 }
 
-pub(crate) fn fetch(request: Request<Body>) -> Result<Response<Body>, AdapterError> {
-    Ok(request.send()?)
+pub(crate) fn fetch(_request: Request) -> Result<Response, AdapterError> {
+    unimplemented!("Reqwest adapter only has async fetch implemented");
 }
 
-pub(crate) async fn fetch_async(request: Request<AsyncBody>) -> Result<Response<AsyncBody>, AdapterError> {
-    Ok(request.send_async().await?)
+pub(crate) async fn fetch_async(request: Request) -> Result<Response, AdapterError> {
+    let res = Client::new().execute(request).await?;
+
+    debug!("Response: {:?}", &res);
+
+    Ok(res)
 }
 
-impl<T> GitHubResponseExt for Response<T> {
+impl GitHubResponseExt for Response {
     fn is_success(&self) -> bool {
         self.status().is_success()
     }
@@ -38,28 +40,33 @@ impl<T> GitHubResponseExt for Response<T> {
     }
 }
 
-pub(crate) fn to_json<E: for<'de> Deserialize<'de>>(mut res: Response<Body>) -> Result<E, serde_json::Error> {
-    res.json()
+pub(crate) fn to_json<E: for<'de> Deserialize<'de>>(_res: Response) -> Result<E, AdapterError> {
+    unimplemented!("Reqwest adapter only has async json conversion implemented");
 }
 
-pub(crate) async fn to_json_async<E: for<'de> Deserialize<'de> + Unpin>(mut res: Response<AsyncBody>) -> Result<E, serde_json::Error> {
-    Ok(res.json().await?)
+pub(crate) async fn to_json_async<E: for<'de> Deserialize<'de> + Unpin + std::fmt::Debug>(res: Response) -> Result<E, AdapterError> {
+    let json = res.json().await?;
+
+    debug!("Body: {:?}", json);
+
+    Ok(json)
 }
 
-impl<E, T> FromJson<E, T> for E
+impl<E> FromJson<E, Body> for E
 where
-    T: From<Vec<u8>>,
     E: ser::Serialize + std::fmt::Debug,
 {
-    fn from_json(model: E) -> Result<T, serde_json::Error> {
+    fn from_json(model: E) -> Result<Body, serde_json::Error> {
+
+        debug!("Error: {:?}", model);
 
         Ok(serde_json::to_vec(&model)?.into())
     }
 }
 
-impl<T: From<()>> GitHubRequestBuilder<T> for Request<T> 
+impl GitHubRequestBuilder<Body> for Request
 {
-    fn build(req: GitHubRequest<T>, auth: &Auth) -> Result<Self, AdapterError> {
+    fn build(req: GitHubRequest<Body>, auth: &Auth) -> Result<Self, AdapterError> {
         let mut builder = http::Request::builder();
 
         builder = builder
@@ -68,7 +75,7 @@ impl<T: From<()>> GitHubRequestBuilder<T> for Request<T>
             .header(ACCEPT, "application/vnd.github.v3+json")
             .header(USER_AGENT, "roctogen")
             .header(CONTENT_TYPE, "application/json");
-
+        
         for header in req.headers.iter() {
             builder = builder.header(header.0, header.1);
         }
@@ -87,9 +94,9 @@ impl<T: From<()>> GitHubRequestBuilder<T> for Request<T>
         };
 
         if let Some(body) = req.body {
-            Ok(builder.body(body)?)
+            Ok(Request::try_from(builder.body(body)?)?)
         } else {
-            Ok(builder.body(().into())?)
+            Ok(Request::try_from(builder.body(Vec::<u8>::new())?)?)
         }
     }
 }
