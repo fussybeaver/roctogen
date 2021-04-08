@@ -19,7 +19,7 @@ wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
 
 #[cfg(target_arch = "wasm32")]
 fn init_log() {
-    console_log::init_with_level(log::Level::Debug).expect("error initializing logger");
+    console_log::init_with_level(log::Level::Info).unwrap_or(());
 }
 
 #[cfg(target_arch = "wasm32")]
