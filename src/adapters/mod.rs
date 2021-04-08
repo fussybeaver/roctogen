@@ -30,31 +30,68 @@ pub use self::reqwest::AdapterError;
 
 #[cfg(feature = "reqwest")]
 pub(crate) use {
-    self::reqwest::fetch, self::reqwest::fetch_async, self::reqwest::to_json, self::reqwest::to_json_async
+    self::reqwest::fetch, self::reqwest::fetch_async, self::reqwest::to_json,
+    self::reqwest::to_json_async,
 };
 
-#[cfg(all(not(feature = "isahc"), not(feature = "reqwest"), not(target_arch = "wasm32")))]
+#[cfg(feature = "ureq")]
+pub mod ureq;
+
+#[cfg(feature = "ureq")]
+pub use self::ureq::AdapterError;
+
+#[cfg(feature = "ureq")]
+pub(crate) use {
+    self::ureq::fetch, self::ureq::fetch_async, self::ureq::to_json, self::ureq::to_json_async,
+};
+
+#[cfg(all(
+    not(feature = "isahc"),
+    not(feature = "reqwest"),
+    not(feature = "ureq"),
+    not(target_arch = "wasm32")
+))]
 #[derive(thiserror::Error, Debug)]
 pub enum AdapterError {}
 
-#[cfg(all(not(feature = "isahc"), not(feature = "reqwest"), not(target_arch = "wasm32")))]
+#[cfg(all(
+    not(feature = "isahc"),
+    not(feature = "reqwest"),
+    not(feature = "ureq"),
+    not(target_arch = "wasm32")
+))]
 pub(crate) fn fetch(
     _request: http::Request<Vec<u8>>,
 ) -> Result<http::Response<Vec<u8>>, AdapterError> {
     unimplemented!("Use a client adapter feature, or target wasm");
 }
 
-#[cfg(all(not(feature = "isahc"), not(feature = "reqwest"), not(target_arch = "wasm32")))]
+#[cfg(all(
+    not(feature = "isahc"),
+    not(feature = "reqwest"),
+    not(feature = "ureq"),
+    not(target_arch = "wasm32")
+))]
 pub(crate) async fn fetch_async(
     _request: http::Request<Vec<u8>>,
 ) -> Result<http::Response<Vec<u8>>, AdapterError> {
     unimplemented!("Use a client adapter feature, or target wasm");
 }
 
-#[cfg(all(not(feature = "isahc"), not(feature = "reqwest"), not(target_arch = "wasm32")))]
+#[cfg(all(
+    not(feature = "isahc"),
+    not(feature = "reqwest"),
+    not(feature = "ureq"),
+    not(target_arch = "wasm32")
+))]
 pub(crate) type FromJsonType = Vec<u8>;
 
-#[cfg(all(not(feature = "isahc"), not(feature = "reqwest"), not(target_arch = "wasm32")))]
+#[cfg(all(
+    not(feature = "isahc"),
+    not(feature = "reqwest"),
+    not(feature = "ureq"),
+    not(target_arch = "wasm32")
+))]
 impl GitHubResponseExt for http::Response<Vec<u8>> {
     fn is_success(&self) -> bool {
         unimplemented!("Use a client adapter feature, or target wasm");
@@ -65,24 +102,24 @@ impl GitHubResponseExt for http::Response<Vec<u8>> {
     }
 }
 
-#[cfg(all(not(feature = "isahc"), not(feature = "reqwest"), not(target_arch = "wasm32")))]
-impl<E> ToJson<E> for http::Response<Vec<u8>>
-where
-    E: for<'de> Deserialize<'de>,
-{
-    fn to_json(self) -> Result<E, serde_json::Error> {
-        unimplemented!("Use a client adapter feature, or target wasm");
-    }
-}
-
-#[cfg(all(not(feature = "isahc"), not(feature = "reqwest"), not(target_arch = "wasm32")))]
+#[cfg(all(
+    not(feature = "isahc"),
+    not(feature = "reqwest"),
+    not(feature = "ureq"),
+    not(target_arch = "wasm32")
+))]
 impl<T> GitHubRequestBuilder<T> for http::Request<Vec<u8>> {
     fn build(_req: GitHubRequest<T>, _auth: &Auth) -> Result<Self, AdapterError> {
         unimplemented!("Use a client adapter feature, or target wasm");
     }
 }
 
-#[cfg(all(not(feature = "isahc"), not(feature = "reqwest"), not(target_arch = "wasm32")))]
+#[cfg(all(
+    not(feature = "isahc"),
+    not(feature = "reqwest"),
+    not(feature = "ureq"),
+    not(target_arch = "wasm32")
+))]
 impl<E, T> FromJson<E, T> for E
 where
     E: ser::Serialize + std::fmt::Debug,

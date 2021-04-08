@@ -67,6 +67,25 @@ fn get_sync_fail() {
     assert!(req.is_err());
 }
 
+#[cfg(target_arch = "x86_64")]
+#[test]
+fn get_sync_ok() {
+
+    let auth = Auth::None;
+
+    let per_page = api::PerPage::new(1);
+
+    let req = repos::new(&auth).list_commits("fussybeaver", "bollard", Some(&per_page));
+    match &req {
+        Ok(ref repos) => {
+            assert!(!&repos.is_empty());
+        },
+        Err(ref e) => debug!("err: {}", e)
+    };
+
+    assert!(req.is_ok());
+}
+
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen_test]
 async fn get_wasm_ok() {
