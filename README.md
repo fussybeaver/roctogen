@@ -109,7 +109,7 @@ $ wrangler preview --watch
 ### Client adapters
 
 Building on non-`wasm` targets generally requires adopting a feature for the desired
-client adapter.
+client adapter. You **cannot** mix adapter feature flags, they are mutually exclusive.
 
 #### Isahc
 
