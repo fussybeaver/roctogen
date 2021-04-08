@@ -99,7 +99,6 @@ env_logger = "0.8"
 
 [package.metadata.docs.rs]
 features = [
-  "isahc",
   "ant-man",
   "baptiste",
   "cloak",
@@ -123,3 +122,5 @@ features = [
   "wyandotte",
   "zzzax"
 ]
+default-target = "x86_64-unknown-linux-gnu"
+targets = ["wasm32-unknown-unknown"]
