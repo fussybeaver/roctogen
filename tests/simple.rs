@@ -48,6 +48,7 @@ async fn get_wasm_fail() {
 #[cfg(target_arch = "x86_64")]
 #[test]
 fn get_sync_fail() {
+    env_logger::try_init().unwrap();
 
     let auth = Auth::None;
 

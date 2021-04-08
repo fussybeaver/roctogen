@@ -26,10 +26,17 @@ pub enum AdapterError {
 }
 
 pub(crate) fn fetch(request: RequestWithBody) -> Result<Response, AdapterError> {
-    if let Some(body) = request.body {
-        Ok(request.req.send_json(body)?)
+    match if let Some(body) = request.body {
+        request.req.send_json(body) 
     } else {
-        Ok(request.req.call()?)
+        request.req.call()
+    } {
+        Ok(res) => Ok(res),
+        Err(ureq::Error::Status(_, res)) => Ok(res),
+        Err(ureq::Error::Transport(transport)) => {
+            let err: ureq::Error = transport.into();
+            Err(err.into())
+        }
     }
 }
 
@@ -49,6 +56,8 @@ impl GitHubResponseExt for Response {
 
 pub(crate) fn to_json<E: for<'de> Deserialize<'de> + std::fmt::Debug>(res: Response) -> Result<E, AdapterError> {
     let json = res.into_json()?;
+
+    debug!("Response: {:?}", &json);
 
     Ok(json)
 }
