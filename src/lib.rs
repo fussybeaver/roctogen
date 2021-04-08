@@ -6,7 +6,12 @@
 //!
 //! This client API is generated from the [upstream OpenAPI
 //! specification](https://github.com/github/rest-api-description/). The library currently supports
-//! webassembly and synchronous requests with the [Isahc HTTP client](https://github.com/sagebind/isahc). 
+//! webassembly and both tokio and non-tokio based asynchronous requests and minimal dependency blocking 
+//! synchronous requests with a choice of different clients, enabled through cargo features:
+//!
+//!   - `isahc` feature (*sync* and non-tokio based *async*): [Isahc HTTP client](https://github.com/sagebind/isahc)
+//!   - `reqwest` feature (*async*) [Reqwest client](https://github.com/seanmonstar/reqwest)
+//!   - `ureq` feature (*sync*) [Ureq client](https://github.com/algesten/ureq) 
 //!
 //! # Install
 //!
@@ -79,8 +84,7 @@
 //!
 //! ## Async
 //!
-//! All the `async` methods are suffixed with `_async` (currently only supported on the `wasm`
-//! target).
+//! All the `async` methods are suffixed with `_async`, and are available on the wasm target or `isahc` and `reqwest` adapters.
 //!
 //! ## Webassembly
 //!
@@ -102,16 +106,33 @@
 //! $ wrangler preview --watch
 //! ```
 //!
-//! ## Isahc
+//! ## Client adapters
 //!
 //! Building on non-`wasm` targets generally requires adopting a feature for the desired
-//! client adapter. This library only supports [`isahc`](https://github.com/sagebind/isahc) at the
-//! moment, but other adapters are planned, and contributions are welcome.
+//! client adapter. 
+//!
+//! ### Isahc
 //!
 //! Compiling for the [`isahc`](https://github.com/sagebind/isahc) client required the `isahc` feature:
 //!
 //! ```nocompile
 //! $ cargo build --features isahc
+//! ```
+//!
+//! ### Reqwest
+//!
+//! Compiling for the [`reqwest`](https://github.com/seanmonstar/reqwest) client required the `reqwest` feature:
+//!
+//! ```nocompile
+//! $ cargo build --features reqwest
+//! ```
+//!
+//! ### Ureq
+//!
+//! Compiling for the [`ureq`](https://github.com/algesten/ureq) client required the `ureq` feature:
+//!
+//! ```nocompile
+//! $ cargo build --features ureq
 //! ```
 //!
 //! # GitHub preview features
