@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.2.1 (09/04/2021)
+- [**closed**] Async Isahc, Reqwest and Ureq support [#4](https://github.com/fussybeaver/roctogen/pull/4)
+
+---
+
 ## v0.2.0 (03/04/2021)
 - [**closed**] Add JWT auth mechanism [#3](https://github.com/fussybeaver/roctogen/pull/3)
 
