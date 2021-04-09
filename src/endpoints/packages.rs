@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
+use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -568,12 +568,12 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesDeletePackageForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesDeletePackageForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesDeletePackageForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                404 => Err(PackagesDeletePackageForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(PackagesDeletePackageForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(PackagesDeletePackageForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(PackagesDeletePackageForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -613,12 +613,12 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesDeletePackageForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesDeletePackageForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesDeletePackageForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                404 => Err(PackagesDeletePackageForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(PackagesDeletePackageForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(PackagesDeletePackageForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(PackagesDeletePackageForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -658,12 +658,12 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesDeletePackageForOrgError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesDeletePackageForOrgError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesDeletePackageForOrgError::Status401(github_response.to_json()?)),
+                404 => Err(PackagesDeletePackageForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(PackagesDeletePackageForOrgError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(PackagesDeletePackageForOrgError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(PackagesDeletePackageForOrgError::Generic { code }),
             }
         }
@@ -704,12 +704,12 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesDeletePackageForOrgError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesDeletePackageForOrgError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesDeletePackageForOrgError::Status401(github_response.to_json()?)),
+                404 => Err(PackagesDeletePackageForOrgError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(PackagesDeletePackageForOrgError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(PackagesDeletePackageForOrgError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(PackagesDeletePackageForOrgError::Generic { code }),
             }
         }
@@ -748,12 +748,12 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                404 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -793,12 +793,12 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                404 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -838,12 +838,12 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesDeletePackageVersionForOrgError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesDeletePackageVersionForOrgError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesDeletePackageVersionForOrgError::Status401(github_response.to_json()?)),
+                404 => Err(PackagesDeletePackageVersionForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(PackagesDeletePackageVersionForOrgError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(PackagesDeletePackageVersionForOrgError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(PackagesDeletePackageVersionForOrgError::Generic { code }),
             }
         }
@@ -884,12 +884,12 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesDeletePackageVersionForOrgError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesDeletePackageVersionForOrgError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesDeletePackageVersionForOrgError::Status401(github_response.to_json()?)),
+                404 => Err(PackagesDeletePackageVersionForOrgError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(PackagesDeletePackageVersionForOrgError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(PackagesDeletePackageVersionForOrgError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(PackagesDeletePackageVersionForOrgError::Generic { code }),
             }
         }
@@ -932,12 +932,12 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status401(github_response.to_json()?)),
+                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Generic { code }),
             }
         }
@@ -982,12 +982,12 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status401(github_response.to_json()?)),
+                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Generic { code }),
             }
         }
@@ -1030,12 +1030,12 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status401(github_response.to_json()?)),
+                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Generic { code }),
             }
         }
@@ -1080,12 +1080,12 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status401(github_response.to_json()?)),
+                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Generic { code }),
             }
         }
@@ -1124,12 +1124,12 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status401(github_response.to_json()?)),
+                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Generic { code }),
             }
         }
@@ -1169,12 +1169,12 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status401(github_response.to_json()?)),
+                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Generic { code }),
             }
         }
@@ -1213,7 +1213,7 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(PackagesGetPackageForAuthenticatedUserError::Generic { code }),
@@ -1255,7 +1255,7 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(PackagesGetPackageForAuthenticatedUserError::Generic { code }),
@@ -1296,7 +1296,7 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(PackagesGetPackageForOrganizationError::Generic { code }),
@@ -1338,7 +1338,7 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(PackagesGetPackageForOrganizationError::Generic { code }),
@@ -1379,7 +1379,7 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(PackagesGetPackageForUserError::Generic { code }),
@@ -1421,7 +1421,7 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(PackagesGetPackageForUserError::Generic { code }),
@@ -1462,7 +1462,7 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(PackagesGetPackageVersionForAuthenticatedUserError::Generic { code }),
@@ -1504,7 +1504,7 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(PackagesGetPackageVersionForAuthenticatedUserError::Generic { code }),
@@ -1545,7 +1545,7 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(PackagesGetPackageVersionForOrganizationError::Generic { code }),
@@ -1587,7 +1587,7 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(PackagesGetPackageVersionForOrganizationError::Generic { code }),
@@ -1628,7 +1628,7 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(PackagesGetPackageVersionForUserError::Generic { code }),
@@ -1670,7 +1670,7 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(PackagesGetPackageVersionForUserError::Generic { code }),
@@ -1718,12 +1718,12 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesRestorePackageForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesRestorePackageForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesRestorePackageForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                404 => Err(PackagesRestorePackageForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(PackagesRestorePackageForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(PackagesRestorePackageForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(PackagesRestorePackageForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -1771,12 +1771,12 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesRestorePackageForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesRestorePackageForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesRestorePackageForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                404 => Err(PackagesRestorePackageForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(PackagesRestorePackageForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(PackagesRestorePackageForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(PackagesRestorePackageForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -1824,12 +1824,12 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesRestorePackageForOrgError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesRestorePackageForOrgError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesRestorePackageForOrgError::Status401(github_response.to_json()?)),
+                404 => Err(PackagesRestorePackageForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(PackagesRestorePackageForOrgError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(PackagesRestorePackageForOrgError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(PackagesRestorePackageForOrgError::Generic { code }),
             }
         }
@@ -1879,12 +1879,12 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesRestorePackageForOrgError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesRestorePackageForOrgError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesRestorePackageForOrgError::Status401(github_response.to_json()?)),
+                404 => Err(PackagesRestorePackageForOrgError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(PackagesRestorePackageForOrgError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(PackagesRestorePackageForOrgError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(PackagesRestorePackageForOrgError::Generic { code }),
             }
         }
@@ -1926,12 +1926,12 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                404 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -1974,12 +1974,12 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                404 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2023,12 +2023,12 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesRestorePackageVersionForOrgError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesRestorePackageVersionForOrgError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesRestorePackageVersionForOrgError::Status401(github_response.to_json()?)),
+                404 => Err(PackagesRestorePackageVersionForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(PackagesRestorePackageVersionForOrgError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(PackagesRestorePackageVersionForOrgError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(PackagesRestorePackageVersionForOrgError::Generic { code }),
             }
         }
@@ -2073,12 +2073,12 @@ impl<'api> Packages<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesRestorePackageVersionForOrgError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesRestorePackageVersionForOrgError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesRestorePackageVersionForOrgError::Status401(github_response.to_json()?)),
+                404 => Err(PackagesRestorePackageVersionForOrgError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(PackagesRestorePackageVersionForOrgError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(PackagesRestorePackageVersionForOrgError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(PackagesRestorePackageVersionForOrgError::Generic { code }),
             }
         }

@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
+use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -1326,12 +1326,12 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsAddRepoToInstallationError::Status403(github_response.to_json()?)),
+                403 => Err(AppsAddRepoToInstallationError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(AppsAddRepoToInstallationError::Status304),
-                404 => Err(AppsAddRepoToInstallationError::Status404(github_response.to_json()?)),
+                404 => Err(AppsAddRepoToInstallationError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsAddRepoToInstallationError::Generic { code }),
             }
         }
@@ -1370,12 +1370,12 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsAddRepoToInstallationError::Status403(github_response.to_json()?)),
+                403 => Err(AppsAddRepoToInstallationError::Status403(crate::adapters::to_json(github_response)?)),
                 304 => Err(AppsAddRepoToInstallationError::Status304),
-                404 => Err(AppsAddRepoToInstallationError::Status404(github_response.to_json()?)),
+                404 => Err(AppsAddRepoToInstallationError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsAddRepoToInstallationError::Generic { code }),
             }
         }
@@ -1413,10 +1413,10 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsCheckAuthorizationError::Status404(github_response.to_json()?)),
+                404 => Err(AppsCheckAuthorizationError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsCheckAuthorizationError::Generic { code }),
             }
         }
@@ -1455,10 +1455,10 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsCheckAuthorizationError::Status404(github_response.to_json()?)),
+                404 => Err(AppsCheckAuthorizationError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsCheckAuthorizationError::Generic { code }),
             }
         }
@@ -1494,11 +1494,11 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsCheckTokenError::Status422(github_response.to_json()?)),
-                404 => Err(AppsCheckTokenError::Status404(github_response.to_json()?)),
+                422 => Err(AppsCheckTokenError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(AppsCheckTokenError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsCheckTokenError::Generic { code }),
             }
         }
@@ -1535,11 +1535,11 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsCheckTokenError::Status422(github_response.to_json()?)),
-                404 => Err(AppsCheckTokenError::Status404(github_response.to_json()?)),
+                422 => Err(AppsCheckTokenError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(AppsCheckTokenError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsCheckTokenError::Generic { code }),
             }
         }
@@ -1582,15 +1582,15 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsCreateContentAttachmentError::Status422(github_response.to_json()?)),
-                404 => Err(AppsCreateContentAttachmentError::Status404(github_response.to_json()?)),
-                410 => Err(AppsCreateContentAttachmentError::Status410(github_response.to_json()?)),
-                415 => Err(AppsCreateContentAttachmentError::Status415(github_response.to_json()?)),
+                422 => Err(AppsCreateContentAttachmentError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(AppsCreateContentAttachmentError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                410 => Err(AppsCreateContentAttachmentError::Status410(crate::adapters::to_json_async(github_response).await?)),
+                415 => Err(AppsCreateContentAttachmentError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(AppsCreateContentAttachmentError::Status304),
-                403 => Err(AppsCreateContentAttachmentError::Status403(github_response.to_json()?)),
+                403 => Err(AppsCreateContentAttachmentError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsCreateContentAttachmentError::Generic { code }),
             }
         }
@@ -1634,15 +1634,15 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsCreateContentAttachmentError::Status422(github_response.to_json()?)),
-                404 => Err(AppsCreateContentAttachmentError::Status404(github_response.to_json()?)),
-                410 => Err(AppsCreateContentAttachmentError::Status410(github_response.to_json()?)),
-                415 => Err(AppsCreateContentAttachmentError::Status415(github_response.to_json()?)),
+                422 => Err(AppsCreateContentAttachmentError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(AppsCreateContentAttachmentError::Status404(crate::adapters::to_json(github_response)?)),
+                410 => Err(AppsCreateContentAttachmentError::Status410(crate::adapters::to_json(github_response)?)),
+                415 => Err(AppsCreateContentAttachmentError::Status415(crate::adapters::to_json(github_response)?)),
                 304 => Err(AppsCreateContentAttachmentError::Status304),
-                403 => Err(AppsCreateContentAttachmentError::Status403(github_response.to_json()?)),
+                403 => Err(AppsCreateContentAttachmentError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsCreateContentAttachmentError::Generic { code }),
             }
         }
@@ -1678,11 +1678,11 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsCreateFromManifestError::Status404(github_response.to_json()?)),
-                422 => Err(AppsCreateFromManifestError::Status422(github_response.to_json()?)),
+                404 => Err(AppsCreateFromManifestError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(AppsCreateFromManifestError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsCreateFromManifestError::Generic { code }),
             }
         }
@@ -1719,11 +1719,11 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsCreateFromManifestError::Status404(github_response.to_json()?)),
-                422 => Err(AppsCreateFromManifestError::Status422(github_response.to_json()?)),
+                404 => Err(AppsCreateFromManifestError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(AppsCreateFromManifestError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsCreateFromManifestError::Generic { code }),
             }
         }
@@ -1761,14 +1761,14 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsCreateInstallationAccessTokenError::Status403(github_response.to_json()?)),
-                415 => Err(AppsCreateInstallationAccessTokenError::Status415(github_response.to_json()?)),
-                401 => Err(AppsCreateInstallationAccessTokenError::Status401(github_response.to_json()?)),
-                404 => Err(AppsCreateInstallationAccessTokenError::Status404(github_response.to_json()?)),
-                422 => Err(AppsCreateInstallationAccessTokenError::Status422(github_response.to_json()?)),
+                403 => Err(AppsCreateInstallationAccessTokenError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                415 => Err(AppsCreateInstallationAccessTokenError::Status415(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(AppsCreateInstallationAccessTokenError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(AppsCreateInstallationAccessTokenError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(AppsCreateInstallationAccessTokenError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsCreateInstallationAccessTokenError::Generic { code }),
             }
         }
@@ -1807,14 +1807,14 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsCreateInstallationAccessTokenError::Status403(github_response.to_json()?)),
-                415 => Err(AppsCreateInstallationAccessTokenError::Status415(github_response.to_json()?)),
-                401 => Err(AppsCreateInstallationAccessTokenError::Status401(github_response.to_json()?)),
-                404 => Err(AppsCreateInstallationAccessTokenError::Status404(github_response.to_json()?)),
-                422 => Err(AppsCreateInstallationAccessTokenError::Status422(github_response.to_json()?)),
+                403 => Err(AppsCreateInstallationAccessTokenError::Status403(crate::adapters::to_json(github_response)?)),
+                415 => Err(AppsCreateInstallationAccessTokenError::Status415(crate::adapters::to_json(github_response)?)),
+                401 => Err(AppsCreateInstallationAccessTokenError::Status401(crate::adapters::to_json(github_response)?)),
+                404 => Err(AppsCreateInstallationAccessTokenError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(AppsCreateInstallationAccessTokenError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsCreateInstallationAccessTokenError::Generic { code }),
             }
         }
@@ -1851,10 +1851,10 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsDeleteAuthorizationError::Status422(github_response.to_json()?)),
+                422 => Err(AppsDeleteAuthorizationError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsDeleteAuthorizationError::Generic { code }),
             }
         }
@@ -1892,10 +1892,10 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsDeleteAuthorizationError::Status422(github_response.to_json()?)),
+                422 => Err(AppsDeleteAuthorizationError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsDeleteAuthorizationError::Generic { code }),
             }
         }
@@ -1933,10 +1933,10 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsDeleteInstallationError::Status404(github_response.to_json()?)),
+                404 => Err(AppsDeleteInstallationError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsDeleteInstallationError::Generic { code }),
             }
         }
@@ -1975,10 +1975,10 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsDeleteInstallationError::Status404(github_response.to_json()?)),
+                404 => Err(AppsDeleteInstallationError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsDeleteInstallationError::Generic { code }),
             }
         }
@@ -2014,10 +2014,10 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsDeleteTokenError::Status422(github_response.to_json()?)),
+                422 => Err(AppsDeleteTokenError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsDeleteTokenError::Generic { code }),
             }
         }
@@ -2054,10 +2054,10 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsDeleteTokenError::Status422(github_response.to_json()?)),
+                422 => Err(AppsDeleteTokenError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsDeleteTokenError::Generic { code }),
             }
         }
@@ -2095,7 +2095,7 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsGetAuthenticatedError::Generic { code }),
@@ -2136,7 +2136,7 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsGetAuthenticatedError::Generic { code }),
@@ -2176,12 +2176,12 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsGetBySlugError::Status403(github_response.to_json()?)),
-                404 => Err(AppsGetBySlugError::Status404(github_response.to_json()?)),
-                415 => Err(AppsGetBySlugError::Status415(github_response.to_json()?)),
+                403 => Err(AppsGetBySlugError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(AppsGetBySlugError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                415 => Err(AppsGetBySlugError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsGetBySlugError::Generic { code }),
             }
         }
@@ -2220,12 +2220,12 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsGetBySlugError::Status403(github_response.to_json()?)),
-                404 => Err(AppsGetBySlugError::Status404(github_response.to_json()?)),
-                415 => Err(AppsGetBySlugError::Status415(github_response.to_json()?)),
+                403 => Err(AppsGetBySlugError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(AppsGetBySlugError::Status404(crate::adapters::to_json(github_response)?)),
+                415 => Err(AppsGetBySlugError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsGetBySlugError::Generic { code }),
             }
         }
@@ -2263,11 +2263,11 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsGetInstallationError::Status404(github_response.to_json()?)),
-                415 => Err(AppsGetInstallationError::Status415(github_response.to_json()?)),
+                404 => Err(AppsGetInstallationError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                415 => Err(AppsGetInstallationError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsGetInstallationError::Generic { code }),
             }
         }
@@ -2306,11 +2306,11 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsGetInstallationError::Status404(github_response.to_json()?)),
-                415 => Err(AppsGetInstallationError::Status415(github_response.to_json()?)),
+                404 => Err(AppsGetInstallationError::Status404(crate::adapters::to_json(github_response)?)),
+                415 => Err(AppsGetInstallationError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsGetInstallationError::Generic { code }),
             }
         }
@@ -2348,7 +2348,7 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsGetOrgInstallationError::Generic { code }),
@@ -2389,7 +2389,7 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsGetOrgInstallationError::Generic { code }),
@@ -2429,11 +2429,11 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 301 => Err(AppsGetRepoInstallationError::Status301),
-                404 => Err(AppsGetRepoInstallationError::Status404(github_response.to_json()?)),
+                404 => Err(AppsGetRepoInstallationError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsGetRepoInstallationError::Generic { code }),
             }
         }
@@ -2472,11 +2472,11 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 301 => Err(AppsGetRepoInstallationError::Status301),
-                404 => Err(AppsGetRepoInstallationError::Status404(github_response.to_json()?)),
+                404 => Err(AppsGetRepoInstallationError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsGetRepoInstallationError::Generic { code }),
             }
         }
@@ -2514,11 +2514,11 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsGetSubscriptionPlanForAccountError::Status404(github_response.to_json()?)),
-                401 => Err(AppsGetSubscriptionPlanForAccountError::Status401(github_response.to_json()?)),
+                404 => Err(AppsGetSubscriptionPlanForAccountError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(AppsGetSubscriptionPlanForAccountError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsGetSubscriptionPlanForAccountError::Generic { code }),
             }
         }
@@ -2557,11 +2557,11 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsGetSubscriptionPlanForAccountError::Status404(github_response.to_json()?)),
-                401 => Err(AppsGetSubscriptionPlanForAccountError::Status401(github_response.to_json()?)),
+                404 => Err(AppsGetSubscriptionPlanForAccountError::Status404(crate::adapters::to_json(github_response)?)),
+                401 => Err(AppsGetSubscriptionPlanForAccountError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsGetSubscriptionPlanForAccountError::Generic { code }),
             }
         }
@@ -2599,11 +2599,11 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 404 => Err(AppsGetSubscriptionPlanForAccountStubbedError::Status404),
-                401 => Err(AppsGetSubscriptionPlanForAccountStubbedError::Status401(github_response.to_json()?)),
+                401 => Err(AppsGetSubscriptionPlanForAccountStubbedError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsGetSubscriptionPlanForAccountStubbedError::Generic { code }),
             }
         }
@@ -2642,11 +2642,11 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 404 => Err(AppsGetSubscriptionPlanForAccountStubbedError::Status404),
-                401 => Err(AppsGetSubscriptionPlanForAccountStubbedError::Status401(github_response.to_json()?)),
+                401 => Err(AppsGetSubscriptionPlanForAccountStubbedError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsGetSubscriptionPlanForAccountStubbedError::Generic { code }),
             }
         }
@@ -2684,7 +2684,7 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsGetUserInstallationError::Generic { code }),
@@ -2725,7 +2725,7 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsGetUserInstallationError::Generic { code }),
@@ -2765,7 +2765,7 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsGetWebhookConfigForAppError::Generic { code }),
@@ -2806,7 +2806,7 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsGetWebhookConfigForAppError::Generic { code }),
@@ -2850,12 +2850,12 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsListAccountsForPlanError::Status404(github_response.to_json()?)),
-                422 => Err(AppsListAccountsForPlanError::Status422(github_response.to_json()?)),
-                401 => Err(AppsListAccountsForPlanError::Status401(github_response.to_json()?)),
+                404 => Err(AppsListAccountsForPlanError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(AppsListAccountsForPlanError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(AppsListAccountsForPlanError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsListAccountsForPlanError::Generic { code }),
             }
         }
@@ -2899,12 +2899,12 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsListAccountsForPlanError::Status404(github_response.to_json()?)),
-                422 => Err(AppsListAccountsForPlanError::Status422(github_response.to_json()?)),
-                401 => Err(AppsListAccountsForPlanError::Status401(github_response.to_json()?)),
+                404 => Err(AppsListAccountsForPlanError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(AppsListAccountsForPlanError::Status422(crate::adapters::to_json(github_response)?)),
+                401 => Err(AppsListAccountsForPlanError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsListAccountsForPlanError::Generic { code }),
             }
         }
@@ -2946,10 +2946,10 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                401 => Err(AppsListAccountsForPlanStubbedError::Status401(github_response.to_json()?)),
+                401 => Err(AppsListAccountsForPlanStubbedError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsListAccountsForPlanStubbedError::Generic { code }),
             }
         }
@@ -2993,10 +2993,10 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                401 => Err(AppsListAccountsForPlanStubbedError::Status401(github_response.to_json()?)),
+                401 => Err(AppsListAccountsForPlanStubbedError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsListAccountsForPlanStubbedError::Generic { code }),
             }
         }
@@ -3045,11 +3045,11 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsListInstallationReposForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(AppsListInstallationReposForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                404 => Err(AppsListInstallationReposForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(AppsListInstallationReposForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(AppsListInstallationReposForAuthenticatedUserError::Status304),
                 code => Err(AppsListInstallationReposForAuthenticatedUserError::Generic { code }),
             }
@@ -3101,11 +3101,11 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsListInstallationReposForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(AppsListInstallationReposForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                404 => Err(AppsListInstallationReposForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(AppsListInstallationReposForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
                 304 => Err(AppsListInstallationReposForAuthenticatedUserError::Status304),
                 code => Err(AppsListInstallationReposForAuthenticatedUserError::Generic { code }),
             }
@@ -3148,7 +3148,7 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsListInstallationsError::Generic { code }),
@@ -3194,7 +3194,7 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsListInstallationsError::Generic { code }),
@@ -3242,13 +3242,13 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(AppsListInstallationsForAuthenticatedUserError::Status304),
-                403 => Err(AppsListInstallationsForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(AppsListInstallationsForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                415 => Err(AppsListInstallationsForAuthenticatedUserError::Status415(github_response.to_json()?)),
+                403 => Err(AppsListInstallationsForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(AppsListInstallationsForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                415 => Err(AppsListInstallationsForAuthenticatedUserError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsListInstallationsForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -3296,13 +3296,13 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(AppsListInstallationsForAuthenticatedUserError::Status304),
-                403 => Err(AppsListInstallationsForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(AppsListInstallationsForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                415 => Err(AppsListInstallationsForAuthenticatedUserError::Status415(github_response.to_json()?)),
+                403 => Err(AppsListInstallationsForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(AppsListInstallationsForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                415 => Err(AppsListInstallationsForAuthenticatedUserError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsListInstallationsForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -3344,11 +3344,11 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsListPlansError::Status404(github_response.to_json()?)),
-                401 => Err(AppsListPlansError::Status401(github_response.to_json()?)),
+                404 => Err(AppsListPlansError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(AppsListPlansError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsListPlansError::Generic { code }),
             }
         }
@@ -3392,11 +3392,11 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsListPlansError::Status404(github_response.to_json()?)),
-                401 => Err(AppsListPlansError::Status401(github_response.to_json()?)),
+                404 => Err(AppsListPlansError::Status404(crate::adapters::to_json(github_response)?)),
+                401 => Err(AppsListPlansError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsListPlansError::Generic { code }),
             }
         }
@@ -3438,10 +3438,10 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                401 => Err(AppsListPlansStubbedError::Status401(github_response.to_json()?)),
+                401 => Err(AppsListPlansStubbedError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsListPlansStubbedError::Generic { code }),
             }
         }
@@ -3485,10 +3485,10 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                401 => Err(AppsListPlansStubbedError::Status401(github_response.to_json()?)),
+                401 => Err(AppsListPlansStubbedError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsListPlansStubbedError::Generic { code }),
             }
         }
@@ -3533,12 +3533,12 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsListReposAccessibleToInstallationError::Status403(github_response.to_json()?)),
+                403 => Err(AppsListReposAccessibleToInstallationError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(AppsListReposAccessibleToInstallationError::Status304),
-                401 => Err(AppsListReposAccessibleToInstallationError::Status401(github_response.to_json()?)),
+                401 => Err(AppsListReposAccessibleToInstallationError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsListReposAccessibleToInstallationError::Generic { code }),
             }
         }
@@ -3585,12 +3585,12 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsListReposAccessibleToInstallationError::Status403(github_response.to_json()?)),
+                403 => Err(AppsListReposAccessibleToInstallationError::Status403(crate::adapters::to_json(github_response)?)),
                 304 => Err(AppsListReposAccessibleToInstallationError::Status304),
-                401 => Err(AppsListReposAccessibleToInstallationError::Status401(github_response.to_json()?)),
+                401 => Err(AppsListReposAccessibleToInstallationError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsListReposAccessibleToInstallationError::Generic { code }),
             }
         }
@@ -3630,12 +3630,12 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status304),
-                401 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                404 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status404(github_response.to_json()?)),
+                401 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsListSubscriptionsForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -3677,12 +3677,12 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status304),
-                401 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                404 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status404(github_response.to_json()?)),
+                401 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                404 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsListSubscriptionsForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -3722,11 +3722,11 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Status304),
-                401 => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Status401(github_response.to_json()?)),
+                401 => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Generic { code }),
             }
         }
@@ -3768,11 +3768,11 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Status304),
-                401 => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Status401(github_response.to_json()?)),
+                401 => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Generic { code }),
             }
         }
@@ -3810,12 +3810,12 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsRemoveRepoFromInstallationError::Status403(github_response.to_json()?)),
+                403 => Err(AppsRemoveRepoFromInstallationError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(AppsRemoveRepoFromInstallationError::Status304),
-                404 => Err(AppsRemoveRepoFromInstallationError::Status404(github_response.to_json()?)),
+                404 => Err(AppsRemoveRepoFromInstallationError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsRemoveRepoFromInstallationError::Generic { code }),
             }
         }
@@ -3854,12 +3854,12 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsRemoveRepoFromInstallationError::Status403(github_response.to_json()?)),
+                403 => Err(AppsRemoveRepoFromInstallationError::Status403(crate::adapters::to_json(github_response)?)),
                 304 => Err(AppsRemoveRepoFromInstallationError::Status304),
-                404 => Err(AppsRemoveRepoFromInstallationError::Status404(github_response.to_json()?)),
+                404 => Err(AppsRemoveRepoFromInstallationError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsRemoveRepoFromInstallationError::Generic { code }),
             }
         }
@@ -3897,7 +3897,7 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsResetAuthorizationError::Generic { code }),
@@ -3938,7 +3938,7 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsResetAuthorizationError::Generic { code }),
@@ -3976,10 +3976,10 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsResetTokenError::Status422(github_response.to_json()?)),
+                422 => Err(AppsResetTokenError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsResetTokenError::Generic { code }),
             }
         }
@@ -4016,10 +4016,10 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsResetTokenError::Status422(github_response.to_json()?)),
+                422 => Err(AppsResetTokenError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsResetTokenError::Generic { code }),
             }
         }
@@ -4057,7 +4057,7 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsRevokeAuthorizationForApplicationError::Generic { code }),
@@ -4098,7 +4098,7 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsRevokeAuthorizationForApplicationError::Generic { code }),
@@ -4140,7 +4140,7 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsRevokeGrantForApplicationError::Generic { code }),
@@ -4183,7 +4183,7 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsRevokeGrantForApplicationError::Generic { code }),
@@ -4225,7 +4225,7 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsRevokeInstallationAccessTokenError::Generic { code }),
@@ -4268,7 +4268,7 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsRevokeInstallationAccessTokenError::Generic { code }),
@@ -4306,13 +4306,13 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                401 => Err(AppsScopeTokenError::Status401(github_response.to_json()?)),
-                403 => Err(AppsScopeTokenError::Status403(github_response.to_json()?)),
-                404 => Err(AppsScopeTokenError::Status404(github_response.to_json()?)),
-                422 => Err(AppsScopeTokenError::Status422(github_response.to_json()?)),
+                401 => Err(AppsScopeTokenError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(AppsScopeTokenError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(AppsScopeTokenError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(AppsScopeTokenError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsScopeTokenError::Generic { code }),
             }
         }
@@ -4349,13 +4349,13 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                401 => Err(AppsScopeTokenError::Status401(github_response.to_json()?)),
-                403 => Err(AppsScopeTokenError::Status403(github_response.to_json()?)),
-                404 => Err(AppsScopeTokenError::Status404(github_response.to_json()?)),
-                422 => Err(AppsScopeTokenError::Status422(github_response.to_json()?)),
+                401 => Err(AppsScopeTokenError::Status401(crate::adapters::to_json(github_response)?)),
+                403 => Err(AppsScopeTokenError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(AppsScopeTokenError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(AppsScopeTokenError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsScopeTokenError::Generic { code }),
             }
         }
@@ -4393,10 +4393,10 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsSuspendInstallationError::Status404(github_response.to_json()?)),
+                404 => Err(AppsSuspendInstallationError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsSuspendInstallationError::Generic { code }),
             }
         }
@@ -4435,10 +4435,10 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsSuspendInstallationError::Status404(github_response.to_json()?)),
+                404 => Err(AppsSuspendInstallationError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsSuspendInstallationError::Generic { code }),
             }
         }
@@ -4476,10 +4476,10 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsUnsuspendInstallationError::Status404(github_response.to_json()?)),
+                404 => Err(AppsUnsuspendInstallationError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsUnsuspendInstallationError::Generic { code }),
             }
         }
@@ -4518,10 +4518,10 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsUnsuspendInstallationError::Status404(github_response.to_json()?)),
+                404 => Err(AppsUnsuspendInstallationError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsUnsuspendInstallationError::Generic { code }),
             }
         }
@@ -4559,7 +4559,7 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsUpdateWebhookConfigForAppError::Generic { code }),
@@ -4600,7 +4600,7 @@ impl<'api> Apps<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsUpdateWebhookConfigForAppError::Generic { code }),

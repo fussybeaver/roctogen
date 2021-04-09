@@ -1,5 +1,5 @@
 use crate::auth::Auth;
-use super::{FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
+use super::{FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 
 use chrono::{DateTime, Duration, Utc};
 use log::debug;
@@ -111,22 +111,15 @@ impl GitHubResponseExt for GitHubResponse {
     }
 }
 
-impl<E> ToJson<E> for GitHubResponse
-where
-    E: for<'de> Deserialize<'de>,
-{
-    fn to_json(self) -> Result<E, serde_json::Error> {
-        self.json.into_serde()
-    }
+pub(crate) async fn to_json_async<E: for<'de> Deserialize<'de>>(res: GitHubResponse) -> Result<E, serde_json::Error> {
+    res.json.into_serde()
 }
 
-pub(crate) type FromJsonType = JsValue;
-
-impl<E> FromJson<E> for E
+impl<E> FromJson<E, JsValue> for E
 where
     E: ser::Serialize,
 {
-    fn from_json(model: E) -> Result<FromJsonType, serde_json::Error> {
+    fn from_json(model: E) -> Result<JsValue, serde_json::Error> {
         JsValue::from_serde(&model)
     }
 }
@@ -138,9 +131,9 @@ struct JWTClaim<'claim> {
     iss: &'claim str
 }
 
-impl GitHubRequestBuilder for Request
+impl GitHubRequestBuilder<JsValue> for Request
 {
-    fn build(req: GitHubRequest, auth: &Auth) -> Result<Self, AdapterError> {
+    fn build(req: GitHubRequest<JsValue>, auth: &Auth) -> Result<Self, AdapterError> {
 
         let mut opts = RequestInit::new();
         opts.method(&req.method);

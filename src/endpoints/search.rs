@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
+use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -750,13 +750,13 @@ impl<'api> Search<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(SearchCodeError::Status304),
-                503 => Err(SearchCodeError::Status503(github_response.to_json()?)),
-                422 => Err(SearchCodeError::Status422(github_response.to_json()?)),
-                403 => Err(SearchCodeError::Status403(github_response.to_json()?)),
+                503 => Err(SearchCodeError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(SearchCodeError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(SearchCodeError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(SearchCodeError::Generic { code }),
             }
         }
@@ -813,13 +813,13 @@ impl<'api> Search<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(SearchCodeError::Status304),
-                503 => Err(SearchCodeError::Status503(github_response.to_json()?)),
-                422 => Err(SearchCodeError::Status422(github_response.to_json()?)),
-                403 => Err(SearchCodeError::Status403(github_response.to_json()?)),
+                503 => Err(SearchCodeError::Status503(crate::adapters::to_json(github_response)?)),
+                422 => Err(SearchCodeError::Status422(crate::adapters::to_json(github_response)?)),
+                403 => Err(SearchCodeError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(SearchCodeError::Generic { code }),
             }
         }
@@ -867,11 +867,11 @@ impl<'api> Search<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(SearchCommitsError::Status304),
-                415 => Err(SearchCommitsError::Status415(github_response.to_json()?)),
+                415 => Err(SearchCommitsError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(SearchCommitsError::Generic { code }),
             }
         }
@@ -921,11 +921,11 @@ impl<'api> Search<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(SearchCommitsError::Status304),
-                415 => Err(SearchCommitsError::Status415(github_response.to_json()?)),
+                415 => Err(SearchCommitsError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(SearchCommitsError::Generic { code }),
             }
         }
@@ -974,13 +974,13 @@ impl<'api> Search<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                503 => Err(SearchIssuesAndPullRequestsError::Status503(github_response.to_json()?)),
-                422 => Err(SearchIssuesAndPullRequestsError::Status422(github_response.to_json()?)),
+                503 => Err(SearchIssuesAndPullRequestsError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(SearchIssuesAndPullRequestsError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(SearchIssuesAndPullRequestsError::Status304),
-                403 => Err(SearchIssuesAndPullRequestsError::Status403(github_response.to_json()?)),
+                403 => Err(SearchIssuesAndPullRequestsError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(SearchIssuesAndPullRequestsError::Generic { code }),
             }
         }
@@ -1031,13 +1031,13 @@ impl<'api> Search<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                503 => Err(SearchIssuesAndPullRequestsError::Status503(github_response.to_json()?)),
-                422 => Err(SearchIssuesAndPullRequestsError::Status422(github_response.to_json()?)),
+                503 => Err(SearchIssuesAndPullRequestsError::Status503(crate::adapters::to_json(github_response)?)),
+                422 => Err(SearchIssuesAndPullRequestsError::Status422(crate::adapters::to_json(github_response)?)),
                 304 => Err(SearchIssuesAndPullRequestsError::Status304),
-                403 => Err(SearchIssuesAndPullRequestsError::Status403(github_response.to_json()?)),
+                403 => Err(SearchIssuesAndPullRequestsError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(SearchIssuesAndPullRequestsError::Generic { code }),
             }
         }
@@ -1083,13 +1083,13 @@ impl<'api> Search<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(SearchLabelsError::Status304),
-                404 => Err(SearchLabelsError::Status404(github_response.to_json()?)),
-                403 => Err(SearchLabelsError::Status403(github_response.to_json()?)),
-                422 => Err(SearchLabelsError::Status422(github_response.to_json()?)),
+                404 => Err(SearchLabelsError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(SearchLabelsError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(SearchLabelsError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(SearchLabelsError::Generic { code }),
             }
         }
@@ -1137,13 +1137,13 @@ impl<'api> Search<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(SearchLabelsError::Status304),
-                404 => Err(SearchLabelsError::Status404(github_response.to_json()?)),
-                403 => Err(SearchLabelsError::Status403(github_response.to_json()?)),
-                422 => Err(SearchLabelsError::Status422(github_response.to_json()?)),
+                404 => Err(SearchLabelsError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(SearchLabelsError::Status403(crate::adapters::to_json(github_response)?)),
+                422 => Err(SearchLabelsError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(SearchLabelsError::Generic { code }),
             }
         }
@@ -1196,11 +1196,11 @@ impl<'api> Search<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                503 => Err(SearchReposError::Status503(github_response.to_json()?)),
-                422 => Err(SearchReposError::Status422(github_response.to_json()?)),
+                503 => Err(SearchReposError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(SearchReposError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(SearchReposError::Status304),
                 code => Err(SearchReposError::Generic { code }),
             }
@@ -1256,11 +1256,11 @@ impl<'api> Search<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                503 => Err(SearchReposError::Status503(github_response.to_json()?)),
-                422 => Err(SearchReposError::Status422(github_response.to_json()?)),
+                503 => Err(SearchReposError::Status503(crate::adapters::to_json(github_response)?)),
+                422 => Err(SearchReposError::Status422(crate::adapters::to_json(github_response)?)),
                 304 => Err(SearchReposError::Status304),
                 code => Err(SearchReposError::Generic { code }),
             }
@@ -1310,11 +1310,11 @@ impl<'api> Search<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(SearchTopicsError::Status304),
-                415 => Err(SearchTopicsError::Status415(github_response.to_json()?)),
+                415 => Err(SearchTopicsError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(SearchTopicsError::Generic { code }),
             }
         }
@@ -1365,11 +1365,11 @@ impl<'api> Search<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(SearchTopicsError::Status304),
-                415 => Err(SearchTopicsError::Status415(github_response.to_json()?)),
+                415 => Err(SearchTopicsError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(SearchTopicsError::Generic { code }),
             }
         }
@@ -1415,12 +1415,12 @@ impl<'api> Search<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(SearchUsersError::Status304),
-                503 => Err(SearchUsersError::Status503(github_response.to_json()?)),
-                422 => Err(SearchUsersError::Status422(github_response.to_json()?)),
+                503 => Err(SearchUsersError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(SearchUsersError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(SearchUsersError::Generic { code }),
             }
         }
@@ -1468,12 +1468,12 @@ impl<'api> Search<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(SearchUsersError::Status304),
-                503 => Err(SearchUsersError::Status503(github_response.to_json()?)),
-                422 => Err(SearchUsersError::Status422(github_response.to_json()?)),
+                503 => Err(SearchUsersError::Status503(crate::adapters::to_json(github_response)?)),
+                422 => Err(SearchUsersError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(SearchUsersError::Generic { code }),
             }
         }

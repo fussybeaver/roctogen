@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
+use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -83,7 +83,7 @@ impl<'api> Emojis<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(EmojisGetError::Status304),
@@ -123,7 +123,7 @@ impl<'api> Emojis<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(EmojisGetError::Status304),

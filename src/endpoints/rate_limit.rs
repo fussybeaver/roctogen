@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
+use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -87,11 +87,11 @@ impl<'api> RateLimit<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(RateLimitGetError::Status304),
-                404 => Err(RateLimitGetError::Status404(github_response.to_json()?)),
+                404 => Err(RateLimitGetError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(RateLimitGetError::Generic { code }),
             }
         }
@@ -130,11 +130,11 @@ impl<'api> RateLimit<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(RateLimitGetError::Status304),
-                404 => Err(RateLimitGetError::Status404(github_response.to_json()?)),
+                404 => Err(RateLimitGetError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(RateLimitGetError::Generic { code }),
             }
         }

@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
+use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -1052,7 +1052,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminAddOrgAccessToSelfHostedRunnerGroupInEnterpriseError::Generic { code }),
@@ -1093,7 +1093,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminAddOrgAccessToSelfHostedRunnerGroupInEnterpriseError::Generic { code }),
@@ -1134,7 +1134,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminAddSelfHostedRunnerToGroupForEnterpriseError::Generic { code }),
@@ -1176,7 +1176,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminAddSelfHostedRunnerToGroupForEnterpriseError::Generic { code }),
@@ -1224,7 +1224,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminCreateRegistrationTokenForEnterpriseError::Generic { code }),
@@ -1273,7 +1273,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminCreateRegistrationTokenForEnterpriseError::Generic { code }),
@@ -1322,7 +1322,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminCreateRemoveTokenForEnterpriseError::Generic { code }),
@@ -1372,7 +1372,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminCreateRemoveTokenForEnterpriseError::Generic { code }),
@@ -1412,7 +1412,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminCreateSelfHostedRunnerGroupForEnterpriseError::Generic { code }),
@@ -1453,7 +1453,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminCreateSelfHostedRunnerGroupForEnterpriseError::Generic { code }),
@@ -1491,7 +1491,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminDeleteScimGroupFromEnterpriseError::Generic { code }),
@@ -1530,7 +1530,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminDeleteScimGroupFromEnterpriseError::Generic { code }),
@@ -1570,7 +1570,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminDeleteSelfHostedRunnerFromEnterpriseError::Generic { code }),
@@ -1611,7 +1611,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminDeleteSelfHostedRunnerFromEnterpriseError::Generic { code }),
@@ -1651,7 +1651,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminDeleteSelfHostedRunnerGroupFromEnterpriseError::Generic { code }),
@@ -1692,7 +1692,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminDeleteSelfHostedRunnerGroupFromEnterpriseError::Generic { code }),
@@ -1730,7 +1730,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminDeleteUserFromEnterpriseError::Generic { code }),
@@ -1769,7 +1769,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminDeleteUserFromEnterpriseError::Generic { code }),
@@ -1809,7 +1809,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminDisableSelectedOrganizationGithubActionsEnterpriseError::Generic { code }),
@@ -1850,7 +1850,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminDisableSelectedOrganizationGithubActionsEnterpriseError::Generic { code }),
@@ -1890,7 +1890,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminEnableSelectedOrganizationGithubActionsEnterpriseError::Generic { code }),
@@ -1931,7 +1931,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminEnableSelectedOrganizationGithubActionsEnterpriseError::Generic { code }),
@@ -1971,7 +1971,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminGetAllowedActionsEnterpriseError::Generic { code }),
@@ -2012,7 +2012,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminGetAllowedActionsEnterpriseError::Generic { code }),
@@ -2052,7 +2052,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminGetGithubActionsPermissionsEnterpriseError::Generic { code }),
@@ -2093,7 +2093,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminGetGithubActionsPermissionsEnterpriseError::Generic { code }),
@@ -2135,7 +2135,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminGetProvisioningInformationForEnterpriseGroupError::Generic { code }),
@@ -2179,7 +2179,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminGetProvisioningInformationForEnterpriseGroupError::Generic { code }),
@@ -2217,7 +2217,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminGetProvisioningInformationForEnterpriseUserError::Generic { code }),
@@ -2256,7 +2256,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminGetProvisioningInformationForEnterpriseUserError::Generic { code }),
@@ -2296,7 +2296,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminGetSelfHostedRunnerForEnterpriseError::Generic { code }),
@@ -2337,7 +2337,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminGetSelfHostedRunnerForEnterpriseError::Generic { code }),
@@ -2377,7 +2377,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminGetSelfHostedRunnerGroupForEnterpriseError::Generic { code }),
@@ -2418,7 +2418,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminGetSelfHostedRunnerGroupForEnterpriseError::Generic { code }),
@@ -2462,7 +2462,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminListOrgAccessToSelfHostedRunnerGroupInEnterpriseError::Generic { code }),
@@ -2508,7 +2508,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminListOrgAccessToSelfHostedRunnerGroupInEnterpriseError::Generic { code }),
@@ -2550,7 +2550,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminListProvisionedGroupsEnterpriseError::Generic { code }),
@@ -2594,7 +2594,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminListProvisionedGroupsEnterpriseError::Generic { code }),
@@ -2653,7 +2653,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminListProvisionedIdentitiesEnterpriseError::Generic { code }),
@@ -2714,7 +2714,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminListProvisionedIdentitiesEnterpriseError::Generic { code }),
@@ -2754,7 +2754,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminListRunnerApplicationsForEnterpriseError::Generic { code }),
@@ -2795,7 +2795,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminListRunnerApplicationsForEnterpriseError::Generic { code }),
@@ -2839,7 +2839,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminListSelectedOrganizationsEnabledGithubActionsEnterpriseError::Generic { code }),
@@ -2885,7 +2885,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminListSelectedOrganizationsEnabledGithubActionsEnterpriseError::Generic { code }),
@@ -2929,7 +2929,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminListSelfHostedRunnerGroupsForEnterpriseError::Generic { code }),
@@ -2975,7 +2975,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminListSelfHostedRunnerGroupsForEnterpriseError::Generic { code }),
@@ -3019,7 +3019,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminListSelfHostedRunnersForEnterpriseError::Generic { code }),
@@ -3065,7 +3065,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminListSelfHostedRunnersForEnterpriseError::Generic { code }),
@@ -3109,7 +3109,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminListSelfHostedRunnersInGroupForEnterpriseError::Generic { code }),
@@ -3155,7 +3155,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminListSelfHostedRunnersInGroupForEnterpriseError::Generic { code }),
@@ -3195,7 +3195,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminProvisionAndInviteEnterpriseGroupError::Generic { code }),
@@ -3236,7 +3236,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminProvisionAndInviteEnterpriseGroupError::Generic { code }),
@@ -3278,7 +3278,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminProvisionAndInviteEnterpriseUserError::Generic { code }),
@@ -3321,7 +3321,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminProvisionAndInviteEnterpriseUserError::Generic { code }),
@@ -3361,7 +3361,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminRemoveOrgAccessToSelfHostedRunnerGroupInEnterpriseError::Generic { code }),
@@ -3402,7 +3402,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminRemoveOrgAccessToSelfHostedRunnerGroupInEnterpriseError::Generic { code }),
@@ -3442,7 +3442,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminRemoveSelfHostedRunnerFromGroupForEnterpriseError::Generic { code }),
@@ -3483,7 +3483,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminRemoveSelfHostedRunnerFromGroupForEnterpriseError::Generic { code }),
@@ -3523,7 +3523,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminSetAllowedActionsEnterpriseError::Generic { code }),
@@ -3564,7 +3564,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminSetAllowedActionsEnterpriseError::Generic { code }),
@@ -3604,7 +3604,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminSetGithubActionsPermissionsEnterpriseError::Generic { code }),
@@ -3645,7 +3645,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminSetGithubActionsPermissionsEnterpriseError::Generic { code }),
@@ -3685,7 +3685,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminSetInformationForProvisionedEnterpriseGroupError::Generic { code }),
@@ -3726,7 +3726,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminSetInformationForProvisionedEnterpriseGroupError::Generic { code }),
@@ -3770,7 +3770,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminSetInformationForProvisionedEnterpriseUserError::Generic { code }),
@@ -3815,7 +3815,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminSetInformationForProvisionedEnterpriseUserError::Generic { code }),
@@ -3855,7 +3855,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminSetOrgAccessToSelfHostedRunnerGroupInEnterpriseError::Generic { code }),
@@ -3896,7 +3896,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminSetOrgAccessToSelfHostedRunnerGroupInEnterpriseError::Generic { code }),
@@ -3936,7 +3936,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminSetSelectedOrganizationsEnabledGithubActionsEnterpriseError::Generic { code }),
@@ -3977,7 +3977,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminSetSelectedOrganizationsEnabledGithubActionsEnterpriseError::Generic { code }),
@@ -4017,7 +4017,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminSetSelfHostedRunnersInGroupForEnterpriseError::Generic { code }),
@@ -4058,7 +4058,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminSetSelfHostedRunnersInGroupForEnterpriseError::Generic { code }),
@@ -4098,7 +4098,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminUpdateAttributeForEnterpriseGroupError::Generic { code }),
@@ -4139,7 +4139,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminUpdateAttributeForEnterpriseGroupError::Generic { code }),
@@ -4194,7 +4194,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminUpdateAttributeForEnterpriseUserError::Generic { code }),
@@ -4250,7 +4250,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminUpdateAttributeForEnterpriseUserError::Generic { code }),
@@ -4290,7 +4290,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminUpdateSelfHostedRunnerGroupForEnterpriseError::Generic { code }),
@@ -4331,7 +4331,7 @@ impl<'api> EnterpriseAdmin<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminUpdateSelfHostedRunnerGroupForEnterpriseError::Generic { code }),

@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
+use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -625,13 +625,13 @@ impl<'api> CodeScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                400 => Err(CodeScanningDeleteAnalysisError::Status400(github_response.to_json()?)),
-                403 => Err(CodeScanningDeleteAnalysisError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningDeleteAnalysisError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningDeleteAnalysisError::Status503(github_response.to_json()?)),
+                400 => Err(CodeScanningDeleteAnalysisError::Status400(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(CodeScanningDeleteAnalysisError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodeScanningDeleteAnalysisError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(CodeScanningDeleteAnalysisError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(CodeScanningDeleteAnalysisError::Generic { code }),
             }
         }
@@ -736,13 +736,13 @@ impl<'api> CodeScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                400 => Err(CodeScanningDeleteAnalysisError::Status400(github_response.to_json()?)),
-                403 => Err(CodeScanningDeleteAnalysisError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningDeleteAnalysisError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningDeleteAnalysisError::Status503(github_response.to_json()?)),
+                400 => Err(CodeScanningDeleteAnalysisError::Status400(crate::adapters::to_json(github_response)?)),
+                403 => Err(CodeScanningDeleteAnalysisError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodeScanningDeleteAnalysisError::Status404(crate::adapters::to_json(github_response)?)),
+                503 => Err(CodeScanningDeleteAnalysisError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(CodeScanningDeleteAnalysisError::Generic { code }),
             }
         }
@@ -781,12 +781,12 @@ impl<'api> CodeScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningGetAlertError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningGetAlertError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningGetAlertError::Status503(github_response.to_json()?)),
+                403 => Err(CodeScanningGetAlertError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodeScanningGetAlertError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(CodeScanningGetAlertError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(CodeScanningGetAlertError::Generic { code }),
             }
         }
@@ -826,12 +826,12 @@ impl<'api> CodeScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningGetAlertError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningGetAlertError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningGetAlertError::Status503(github_response.to_json()?)),
+                403 => Err(CodeScanningGetAlertError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodeScanningGetAlertError::Status404(crate::adapters::to_json(github_response)?)),
+                503 => Err(CodeScanningGetAlertError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(CodeScanningGetAlertError::Generic { code }),
             }
         }
@@ -888,12 +888,12 @@ impl<'api> CodeScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningGetAnalysisError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningGetAnalysisError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningGetAnalysisError::Status503(github_response.to_json()?)),
+                403 => Err(CodeScanningGetAnalysisError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodeScanningGetAnalysisError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(CodeScanningGetAnalysisError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(CodeScanningGetAnalysisError::Generic { code }),
             }
         }
@@ -951,12 +951,12 @@ impl<'api> CodeScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningGetAnalysisError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningGetAnalysisError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningGetAnalysisError::Status503(github_response.to_json()?)),
+                403 => Err(CodeScanningGetAnalysisError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodeScanningGetAnalysisError::Status404(crate::adapters::to_json(github_response)?)),
+                503 => Err(CodeScanningGetAnalysisError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(CodeScanningGetAnalysisError::Generic { code }),
             }
         }
@@ -992,12 +992,12 @@ impl<'api> CodeScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningGetSarifError::Status403(github_response.to_json()?)),
+                403 => Err(CodeScanningGetSarifError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(CodeScanningGetSarifError::Status404),
-                503 => Err(CodeScanningGetSarifError::Status503(github_response.to_json()?)),
+                503 => Err(CodeScanningGetSarifError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(CodeScanningGetSarifError::Generic { code }),
             }
         }
@@ -1034,12 +1034,12 @@ impl<'api> CodeScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningGetSarifError::Status403(github_response.to_json()?)),
+                403 => Err(CodeScanningGetSarifError::Status403(crate::adapters::to_json(github_response)?)),
                 404 => Err(CodeScanningGetSarifError::Status404),
-                503 => Err(CodeScanningGetSarifError::Status503(github_response.to_json()?)),
+                503 => Err(CodeScanningGetSarifError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(CodeScanningGetSarifError::Generic { code }),
             }
         }
@@ -1087,12 +1087,12 @@ impl<'api> CodeScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningListAlertsForRepoError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningListAlertsForRepoError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningListAlertsForRepoError::Status503(github_response.to_json()?)),
+                403 => Err(CodeScanningListAlertsForRepoError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodeScanningListAlertsForRepoError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(CodeScanningListAlertsForRepoError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(CodeScanningListAlertsForRepoError::Generic { code }),
             }
         }
@@ -1142,12 +1142,12 @@ impl<'api> CodeScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningListAlertsForRepoError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningListAlertsForRepoError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningListAlertsForRepoError::Status503(github_response.to_json()?)),
+                403 => Err(CodeScanningListAlertsForRepoError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodeScanningListAlertsForRepoError::Status404(crate::adapters::to_json(github_response)?)),
+                503 => Err(CodeScanningListAlertsForRepoError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(CodeScanningListAlertsForRepoError::Generic { code }),
             }
         }
@@ -1187,12 +1187,12 @@ impl<'api> CodeScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningListAlertsInstancesError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningListAlertsInstancesError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningListAlertsInstancesError::Status503(github_response.to_json()?)),
+                403 => Err(CodeScanningListAlertsInstancesError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodeScanningListAlertsInstancesError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(CodeScanningListAlertsInstancesError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(CodeScanningListAlertsInstancesError::Generic { code }),
             }
         }
@@ -1234,12 +1234,12 @@ impl<'api> CodeScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningListAlertsInstancesError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningListAlertsInstancesError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningListAlertsInstancesError::Status503(github_response.to_json()?)),
+                403 => Err(CodeScanningListAlertsInstancesError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodeScanningListAlertsInstancesError::Status404(crate::adapters::to_json(github_response)?)),
+                503 => Err(CodeScanningListAlertsInstancesError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(CodeScanningListAlertsInstancesError::Generic { code }),
             }
         }
@@ -1294,12 +1294,12 @@ impl<'api> CodeScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningListRecentAnalysesError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningListRecentAnalysesError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningListRecentAnalysesError::Status503(github_response.to_json()?)),
+                403 => Err(CodeScanningListRecentAnalysesError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodeScanningListRecentAnalysesError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(CodeScanningListRecentAnalysesError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(CodeScanningListRecentAnalysesError::Generic { code }),
             }
         }
@@ -1356,12 +1356,12 @@ impl<'api> CodeScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningListRecentAnalysesError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningListRecentAnalysesError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningListRecentAnalysesError::Status503(github_response.to_json()?)),
+                403 => Err(CodeScanningListRecentAnalysesError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodeScanningListRecentAnalysesError::Status404(crate::adapters::to_json(github_response)?)),
+                503 => Err(CodeScanningListRecentAnalysesError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(CodeScanningListRecentAnalysesError::Generic { code }),
             }
         }
@@ -1397,12 +1397,12 @@ impl<'api> CodeScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningUpdateAlertError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningUpdateAlertError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningUpdateAlertError::Status503(github_response.to_json()?)),
+                403 => Err(CodeScanningUpdateAlertError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodeScanningUpdateAlertError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(CodeScanningUpdateAlertError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(CodeScanningUpdateAlertError::Generic { code }),
             }
         }
@@ -1439,12 +1439,12 @@ impl<'api> CodeScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningUpdateAlertError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningUpdateAlertError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningUpdateAlertError::Status503(github_response.to_json()?)),
+                403 => Err(CodeScanningUpdateAlertError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodeScanningUpdateAlertError::Status404(crate::adapters::to_json(github_response)?)),
+                503 => Err(CodeScanningUpdateAlertError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(CodeScanningUpdateAlertError::Generic { code }),
             }
         }
@@ -1496,14 +1496,14 @@ impl<'api> CodeScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 400 => Err(CodeScanningUploadSarifError::Status400),
-                403 => Err(CodeScanningUploadSarifError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningUploadSarifError::Status404(github_response.to_json()?)),
+                403 => Err(CodeScanningUploadSarifError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodeScanningUploadSarifError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 413 => Err(CodeScanningUploadSarifError::Status413),
-                503 => Err(CodeScanningUploadSarifError::Status503(github_response.to_json()?)),
+                503 => Err(CodeScanningUploadSarifError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(CodeScanningUploadSarifError::Generic { code }),
             }
         }
@@ -1556,14 +1556,14 @@ impl<'api> CodeScanning<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 400 => Err(CodeScanningUploadSarifError::Status400),
-                403 => Err(CodeScanningUploadSarifError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningUploadSarifError::Status404(github_response.to_json()?)),
+                403 => Err(CodeScanningUploadSarifError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodeScanningUploadSarifError::Status404(crate::adapters::to_json(github_response)?)),
                 413 => Err(CodeScanningUploadSarifError::Status413),
-                503 => Err(CodeScanningUploadSarifError::Status503(github_response.to_json()?)),
+                503 => Err(CodeScanningUploadSarifError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(CodeScanningUploadSarifError::Generic { code }),
             }
         }

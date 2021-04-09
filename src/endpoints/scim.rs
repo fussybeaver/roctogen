@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
+use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -256,11 +256,11 @@ impl<'api> Scim<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ScimDeleteUserFromOrgError::Status404(github_response.to_json()?)),
-                403 => Err(ScimDeleteUserFromOrgError::Status403(github_response.to_json()?)),
+                404 => Err(ScimDeleteUserFromOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(ScimDeleteUserFromOrgError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(ScimDeleteUserFromOrgError::Status304),
                 code => Err(ScimDeleteUserFromOrgError::Generic { code }),
             }
@@ -296,11 +296,11 @@ impl<'api> Scim<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ScimDeleteUserFromOrgError::Status404(github_response.to_json()?)),
-                403 => Err(ScimDeleteUserFromOrgError::Status403(github_response.to_json()?)),
+                404 => Err(ScimDeleteUserFromOrgError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(ScimDeleteUserFromOrgError::Status403(crate::adapters::to_json(github_response)?)),
                 304 => Err(ScimDeleteUserFromOrgError::Status304),
                 code => Err(ScimDeleteUserFromOrgError::Generic { code }),
             }
@@ -335,11 +335,11 @@ impl<'api> Scim<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ScimGetProvisioningInformationForUserError::Status404(github_response.to_json()?)),
-                403 => Err(ScimGetProvisioningInformationForUserError::Status403(github_response.to_json()?)),
+                404 => Err(ScimGetProvisioningInformationForUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(ScimGetProvisioningInformationForUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(ScimGetProvisioningInformationForUserError::Status304),
                 code => Err(ScimGetProvisioningInformationForUserError::Generic { code }),
             }
@@ -375,11 +375,11 @@ impl<'api> Scim<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ScimGetProvisioningInformationForUserError::Status404(github_response.to_json()?)),
-                403 => Err(ScimGetProvisioningInformationForUserError::Status403(github_response.to_json()?)),
+                404 => Err(ScimGetProvisioningInformationForUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(ScimGetProvisioningInformationForUserError::Status403(crate::adapters::to_json(github_response)?)),
                 304 => Err(ScimGetProvisioningInformationForUserError::Status304),
                 code => Err(ScimGetProvisioningInformationForUserError::Generic { code }),
             }
@@ -435,13 +435,13 @@ impl<'api> Scim<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(ScimListProvisionedIdentitiesError::Status304),
-                404 => Err(ScimListProvisionedIdentitiesError::Status404(github_response.to_json()?)),
-                403 => Err(ScimListProvisionedIdentitiesError::Status403(github_response.to_json()?)),
-                400 => Err(ScimListProvisionedIdentitiesError::Status400(github_response.to_json()?)),
+                404 => Err(ScimListProvisionedIdentitiesError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(ScimListProvisionedIdentitiesError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                400 => Err(ScimListProvisionedIdentitiesError::Status400(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ScimListProvisionedIdentitiesError::Generic { code }),
             }
         }
@@ -498,13 +498,13 @@ impl<'api> Scim<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(ScimListProvisionedIdentitiesError::Status304),
-                404 => Err(ScimListProvisionedIdentitiesError::Status404(github_response.to_json()?)),
-                403 => Err(ScimListProvisionedIdentitiesError::Status403(github_response.to_json()?)),
-                400 => Err(ScimListProvisionedIdentitiesError::Status400(github_response.to_json()?)),
+                404 => Err(ScimListProvisionedIdentitiesError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(ScimListProvisionedIdentitiesError::Status403(crate::adapters::to_json(github_response)?)),
+                400 => Err(ScimListProvisionedIdentitiesError::Status400(crate::adapters::to_json(github_response)?)),
                 code => Err(ScimListProvisionedIdentitiesError::Generic { code }),
             }
         }
@@ -540,15 +540,15 @@ impl<'api> Scim<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(ScimProvisionAndInviteUserError::Status304),
-                404 => Err(ScimProvisionAndInviteUserError::Status404(github_response.to_json()?)),
-                403 => Err(ScimProvisionAndInviteUserError::Status403(github_response.to_json()?)),
-                500 => Err(ScimProvisionAndInviteUserError::Status500(github_response.to_json()?)),
-                409 => Err(ScimProvisionAndInviteUserError::Status409(github_response.to_json()?)),
-                400 => Err(ScimProvisionAndInviteUserError::Status400(github_response.to_json()?)),
+                404 => Err(ScimProvisionAndInviteUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(ScimProvisionAndInviteUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                500 => Err(ScimProvisionAndInviteUserError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(ScimProvisionAndInviteUserError::Status409(crate::adapters::to_json_async(github_response).await?)),
+                400 => Err(ScimProvisionAndInviteUserError::Status400(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ScimProvisionAndInviteUserError::Generic { code }),
             }
         }
@@ -585,15 +585,15 @@ impl<'api> Scim<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(ScimProvisionAndInviteUserError::Status304),
-                404 => Err(ScimProvisionAndInviteUserError::Status404(github_response.to_json()?)),
-                403 => Err(ScimProvisionAndInviteUserError::Status403(github_response.to_json()?)),
-                500 => Err(ScimProvisionAndInviteUserError::Status500(github_response.to_json()?)),
-                409 => Err(ScimProvisionAndInviteUserError::Status409(github_response.to_json()?)),
-                400 => Err(ScimProvisionAndInviteUserError::Status400(github_response.to_json()?)),
+                404 => Err(ScimProvisionAndInviteUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(ScimProvisionAndInviteUserError::Status403(crate::adapters::to_json(github_response)?)),
+                500 => Err(ScimProvisionAndInviteUserError::Status500(crate::adapters::to_json(github_response)?)),
+                409 => Err(ScimProvisionAndInviteUserError::Status409(crate::adapters::to_json(github_response)?)),
+                400 => Err(ScimProvisionAndInviteUserError::Status400(crate::adapters::to_json(github_response)?)),
                 code => Err(ScimProvisionAndInviteUserError::Generic { code }),
             }
         }
@@ -633,12 +633,12 @@ impl<'api> Scim<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(ScimSetInformationForProvisionedUserError::Status304),
-                404 => Err(ScimSetInformationForProvisionedUserError::Status404(github_response.to_json()?)),
-                403 => Err(ScimSetInformationForProvisionedUserError::Status403(github_response.to_json()?)),
+                404 => Err(ScimSetInformationForProvisionedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(ScimSetInformationForProvisionedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ScimSetInformationForProvisionedUserError::Generic { code }),
             }
         }
@@ -679,12 +679,12 @@ impl<'api> Scim<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(ScimSetInformationForProvisionedUserError::Status304),
-                404 => Err(ScimSetInformationForProvisionedUserError::Status404(github_response.to_json()?)),
-                403 => Err(ScimSetInformationForProvisionedUserError::Status403(github_response.to_json()?)),
+                404 => Err(ScimSetInformationForProvisionedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(ScimSetInformationForProvisionedUserError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(ScimSetInformationForProvisionedUserError::Generic { code }),
             }
         }
@@ -735,14 +735,14 @@ impl<'api> Scim<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(ScimUpdateAttributeForUserError::Status304),
-                404 => Err(ScimUpdateAttributeForUserError::Status404(github_response.to_json()?)),
-                403 => Err(ScimUpdateAttributeForUserError::Status403(github_response.to_json()?)),
-                400 => Err(ScimUpdateAttributeForUserError::Status400(github_response.to_json()?)),
-                429 => Err(ScimUpdateAttributeForUserError::Status429(github_response.to_json()?)),
+                404 => Err(ScimUpdateAttributeForUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(ScimUpdateAttributeForUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                400 => Err(ScimUpdateAttributeForUserError::Status400(crate::adapters::to_json_async(github_response).await?)),
+                429 => Err(ScimUpdateAttributeForUserError::Status429(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ScimUpdateAttributeForUserError::Generic { code }),
             }
         }
@@ -794,14 +794,14 @@ impl<'api> Scim<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(ScimUpdateAttributeForUserError::Status304),
-                404 => Err(ScimUpdateAttributeForUserError::Status404(github_response.to_json()?)),
-                403 => Err(ScimUpdateAttributeForUserError::Status403(github_response.to_json()?)),
-                400 => Err(ScimUpdateAttributeForUserError::Status400(github_response.to_json()?)),
-                429 => Err(ScimUpdateAttributeForUserError::Status429(github_response.to_json()?)),
+                404 => Err(ScimUpdateAttributeForUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(ScimUpdateAttributeForUserError::Status403(crate::adapters::to_json(github_response)?)),
+                400 => Err(ScimUpdateAttributeForUserError::Status400(crate::adapters::to_json(github_response)?)),
+                429 => Err(ScimUpdateAttributeForUserError::Status429(crate::adapters::to_json(github_response)?)),
                 code => Err(ScimUpdateAttributeForUserError::Generic { code }),
             }
         }

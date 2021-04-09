@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
+use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -846,12 +846,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsCheckIsStarredError::Status404(github_response.to_json()?)),
+                404 => Err(GistsCheckIsStarredError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(GistsCheckIsStarredError::Status304),
-                403 => Err(GistsCheckIsStarredError::Status403(github_response.to_json()?)),
+                403 => Err(GistsCheckIsStarredError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GistsCheckIsStarredError::Generic { code }),
             }
         }
@@ -886,12 +886,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsCheckIsStarredError::Status404(github_response.to_json()?)),
+                404 => Err(GistsCheckIsStarredError::Status404(crate::adapters::to_json(github_response)?)),
                 304 => Err(GistsCheckIsStarredError::Status304),
-                403 => Err(GistsCheckIsStarredError::Status403(github_response.to_json()?)),
+                403 => Err(GistsCheckIsStarredError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(GistsCheckIsStarredError::Generic { code }),
             }
         }
@@ -929,13 +929,13 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(GistsCreateError::Status422(github_response.to_json()?)),
+                422 => Err(GistsCreateError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(GistsCreateError::Status304),
-                404 => Err(GistsCreateError::Status404(github_response.to_json()?)),
-                403 => Err(GistsCreateError::Status403(github_response.to_json()?)),
+                404 => Err(GistsCreateError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(GistsCreateError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GistsCreateError::Generic { code }),
             }
         }
@@ -974,13 +974,13 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(GistsCreateError::Status422(github_response.to_json()?)),
+                422 => Err(GistsCreateError::Status422(crate::adapters::to_json(github_response)?)),
                 304 => Err(GistsCreateError::Status304),
-                404 => Err(GistsCreateError::Status404(github_response.to_json()?)),
-                403 => Err(GistsCreateError::Status403(github_response.to_json()?)),
+                404 => Err(GistsCreateError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(GistsCreateError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(GistsCreateError::Generic { code }),
             }
         }
@@ -1014,12 +1014,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(GistsCreateCommentError::Status304),
-                404 => Err(GistsCreateCommentError::Status404(github_response.to_json()?)),
-                403 => Err(GistsCreateCommentError::Status403(github_response.to_json()?)),
+                404 => Err(GistsCreateCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(GistsCreateCommentError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GistsCreateCommentError::Generic { code }),
             }
         }
@@ -1054,12 +1054,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(GistsCreateCommentError::Status304),
-                404 => Err(GistsCreateCommentError::Status404(github_response.to_json()?)),
-                403 => Err(GistsCreateCommentError::Status403(github_response.to_json()?)),
+                404 => Err(GistsCreateCommentError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(GistsCreateCommentError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(GistsCreateCommentError::Generic { code }),
             }
         }
@@ -1093,12 +1093,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsDeleteError::Status404(github_response.to_json()?)),
+                404 => Err(GistsDeleteError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(GistsDeleteError::Status304),
-                403 => Err(GistsDeleteError::Status403(github_response.to_json()?)),
+                403 => Err(GistsDeleteError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GistsDeleteError::Generic { code }),
             }
         }
@@ -1133,12 +1133,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsDeleteError::Status404(github_response.to_json()?)),
+                404 => Err(GistsDeleteError::Status404(crate::adapters::to_json(github_response)?)),
                 304 => Err(GistsDeleteError::Status304),
-                403 => Err(GistsDeleteError::Status403(github_response.to_json()?)),
+                403 => Err(GistsDeleteError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(GistsDeleteError::Generic { code }),
             }
         }
@@ -1172,12 +1172,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(GistsDeleteCommentError::Status304),
-                404 => Err(GistsDeleteCommentError::Status404(github_response.to_json()?)),
-                403 => Err(GistsDeleteCommentError::Status403(github_response.to_json()?)),
+                404 => Err(GistsDeleteCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(GistsDeleteCommentError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GistsDeleteCommentError::Generic { code }),
             }
         }
@@ -1212,12 +1212,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(GistsDeleteCommentError::Status304),
-                404 => Err(GistsDeleteCommentError::Status404(github_response.to_json()?)),
-                403 => Err(GistsDeleteCommentError::Status403(github_response.to_json()?)),
+                404 => Err(GistsDeleteCommentError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(GistsDeleteCommentError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(GistsDeleteCommentError::Generic { code }),
             }
         }
@@ -1253,13 +1253,13 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsForkError::Status404(github_response.to_json()?)),
-                422 => Err(GistsForkError::Status422(github_response.to_json()?)),
+                404 => Err(GistsForkError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(GistsForkError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(GistsForkError::Status304),
-                403 => Err(GistsForkError::Status403(github_response.to_json()?)),
+                403 => Err(GistsForkError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GistsForkError::Generic { code }),
             }
         }
@@ -1296,13 +1296,13 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsForkError::Status404(github_response.to_json()?)),
-                422 => Err(GistsForkError::Status422(github_response.to_json()?)),
+                404 => Err(GistsForkError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(GistsForkError::Status422(crate::adapters::to_json(github_response)?)),
                 304 => Err(GistsForkError::Status304),
-                403 => Err(GistsForkError::Status403(github_response.to_json()?)),
+                403 => Err(GistsForkError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(GistsForkError::Generic { code }),
             }
         }
@@ -1336,11 +1336,11 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(GistsGetError::Status403(github_response.to_json()?)),
-                404 => Err(GistsGetError::Status404(github_response.to_json()?)),
+                403 => Err(GistsGetError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(GistsGetError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(GistsGetError::Status304),
                 code => Err(GistsGetError::Generic { code }),
             }
@@ -1376,11 +1376,11 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(GistsGetError::Status403(github_response.to_json()?)),
-                404 => Err(GistsGetError::Status404(github_response.to_json()?)),
+                403 => Err(GistsGetError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(GistsGetError::Status404(crate::adapters::to_json(github_response)?)),
                 304 => Err(GistsGetError::Status304),
                 code => Err(GistsGetError::Generic { code }),
             }
@@ -1415,12 +1415,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(GistsGetCommentError::Status304),
-                404 => Err(GistsGetCommentError::Status404(github_response.to_json()?)),
-                403 => Err(GistsGetCommentError::Status403(github_response.to_json()?)),
+                404 => Err(GistsGetCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(GistsGetCommentError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GistsGetCommentError::Generic { code }),
             }
         }
@@ -1455,12 +1455,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(GistsGetCommentError::Status304),
-                404 => Err(GistsGetCommentError::Status404(github_response.to_json()?)),
-                403 => Err(GistsGetCommentError::Status403(github_response.to_json()?)),
+                404 => Err(GistsGetCommentError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(GistsGetCommentError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(GistsGetCommentError::Generic { code }),
             }
         }
@@ -1494,12 +1494,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(GistsGetRevisionError::Status422(github_response.to_json()?)),
-                404 => Err(GistsGetRevisionError::Status404(github_response.to_json()?)),
-                403 => Err(GistsGetRevisionError::Status403(github_response.to_json()?)),
+                422 => Err(GistsGetRevisionError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(GistsGetRevisionError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(GistsGetRevisionError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GistsGetRevisionError::Generic { code }),
             }
         }
@@ -1534,12 +1534,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(GistsGetRevisionError::Status422(github_response.to_json()?)),
-                404 => Err(GistsGetRevisionError::Status404(github_response.to_json()?)),
-                403 => Err(GistsGetRevisionError::Status403(github_response.to_json()?)),
+                422 => Err(GistsGetRevisionError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(GistsGetRevisionError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(GistsGetRevisionError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(GistsGetRevisionError::Generic { code }),
             }
         }
@@ -1579,11 +1579,11 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(GistsListError::Status304),
-                403 => Err(GistsListError::Status403(github_response.to_json()?)),
+                403 => Err(GistsListError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GistsListError::Generic { code }),
             }
         }
@@ -1625,11 +1625,11 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(GistsListError::Status304),
-                403 => Err(GistsListError::Status403(github_response.to_json()?)),
+                403 => Err(GistsListError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(GistsListError::Generic { code }),
             }
         }
@@ -1667,12 +1667,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(GistsListCommentsError::Status304),
-                404 => Err(GistsListCommentsError::Status404(github_response.to_json()?)),
-                403 => Err(GistsListCommentsError::Status403(github_response.to_json()?)),
+                404 => Err(GistsListCommentsError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(GistsListCommentsError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GistsListCommentsError::Generic { code }),
             }
         }
@@ -1712,12 +1712,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(GistsListCommentsError::Status304),
-                404 => Err(GistsListCommentsError::Status404(github_response.to_json()?)),
-                403 => Err(GistsListCommentsError::Status403(github_response.to_json()?)),
+                404 => Err(GistsListCommentsError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(GistsListCommentsError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(GistsListCommentsError::Generic { code }),
             }
         }
@@ -1755,12 +1755,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsListCommitsError::Status404(github_response.to_json()?)),
+                404 => Err(GistsListCommitsError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(GistsListCommitsError::Status304),
-                403 => Err(GistsListCommitsError::Status403(github_response.to_json()?)),
+                403 => Err(GistsListCommitsError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GistsListCommitsError::Generic { code }),
             }
         }
@@ -1800,12 +1800,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsListCommitsError::Status404(github_response.to_json()?)),
+                404 => Err(GistsListCommitsError::Status404(crate::adapters::to_json(github_response)?)),
                 304 => Err(GistsListCommitsError::Status304),
-                403 => Err(GistsListCommitsError::Status403(github_response.to_json()?)),
+                403 => Err(GistsListCommitsError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(GistsListCommitsError::Generic { code }),
             }
         }
@@ -1845,10 +1845,10 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(GistsListForUserError::Status422(github_response.to_json()?)),
+                422 => Err(GistsListForUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GistsListForUserError::Generic { code }),
             }
         }
@@ -1890,10 +1890,10 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(GistsListForUserError::Status422(github_response.to_json()?)),
+                422 => Err(GistsListForUserError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(GistsListForUserError::Generic { code }),
             }
         }
@@ -1931,12 +1931,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsListForksError::Status404(github_response.to_json()?)),
+                404 => Err(GistsListForksError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(GistsListForksError::Status304),
-                403 => Err(GistsListForksError::Status403(github_response.to_json()?)),
+                403 => Err(GistsListForksError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GistsListForksError::Generic { code }),
             }
         }
@@ -1976,12 +1976,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsListForksError::Status404(github_response.to_json()?)),
+                404 => Err(GistsListForksError::Status404(crate::adapters::to_json(github_response)?)),
                 304 => Err(GistsListForksError::Status304),
-                403 => Err(GistsListForksError::Status403(github_response.to_json()?)),
+                403 => Err(GistsListForksError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(GistsListForksError::Generic { code }),
             }
         }
@@ -2023,12 +2023,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(GistsListPublicError::Status422(github_response.to_json()?)),
+                422 => Err(GistsListPublicError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(GistsListPublicError::Status304),
-                403 => Err(GistsListPublicError::Status403(github_response.to_json()?)),
+                403 => Err(GistsListPublicError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GistsListPublicError::Generic { code }),
             }
         }
@@ -2072,12 +2072,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(GistsListPublicError::Status422(github_response.to_json()?)),
+                422 => Err(GistsListPublicError::Status422(crate::adapters::to_json(github_response)?)),
                 304 => Err(GistsListPublicError::Status304),
-                403 => Err(GistsListPublicError::Status403(github_response.to_json()?)),
+                403 => Err(GistsListPublicError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(GistsListPublicError::Generic { code }),
             }
         }
@@ -2117,12 +2117,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                401 => Err(GistsListStarredError::Status401(github_response.to_json()?)),
+                401 => Err(GistsListStarredError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(GistsListStarredError::Status304),
-                403 => Err(GistsListStarredError::Status403(github_response.to_json()?)),
+                403 => Err(GistsListStarredError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GistsListStarredError::Generic { code }),
             }
         }
@@ -2164,12 +2164,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                401 => Err(GistsListStarredError::Status401(github_response.to_json()?)),
+                401 => Err(GistsListStarredError::Status401(crate::adapters::to_json(github_response)?)),
                 304 => Err(GistsListStarredError::Status304),
-                403 => Err(GistsListStarredError::Status403(github_response.to_json()?)),
+                403 => Err(GistsListStarredError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(GistsListStarredError::Generic { code }),
             }
         }
@@ -2205,12 +2205,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsStarError::Status404(github_response.to_json()?)),
+                404 => Err(GistsStarError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(GistsStarError::Status304),
-                403 => Err(GistsStarError::Status403(github_response.to_json()?)),
+                403 => Err(GistsStarError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GistsStarError::Generic { code }),
             }
         }
@@ -2247,12 +2247,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsStarError::Status404(github_response.to_json()?)),
+                404 => Err(GistsStarError::Status404(crate::adapters::to_json(github_response)?)),
                 304 => Err(GistsStarError::Status304),
-                403 => Err(GistsStarError::Status403(github_response.to_json()?)),
+                403 => Err(GistsStarError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(GistsStarError::Generic { code }),
             }
         }
@@ -2286,12 +2286,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(GistsUnstarError::Status304),
-                404 => Err(GistsUnstarError::Status404(github_response.to_json()?)),
-                403 => Err(GistsUnstarError::Status403(github_response.to_json()?)),
+                404 => Err(GistsUnstarError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(GistsUnstarError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GistsUnstarError::Generic { code }),
             }
         }
@@ -2326,12 +2326,12 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(GistsUnstarError::Status304),
-                404 => Err(GistsUnstarError::Status404(github_response.to_json()?)),
-                403 => Err(GistsUnstarError::Status403(github_response.to_json()?)),
+                404 => Err(GistsUnstarError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(GistsUnstarError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(GistsUnstarError::Generic { code }),
             }
         }
@@ -2367,11 +2367,11 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(GistsUpdateError::Status422(github_response.to_json()?)),
-                404 => Err(GistsUpdateError::Status404(github_response.to_json()?)),
+                422 => Err(GistsUpdateError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(GistsUpdateError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GistsUpdateError::Generic { code }),
             }
         }
@@ -2408,11 +2408,11 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(GistsUpdateError::Status422(github_response.to_json()?)),
-                404 => Err(GistsUpdateError::Status404(github_response.to_json()?)),
+                422 => Err(GistsUpdateError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(GistsUpdateError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(GistsUpdateError::Generic { code }),
             }
         }
@@ -2446,10 +2446,10 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsUpdateCommentError::Status404(github_response.to_json()?)),
+                404 => Err(GistsUpdateCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GistsUpdateCommentError::Generic { code }),
             }
         }
@@ -2484,10 +2484,10 @@ impl<'api> Gists<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsUpdateCommentError::Status404(github_response.to_json()?)),
+                404 => Err(GistsUpdateCommentError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(GistsUpdateCommentError::Generic { code }),
             }
         }

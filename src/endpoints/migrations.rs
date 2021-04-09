@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
+use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -749,7 +749,7 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(MigrationsCancelImportError::Generic { code }),
@@ -788,7 +788,7 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(MigrationsCancelImportError::Generic { code }),
@@ -829,13 +829,13 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status404(github_response.to_json()?)),
+                404 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status304),
-                403 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -875,13 +875,13 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status404(github_response.to_json()?)),
+                404 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
                 304 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status304),
-                403 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -920,10 +920,10 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsDeleteArchiveForOrgError::Status404(github_response.to_json()?)),
+                404 => Err(MigrationsDeleteArchiveForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsDeleteArchiveForOrgError::Generic { code }),
             }
         }
@@ -963,10 +963,10 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsDeleteArchiveForOrgError::Status404(github_response.to_json()?)),
+                404 => Err(MigrationsDeleteArchiveForOrgError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsDeleteArchiveForOrgError::Generic { code }),
             }
         }
@@ -1005,11 +1005,11 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 302 => Err(MigrationsDownloadArchiveForOrgError::Status302),
-                404 => Err(MigrationsDownloadArchiveForOrgError::Status404(github_response.to_json()?)),
+                404 => Err(MigrationsDownloadArchiveForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsDownloadArchiveForOrgError::Generic { code }),
             }
         }
@@ -1049,11 +1049,11 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 302 => Err(MigrationsDownloadArchiveForOrgError::Status302),
-                404 => Err(MigrationsDownloadArchiveForOrgError::Status404(github_response.to_json()?)),
+                404 => Err(MigrationsDownloadArchiveForOrgError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsDownloadArchiveForOrgError::Generic { code }),
             }
         }
@@ -1112,13 +1112,13 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 302 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status302),
                 304 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status304),
-                403 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsGetArchiveForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -1178,13 +1178,13 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 302 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status302),
                 304 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status304),
-                403 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsGetArchiveForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -1226,10 +1226,10 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsGetCommitAuthorsError::Status404(github_response.to_json()?)),
+                404 => Err(MigrationsGetCommitAuthorsError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsGetCommitAuthorsError::Generic { code }),
             }
         }
@@ -1273,10 +1273,10 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsGetCommitAuthorsError::Status404(github_response.to_json()?)),
+                404 => Err(MigrationsGetCommitAuthorsError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsGetCommitAuthorsError::Generic { code }),
             }
         }
@@ -1345,10 +1345,10 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsGetImportStatusError::Status404(github_response.to_json()?)),
+                404 => Err(MigrationsGetImportStatusError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsGetImportStatusError::Generic { code }),
             }
         }
@@ -1418,10 +1418,10 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsGetImportStatusError::Status404(github_response.to_json()?)),
+                404 => Err(MigrationsGetImportStatusError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsGetImportStatusError::Generic { code }),
             }
         }
@@ -1457,7 +1457,7 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(MigrationsGetLargeFilesError::Generic { code }),
@@ -1496,7 +1496,7 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(MigrationsGetLargeFilesError::Generic { code }),
@@ -1548,13 +1548,13 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsGetStatusForAuthenticatedUserError::Status404(github_response.to_json()?)),
+                404 => Err(MigrationsGetStatusForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(MigrationsGetStatusForAuthenticatedUserError::Status304),
-                403 => Err(MigrationsGetStatusForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(MigrationsGetStatusForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(MigrationsGetStatusForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(MigrationsGetStatusForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsGetStatusForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -1606,13 +1606,13 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsGetStatusForAuthenticatedUserError::Status404(github_response.to_json()?)),
+                404 => Err(MigrationsGetStatusForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
                 304 => Err(MigrationsGetStatusForAuthenticatedUserError::Status304),
-                403 => Err(MigrationsGetStatusForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(MigrationsGetStatusForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(MigrationsGetStatusForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(MigrationsGetStatusForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsGetStatusForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -1662,10 +1662,10 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsGetStatusForOrgError::Status404(github_response.to_json()?)),
+                404 => Err(MigrationsGetStatusForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsGetStatusForOrgError::Generic { code }),
             }
         }
@@ -1717,10 +1717,10 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsGetStatusForOrgError::Status404(github_response.to_json()?)),
+                404 => Err(MigrationsGetStatusForOrgError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsGetStatusForOrgError::Generic { code }),
             }
         }
@@ -1763,12 +1763,12 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(MigrationsListForAuthenticatedUserError::Status304),
-                403 => Err(MigrationsListForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(MigrationsListForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(MigrationsListForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(MigrationsListForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsListForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -1813,12 +1813,12 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(MigrationsListForAuthenticatedUserError::Status304),
-                403 => Err(MigrationsListForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(MigrationsListForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(MigrationsListForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(MigrationsListForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsListForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -1861,7 +1861,7 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(MigrationsListForOrgError::Generic { code }),
@@ -1908,7 +1908,7 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(MigrationsListForOrgError::Generic { code }),
@@ -1953,10 +1953,10 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsListReposForOrgError::Status404(github_response.to_json()?)),
+                404 => Err(MigrationsListReposForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsListReposForOrgError::Generic { code }),
             }
         }
@@ -2001,10 +2001,10 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsListReposForOrgError::Status404(github_response.to_json()?)),
+                404 => Err(MigrationsListReposForOrgError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsListReposForOrgError::Generic { code }),
             }
         }
@@ -2047,10 +2047,10 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsListReposForUserError::Status404(github_response.to_json()?)),
+                404 => Err(MigrationsListReposForUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsListReposForUserError::Generic { code }),
             }
         }
@@ -2095,10 +2095,10 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsListReposForUserError::Status404(github_response.to_json()?)),
+                404 => Err(MigrationsListReposForUserError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsListReposForUserError::Generic { code }),
             }
         }
@@ -2134,11 +2134,11 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(MigrationsMapCommitAuthorError::Status422(github_response.to_json()?)),
-                404 => Err(MigrationsMapCommitAuthorError::Status404(github_response.to_json()?)),
+                422 => Err(MigrationsMapCommitAuthorError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(MigrationsMapCommitAuthorError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsMapCommitAuthorError::Generic { code }),
             }
         }
@@ -2175,11 +2175,11 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(MigrationsMapCommitAuthorError::Status422(github_response.to_json()?)),
-                404 => Err(MigrationsMapCommitAuthorError::Status404(github_response.to_json()?)),
+                422 => Err(MigrationsMapCommitAuthorError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(MigrationsMapCommitAuthorError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsMapCommitAuthorError::Generic { code }),
             }
         }
@@ -2215,10 +2215,10 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(MigrationsSetLfsPreferenceError::Status422(github_response.to_json()?)),
+                422 => Err(MigrationsSetLfsPreferenceError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsSetLfsPreferenceError::Generic { code }),
             }
         }
@@ -2255,10 +2255,10 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(MigrationsSetLfsPreferenceError::Status422(github_response.to_json()?)),
+                422 => Err(MigrationsSetLfsPreferenceError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsSetLfsPreferenceError::Generic { code }),
             }
         }
@@ -2294,13 +2294,13 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(MigrationsStartForAuthenticatedUserError::Status422(github_response.to_json()?)),
+                422 => Err(MigrationsStartForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(MigrationsStartForAuthenticatedUserError::Status304),
-                403 => Err(MigrationsStartForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(MigrationsStartForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(MigrationsStartForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(MigrationsStartForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsStartForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2337,13 +2337,13 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(MigrationsStartForAuthenticatedUserError::Status422(github_response.to_json()?)),
+                422 => Err(MigrationsStartForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
                 304 => Err(MigrationsStartForAuthenticatedUserError::Status304),
-                403 => Err(MigrationsStartForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(MigrationsStartForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(MigrationsStartForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(MigrationsStartForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsStartForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2379,11 +2379,11 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsStartForOrgError::Status404(github_response.to_json()?)),
-                422 => Err(MigrationsStartForOrgError::Status422(github_response.to_json()?)),
+                404 => Err(MigrationsStartForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(MigrationsStartForOrgError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsStartForOrgError::Generic { code }),
             }
         }
@@ -2420,11 +2420,11 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsStartForOrgError::Status404(github_response.to_json()?)),
-                422 => Err(MigrationsStartForOrgError::Status422(github_response.to_json()?)),
+                404 => Err(MigrationsStartForOrgError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(MigrationsStartForOrgError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsStartForOrgError::Generic { code }),
             }
         }
@@ -2460,11 +2460,11 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(MigrationsStartImportError::Status422(github_response.to_json()?)),
-                404 => Err(MigrationsStartImportError::Status404(github_response.to_json()?)),
+                422 => Err(MigrationsStartImportError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(MigrationsStartImportError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsStartImportError::Generic { code }),
             }
         }
@@ -2501,11 +2501,11 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(MigrationsStartImportError::Status422(github_response.to_json()?)),
-                404 => Err(MigrationsStartImportError::Status404(github_response.to_json()?)),
+                422 => Err(MigrationsStartImportError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(MigrationsStartImportError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsStartImportError::Generic { code }),
             }
         }
@@ -2544,13 +2544,13 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status304),
-                404 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                404 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsUnlockRepoForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2590,13 +2590,13 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status304),
-                404 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                404 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsUnlockRepoForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2635,10 +2635,10 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsUnlockRepoForOrgError::Status404(github_response.to_json()?)),
+                404 => Err(MigrationsUnlockRepoForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsUnlockRepoForOrgError::Generic { code }),
             }
         }
@@ -2678,10 +2678,10 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsUnlockRepoForOrgError::Status404(github_response.to_json()?)),
+                404 => Err(MigrationsUnlockRepoForOrgError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsUnlockRepoForOrgError::Generic { code }),
             }
         }
@@ -2718,7 +2718,7 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(MigrationsUpdateImportError::Generic { code }),
@@ -2758,7 +2758,7 @@ impl<'api> Migrations<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(MigrationsUpdateImportError::Generic { code }),

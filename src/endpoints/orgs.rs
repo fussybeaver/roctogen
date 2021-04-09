@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt, ToJson};
+use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
 use crate::models::*;
 
@@ -1532,10 +1532,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsBlockUserError::Status422(github_response.to_json()?)),
+                422 => Err(OrgsBlockUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsBlockUserError::Generic { code }),
             }
         }
@@ -1570,10 +1570,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsBlockUserError::Status422(github_response.to_json()?)),
+                422 => Err(OrgsBlockUserError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsBlockUserError::Generic { code }),
             }
         }
@@ -1611,11 +1611,11 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsCancelInvitationError::Status422(github_response.to_json()?)),
-                404 => Err(OrgsCancelInvitationError::Status404(github_response.to_json()?)),
+                422 => Err(OrgsCancelInvitationError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OrgsCancelInvitationError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsCancelInvitationError::Generic { code }),
             }
         }
@@ -1654,11 +1654,11 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsCancelInvitationError::Status422(github_response.to_json()?)),
-                404 => Err(OrgsCancelInvitationError::Status404(github_response.to_json()?)),
+                422 => Err(OrgsCancelInvitationError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(OrgsCancelInvitationError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsCancelInvitationError::Generic { code }),
             }
         }
@@ -1692,10 +1692,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsCheckBlockedUserError::Status404(github_response.to_json()?)),
+                404 => Err(OrgsCheckBlockedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsCheckBlockedUserError::Generic { code }),
             }
         }
@@ -1730,10 +1730,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsCheckBlockedUserError::Status404(github_response.to_json()?)),
+                404 => Err(OrgsCheckBlockedUserError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsCheckBlockedUserError::Generic { code }),
             }
         }
@@ -1769,7 +1769,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 302 => Err(OrgsCheckMembershipForUserError::Status302),
@@ -1810,7 +1810,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 302 => Err(OrgsCheckMembershipForUserError::Status302),
@@ -1848,7 +1848,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 404 => Err(OrgsCheckPublicMembershipForUserError::Status404),
@@ -1886,7 +1886,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 404 => Err(OrgsCheckPublicMembershipForUserError::Status404),
@@ -1925,12 +1925,12 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 204 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status204),
-                403 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status403(github_response.to_json()?)),
-                404 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status404(github_response.to_json()?)),
+                403 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsConvertMemberToOutsideCollaboratorError::Generic { code }),
             }
         }
@@ -1967,12 +1967,12 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 204 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status204),
-                403 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status403(github_response.to_json()?)),
-                404 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status404(github_response.to_json()?)),
+                403 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsConvertMemberToOutsideCollaboratorError::Generic { code }),
             }
         }
@@ -2010,11 +2010,11 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsCreateInvitationError::Status422(github_response.to_json()?)),
-                404 => Err(OrgsCreateInvitationError::Status404(github_response.to_json()?)),
+                422 => Err(OrgsCreateInvitationError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OrgsCreateInvitationError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsCreateInvitationError::Generic { code }),
             }
         }
@@ -2053,11 +2053,11 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsCreateInvitationError::Status422(github_response.to_json()?)),
-                404 => Err(OrgsCreateInvitationError::Status404(github_response.to_json()?)),
+                422 => Err(OrgsCreateInvitationError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(OrgsCreateInvitationError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsCreateInvitationError::Generic { code }),
             }
         }
@@ -2093,11 +2093,11 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsCreateWebhookError::Status422(github_response.to_json()?)),
-                404 => Err(OrgsCreateWebhookError::Status404(github_response.to_json()?)),
+                422 => Err(OrgsCreateWebhookError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OrgsCreateWebhookError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsCreateWebhookError::Generic { code }),
             }
         }
@@ -2134,11 +2134,11 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsCreateWebhookError::Status422(github_response.to_json()?)),
-                404 => Err(OrgsCreateWebhookError::Status404(github_response.to_json()?)),
+                422 => Err(OrgsCreateWebhookError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(OrgsCreateWebhookError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsCreateWebhookError::Generic { code }),
             }
         }
@@ -2172,10 +2172,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsDeleteWebhookError::Status404(github_response.to_json()?)),
+                404 => Err(OrgsDeleteWebhookError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsDeleteWebhookError::Generic { code }),
             }
         }
@@ -2210,10 +2210,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsDeleteWebhookError::Status404(github_response.to_json()?)),
+                404 => Err(OrgsDeleteWebhookError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsDeleteWebhookError::Generic { code }),
             }
         }
@@ -2254,10 +2254,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsGetError::Status404(github_response.to_json()?)),
+                404 => Err(OrgsGetError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsGetError::Generic { code }),
             }
         }
@@ -2299,10 +2299,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsGetError::Status404(github_response.to_json()?)),
+                404 => Err(OrgsGetError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsGetError::Generic { code }),
             }
         }
@@ -2346,7 +2346,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(OrgsGetAuditLogError::Generic { code }),
@@ -2394,7 +2394,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(OrgsGetAuditLogError::Generic { code }),
@@ -2430,11 +2430,11 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsGetMembershipForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(OrgsGetMembershipForAuthenticatedUserError::Status404(github_response.to_json()?)),
+                403 => Err(OrgsGetMembershipForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OrgsGetMembershipForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsGetMembershipForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2469,11 +2469,11 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsGetMembershipForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(OrgsGetMembershipForAuthenticatedUserError::Status404(github_response.to_json()?)),
+                403 => Err(OrgsGetMembershipForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(OrgsGetMembershipForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsGetMembershipForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2509,11 +2509,11 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsGetMembershipForUserError::Status404(github_response.to_json()?)),
-                403 => Err(OrgsGetMembershipForUserError::Status403(github_response.to_json()?)),
+                404 => Err(OrgsGetMembershipForUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(OrgsGetMembershipForUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsGetMembershipForUserError::Generic { code }),
             }
         }
@@ -2550,11 +2550,11 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsGetMembershipForUserError::Status404(github_response.to_json()?)),
-                403 => Err(OrgsGetMembershipForUserError::Status403(github_response.to_json()?)),
+                404 => Err(OrgsGetMembershipForUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(OrgsGetMembershipForUserError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsGetMembershipForUserError::Generic { code }),
             }
         }
@@ -2590,10 +2590,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsGetWebhookError::Status404(github_response.to_json()?)),
+                404 => Err(OrgsGetWebhookError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsGetWebhookError::Generic { code }),
             }
         }
@@ -2630,10 +2630,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsGetWebhookError::Status404(github_response.to_json()?)),
+                404 => Err(OrgsGetWebhookError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsGetWebhookError::Generic { code }),
             }
         }
@@ -2671,7 +2671,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(OrgsGetWebhookConfigForOrgError::Generic { code }),
@@ -2712,7 +2712,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(OrgsGetWebhookConfigForOrgError::Generic { code }),
@@ -2756,7 +2756,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(OrgsListError::Status304),
@@ -2803,7 +2803,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(OrgsListError::Status304),
@@ -2846,7 +2846,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(OrgsListAppInstallationsError::Generic { code }),
@@ -2890,7 +2890,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(OrgsListAppInstallationsError::Generic { code }),
@@ -2928,10 +2928,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                415 => Err(OrgsListBlockedUsersError::Status415(github_response.to_json()?)),
+                415 => Err(OrgsListBlockedUsersError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsListBlockedUsersError::Generic { code }),
             }
         }
@@ -2968,10 +2968,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                415 => Err(OrgsListBlockedUsersError::Status415(github_response.to_json()?)),
+                415 => Err(OrgsListBlockedUsersError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsListBlockedUsersError::Generic { code }),
             }
         }
@@ -3011,10 +3011,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsListFailedInvitationsError::Status404(github_response.to_json()?)),
+                404 => Err(OrgsListFailedInvitationsError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsListFailedInvitationsError::Generic { code }),
             }
         }
@@ -3056,10 +3056,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsListFailedInvitationsError::Status404(github_response.to_json()?)),
+                404 => Err(OrgsListFailedInvitationsError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsListFailedInvitationsError::Generic { code }),
             }
         }
@@ -3103,12 +3103,12 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(OrgsListForAuthenticatedUserError::Status304),
-                403 => Err(OrgsListForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(OrgsListForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(OrgsListForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(OrgsListForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsListForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -3154,12 +3154,12 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(OrgsListForAuthenticatedUserError::Status304),
-                403 => Err(OrgsListForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(OrgsListForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(OrgsListForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(OrgsListForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsListForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -3201,7 +3201,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(OrgsListForUserError::Generic { code }),
@@ -3247,7 +3247,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(OrgsListForUserError::Generic { code }),
@@ -3289,10 +3289,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsListInvitationTeamsError::Status404(github_response.to_json()?)),
+                404 => Err(OrgsListInvitationTeamsError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsListInvitationTeamsError::Generic { code }),
             }
         }
@@ -3334,10 +3334,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsListInvitationTeamsError::Status404(github_response.to_json()?)),
+                404 => Err(OrgsListInvitationTeamsError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsListInvitationTeamsError::Generic { code }),
             }
         }
@@ -3377,11 +3377,11 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 302 => Err(OrgsListMembersError::Status302),
-                422 => Err(OrgsListMembersError::Status422(github_response.to_json()?)),
+                422 => Err(OrgsListMembersError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsListMembersError::Generic { code }),
             }
         }
@@ -3423,11 +3423,11 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 302 => Err(OrgsListMembersError::Status302),
-                422 => Err(OrgsListMembersError::Status422(github_response.to_json()?)),
+                422 => Err(OrgsListMembersError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsListMembersError::Generic { code }),
             }
         }
@@ -3465,13 +3465,13 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 304 => Err(OrgsListMembershipsForAuthenticatedUserError::Status304),
-                403 => Err(OrgsListMembershipsForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(OrgsListMembershipsForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                422 => Err(OrgsListMembershipsForAuthenticatedUserError::Status422(github_response.to_json()?)),
+                403 => Err(OrgsListMembershipsForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(OrgsListMembershipsForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(OrgsListMembershipsForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsListMembershipsForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -3511,13 +3511,13 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 304 => Err(OrgsListMembershipsForAuthenticatedUserError::Status304),
-                403 => Err(OrgsListMembershipsForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(OrgsListMembershipsForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                422 => Err(OrgsListMembershipsForAuthenticatedUserError::Status422(github_response.to_json()?)),
+                403 => Err(OrgsListMembershipsForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(OrgsListMembershipsForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                422 => Err(OrgsListMembershipsForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsListMembershipsForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -3557,7 +3557,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(OrgsListOutsideCollaboratorsError::Generic { code }),
@@ -3601,7 +3601,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(OrgsListOutsideCollaboratorsError::Generic { code }),
@@ -3643,10 +3643,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsListPendingInvitationsError::Status404(github_response.to_json()?)),
+                404 => Err(OrgsListPendingInvitationsError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsListPendingInvitationsError::Generic { code }),
             }
         }
@@ -3688,10 +3688,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsListPendingInvitationsError::Status404(github_response.to_json()?)),
+                404 => Err(OrgsListPendingInvitationsError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsListPendingInvitationsError::Generic { code }),
             }
         }
@@ -3731,7 +3731,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(OrgsListPublicMembersError::Generic { code }),
@@ -3775,7 +3775,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(OrgsListPublicMembersError::Generic { code }),
@@ -3815,7 +3815,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(OrgsListSamlSsoAuthorizationsError::Generic { code }),
@@ -3856,7 +3856,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(OrgsListSamlSsoAuthorizationsError::Generic { code }),
@@ -3896,10 +3896,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsListWebhooksError::Status404(github_response.to_json()?)),
+                404 => Err(OrgsListWebhooksError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsListWebhooksError::Generic { code }),
             }
         }
@@ -3939,10 +3939,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsListWebhooksError::Status404(github_response.to_json()?)),
+                404 => Err(OrgsListWebhooksError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsListWebhooksError::Generic { code }),
             }
         }
@@ -3978,10 +3978,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsPingWebhookError::Status404(github_response.to_json()?)),
+                404 => Err(OrgsPingWebhookError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsPingWebhookError::Generic { code }),
             }
         }
@@ -4018,10 +4018,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsPingWebhookError::Status404(github_response.to_json()?)),
+                404 => Err(OrgsPingWebhookError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsPingWebhookError::Generic { code }),
             }
         }
@@ -4057,10 +4057,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsRemoveMemberError::Status403(github_response.to_json()?)),
+                403 => Err(OrgsRemoveMemberError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsRemoveMemberError::Generic { code }),
             }
         }
@@ -4097,10 +4097,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsRemoveMemberError::Status403(github_response.to_json()?)),
+                403 => Err(OrgsRemoveMemberError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsRemoveMemberError::Generic { code }),
             }
         }
@@ -4138,11 +4138,11 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsRemoveMembershipForUserError::Status403(github_response.to_json()?)),
-                404 => Err(OrgsRemoveMembershipForUserError::Status404(github_response.to_json()?)),
+                403 => Err(OrgsRemoveMembershipForUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OrgsRemoveMembershipForUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsRemoveMembershipForUserError::Generic { code }),
             }
         }
@@ -4181,11 +4181,11 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsRemoveMembershipForUserError::Status403(github_response.to_json()?)),
-                404 => Err(OrgsRemoveMembershipForUserError::Status404(github_response.to_json()?)),
+                403 => Err(OrgsRemoveMembershipForUserError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(OrgsRemoveMembershipForUserError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsRemoveMembershipForUserError::Generic { code }),
             }
         }
@@ -4221,10 +4221,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsRemoveOutsideCollaboratorError::Status422(github_response.to_json()?)),
+                422 => Err(OrgsRemoveOutsideCollaboratorError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsRemoveOutsideCollaboratorError::Generic { code }),
             }
         }
@@ -4261,10 +4261,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsRemoveOutsideCollaboratorError::Status422(github_response.to_json()?)),
+                422 => Err(OrgsRemoveOutsideCollaboratorError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsRemoveOutsideCollaboratorError::Generic { code }),
             }
         }
@@ -4298,7 +4298,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(OrgsRemovePublicMembershipForAuthenticatedUserError::Generic { code }),
@@ -4335,7 +4335,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(OrgsRemovePublicMembershipForAuthenticatedUserError::Generic { code }),
@@ -4375,10 +4375,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsRemoveSamlSsoAuthorizationError::Status404(github_response.to_json()?)),
+                404 => Err(OrgsRemoveSamlSsoAuthorizationError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsRemoveSamlSsoAuthorizationError::Generic { code }),
             }
         }
@@ -4417,10 +4417,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsRemoveSamlSsoAuthorizationError::Status404(github_response.to_json()?)),
+                404 => Err(OrgsRemoveSamlSsoAuthorizationError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsRemoveSamlSsoAuthorizationError::Generic { code }),
             }
         }
@@ -4464,11 +4464,11 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsSetMembershipForUserError::Status422(github_response.to_json()?)),
-                403 => Err(OrgsSetMembershipForUserError::Status403(github_response.to_json()?)),
+                422 => Err(OrgsSetMembershipForUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(OrgsSetMembershipForUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsSetMembershipForUserError::Generic { code }),
             }
         }
@@ -4513,11 +4513,11 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsSetMembershipForUserError::Status422(github_response.to_json()?)),
-                403 => Err(OrgsSetMembershipForUserError::Status403(github_response.to_json()?)),
+                422 => Err(OrgsSetMembershipForUserError::Status422(crate::adapters::to_json(github_response)?)),
+                403 => Err(OrgsSetMembershipForUserError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsSetMembershipForUserError::Generic { code }),
             }
         }
@@ -4555,10 +4555,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsSetPublicMembershipForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                403 => Err(OrgsSetPublicMembershipForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsSetPublicMembershipForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -4597,10 +4597,10 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsSetPublicMembershipForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                403 => Err(OrgsSetPublicMembershipForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsSetPublicMembershipForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -4634,7 +4634,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(OrgsUnblockUserError::Generic { code }),
@@ -4671,7 +4671,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(OrgsUnblockUserError::Generic { code }),
@@ -4714,12 +4714,12 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsUpdateError::Status422(github_response.to_json()?)),
-                409 => Err(OrgsUpdateError::Status409(github_response.to_json()?)),
-                415 => Err(OrgsUpdateError::Status415(github_response.to_json()?)),
+                422 => Err(OrgsUpdateError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(OrgsUpdateError::Status409(crate::adapters::to_json_async(github_response).await?)),
+                415 => Err(OrgsUpdateError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsUpdateError::Generic { code }),
             }
         }
@@ -4761,12 +4761,12 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsUpdateError::Status422(github_response.to_json()?)),
-                409 => Err(OrgsUpdateError::Status409(github_response.to_json()?)),
-                415 => Err(OrgsUpdateError::Status415(github_response.to_json()?)),
+                422 => Err(OrgsUpdateError::Status422(crate::adapters::to_json(github_response)?)),
+                409 => Err(OrgsUpdateError::Status409(crate::adapters::to_json(github_response)?)),
+                415 => Err(OrgsUpdateError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsUpdateError::Generic { code }),
             }
         }
@@ -4800,12 +4800,12 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                422 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status422(github_response.to_json()?)),
+                403 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsUpdateMembershipForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -4840,12 +4840,12 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                422 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status422(github_response.to_json()?)),
+                403 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsUpdateMembershipForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -4881,11 +4881,11 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsUpdateWebhookError::Status422(github_response.to_json()?)),
-                404 => Err(OrgsUpdateWebhookError::Status404(github_response.to_json()?)),
+                422 => Err(OrgsUpdateWebhookError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OrgsUpdateWebhookError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsUpdateWebhookError::Generic { code }),
             }
         }
@@ -4922,11 +4922,11 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsUpdateWebhookError::Status422(github_response.to_json()?)),
-                404 => Err(OrgsUpdateWebhookError::Status404(github_response.to_json()?)),
+                422 => Err(OrgsUpdateWebhookError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(OrgsUpdateWebhookError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsUpdateWebhookError::Generic { code }),
             }
         }
@@ -4964,7 +4964,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
                 code => Err(OrgsUpdateWebhookConfigForOrgError::Generic { code }),
@@ -5005,7 +5005,7 @@ impl<'api> Orgs<'api> {
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
                 code => Err(OrgsUpdateWebhookConfigForOrgError::Generic { code }),
