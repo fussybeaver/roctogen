@@ -84,7 +84,21 @@ pub(crate) async fn fetch_async(
     not(feature = "ureq"),
     not(target_arch = "wasm32")
 ))]
-pub(crate) type FromJsonType = Vec<u8>;
+pub(crate) fn to_json<E: for<'de> Deserialize<'de>>(
+    _res: http::Response<Vec<u8>>,
+) -> Result<E, AdapterError> {
+    unimplemented!("Use a client adapter feature, or target wasm");
+}
+
+#[cfg(all(
+    not(feature = "isahc"),
+    not(feature = "reqwest"),
+    not(feature = "ureq"),
+    not(target_arch = "wasm32")
+))]
+pub(crate) async fn to_json_async<E: for<'de> Deserialize<'de>>(_res: http::Response<Vec<u8>>) -> Result<E, AdapterError> {
+    unimplemented!("Use a client adapter feature, or target wasm");
+}
 
 #[cfg(all(
     not(feature = "isahc"),
@@ -108,8 +122,8 @@ impl GitHubResponseExt for http::Response<Vec<u8>> {
     not(feature = "ureq"),
     not(target_arch = "wasm32")
 ))]
-impl<T> GitHubRequestBuilder<T> for http::Request<Vec<u8>> {
-    fn build(_req: GitHubRequest<T>, _auth: &Auth) -> Result<Self, AdapterError> {
+impl GitHubRequestBuilder<Vec<u8>> for http::Request<Vec<u8>> {
+    fn build(_req: GitHubRequest<Vec<u8>>, _auth: &Auth) -> Result<Self, AdapterError> {
         unimplemented!("Use a client adapter feature, or target wasm");
     }
 }
