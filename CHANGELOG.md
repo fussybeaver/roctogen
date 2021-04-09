@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.2.2 (09/04/2021)
+- [**closed**] Allow build without any features [#5](https://github.com/fussybeaver/roctogen/pull/5)
+
+---
+
 ## v0.2.1 (09/04/2021)
 - [**closed**] Async Isahc, Reqwest and Ureq support [#4](https://github.com/fussybeaver/roctogen/pull/4)
 
