@@ -1,5 +1,5 @@
 [package]
-name = "roctogen-jwt-example"
+name = "roctogen-github-update-issue-bot"
 version = "0.1.0"
 authors = ["Niel Drummond <niel.drummond@fundingcircle.com>"]
 edition = "2018"
@@ -8,7 +8,7 @@ edition = "2018"
 crate-type = ["cdylib", "rlib"]
 
 [features]
-default = ["console_error_panic_hook", "debug"]
+default = ["console_error_panic_hook"]
 debug = []
 
 [dependencies]
@@ -26,6 +26,8 @@ console_log = { version = "0.2", features = ["color"] }
 chrono = { version = "0.4", features = ["wasmbind"] }
 pem = "0.8.1"
 base64 = "0.13"
+roctogen-common = { version = "0.1.0", path = "../common" }
+regex = "1.4"
 
 [dependencies.web-sys]
 version = "0.3"
