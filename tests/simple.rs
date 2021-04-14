@@ -242,9 +242,7 @@ async fn post_wasm_fail() {
 fn post_sync_fail() {
     let auth = Auth::None;
 
-    let body = models::PostReposAddUserAccessRestrictions {
-        users: Some(vec!["fussybeaver".to_string()]),
-    };
+    let body: models::PostReposAddUserAccessRestrictions = vec!["fussybeaver".to_string()].into();
 
     let req =
         repos::new(&auth).add_user_access_restrictions("fussybeaver", "bollard", "master", body);
@@ -266,9 +264,7 @@ fn post_sync_fail() {
 async fn post_async_fail() {
     let auth = Auth::None;
 
-    let body = models::PostReposAddUserAccessRestrictions {
-        users: Some(vec!["fussybeaver".to_string()]),
-    };
+    let body: models::PostReposAddUserAccessRestrictions = vec!["fussybeaver".to_string()].into();
 
     let req = repos::new(&auth)
         .add_user_access_restrictions_async("fussybeaver", "bollard", "master", body)
@@ -292,9 +288,8 @@ fn post_async_fail() {
     let req = futures_lite::future::block_on(async {
         let auth = Auth::None;
 
-        let body = models::PostReposAddUserAccessRestrictions {
-            users: Some(vec!["fussybeaver".to_string()]),
-        };
+        let body: models::PostReposAddUserAccessRestrictions =
+            vec!["fussybeaver".to_string()].into();
 
         repos::new(&auth)
             .add_user_access_restrictions_async("fussybeaver", "bollard", "master", body)

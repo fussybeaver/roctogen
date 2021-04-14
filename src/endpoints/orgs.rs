@@ -44,7 +44,7 @@ pub enum OrgsBlockUserError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -63,9 +63,9 @@ pub enum OrgsCancelInvitationError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -105,7 +105,7 @@ pub enum OrgsCheckMembershipForUserError {
 
     #[error("Response if requester is not an organization member")]
     Status302,
-    #[error("Response if requester is an organization member and user is not a member")]
+    #[error("Not Found if requester is an organization member and user is not a member")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -124,7 +124,7 @@ pub enum OrgsCheckPublicMembershipForUserError {
 
     // -- endpoint errors
 
-    #[error("Response if user is not a public member")]
+    #[error("Not Found if user is not a public member")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -145,9 +145,9 @@ pub enum OrgsConvertMemberToOutsideCollaboratorError {
 
     #[error("User was converted")]
     Status204,
-    #[error("response")]
-    Status403(PutTeamsAddOrUpdateProjectPermissionsLegacyResponse403),
-    #[error("Resource Not Found")]
+    #[error("Forbidden if user is the last owner of the organization or not a member of the organization")]
+    Status403,
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -166,9 +166,9 @@ pub enum OrgsCreateInvitationError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -187,9 +187,9 @@ pub enum OrgsCreateWebhookError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -208,7 +208,7 @@ pub enum OrgsDeleteWebhookError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -227,7 +227,7 @@ pub enum OrgsGetError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -265,7 +265,7 @@ pub enum OrgsGetMembershipForAuthenticatedUserError {
 
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -284,7 +284,7 @@ pub enum OrgsGetMembershipForUserError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -305,7 +305,7 @@ pub enum OrgsGetWebhookError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -341,7 +341,7 @@ pub enum OrgsListError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -377,7 +377,7 @@ pub enum OrgsListBlockedUsersError {
 
     // -- endpoint errors
 
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -396,7 +396,7 @@ pub enum OrgsListFailedInvitationsError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -415,11 +415,11 @@ pub enum OrgsListForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -455,7 +455,7 @@ pub enum OrgsListInvitationTeamsError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -476,7 +476,7 @@ pub enum OrgsListMembersError {
 
     #[error("Response if requester is not an organization member")]
     Status302,
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -495,13 +495,13 @@ pub enum OrgsListMembershipsForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -537,7 +537,7 @@ pub enum OrgsListPendingInvitationsError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -590,7 +590,7 @@ pub enum OrgsListWebhooksError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -609,7 +609,7 @@ pub enum OrgsPingWebhookError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -649,7 +649,7 @@ pub enum OrgsRemoveMembershipForUserError {
 
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -668,7 +668,7 @@ pub enum OrgsRemoveOutsideCollaboratorError {
 
     // -- endpoint errors
 
-    #[error("Response if user is a member of the organization")]
+    #[error("Unprocessable Entity if user is a member of the organization")]
     Status422(PutTeamsAddOrUpdateProjectPermissionsLegacyResponse403),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -704,7 +704,7 @@ pub enum OrgsRemoveSamlSsoAuthorizationError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -723,7 +723,7 @@ pub enum OrgsSetMembershipForUserError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -780,11 +780,11 @@ pub enum OrgsUpdateError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(PostProjectsCreateCardResponse422),
     #[error("Conflict")]
     Status409(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -805,9 +805,9 @@ pub enum OrgsUpdateMembershipForAuthenticatedUserError {
 
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -826,9 +826,9 @@ pub enum OrgsUpdateWebhookError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1904,7 +1904,7 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for convert_member_to_outside_collaborator](https://docs.github.com/rest/reference/orgs#convert-an-organization-member-to-outside-collaborator)
     ///
     /// ---
-    pub async fn convert_member_to_outside_collaborator_async(&self, org: &str, username: &str) -> Result<(), OrgsConvertMemberToOutsideCollaboratorError> {
+    pub async fn convert_member_to_outside_collaborator_async(&self, org: &str, username: &str) -> Result<HashMap<String, Value>, OrgsConvertMemberToOutsideCollaboratorError> {
 
         let request_uri = format!("{}/orgs/{}/outside_collaborators/{}", super::GITHUB_BASE_API_URL, org, username);
 
@@ -1929,7 +1929,7 @@ impl<'api> Orgs<'api> {
         } else {
             match github_response.status_code() {
                 204 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status204),
-                403 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status403),
                 404 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsConvertMemberToOutsideCollaboratorError::Generic { code }),
             }
@@ -1946,7 +1946,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn convert_member_to_outside_collaborator(&self, org: &str, username: &str) -> Result<(), OrgsConvertMemberToOutsideCollaboratorError> {
+    pub fn convert_member_to_outside_collaborator(&self, org: &str, username: &str) -> Result<HashMap<String, Value>, OrgsConvertMemberToOutsideCollaboratorError> {
 
         let request_uri = format!("{}/orgs/{}/outside_collaborators/{}", super::GITHUB_BASE_API_URL, org, username);
 
@@ -1971,7 +1971,7 @@ impl<'api> Orgs<'api> {
         } else {
             match github_response.status_code() {
                 204 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status204),
-                403 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status403(crate::adapters::to_json(github_response)?)),
+                403 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status403),
                 404 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsConvertMemberToOutsideCollaboratorError::Generic { code }),
             }
@@ -2312,8 +2312,6 @@ impl<'api> Orgs<'api> {
     ///
     /// # Get the audit log for an organization
     ///
-    /// **Note:** The audit log REST API is currently in beta and is subject to change.
-    /// 
     /// Gets the audit log for an organization. For more information, see "[Reviewing the audit log for your organization](https://docs.github.com/github/setting-up-and-managing-organizations-and-teams/reviewing-the-audit-log-for-your-organization)."
     /// 
     /// To use this endpoint, you must be an organization owner, and you must use an access token with the `admin:org` scope. GitHub Apps must have the `organization_administration` read permission to use this endpoint.
@@ -2358,8 +2356,6 @@ impl<'api> Orgs<'api> {
     ///
     /// # Get the audit log for an organization
     ///
-    /// **Note:** The audit log REST API is currently in beta and is subject to change.
-    /// 
     /// Gets the audit log for an organization. For more information, see "[Reviewing the audit log for your organization](https://docs.github.com/github/setting-up-and-managing-organizations-and-teams/reviewing-the-audit-log-for-your-organization)."
     /// 
     /// To use this endpoint, you must be an organization owner, and you must use an access token with the `admin:org` scope. GitHub Apps must have the `organization_administration` read permission to use this endpoint.
@@ -2483,7 +2479,7 @@ impl<'api> Orgs<'api> {
     ///
     /// # Get organization membership for a user
     ///
-    /// In order to get a user's membership with an organization, the authenticated user must be an organization member.
+    /// In order to get a user's membership with an organization, the authenticated user must be an organization member. The `state` parameter in the response can be used to identify the user's membership status.
     /// 
     /// [GitHub API docs for get_membership_for_user](https://docs.github.com/rest/reference/orgs#get-organization-membership-for-a-user)
     ///
@@ -2523,7 +2519,7 @@ impl<'api> Orgs<'api> {
     ///
     /// # Get organization membership for a user
     ///
-    /// In order to get a user's membership with an organization, the authenticated user must be an organization member.
+    /// In order to get a user's membership with an organization, the authenticated user must be an organization member. The `state` parameter in the response can be used to identify the user's membership status.
     /// 
     /// [GitHub API docs for get_membership_for_user](https://docs.github.com/rest/reference/orgs#get-organization-membership-for-a-user)
     ///

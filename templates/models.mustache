@@ -60,7 +60,29 @@ impl std::str::FromStr for {{classname}} {
         }
     }
 }
-{{/vendorExtensions.x-rustgen-is-untagged-enum}}{{/vendorExtensions.is-enum}}{{^vendorExtensions.is-enum}}{{#vendorExtensions.x-rustgen-is-bool}}
+{{/vendorExtensions.x-rustgen-is-untagged-enum}}{{/vendorExtensions.is-enum}}{{^vendorExtensions.is-enum}}{{#vendorExtensions.x-rustgen-enum-one-of}}
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum {{classname}} { {{#allowableValues}}{{#values}}
+    {{../classname}}Variant{{@index}}({{#vendorExtensions.x-is-list-container}}Vec<{{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-list-container}}{{#vendorExtensions.x-is-map-container}}HashMap<String, {{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-map-container}}{{^vendorExtensions.x-is-container}}{{{datatype}}}{{/vendorExtensions.x-is-container}}),{{/values}}{{/allowableValues}}
+}
+{{#allowableValues}}{{#values}}
+
+impl From<{{#vendorExtensions.x-is-list-container}}Vec<{{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-list-container}}{{#vendorExtensions.x-is-map-container}}HashMap<String, {{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-map-container}}{{^vendorExtensions.x-is-container}}{{{datatype}}}{{/vendorExtensions.x-is-container}}> for {{../classname}} {
+    fn from(value: {{#vendorExtensions.x-is-list-container}}Vec<{{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-list-container}}{{#vendorExtensions.x-is-map-container}}HashMap<String, {{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-map-container}}{{^vendorExtensions.x-is-container}}{{{datatype}}}{{/vendorExtensions.x-is-container}}) -> Self {
+        {{../classname}}::{{../classname}}Variant{{@index}}(value)
+    }
+}
+{{/values}}{{/allowableValues}}{{#vendorExtensions.x-rustgen-is-display}}
+
+impl Display for {{classname}} {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        match self { {{#allowableValues}}{{#values}}
+            {{../classname}}::{{../classname}}Variant{{@index}}(value) => write!(f, "{}", value),{{/values}}{{/allowableValues}}
+        }
+    }
+}
+{{/vendorExtensions.x-rustgen-is-display}}{{/vendorExtensions.x-rustgen-enum-one-of}}{{^vendorExtensions.x-rustgen-enum-one-of}}{{#vendorExtensions.x-rustgen-is-bool}}
 pub type {{classname}} = bool;
 {{/vendorExtensions.x-rustgen-is-bool}}{{#vendorExtensions.x-rustgen-is-integer}}
 pub type {{classname}} = i32;
@@ -68,7 +90,9 @@ pub type {{classname}} = i32;
 pub type {{classname}} = String;
 {{/vendorExtensions.x-rustgen-is-string}}{{#vendorExtensions.x-rustgen-is-datetime}}
 pub type {{classname}} = DateTime<Utc>;
-{{/vendorExtensions.x-rustgen-is-datetime}}{{^vendorExtensions.has-vars}}{{! general struct}}#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]{{#xmlName}}
+{{/vendorExtensions.x-rustgen-is-datetime}}{{#vendorExtensions.x-rustgen-is-array}}
+pub type {{classname}} = Vec<{{arrayModelType}}>;
+{{/vendorExtensions.x-rustgen-is-array}}{{^vendorExtensions.has-vars}}{{! general struct}}#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]{{#xmlName}}
 #[serde(rename = "{{xmlName}}")]{{/xmlName}}
 pub struct {{classname}} {     
 {{#vars}}{{#description}}    /// {{{.}}}
@@ -123,4 +147,4 @@ impl ::std::convert::AsRef<str> for {{classname}}{{enumName}} {
         }
     }
 }
-{{/vendorExtensions.is-enum}}{{/vars}}{{/vendorExtensions.has-vars}}{{/vendorExtensions.is-enum}}{{/model}}{{/models}}
+{{/vendorExtensions.is-enum}}{{/vars}}{{/vendorExtensions.has-vars}}{{/vendorExtensions.x-rustgen-enum-one-of}}{{/vendorExtensions.is-enum}}{{/model}}{{/models}}

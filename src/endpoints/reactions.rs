@@ -46,9 +46,9 @@ pub enum ReactionsCreateForCommitCommentError {
 
     #[error("Reaction created")]
     Status201(Reaction),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -67,9 +67,11 @@ pub enum ReactionsCreateForIssueError {
 
     // -- endpoint errors
 
-    #[error("Preview Header Missing")]
+    #[error("Response")]
+    Status201(Reaction),
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -90,9 +92,9 @@ pub enum ReactionsCreateForIssueCommentError {
 
     #[error("Reaction created")]
     Status201(Reaction),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -113,9 +115,9 @@ pub enum ReactionsCreateForPullRequestReviewCommentError {
 
     #[error("Reaction created")]
     Status201(Reaction),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -134,6 +136,8 @@ pub enum ReactionsCreateForTeamDiscussionCommentInOrgError {
 
     // -- endpoint errors
 
+    #[error("Response")]
+    Status201(Reaction),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -168,6 +172,8 @@ pub enum ReactionsCreateForTeamDiscussionInOrgError {
 
     // -- endpoint errors
 
+    #[error("Response")]
+    Status201(Reaction),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -304,15 +310,15 @@ pub enum ReactionsDeleteLegacyError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -331,9 +337,9 @@ pub enum ReactionsListForCommitCommentError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -352,11 +358,11 @@ pub enum ReactionsListForIssueError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -375,9 +381,9 @@ pub enum ReactionsListForIssueCommentError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -396,9 +402,9 @@ pub enum ReactionsListForPullRequestReviewCommentError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1024,6 +1030,7 @@ impl<'api> Reactions<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                201 => Err(ReactionsCreateForIssueError::Status201(crate::adapters::to_json_async(github_response).await?)),
                 415 => Err(ReactionsCreateForIssueError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(ReactionsCreateForIssueError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReactionsCreateForIssueError::Generic { code }),
@@ -1068,6 +1075,7 @@ impl<'api> Reactions<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                201 => Err(ReactionsCreateForIssueError::Status201(crate::adapters::to_json(github_response)?)),
                 415 => Err(ReactionsCreateForIssueError::Status415(crate::adapters::to_json(github_response)?)),
                 422 => Err(ReactionsCreateForIssueError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReactionsCreateForIssueError::Generic { code }),
@@ -1291,6 +1299,7 @@ impl<'api> Reactions<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                201 => Err(ReactionsCreateForTeamDiscussionCommentInOrgError::Status201(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReactionsCreateForTeamDiscussionCommentInOrgError::Generic { code }),
             }
         }
@@ -1335,6 +1344,7 @@ impl<'api> Reactions<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                201 => Err(ReactionsCreateForTeamDiscussionCommentInOrgError::Status201(crate::adapters::to_json(github_response)?)),
                 code => Err(ReactionsCreateForTeamDiscussionCommentInOrgError::Generic { code }),
             }
         }
@@ -1465,6 +1475,7 @@ impl<'api> Reactions<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                201 => Err(ReactionsCreateForTeamDiscussionInOrgError::Status201(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReactionsCreateForTeamDiscussionInOrgError::Generic { code }),
             }
         }
@@ -1509,6 +1520,7 @@ impl<'api> Reactions<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                201 => Err(ReactionsCreateForTeamDiscussionInOrgError::Status201(crate::adapters::to_json(github_response)?)),
                 code => Err(ReactionsCreateForTeamDiscussionInOrgError::Generic { code }),
             }
         }

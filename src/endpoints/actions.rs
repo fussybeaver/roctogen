@@ -31,6 +31,23 @@ pub fn new(auth: &Auth) -> Actions {
     Actions { auth }
 }
 
+/// Errors for the [Get GitHub Actions permissions for an organization](Actions::actions_policies_get_github_actions_permissions_organization_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsActionsPoliciesGetGithubActionsPermissionsOrganizationError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Add repository access to a self-hosted runner group in an organization](Actions::add_repo_access_to_self_hosted_runner_group_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsAddRepoAccessToSelfHostedRunnerGroupInOrgError {
@@ -61,7 +78,7 @@ pub enum ActionsAddSelectedRepoToOrgSecretError {
 
     // -- endpoint errors
 
-    #[error("Response when visibility type is not set to selected")]
+    #[error("Conflict when visibility type is not set to selected")]
     Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -460,7 +477,7 @@ pub enum ActionsDownloadArtifactError {
 
     // -- endpoint errors
 
-    #[error("response")]
+    #[error("Response")]
     Status302,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -479,7 +496,7 @@ pub enum ActionsDownloadJobLogsForWorkflowRunError {
 
     // -- endpoint errors
 
-    #[error("response")]
+    #[error("Response")]
     Status302,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -498,7 +515,7 @@ pub enum ActionsDownloadWorkflowRunLogsError {
 
     // -- endpoint errors
 
-    #[error("response")]
+    #[error("Response")]
     Status302,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -609,23 +626,6 @@ pub enum ActionsGetEnvironmentPublicKeyError {
 /// Errors for the [Get an environment secret](Actions::get_environment_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetEnvironmentSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
-    #[error("Status code: {}", code)]
-    Generic { code: u16 },
-}
-
-/// Errors for the [Get GitHub Actions permissions for an organization](Actions::get_github_actions_permissions_organization_async()) endpoint.
-#[derive(Debug, thiserror::Error)]
-pub enum ActionsGetGithubActionsPermissionsOrganizationError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -1248,7 +1248,7 @@ pub enum ActionsRemoveSelectedRepoFromOrgSecretError {
 
     // -- endpoint errors
 
-    #[error("Response when visibility type not set to selected")]
+    #[error("Conflict when visibility type not set to selected")]
     Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2227,6 +2227,87 @@ impl<'enc> From<&'enc PerPage> for ActionsListWorkflowRunsForRepoParams<'enc> {
 impl<'api> Actions<'api> {
     /// ---
     ///
+    /// # Get GitHub Actions permissions for an organization
+    ///
+    /// Gets the GitHub Actions permissions policy for repositories and allowed actions in an organization.
+    /// 
+    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
+    /// 
+    /// [GitHub API docs for actions_policies_get_github_actions_permissions_organization](https://docs.github.com/rest/reference/actions#get-github-actions-permissions-for-an-organization)
+    ///
+    /// ---
+    pub async fn actions_policies_get_github_actions_permissions_organization_async(&self, org: &str) -> Result<ActionsOrganizationPermissions, ActionsActionsPoliciesGetGithubActionsPermissionsOrganizationError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/permissions", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsActionsPoliciesGetGithubActionsPermissionsOrganizationError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get GitHub Actions permissions for an organization
+    ///
+    /// Gets the GitHub Actions permissions policy for repositories and allowed actions in an organization.
+    /// 
+    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
+    /// 
+    /// [GitHub API docs for actions_policies_get_github_actions_permissions_organization](https://docs.github.com/rest/reference/actions#get-github-actions-permissions-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn actions_policies_get_github_actions_permissions_organization(&self, org: &str) -> Result<ActionsOrganizationPermissions, ActionsActionsPoliciesGetGithubActionsPermissionsOrganizationError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/permissions", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsActionsPoliciesGetGithubActionsPermissionsOrganizationError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Add repository access to a self-hosted runner group in an organization
     ///
     /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
@@ -2491,7 +2572,7 @@ impl<'api> Actions<'api> {
     /// [GitHub API docs for cancel_workflow_run](https://docs.github.com/rest/reference/actions#cancel-a-workflow-run)
     ///
     /// ---
-    pub async fn cancel_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), ActionsCancelWorkflowRunError> {
+    pub async fn cancel_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<HashMap<String, Value>, ActionsCancelWorkflowRunError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/cancel", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
@@ -2530,7 +2611,7 @@ impl<'api> Actions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn cancel_workflow_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), ActionsCancelWorkflowRunError> {
+    pub fn cancel_workflow_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<HashMap<String, Value>, ActionsCancelWorkflowRunError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/cancel", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
@@ -2869,7 +2950,7 @@ impl<'api> Actions<'api> {
     /// [GitHub API docs for create_or_update_org_secret](https://docs.github.com/rest/reference/actions#create-or-update-an-organization-secret)
     ///
     /// ---
-    pub async fn create_or_update_org_secret_async(&self, org: &str, secret_name: &str, body: PutActionsCreateOrUpdateOrgSecret) -> Result<(), ActionsCreateOrUpdateOrgSecretError> {
+    pub async fn create_or_update_org_secret_async(&self, org: &str, secret_name: &str, body: PutActionsCreateOrUpdateOrgSecret) -> Result<HashMap<String, Value>, ActionsCreateOrUpdateOrgSecretError> {
 
         let request_uri = format!("{}/orgs/{}/actions/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
 
@@ -2983,7 +3064,7 @@ impl<'api> Actions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_or_update_org_secret(&self, org: &str, secret_name: &str, body: PutActionsCreateOrUpdateOrgSecret) -> Result<(), ActionsCreateOrUpdateOrgSecretError> {
+    pub fn create_or_update_org_secret(&self, org: &str, secret_name: &str, body: PutActionsCreateOrUpdateOrgSecret) -> Result<HashMap<String, Value>, ActionsCreateOrUpdateOrgSecretError> {
 
         let request_uri = format!("{}/orgs/{}/actions/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
 
@@ -3096,7 +3177,7 @@ impl<'api> Actions<'api> {
     /// [GitHub API docs for create_or_update_repo_secret](https://docs.github.com/rest/reference/actions#create-or-update-a-repository-secret)
     ///
     /// ---
-    pub async fn create_or_update_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str, body: PutActionsCreateOrUpdateRepoSecret) -> Result<(), ActionsCreateOrUpdateRepoSecretError> {
+    pub async fn create_or_update_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str, body: PutActionsCreateOrUpdateRepoSecret) -> Result<HashMap<String, Value>, ActionsCreateOrUpdateRepoSecretError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
 
@@ -3210,7 +3291,7 @@ impl<'api> Actions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_or_update_repo_secret(&self, owner: &str, repo: &str, secret_name: &str, body: PutActionsCreateOrUpdateRepoSecret) -> Result<(), ActionsCreateOrUpdateRepoSecretError> {
+    pub fn create_or_update_repo_secret(&self, owner: &str, repo: &str, secret_name: &str, body: PutActionsCreateOrUpdateRepoSecret) -> Result<HashMap<String, Value>, ActionsCreateOrUpdateRepoSecretError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
 
@@ -5479,87 +5560,6 @@ impl<'api> Actions<'api> {
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetEnvironmentSecretError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Get GitHub Actions permissions for an organization
-    ///
-    /// Gets the GitHub Actions permissions policy for repositories and allowed actions in an organization.
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
-    /// 
-    /// [GitHub API docs for get_github_actions_permissions_organization](https://docs.github.com/rest/reference/actions#get-github-actions-permissions-for-an-organization)
-    ///
-    /// ---
-    pub async fn get_github_actions_permissions_organization_async(&self, org: &str) -> Result<ActionsOrganizationPermissions, ActionsGetGithubActionsPermissionsOrganizationError> {
-
-        let request_uri = format!("{}/orgs/{}/actions/permissions", super::GITHUB_BASE_API_URL, org);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch_async(request).await?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
-        } else {
-            match github_response.status_code() {
-                code => Err(ActionsGetGithubActionsPermissionsOrganizationError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Get GitHub Actions permissions for an organization
-    ///
-    /// Gets the GitHub Actions permissions policy for repositories and allowed actions in an organization.
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
-    /// 
-    /// [GitHub API docs for get_github_actions_permissions_organization](https://docs.github.com/rest/reference/actions#get-github-actions-permissions-for-an-organization)
-    ///
-    /// ---
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_github_actions_permissions_organization(&self, org: &str) -> Result<ActionsOrganizationPermissions, ActionsGetGithubActionsPermissionsOrganizationError> {
-
-        let request_uri = format!("{}/orgs/{}/actions/permissions", super::GITHUB_BASE_API_URL, org);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch(request)?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
-        } else {
-            match github_response.status_code() {
-                code => Err(ActionsGetGithubActionsPermissionsOrganizationError::Generic { code }),
             }
         }
     }
@@ -8342,7 +8342,7 @@ impl<'api> Actions<'api> {
     /// [GitHub API docs for re_run_workflow](https://docs.github.com/rest/reference/actions#re-run-a-workflow)
     ///
     /// ---
-    pub async fn re_run_workflow_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), ActionsReRunWorkflowError> {
+    pub async fn re_run_workflow_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<HashMap<String, Value>, ActionsReRunWorkflowError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/rerun", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
@@ -8381,7 +8381,7 @@ impl<'api> Actions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn re_run_workflow(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), ActionsReRunWorkflowError> {
+    pub fn re_run_workflow(&self, owner: &str, repo: &str, run_id: i32) -> Result<HashMap<String, Value>, ActionsReRunWorkflowError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/rerun", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 

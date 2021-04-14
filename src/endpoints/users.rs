@@ -44,15 +44,15 @@ pub enum UsersAddEmailForAuthenticatedError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -71,15 +71,15 @@ pub enum UsersBlockError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -100,11 +100,11 @@ pub enum UsersCheckBlockedError {
 
     #[error("If the user is not blocked:")]
     Status404(BasicError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -123,7 +123,7 @@ pub enum UsersCheckFollowingForUserError {
 
     // -- endpoint errors
 
-    #[error("Response if the user does not follow the target user")]
+    #[error("if the user does not follow the target user")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -142,13 +142,13 @@ pub enum UsersCheckPersonIsFollowedByAuthenticatedError {
 
     // -- endpoint errors
 
-    #[error("Response if the person is not followed by the authenticated user")]
+    #[error("if the person is not followed by the authenticated user")]
     Status404(BasicError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -167,15 +167,15 @@ pub enum UsersCreateGpgKeyForAuthenticatedError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -194,15 +194,15 @@ pub enum UsersCreatePublicSshKeyForAuthenticatedError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -221,15 +221,15 @@ pub enum UsersDeleteEmailForAuthenticatedError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -248,15 +248,15 @@ pub enum UsersDeleteGpgKeyForAuthenticatedError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -275,13 +275,13 @@ pub enum UsersDeletePublicSshKeyForAuthenticatedError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -300,13 +300,13 @@ pub enum UsersFollowError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -325,11 +325,11 @@ pub enum UsersGetAuthenticatedError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -348,7 +348,9 @@ pub enum UsersGetByUsernameError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Accepted")]
+    Status202(HashMap<String, Value>),
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -367,9 +369,9 @@ pub enum UsersGetContextForUserError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -388,13 +390,13 @@ pub enum UsersGetGpgKeyForAuthenticatedError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -413,13 +415,13 @@ pub enum UsersGetPublicSshKeyForAuthenticatedError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -438,7 +440,7 @@ pub enum UsersListError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -457,15 +459,15 @@ pub enum UsersListBlockedByAuthenticatedError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -484,13 +486,13 @@ pub enum UsersListEmailsForAuthenticatedError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -509,11 +511,11 @@ pub enum UsersListFollowedByAuthenticatedError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -532,11 +534,11 @@ pub enum UsersListFollowersForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -589,13 +591,13 @@ pub enum UsersListGpgKeysForAuthenticatedError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -631,13 +633,13 @@ pub enum UsersListPublicEmailsForAuthenticatedError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -673,13 +675,13 @@ pub enum UsersListPublicSshKeysForAuthenticatedError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -698,15 +700,15 @@ pub enum UsersSetPrimaryEmailVisibilityForAuthenticatedError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -725,13 +727,13 @@ pub enum UsersUnblockError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -750,13 +752,13 @@ pub enum UsersUnfollowError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -775,15 +777,15 @@ pub enum UsersUpdateAuthenticatedError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2309,6 +2311,7 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                202 => Err(UsersGetByUsernameError::Status202(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(UsersGetByUsernameError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(UsersGetByUsernameError::Generic { code }),
             }
@@ -2355,6 +2358,7 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                202 => Err(UsersGetByUsernameError::Status202(crate::adapters::to_json(github_response)?)),
                 404 => Err(UsersGetByUsernameError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(UsersGetByUsernameError::Generic { code }),
             }

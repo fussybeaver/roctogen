@@ -44,11 +44,11 @@ pub enum ActivityCheckRepoIsStarredByAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Response if this repository is not starred by you")]
+    #[error("Not Found if this repository is not starred by you")]
     Status404(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
@@ -86,11 +86,11 @@ pub enum ActivityDeleteThreadSubscriptionError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -126,7 +126,7 @@ pub enum ActivityGetRepoSubscriptionError {
 
     // -- endpoint errors
 
-    #[error("Response if you don&#x27;t subscribe to the repository")]
+    #[error("Not Found if you don&#x27;t subscribe to the repository")]
     Status404,
     #[error("Forbidden")]
     Status403(BasicError),
@@ -147,11 +147,11 @@ pub enum ActivityGetThreadError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -170,11 +170,11 @@ pub enum ActivityGetThreadSubscriptionForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -210,13 +210,13 @@ pub enum ActivityListNotificationsForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -252,11 +252,11 @@ pub enum ActivityListPublicEventsError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Service Unavailable")]
+    #[error("Service unavailable")]
     Status503(GetSearchUsersResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -275,14 +275,14 @@ pub enum ActivityListPublicEventsForRepoNetworkError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Moved Permanently")]
-    Status301,
+    #[error("Moved permanently")]
+    Status301(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -402,11 +402,11 @@ pub enum ActivityListReposStarredByAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -459,7 +459,7 @@ pub enum ActivityListStargazersForRepoError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -478,11 +478,11 @@ pub enum ActivityListWatchedReposForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -518,13 +518,13 @@ pub enum ActivityMarkNotificationsAsReadError {
 
     // -- endpoint errors
 
-    #[error("response")]
+    #[error("Reset Content")]
     Status205,
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -543,6 +543,8 @@ pub enum ActivityMarkRepoNotificationsAsReadError {
 
     // -- endpoint errors
 
+    #[error("Reset Content")]
+    Status205,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -560,7 +562,7 @@ pub enum ActivityMarkThreadAsReadError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
@@ -598,11 +600,11 @@ pub enum ActivitySetThreadSubscriptionError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -623,11 +625,11 @@ pub enum ActivityStarRepoForAuthenticatedUserError {
 
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -646,11 +648,11 @@ pub enum ActivityUnstarRepoForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
@@ -2502,7 +2504,7 @@ impl<'api> Activity<'api> {
                 404 => Err(ActivityListPublicEventsForRepoNetworkError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 403 => Err(ActivityListPublicEventsForRepoNetworkError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(ActivityListPublicEventsForRepoNetworkError::Status304),
-                301 => Err(ActivityListPublicEventsForRepoNetworkError::Status301),
+                301 => Err(ActivityListPublicEventsForRepoNetworkError::Status301(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ActivityListPublicEventsForRepoNetworkError::Generic { code }),
             }
         }
@@ -2548,7 +2550,7 @@ impl<'api> Activity<'api> {
                 404 => Err(ActivityListPublicEventsForRepoNetworkError::Status404(crate::adapters::to_json(github_response)?)),
                 403 => Err(ActivityListPublicEventsForRepoNetworkError::Status403(crate::adapters::to_json(github_response)?)),
                 304 => Err(ActivityListPublicEventsForRepoNetworkError::Status304),
-                301 => Err(ActivityListPublicEventsForRepoNetworkError::Status301),
+                301 => Err(ActivityListPublicEventsForRepoNetworkError::Status301(crate::adapters::to_json(github_response)?)),
                 code => Err(ActivityListPublicEventsForRepoNetworkError::Generic { code }),
             }
         }
@@ -3161,7 +3163,7 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for list_repos_starred_by_user](https://docs.github.com/rest/reference/activity#list-repositories-starred-by-a-user)
     ///
     /// ---
-    pub async fn list_repos_starred_by_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListReposStarredByUserParams<'api>>>) -> Result<Vec<Repository>, ActivityListReposStarredByUserError> {
+    pub async fn list_repos_starred_by_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListReposStarredByUserParams<'api>>>) -> Result<GetActivityListReposStarredByUserResponse200, ActivityListReposStarredByUserError> {
 
         let mut request_uri = format!("{}/users/{}/starred", super::GITHUB_BASE_API_URL, username);
 
@@ -3206,7 +3208,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_repos_starred_by_user(&self, username: &str, query_params: Option<impl Into<ActivityListReposStarredByUserParams<'api>>>) -> Result<Vec<Repository>, ActivityListReposStarredByUserError> {
+    pub fn list_repos_starred_by_user(&self, username: &str, query_params: Option<impl Into<ActivityListReposStarredByUserParams<'api>>>) -> Result<GetActivityListReposStarredByUserResponse200, ActivityListReposStarredByUserError> {
 
         let mut request_uri = format!("{}/users/{}/starred", super::GITHUB_BASE_API_URL, username);
 
@@ -3337,7 +3339,7 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for list_stargazers_for_repo](https://docs.github.com/rest/reference/activity#list-stargazers)
     ///
     /// ---
-    pub async fn list_stargazers_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListStargazersForRepoParams>>) -> Result<Vec<SimpleUser>, ActivityListStargazersForRepoError> {
+    pub async fn list_stargazers_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListStargazersForRepoParams>>) -> Result<GetActivityListStargazersForRepoResponse200, ActivityListStargazersForRepoError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/stargazers", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -3383,7 +3385,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_stargazers_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListStargazersForRepoParams>>) -> Result<Vec<SimpleUser>, ActivityListStargazersForRepoError> {
+    pub fn list_stargazers_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListStargazersForRepoParams>>) -> Result<GetActivityListStargazersForRepoResponse200, ActivityListStargazersForRepoError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/stargazers", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -3690,7 +3692,7 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for mark_repo_notifications_as_read](https://docs.github.com/rest/reference/activity#mark-repository-notifications-as-read)
     ///
     /// ---
-    pub async fn mark_repo_notifications_as_read_async(&self, owner: &str, repo: &str, body: PutActivityMarkRepoNotificationsAsRead) -> Result<(), ActivityMarkRepoNotificationsAsReadError> {
+    pub async fn mark_repo_notifications_as_read_async(&self, owner: &str, repo: &str, body: PutActivityMarkRepoNotificationsAsRead) -> Result<PutPullsUpdateBranchResponse202, ActivityMarkRepoNotificationsAsReadError> {
 
         let request_uri = format!("{}/repos/{}/{}/notifications", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -3714,6 +3716,7 @@ impl<'api> Activity<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                205 => Err(ActivityMarkRepoNotificationsAsReadError::Status205),
                 code => Err(ActivityMarkRepoNotificationsAsReadError::Generic { code }),
             }
         }
@@ -3729,7 +3732,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn mark_repo_notifications_as_read(&self, owner: &str, repo: &str, body: PutActivityMarkRepoNotificationsAsRead) -> Result<(), ActivityMarkRepoNotificationsAsReadError> {
+    pub fn mark_repo_notifications_as_read(&self, owner: &str, repo: &str, body: PutActivityMarkRepoNotificationsAsRead) -> Result<PutPullsUpdateBranchResponse202, ActivityMarkRepoNotificationsAsReadError> {
 
         let request_uri = format!("{}/repos/{}/{}/notifications", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -3753,6 +3756,7 @@ impl<'api> Activity<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                205 => Err(ActivityMarkRepoNotificationsAsReadError::Status205),
                 code => Err(ActivityMarkRepoNotificationsAsReadError::Generic { code }),
             }
         }

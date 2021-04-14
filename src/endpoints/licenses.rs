@@ -46,9 +46,9 @@ pub enum LicensesGetError {
 
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -67,7 +67,7 @@ pub enum LicensesGetAllCommonlyUsedError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },

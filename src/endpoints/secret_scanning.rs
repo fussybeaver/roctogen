@@ -46,7 +46,7 @@ pub enum SecretScanningGetAlertError {
 
     #[error("Repository is public, or secret scanning is disabled for the repository, or the resource is not found")]
     Status404,
-    #[error("Service Unavailable")]
+    #[error("Service unavailable")]
     Status503(GetSearchUsersResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -67,7 +67,7 @@ pub enum SecretScanningListAlertsForRepoError {
 
     #[error("Repository is public or secret scanning is disabled for the repository")]
     Status404,
-    #[error("Service Unavailable")]
+    #[error("Service unavailable")]
     Status503(GetSearchUsersResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -90,7 +90,7 @@ pub enum SecretScanningUpdateAlertError {
     Status404,
     #[error("State does not match the resolution")]
     Status422,
-    #[error("Service Unavailable")]
+    #[error("Service unavailable")]
     Status503(GetSearchUsersResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },

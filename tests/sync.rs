@@ -182,9 +182,7 @@ fn rate_limit_sync_ok() {
 fn post_sync_fail() {
     let auth = Auth::None;
 
-    let body = models::PostReposAddUserAccessRestrictions {
-        users: Some(vec!["fussybeaver".to_string()])
-    };
+    let body: models::PostReposAddUserAccessRestrictions = vec!["fussybeaver".to_string()].into();
 
     let req = repos::new(&auth).add_user_access_restrictions("fussybeaver", "bollard", "master", body);
     match &req {

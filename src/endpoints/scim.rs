@@ -44,11 +44,11 @@ pub enum ScimDeleteUserFromOrgError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(ScimError),
     #[error("Forbidden")]
     Status403(ScimError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -67,11 +67,11 @@ pub enum ScimGetProvisioningInformationForUserError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(ScimError),
     #[error("Forbidden")]
     Status403(ScimError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -90,9 +90,9 @@ pub enum ScimListProvisionedIdentitiesError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(ScimError),
     #[error("Forbidden")]
     Status403(ScimError),
@@ -115,9 +115,9 @@ pub enum ScimProvisionAndInviteUserError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(ScimError),
     #[error("Forbidden")]
     Status403(ScimError),
@@ -144,9 +144,9 @@ pub enum ScimSetInformationForProvisionedUserError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(ScimError),
     #[error("Forbidden")]
     Status403(ScimError),
@@ -167,15 +167,15 @@ pub enum ScimUpdateAttributeForUserError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(ScimError),
     #[error("Forbidden")]
     Status403(ScimError),
     #[error("Bad Request")]
     Status400(ScimError),
-    #[error("Too many requests")]
+    #[error("Response")]
     Status429(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },

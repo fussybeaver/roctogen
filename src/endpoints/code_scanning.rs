@@ -48,9 +48,9 @@ pub enum CodeScanningDeleteAnalysisError {
     Status400(BasicError),
     #[error("Response if the repository is archived or if github advanced security is not enabled for this repository")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Service Unavailable")]
+    #[error("Service unavailable")]
     Status503(GetSearchUsersResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -69,11 +69,11 @@ pub enum CodeScanningGetAlertError {
 
     // -- endpoint errors
 
-    #[error("Response if github advanced security is not enabled for this repository")]
+    #[error("Response if GitHub Advanced Security is not enabled for this repository")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Service Unavailable")]
+    #[error("Service unavailable")]
     Status503(GetSearchUsersResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -92,11 +92,11 @@ pub enum CodeScanningGetAnalysisError {
 
     // -- endpoint errors
 
-    #[error("Response if github advanced security is not enabled for this repository")]
+    #[error("Response if GitHub Advanced Security is not enabled for this repository")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Service Unavailable")]
+    #[error("Service unavailable")]
     Status503(GetSearchUsersResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -115,11 +115,11 @@ pub enum CodeScanningGetSarifError {
 
     // -- endpoint errors
 
-    #[error("Response if github advanced security is not enabled for this repository")]
+    #[error("Response if GitHub Advanced Security is not enabled for this repository")]
     Status403(BasicError),
-    #[error("Response if the sarif id does not match any upload")]
+    #[error("Not Found if the sarif id does not match any upload")]
     Status404,
-    #[error("Service Unavailable")]
+    #[error("Service unavailable")]
     Status503(GetSearchUsersResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -138,11 +138,11 @@ pub enum CodeScanningListAlertsForRepoError {
 
     // -- endpoint errors
 
-    #[error("Response if github advanced security is not enabled for this repository")]
+    #[error("Response if GitHub Advanced Security is not enabled for this repository")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Service Unavailable")]
+    #[error("Service unavailable")]
     Status503(GetSearchUsersResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -161,11 +161,11 @@ pub enum CodeScanningListAlertsInstancesError {
 
     // -- endpoint errors
 
-    #[error("Response if github advanced security is not enabled for this repository")]
+    #[error("Response if GitHub Advanced Security is not enabled for this repository")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Service Unavailable")]
+    #[error("Service unavailable")]
     Status503(GetSearchUsersResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -184,11 +184,11 @@ pub enum CodeScanningListRecentAnalysesError {
 
     // -- endpoint errors
 
-    #[error("Response if github advanced security is not enabled for this repository")]
+    #[error("Response if GitHub Advanced Security is not enabled for this repository")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Service Unavailable")]
+    #[error("Service unavailable")]
     Status503(GetSearchUsersResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -209,9 +209,9 @@ pub enum CodeScanningUpdateAlertError {
 
     #[error("Response if the repository is archived or if github advanced security is not enabled for this repository")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Service Unavailable")]
+    #[error("Service unavailable")]
     Status503(GetSearchUsersResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -230,15 +230,17 @@ pub enum CodeScanningUploadSarifError {
 
     // -- endpoint errors
 
-    #[error("Response if the sarif field is invalid")]
+    #[error("Response")]
+    Status202(CodeScanningSarifsReceipt),
+    #[error("Bad Request if the sarif field is invalid")]
     Status400,
     #[error("Response if the repository is archived or if github advanced security is not enabled for this repository")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Response if the sarif field is too large")]
+    #[error("Payload Too Large if the sarif field is too large")]
     Status413,
-    #[error("Service Unavailable")]
+    #[error("Service unavailable")]
     Status503(GetSearchUsersResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -248,7 +250,7 @@ pub enum CodeScanningUploadSarifError {
 /// Query parameters for the [Delete a code scanning analysis from a repository](CodeScanning::delete_analysis_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct CodeScanningDeleteAnalysisParams<'req> {
-    /// Allow deletion if the specified analysis is the last in a set. The parameter can be used without a value as the parameter value is not considered. If you attempt to delete the final analysis in a set without using this parameter you'll get a 400 response with the message: `Analysis is last of its type and deletion may result in the loss of historical alert data. Please specify confirm_delete.`
+    /// Allow deletion if the specified analysis is the last in a set. If you attempt to delete the final analysis in a set without setting this parameter to `true`, you'll get a 400 response with the message: `Analysis is last of its type and deletion may result in the loss of historical alert data. Please specify confirm_delete.`
     confirm_delete: Option<&'req str>
 }
 
@@ -257,7 +259,7 @@ impl<'req> CodeScanningDeleteAnalysisParams<'req> {
         Self::default()
     }
 
-    /// Allow deletion if the specified analysis is the last in a set. The parameter can be used without a value as the parameter value is not considered. If you attempt to delete the final analysis in a set without using this parameter you'll get a 400 response with the message: `Analysis is last of its type and deletion may result in the loss of historical alert data. Please specify confirm_delete.`
+    /// Allow deletion if the specified analysis is the last in a set. If you attempt to delete the final analysis in a set without setting this parameter to `true`, you'll get a 400 response with the message: `Analysis is last of its type and deletion may result in the loss of historical alert data. Please specify confirm_delete.`
     pub fn confirm_delete(self, confirm_delete: &'req str) -> Self {
         Self { 
             confirm_delete: Some(confirm_delete),
@@ -593,9 +595,9 @@ impl<'api> CodeScanning<'api> {
     /// 
     ///   **Inner loop**:
     ///   * Delete the identified analysis.
-    ///   * Parse the response for the value of `next_analysis_url` and, if found, use this in the next iteration.
+    ///   * Parse the response for the value of `confirm_delete_url` and, if found, use this in the next iteration.
     /// 
-    /// The above process assumes that you want to remove all trace of the tool's analyses from the GitHub user interface, for the specified repository, and it therefore uses the `next_analysis_url` value. Alternatively, you could use the `confirm_delete_url` value, which would leave the last analysis in each set undeleted to avoid removing a tool's analysis entirely.
+    /// The above process assumes that you want to remove all trace of the tool's analyses from the GitHub user interface, for the specified repository, and it therefore uses the `confirm_delete_url` value. Alternatively, you could use the `next_analysis_url` value, which would leave the last analysis in each set undeleted to avoid removing a tool's analysis entirely.
     /// 
     /// [GitHub API docs for delete_analysis](https://docs.github.com/rest/reference/code-scanning#delete-a-code-scanning-analysis-from-a-repository)
     ///
@@ -702,9 +704,9 @@ impl<'api> CodeScanning<'api> {
     /// 
     ///   **Inner loop**:
     ///   * Delete the identified analysis.
-    ///   * Parse the response for the value of `next_analysis_url` and, if found, use this in the next iteration.
+    ///   * Parse the response for the value of `confirm_delete_url` and, if found, use this in the next iteration.
     /// 
-    /// The above process assumes that you want to remove all trace of the tool's analyses from the GitHub user interface, for the specified repository, and it therefore uses the `next_analysis_url` value. Alternatively, you could use the `confirm_delete_url` value, which would leave the last analysis in each set undeleted to avoid removing a tool's analysis entirely.
+    /// The above process assumes that you want to remove all trace of the tool's analyses from the GitHub user interface, for the specified repository, and it therefore uses the `confirm_delete_url` value. Alternatively, you could use the `next_analysis_url` value, which would leave the last analysis in each set undeleted to avoid removing a tool's analysis entirely.
     /// 
     /// [GitHub API docs for delete_analysis](https://docs.github.com/rest/reference/code-scanning#delete-a-code-scanning-analysis-from-a-repository)
     ///
@@ -867,7 +869,7 @@ impl<'api> CodeScanning<'api> {
     /// [GitHub API docs for get_analysis](https://docs.github.com/rest/reference/code-scanning#get-a-code-scanning-analysis-for-a-repository)
     ///
     /// ---
-    pub async fn get_analysis_async(&self, owner: &str, repo: &str, analysis_id: i32) -> Result<CodeScanningAnalysis, CodeScanningGetAnalysisError> {
+    pub async fn get_analysis_async(&self, owner: &str, repo: &str, analysis_id: i32) -> Result<String, CodeScanningGetAnalysisError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/analyses/{}", super::GITHUB_BASE_API_URL, owner, repo, analysis_id);
 
@@ -930,7 +932,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_analysis(&self, owner: &str, repo: &str, analysis_id: i32) -> Result<CodeScanningAnalysis, CodeScanningGetAnalysisError> {
+    pub fn get_analysis(&self, owner: &str, repo: &str, analysis_id: i32) -> Result<String, CodeScanningGetAnalysisError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/analyses/{}", super::GITHUB_BASE_API_URL, owner, repo, analysis_id);
 
@@ -1475,7 +1477,7 @@ impl<'api> CodeScanning<'api> {
     /// [GitHub API docs for upload_sarif](https://docs.github.com/rest/reference/code-scanning#upload-an-analysis-as-sarif-data)
     ///
     /// ---
-    pub async fn upload_sarif_async(&self, owner: &str, repo: &str, body: PostCodeScanningUploadSarif) -> Result<CodeScanningSarifsReceipt, CodeScanningUploadSarifError> {
+    pub async fn upload_sarif_async(&self, owner: &str, repo: &str, body: PostCodeScanningUploadSarif) -> Result<Value, CodeScanningUploadSarifError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/sarifs", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -1499,6 +1501,7 @@ impl<'api> CodeScanning<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                202 => Err(CodeScanningUploadSarifError::Status202(crate::adapters::to_json_async(github_response).await?)),
                 400 => Err(CodeScanningUploadSarifError::Status400),
                 403 => Err(CodeScanningUploadSarifError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(CodeScanningUploadSarifError::Status404(crate::adapters::to_json_async(github_response).await?)),
@@ -1535,7 +1538,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn upload_sarif(&self, owner: &str, repo: &str, body: PostCodeScanningUploadSarif) -> Result<CodeScanningSarifsReceipt, CodeScanningUploadSarifError> {
+    pub fn upload_sarif(&self, owner: &str, repo: &str, body: PostCodeScanningUploadSarif) -> Result<Value, CodeScanningUploadSarifError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/sarifs", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -1559,6 +1562,7 @@ impl<'api> CodeScanning<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                202 => Err(CodeScanningUploadSarifError::Status202(crate::adapters::to_json(github_response)?)),
                 400 => Err(CodeScanningUploadSarifError::Status400),
                 403 => Err(CodeScanningUploadSarifError::Status403(crate::adapters::to_json(github_response)?)),
                 404 => Err(CodeScanningUploadSarifError::Status404(crate::adapters::to_json(github_response)?)),

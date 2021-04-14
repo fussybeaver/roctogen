@@ -44,11 +44,11 @@ pub enum SearchCodeError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Service Unavailable")]
+    #[error("Service unavailable")]
     Status503(GetSearchUsersResponse503),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -69,9 +69,9 @@ pub enum SearchCommitsError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -90,11 +90,11 @@ pub enum SearchIssuesAndPullRequestsError {
 
     // -- endpoint errors
 
-    #[error("Service Unavailable")]
+    #[error("Service unavailable")]
     Status503(GetSearchUsersResponse503),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
@@ -115,13 +115,13 @@ pub enum SearchLabelsError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -140,11 +140,11 @@ pub enum SearchReposError {
 
     // -- endpoint errors
 
-    #[error("Service Unavailable")]
+    #[error("Service unavailable")]
     Status503(GetSearchUsersResponse503),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -163,9 +163,9 @@ pub enum SearchTopicsError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -184,11 +184,11 @@ pub enum SearchUsersError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Service Unavailable")]
+    #[error("Service unavailable")]
     Status503(GetSearchUsersResponse503),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },

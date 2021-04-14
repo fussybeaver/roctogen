@@ -44,10 +44,10 @@ pub enum TeamsAddMemberLegacyError {
 
     // -- endpoint errors
 
-    #[error("Response if team synchronization is set up")]
+    #[error("Not Found if team synchronization is set up")]
     Status404,
-    #[error("response")]
-    Status422(PutTeamsAddMemberLegacyResponse422),
+    #[error("Unprocessable Entity if you attempt to add an organization to a team or you attempt to add a user to a team when they are not a member of at least one other team in the same organization")]
+    Status422,
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Status code: {}", code)]
@@ -67,10 +67,10 @@ pub enum TeamsAddOrUpdateMembershipForUserInOrgError {
 
     // -- endpoint errors
 
-    #[error("Response if team synchronization is set up")]
+    #[error("Forbidden if team synchronization is set up")]
     Status403,
-    #[error("Response if you attempt to add an organization to a team")]
-    Status422(PutTeamsAddOrUpdateMembershipForUserInOrgResponse422),
+    #[error("Unprocessable Entity if you attempt to add an organization to a team")]
+    Status422,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -88,11 +88,11 @@ pub enum TeamsAddOrUpdateMembershipForUserLegacyError {
 
     // -- endpoint errors
 
-    #[error("Response if team synchronization is set up")]
+    #[error("Forbidden if team synchronization is set up")]
     Status403,
-    #[error("Response if you attempt to add an organization to a team")]
-    Status422(PutTeamsAddOrUpdateMembershipForUserLegacyResponse422),
-    #[error("Resource Not Found")]
+    #[error("Unprocessable Entity if you attempt to add an organization to a team")]
+    Status422,
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -111,7 +111,7 @@ pub enum TeamsAddOrUpdateProjectPermissionsInOrgError {
 
     // -- endpoint errors
 
-    #[error("Response if the project is not owned by the organization")]
+    #[error("Forbidden if the project is not owned by the organization")]
     Status403(PutTeamsAddOrUpdateProjectPermissionsLegacyResponse403),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -130,13 +130,13 @@ pub enum TeamsAddOrUpdateProjectPermissionsLegacyError {
 
     // -- endpoint errors
 
-    #[error("Response if the project is not owned by the organization")]
+    #[error("Forbidden if the project is not owned by the organization")]
     Status403(PutTeamsAddOrUpdateProjectPermissionsLegacyResponse403),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -174,7 +174,7 @@ pub enum TeamsAddOrUpdateRepoPermissionsLegacyError {
 
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -193,7 +193,7 @@ pub enum TeamsCheckPermissionsForProjectInOrgError {
 
     // -- endpoint errors
 
-    #[error("Response if project is not managed by this team")]
+    #[error("Not Found if project is not managed by this team")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -212,9 +212,9 @@ pub enum TeamsCheckPermissionsForProjectLegacyError {
 
     // -- endpoint errors
 
-    #[error("Response if project is not managed by this team")]
+    #[error("Not Found if project is not managed by this team")]
     Status404,
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -233,9 +233,9 @@ pub enum TeamsCheckPermissionsForRepoInOrgError {
 
     // -- endpoint errors
 
-    #[error("Response if team has permission for the repository")]
+    #[error("Response if team has permission for the repository. This is the response when the repository media type hasn&#x27;t been provded in the Accept header.")]
     Status204,
-    #[error("Response if team does not have permission for the repository")]
+    #[error("Not Found if team does not have permission for the repository")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -256,7 +256,7 @@ pub enum TeamsCheckPermissionsForRepoLegacyError {
 
     #[error("Response if repository is managed by this team")]
     Status204,
-    #[error("Response if repository is not managed by this team")]
+    #[error("Not Found if repository is not managed by this team")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -275,7 +275,7 @@ pub enum TeamsCreateError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -381,7 +381,7 @@ pub enum TeamsCreateOrUpdateIdpGroupConnectionsLegacyError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -487,9 +487,9 @@ pub enum TeamsDeleteLegacyError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -508,7 +508,7 @@ pub enum TeamsGetByNameError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -595,7 +595,7 @@ pub enum TeamsGetLegacyError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -614,7 +614,7 @@ pub enum TeamsGetMemberLegacyError {
 
     // -- endpoint errors
 
-    #[error("Response if user is not a member")]
+    #[error("if user is not a member")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -633,7 +633,7 @@ pub enum TeamsGetMembershipForUserInOrgError {
 
     // -- endpoint errors
 
-    #[error("Response if user has no team membership")]
+    #[error("if user has no team membership")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -652,7 +652,7 @@ pub enum TeamsGetMembershipForUserLegacyError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -707,11 +707,11 @@ pub enum TeamsListChildLegacyError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -798,9 +798,9 @@ pub enum TeamsListForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -823,7 +823,7 @@ pub enum TeamsListIdpGroupsForLegacyError {
 
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -893,7 +893,7 @@ pub enum TeamsListMembersLegacyError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -963,9 +963,9 @@ pub enum TeamsListProjectsLegacyError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1001,7 +1001,7 @@ pub enum TeamsListReposLegacyError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1020,7 +1020,7 @@ pub enum TeamsRemoveMemberLegacyError {
 
     // -- endpoint errors
 
-    #[error("Response if team synchronization is setup")]
+    #[error("Not Found if team synchronization is setup")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1039,7 +1039,7 @@ pub enum TeamsRemoveMembershipForUserInOrgError {
 
     // -- endpoint errors
 
-    #[error("Response if team synchronization is set up")]
+    #[error("Forbidden if team synchronization is set up")]
     Status403,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1058,7 +1058,7 @@ pub enum TeamsRemoveMembershipForUserLegacyError {
 
     // -- endpoint errors
 
-    #[error("Response if team synchronization is set up")]
+    #[error("if team synchronization is set up")]
     Status403,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1094,11 +1094,11 @@ pub enum TeamsRemoveProjectLegacyError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1236,9 +1236,11 @@ pub enum TeamsUpdateLegacyError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Response")]
+    Status201(TeamFull),
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -2066,7 +2068,7 @@ impl<'api> Teams<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsAddMemberLegacyError::Status404),
-                422 => Err(TeamsAddMemberLegacyError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(TeamsAddMemberLegacyError::Status422),
                 403 => Err(TeamsAddMemberLegacyError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(TeamsAddMemberLegacyError::Generic { code }),
             }
@@ -2118,7 +2120,7 @@ impl<'api> Teams<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsAddMemberLegacyError::Status404),
-                422 => Err(TeamsAddMemberLegacyError::Status422(crate::adapters::to_json(github_response)?)),
+                422 => Err(TeamsAddMemberLegacyError::Status422),
                 403 => Err(TeamsAddMemberLegacyError::Status403(crate::adapters::to_json(github_response)?)),
                 code => Err(TeamsAddMemberLegacyError::Generic { code }),
             }
@@ -2169,7 +2171,7 @@ impl<'api> Teams<'api> {
         } else {
             match github_response.status_code() {
                 403 => Err(TeamsAddOrUpdateMembershipForUserInOrgError::Status403),
-                422 => Err(TeamsAddOrUpdateMembershipForUserInOrgError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(TeamsAddOrUpdateMembershipForUserInOrgError::Status422),
                 code => Err(TeamsAddOrUpdateMembershipForUserInOrgError::Generic { code }),
             }
         }
@@ -2220,7 +2222,7 @@ impl<'api> Teams<'api> {
         } else {
             match github_response.status_code() {
                 403 => Err(TeamsAddOrUpdateMembershipForUserInOrgError::Status403),
-                422 => Err(TeamsAddOrUpdateMembershipForUserInOrgError::Status422(crate::adapters::to_json(github_response)?)),
+                422 => Err(TeamsAddOrUpdateMembershipForUserInOrgError::Status422),
                 code => Err(TeamsAddOrUpdateMembershipForUserInOrgError::Generic { code }),
             }
         }
@@ -2270,7 +2272,7 @@ impl<'api> Teams<'api> {
         } else {
             match github_response.status_code() {
                 403 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status403),
-                422 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status422),
                 404 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Generic { code }),
             }
@@ -2322,7 +2324,7 @@ impl<'api> Teams<'api> {
         } else {
             match github_response.status_code() {
                 403 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status403),
-                422 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status422(crate::adapters::to_json(github_response)?)),
+                422 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status422),
                 404 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Generic { code }),
             }
@@ -4777,7 +4779,10 @@ impl<'api> Teams<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/memberships/{username}`.
     /// 
-    /// **Note:** The `role` for organization owners returns as `maintainer`. For more information about `maintainer` roles, see [Create a team](https://docs.github.com/rest/reference/teams#create-a-team).
+    /// **Note:**
+    /// The response contains the `state` of the membership and the member's `role`.
+    /// 
+    /// The `role` for organization owners is set to `maintainer`. For more information about `maintainer` roles, see see [Create a team](https://docs.github.com/rest/reference/teams#create-a-team).
     /// 
     /// [GitHub API docs for get_membership_for_user_in_org](https://docs.github.com/rest/reference/teams#get-team-membership-for-a-user)
     ///
@@ -4822,7 +4827,10 @@ impl<'api> Teams<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/memberships/{username}`.
     /// 
-    /// **Note:** The `role` for organization owners returns as `maintainer`. For more information about `maintainer` roles, see [Create a team](https://docs.github.com/rest/reference/teams#create-a-team).
+    /// **Note:**
+    /// The response contains the `state` of the membership and the member's `role`.
+    /// 
+    /// The `role` for organization owners is set to `maintainer`. For more information about `maintainer` roles, see see [Create a team](https://docs.github.com/rest/reference/teams#create-a-team).
     /// 
     /// [GitHub API docs for get_membership_for_user_in_org](https://docs.github.com/rest/reference/teams#get-team-membership-for-a-user)
     ///
@@ -4868,7 +4876,10 @@ impl<'api> Teams<'api> {
     /// 
     /// To get a user's membership with a team, the team must be visible to the authenticated user.
     /// 
-    /// **Note:** The `role` for organization owners returns as `maintainer`. For more information about `maintainer` roles, see [Create a team](https://docs.github.com/rest/reference/teams#create-a-team).
+    /// **Note:**
+    /// The response contains the `state` of the membership and the member's `role`.
+    /// 
+    /// The `role` for organization owners is set to `maintainer`. For more information about `maintainer` roles, see [Create a team](https://docs.github.com/rest/reference/teams#create-a-team).
     /// 
     /// [GitHub API docs for get_membership_for_user_legacy](https://docs.github.com/rest/reference/teams#get-team-membership-for-a-user-legacy)
     ///
@@ -4913,7 +4924,10 @@ impl<'api> Teams<'api> {
     /// 
     /// To get a user's membership with a team, the team must be visible to the authenticated user.
     /// 
-    /// **Note:** The `role` for organization owners returns as `maintainer`. For more information about `maintainer` roles, see [Create a team](https://docs.github.com/rest/reference/teams#create-a-team).
+    /// **Note:**
+    /// The response contains the `state` of the membership and the member's `role`.
+    /// 
+    /// The `role` for organization owners is set to `maintainer`. For more information about `maintainer` roles, see [Create a team](https://docs.github.com/rest/reference/teams#create-a-team).
     /// 
     /// [GitHub API docs for get_membership_for_user_legacy](https://docs.github.com/rest/reference/teams#get-team-membership-for-a-user-legacy)
     ///
@@ -7772,6 +7786,7 @@ impl<'api> Teams<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                201 => Err(TeamsUpdateLegacyError::Status201(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(TeamsUpdateLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(TeamsUpdateLegacyError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 403 => Err(TeamsUpdateLegacyError::Status403(crate::adapters::to_json_async(github_response).await?)),
@@ -7818,6 +7833,7 @@ impl<'api> Teams<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                201 => Err(TeamsUpdateLegacyError::Status201(crate::adapters::to_json(github_response)?)),
                 404 => Err(TeamsUpdateLegacyError::Status404(crate::adapters::to_json(github_response)?)),
                 422 => Err(TeamsUpdateLegacyError::Status422(crate::adapters::to_json(github_response)?)),
                 403 => Err(TeamsUpdateLegacyError::Status403(crate::adapters::to_json(github_response)?)),

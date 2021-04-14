@@ -61,6 +61,8 @@ pub enum ChecksCreateSuiteError {
 
     // -- endpoint errors
 
+    #[error("Response when the suite was created")]
+    Status201(CheckSuite),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -638,6 +640,7 @@ impl<'api> Checks<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                201 => Err(ChecksCreateSuiteError::Status201(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ChecksCreateSuiteError::Generic { code }),
             }
         }
@@ -679,6 +682,7 @@ impl<'api> Checks<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                201 => Err(ChecksCreateSuiteError::Status201(crate::adapters::to_json(github_response)?)),
                 code => Err(ChecksCreateSuiteError::Generic { code }),
             }
         }
@@ -1213,7 +1217,7 @@ impl<'api> Checks<'api> {
     /// [GitHub API docs for rerequest_suite](https://docs.github.com/rest/reference/checks#rerequest-a-check-suite)
     ///
     /// ---
-    pub async fn rerequest_suite_async(&self, owner: &str, repo: &str, check_suite_id: i32) -> Result<(), ChecksRerequestSuiteError> {
+    pub async fn rerequest_suite_async(&self, owner: &str, repo: &str, check_suite_id: i32) -> Result<HashMap<String, Value>, ChecksRerequestSuiteError> {
 
         let request_uri = format!("{}/repos/{}/{}/check-suites/{}/rerequest", super::GITHUB_BASE_API_URL, owner, repo, check_suite_id);
 
@@ -1254,7 +1258,7 @@ impl<'api> Checks<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn rerequest_suite(&self, owner: &str, repo: &str, check_suite_id: i32) -> Result<(), ChecksRerequestSuiteError> {
+    pub fn rerequest_suite(&self, owner: &str, repo: &str, check_suite_id: i32) -> Result<HashMap<String, Value>, ChecksRerequestSuiteError> {
 
         let request_uri = format!("{}/repos/{}/{}/check-suites/{}/rerequest", super::GITHUB_BASE_API_URL, owner, repo, check_suite_id);
 

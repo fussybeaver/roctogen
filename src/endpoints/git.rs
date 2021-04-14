@@ -44,13 +44,13 @@ pub enum GitCreateBlobError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Conflict")]
     Status409(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -69,9 +69,9 @@ pub enum GitCreateCommitError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -90,7 +90,7 @@ pub enum GitCreateRefError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -109,7 +109,7 @@ pub enum GitCreateTagError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -128,9 +128,9 @@ pub enum GitCreateTreeError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -151,7 +151,7 @@ pub enum GitDeleteRefError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -170,9 +170,9 @@ pub enum GitGetBlobError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -193,7 +193,7 @@ pub enum GitGetCommitError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -212,7 +212,7 @@ pub enum GitGetRefError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -231,7 +231,7 @@ pub enum GitGetTagError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -250,9 +250,9 @@ pub enum GitGetTreeError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -288,7 +288,7 @@ pub enum GitUpdateRefError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },

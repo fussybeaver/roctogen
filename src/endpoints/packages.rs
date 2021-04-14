@@ -44,11 +44,11 @@ pub enum PackagesDeletePackageForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -67,11 +67,11 @@ pub enum PackagesDeletePackageForOrgError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -90,11 +90,11 @@ pub enum PackagesDeletePackageVersionForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -113,11 +113,11 @@ pub enum PackagesDeletePackageVersionForOrgError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -136,11 +136,11 @@ pub enum PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -159,11 +159,11 @@ pub enum PackagesGetAllPackageVersionsForPackageOwnedByOrgError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -182,11 +182,11 @@ pub enum PackagesGetAllPackageVersionsForPackageOwnedByUserError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -307,11 +307,11 @@ pub enum PackagesRestorePackageForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -330,11 +330,11 @@ pub enum PackagesRestorePackageForOrgError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -353,11 +353,11 @@ pub enum PackagesRestorePackageVersionForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -376,11 +376,11 @@ pub enum PackagesRestorePackageVersionForOrgError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -539,7 +539,7 @@ impl<'api> Packages<'api> {
     ///
     /// # Delete a package for the authenticated user
     ///
-    /// Deletes a package owned by the authenticated user. You cannot delete a public package if any version of the package has more than 25 downloads. In this scenario, contact GitHub support for further assistance.
+    /// Deletes a package owned by the authenticated user. You cannot delete a public package if any version of the package has more than 5,000 downloads. In this scenario, contact GitHub support for further assistance.
     /// 
     /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:delete` scope.
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
@@ -583,7 +583,7 @@ impl<'api> Packages<'api> {
     ///
     /// # Delete a package for the authenticated user
     ///
-    /// Deletes a package owned by the authenticated user. You cannot delete a public package if any version of the package has more than 25 downloads. In this scenario, contact GitHub support for further assistance.
+    /// Deletes a package owned by the authenticated user. You cannot delete a public package if any version of the package has more than 5,000 downloads. In this scenario, contact GitHub support for further assistance.
     /// 
     /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:delete` scope.
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
@@ -628,7 +628,7 @@ impl<'api> Packages<'api> {
     ///
     /// # Delete a package for an organization
     ///
-    /// Deletes an entire package in an organization. You cannot delete a public package if any version of the package has more than 25 downloads. In this scenario, contact GitHub support for further assistance.
+    /// Deletes an entire package in an organization. You cannot delete a public package if any version of the package has more than 5,000 downloads. In this scenario, contact GitHub support for further assistance.
     /// 
     /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` scope. In addition:
     /// - If `package_type` is not `container`, your token must also include the `repo` scope.
@@ -673,7 +673,7 @@ impl<'api> Packages<'api> {
     ///
     /// # Delete a package for an organization
     ///
-    /// Deletes an entire package in an organization. You cannot delete a public package if any version of the package has more than 25 downloads. In this scenario, contact GitHub support for further assistance.
+    /// Deletes an entire package in an organization. You cannot delete a public package if any version of the package has more than 5,000 downloads. In this scenario, contact GitHub support for further assistance.
     /// 
     /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` scope. In addition:
     /// - If `package_type` is not `container`, your token must also include the `repo` scope.
@@ -719,7 +719,7 @@ impl<'api> Packages<'api> {
     ///
     /// # Delete a package version for the authenticated user
     ///
-    /// Deletes a specific package version for a package owned by the authenticated user.  If the package is public and the package version has more than 25 downloads, you cannot delete the package version. In this scenario, contact GitHub support for further assistance.
+    /// Deletes a specific package version for a package owned by the authenticated user.  If the package is public and the package version has more than 5,000 downloads, you cannot delete the package version. In this scenario, contact GitHub support for further assistance.
     /// 
     /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` scope.
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
@@ -763,7 +763,7 @@ impl<'api> Packages<'api> {
     ///
     /// # Delete a package version for the authenticated user
     ///
-    /// Deletes a specific package version for a package owned by the authenticated user.  If the package is public and the package version has more than 25 downloads, you cannot delete the package version. In this scenario, contact GitHub support for further assistance.
+    /// Deletes a specific package version for a package owned by the authenticated user.  If the package is public and the package version has more than 5,000 downloads, you cannot delete the package version. In this scenario, contact GitHub support for further assistance.
     /// 
     /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` scope.
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
@@ -808,7 +808,7 @@ impl<'api> Packages<'api> {
     ///
     /// # Delete package version for an organization
     ///
-    /// Deletes a specific package version in an organization. If the package is public and the package version has more than 25 downloads, you cannot delete the package version. In this scenario, contact GitHub support for further assistance.
+    /// Deletes a specific package version in an organization. If the package is public and the package version has more than 5,000 downloads, you cannot delete the package version. In this scenario, contact GitHub support for further assistance.
     /// 
     /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` scope. In addition:
     /// - If `package_type` is not `container`, your token must also include the `repo` scope.
@@ -853,7 +853,7 @@ impl<'api> Packages<'api> {
     ///
     /// # Delete package version for an organization
     ///
-    /// Deletes a specific package version in an organization. If the package is public and the package version has more than 25 downloads, you cannot delete the package version. In this scenario, contact GitHub support for further assistance.
+    /// Deletes a specific package version in an organization. If the package is public and the package version has more than 5,000 downloads, you cannot delete the package version. In this scenario, contact GitHub support for further assistance.
     /// 
     /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` scope. In addition:
     /// - If `package_type` is not `container`, your token must also include the `repo` scope.

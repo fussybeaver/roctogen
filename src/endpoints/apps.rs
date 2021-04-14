@@ -46,9 +46,9 @@ pub enum AppsAddRepoToInstallationError {
 
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -67,7 +67,7 @@ pub enum AppsCheckAuthorizationError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -86,9 +86,9 @@ pub enum AppsCheckTokenError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -107,15 +107,15 @@ pub enum AppsCreateContentAttachmentError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
@@ -136,9 +136,9 @@ pub enum AppsCreateFromManifestError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -159,13 +159,13 @@ pub enum AppsCreateInstallationAccessTokenError {
 
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -184,7 +184,7 @@ pub enum AppsDeleteAuthorizationError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -203,7 +203,7 @@ pub enum AppsDeleteInstallationError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -222,7 +222,7 @@ pub enum AppsDeleteTokenError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -260,9 +260,9 @@ pub enum AppsGetBySlugError {
 
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -281,9 +281,9 @@ pub enum AppsGetInstallationError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -319,9 +319,9 @@ pub enum AppsGetRepoInstallationError {
 
     // -- endpoint errors
 
-    #[error("Moved Permanently")]
-    Status301,
-    #[error("Resource Not Found")]
+    #[error("Moved permanently")]
+    Status301(BasicError),
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -340,9 +340,9 @@ pub enum AppsGetSubscriptionPlanForAccountError {
 
     // -- endpoint errors
 
-    #[error("Response when the account has not purchased the listing")]
+    #[error("Not Found when the account has not purchased the listing")]
     Status404(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -361,9 +361,9 @@ pub enum AppsGetSubscriptionPlanForAccountStubbedError {
 
     // -- endpoint errors
 
-    #[error("Response when the account has not purchased the listing")]
+    #[error("Not Found when the account has not purchased the listing")]
     Status404,
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -416,11 +416,11 @@ pub enum AppsListAccountsForPlanError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -439,7 +439,7 @@ pub enum AppsListAccountsForPlanStubbedError {
 
     // -- endpoint errors
 
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -458,11 +458,11 @@ pub enum AppsListInstallationReposForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -498,13 +498,13 @@ pub enum AppsListInstallationsForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -523,9 +523,9 @@ pub enum AppsListPlansError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -544,7 +544,7 @@ pub enum AppsListPlansStubbedError {
 
     // -- endpoint errors
 
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -565,9 +565,9 @@ pub enum AppsListReposAccessibleToInstallationError {
 
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -586,11 +586,11 @@ pub enum AppsListSubscriptionsForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -609,9 +609,9 @@ pub enum AppsListSubscriptionsForAuthenticatedUserStubbedError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -632,9 +632,9 @@ pub enum AppsRemoveRepoFromInstallationError {
 
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -670,7 +670,7 @@ pub enum AppsResetTokenError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -740,13 +740,13 @@ pub enum AppsScopeTokenError {
 
     // -- endpoint errors
 
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -765,7 +765,7 @@ pub enum AppsSuspendInstallationError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -784,7 +784,7 @@ pub enum AppsUnsuspendInstallationError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1657,14 +1657,14 @@ impl<'api> Apps<'api> {
     /// [GitHub API docs for create_from_manifest](https://docs.github.com/rest/reference/apps/#create-a-github-app-from-a-manifest)
     ///
     /// ---
-    pub async fn create_from_manifest_async(&self, code: &str) -> Result<PostAppsCreateFromManifestResponse201, AppsCreateFromManifestError> {
+    pub async fn create_from_manifest_async(&self, code: &str, body: HashMap<String, Value>) -> Result<PostAppsCreateFromManifestResponse201, AppsCreateFromManifestError> {
 
         let request_uri = format!("{}/app-manifests/{}/conversions", super::GITHUB_BASE_API_URL, code);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: Some(HashMap::from_json(body)?),
             method: "POST",
             headers: vec![]
         };
@@ -1698,14 +1698,14 @@ impl<'api> Apps<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_from_manifest(&self, code: &str) -> Result<PostAppsCreateFromManifestResponse201, AppsCreateFromManifestError> {
+    pub fn create_from_manifest(&self, code: &str, body: HashMap<String, Value>) -> Result<PostAppsCreateFromManifestResponse201, AppsCreateFromManifestError> {
 
         let request_uri = format!("{}/app-manifests/{}/conversions", super::GITHUB_BASE_API_URL, code);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: Some(HashMap::from_json(body)?),
             method: "POST",
             headers: vec![]
         };
@@ -2432,7 +2432,7 @@ impl<'api> Apps<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                301 => Err(AppsGetRepoInstallationError::Status301),
+                301 => Err(AppsGetRepoInstallationError::Status301(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(AppsGetRepoInstallationError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(AppsGetRepoInstallationError::Generic { code }),
             }
@@ -2475,7 +2475,7 @@ impl<'api> Apps<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                301 => Err(AppsGetRepoInstallationError::Status301),
+                301 => Err(AppsGetRepoInstallationError::Status301(crate::adapters::to_json(github_response)?)),
                 404 => Err(AppsGetRepoInstallationError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsGetRepoInstallationError::Generic { code }),
             }
@@ -4280,7 +4280,7 @@ impl<'api> Apps<'api> {
     ///
     /// # Create a scoped access token
     ///
-    /// Exchanges a non-repository scoped user-to-server OAuth access token for a repository scoped user-to-server OAuth access token. You can specify which repositories the token can access and which permissions are granted to the token. You must use [Basic Authentication](https://docs.github.com/rest/overview/other-authentication-methods#basic-authentication) when accessing this endpoint, using the OAuth application's `client_id` and `client_secret` as the username and password. Invalid tokens will return `404 NOT FOUND`.
+    /// Use a non-scoped user-to-server OAuth access token to create a repository scoped and/or permission scoped user-to-server OAuth access token. You can specify which repositories the token can access and which permissions are granted to the token. You must use [Basic Authentication](https://docs.github.com/rest/overview/other-authentication-methods#basic-authentication) when accessing this endpoint, using the OAuth application's `client_id` and `client_secret` as the username and password. Invalid tokens will return `404 NOT FOUND`.
     /// 
     /// [GitHub API docs for scope_token](https://docs.github.com/rest/reference/apps#create-a-scoped-access-token)
     ///
@@ -4322,7 +4322,7 @@ impl<'api> Apps<'api> {
     ///
     /// # Create a scoped access token
     ///
-    /// Exchanges a non-repository scoped user-to-server OAuth access token for a repository scoped user-to-server OAuth access token. You can specify which repositories the token can access and which permissions are granted to the token. You must use [Basic Authentication](https://docs.github.com/rest/overview/other-authentication-methods#basic-authentication) when accessing this endpoint, using the OAuth application's `client_id` and `client_secret` as the username and password. Invalid tokens will return `404 NOT FOUND`.
+    /// Use a non-scoped user-to-server OAuth access token to create a repository scoped and/or permission scoped user-to-server OAuth access token. You can specify which repositories the token can access and which permissions are granted to the token. You must use [Basic Authentication](https://docs.github.com/rest/overview/other-authentication-methods#basic-authentication) when accessing this endpoint, using the OAuth application's `client_id` and `client_secret` as the username and password. Invalid tokens will return `404 NOT FOUND`.
     /// 
     /// [GitHub API docs for scope_token](https://docs.github.com/rest/reference/apps#create-a-scoped-access-token)
     ///

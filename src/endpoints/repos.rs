@@ -48,9 +48,9 @@ pub enum ReposAcceptInvitationError {
     Status403(BasicError),
     #[error("Conflict")]
     Status409(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -69,7 +69,7 @@ pub enum ReposAddAppAccessRestrictionsError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -90,7 +90,7 @@ pub enum ReposAddCollaboratorError {
 
     #[error("Response when person is already a collaborator")]
     Status204,
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -111,11 +111,11 @@ pub enum ReposAddStatusCheckContextsError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -134,7 +134,7 @@ pub enum ReposAddTeamAccessRestrictionsError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -153,7 +153,7 @@ pub enum ReposAddUserAccessRestrictionsError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -172,7 +172,7 @@ pub enum ReposCheckCollaboratorError {
 
     // -- endpoint errors
 
-    #[error("Response if user is not a collaborator")]
+    #[error("Not Found if user is not a collaborator")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -191,7 +191,7 @@ pub enum ReposCheckVulnerabilityAlertsError {
 
     // -- endpoint errors
 
-    #[error("Response if repository is not enabled with vulnerability alerts")]
+    #[error("Not Found if repository is not enabled with vulnerability alerts")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -212,7 +212,7 @@ pub enum ReposCompareCommitsError {
 
     #[error("Internal Error")]
     Status500(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -233,7 +233,7 @@ pub enum ReposCreateCommitCommentError {
 
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -252,7 +252,7 @@ pub enum ReposCreateCommitSignatureProtectionError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -288,7 +288,7 @@ pub enum ReposCreateDeployKeyError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -309,9 +309,9 @@ pub enum ReposCreateDeploymentError {
 
     #[error("Merged branch response")]
     Status202(PostReposCreateDeploymentResponse202),
-    #[error("response")]
-    Status409(PostReposCreateDeploymentResponse409),
-    #[error("Validation Failed")]
+    #[error("Conflict when there is a merge conflict or the commit&#x27;s status checks failed")]
+    Status409,
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -330,7 +330,7 @@ pub enum ReposCreateDeploymentStatusError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -349,7 +349,7 @@ pub enum ReposCreateDispatchEventError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -368,15 +368,15 @@ pub enum ReposCreateForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Bad Request")]
     Status400(BasicError),
@@ -399,11 +399,11 @@ pub enum ReposCreateForkError {
 
     #[error("Bad Request")]
     Status400(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -424,7 +424,7 @@ pub enum ReposCreateInOrgError {
 
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -462,11 +462,11 @@ pub enum ReposCreateOrUpdateFileContentsError {
 
     // -- endpoint errors
 
-    #[error("response")]
+    #[error("Response")]
     Status201(FileCommit),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Conflict")]
     Status409(BasicError),
@@ -487,9 +487,9 @@ pub enum ReposCreatePagesSiteError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
     #[error("Conflict")]
     Status409(BasicError),
@@ -510,7 +510,9 @@ pub enum ReposCreateReleaseError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Not Found if the discussion category name is invalid")]
+    Status404(BasicError),
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -546,9 +548,9 @@ pub enum ReposCreateWebhookError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -571,9 +573,9 @@ pub enum ReposDeclineInvitationError {
 
     #[error("Conflict")]
     Status409(BasicError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -596,7 +598,7 @@ pub enum ReposDeleteError {
 
     #[error("If an organization owner has configured the organization to prevent members from deleting organization-owned repositories, a member will get this response:")]
     Status403(PutTeamsAddOrUpdateProjectPermissionsLegacyResponse403),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -632,7 +634,7 @@ pub enum ReposDeleteAdminBranchProtectionError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -687,7 +689,7 @@ pub enum ReposDeleteCommitCommentError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -706,7 +708,7 @@ pub enum ReposDeleteCommitSignatureProtectionError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -742,9 +744,9 @@ pub enum ReposDeleteDeploymentError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -763,13 +765,13 @@ pub enum ReposDeleteFileError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Conflict")]
     Status409(BasicError),
-    #[error("Service Unavailable")]
+    #[error("Service unavailable")]
     Status503(GetSearchUsersResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -805,11 +807,11 @@ pub enum ReposDeletePagesSiteError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -828,7 +830,7 @@ pub enum ReposDeletePullRequestReviewProtectionError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -881,7 +883,7 @@ pub enum ReposDeleteWebhookError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -934,7 +936,7 @@ pub enum ReposDownloadTarballArchiveError {
 
     // -- endpoint errors
 
-    #[error("response")]
+    #[error("Response")]
     Status302,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -953,7 +955,7 @@ pub enum ReposDownloadZipballArchiveError {
 
     // -- endpoint errors
 
-    #[error("response")]
+    #[error("Response")]
     Status302,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1008,10 +1010,10 @@ pub enum ReposGetError {
 
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Moved Permanently")]
-    Status301,
+    #[error("Moved permanently")]
+    Status301(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1029,7 +1031,7 @@ pub enum ReposGetAccessRestrictionsError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1082,7 +1084,7 @@ pub enum ReposGetAllStatusCheckContextsError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1101,9 +1103,9 @@ pub enum ReposGetAllTopicsError {
 
     // -- endpoint errors
 
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1122,7 +1124,7 @@ pub enum ReposGetAppsWithAccessToProtectedBranchError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1141,9 +1143,11 @@ pub enum ReposGetBranchError {
 
     // -- endpoint errors
 
-    #[error("Preview Header Missing")]
+    #[error("Moved permanently")]
+    Status301(BasicError),
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1162,7 +1166,7 @@ pub enum ReposGetBranchProtectionError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1200,6 +1204,10 @@ pub enum ReposGetCodeFrequencyStatsError {
 
     // -- endpoint errors
 
+    #[error("Accepted")]
+    Status202(HashMap<String, Value>),
+    #[error("A header with no content is returned.")]
+    Status204,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1217,7 +1225,7 @@ pub enum ReposGetCollaboratorPermissionLevelError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1236,7 +1244,7 @@ pub enum ReposGetCombinedStatusForRefError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1255,9 +1263,9 @@ pub enum ReposGetCommitError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Internal Error")]
     Status500(BasicError),
@@ -1278,6 +1286,10 @@ pub enum ReposGetCommitActivityStatsError {
 
     // -- endpoint errors
 
+    #[error("Accepted")]
+    Status202(HashMap<String, Value>),
+    #[error("A header with no content is returned.")]
+    Status204,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1295,7 +1307,7 @@ pub enum ReposGetCommitCommentError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1314,7 +1326,7 @@ pub enum ReposGetCommitSignatureProtectionError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1350,7 +1362,7 @@ pub enum ReposGetContentError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -1373,6 +1385,10 @@ pub enum ReposGetContributorsStatsError {
 
     // -- endpoint errors
 
+    #[error("Accepted")]
+    Status202(HashMap<String, Value>),
+    #[error("A header with no content is returned.")]
+    Status204,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1390,7 +1406,7 @@ pub enum ReposGetDeployKeyError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1409,7 +1425,7 @@ pub enum ReposGetDeploymentError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1428,9 +1444,9 @@ pub enum ReposGetDeploymentStatusError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1500,7 +1516,7 @@ pub enum ReposGetPagesError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1536,7 +1552,7 @@ pub enum ReposGetParticipationStatsError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1572,6 +1588,8 @@ pub enum ReposGetPunchCardStatsError {
 
     // -- endpoint errors
 
+    #[error("A header with no content is returned.")]
+    Status204,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1589,17 +1607,17 @@ pub enum ReposGetReadmeError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
-/// Errors for the [Get a repository README](Repos::get_readme_from_alt_path_async()) endpoint.
+/// Errors for the [Get a repository README for a directory](Repos::get_readme_in_directory_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum ReposGetReadmeFromAltPathError {
+pub enum ReposGetReadmeInDirectoryError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -1610,9 +1628,9 @@ pub enum ReposGetReadmeFromAltPathError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1631,7 +1649,7 @@ pub enum ReposGetReleaseError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1650,9 +1668,9 @@ pub enum ReposGetReleaseAssetError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
     #[error("Found")]
     Status302,
@@ -1673,7 +1691,7 @@ pub enum ReposGetReleaseByTagError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1692,7 +1710,7 @@ pub enum ReposGetStatusChecksProtectionError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1711,7 +1729,7 @@ pub enum ReposGetTeamsWithAccessToProtectedBranchError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1768,7 +1786,7 @@ pub enum ReposGetUsersWithAccessToProtectedBranchError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1806,7 +1824,7 @@ pub enum ReposGetWebhookError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1842,7 +1860,7 @@ pub enum ReposListBranchesError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1861,9 +1879,9 @@ pub enum ReposListBranchesForHeadCommitError {
 
     // -- endpoint errors
 
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1882,7 +1900,7 @@ pub enum ReposListCollaboratorsError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1935,8 +1953,8 @@ pub enum ReposListCommitStatusesForRefError {
 
     // -- endpoint errors
 
-    #[error("Moved Permanently")]
-    Status301,
+    #[error("Moved permanently")]
+    Status301(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1958,7 +1976,7 @@ pub enum ReposListCommitsError {
     Status500(BasicError),
     #[error("Bad Request")]
     Status400(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Conflict")]
     Status409(BasicError),
@@ -1983,7 +2001,7 @@ pub enum ReposListContributorsError {
     Status204,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2019,7 +2037,7 @@ pub enum ReposListDeploymentStatusesError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2055,13 +2073,13 @@ pub enum ReposListForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2150,13 +2168,13 @@ pub enum ReposListInvitationsForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2209,9 +2227,9 @@ pub enum ReposListPublicError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2230,7 +2248,7 @@ pub enum ReposListPullRequestsAssociatedWithCommitError {
 
     // -- endpoint errors
 
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2266,7 +2284,7 @@ pub enum ReposListReleasesError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2319,7 +2337,7 @@ pub enum ReposListWebhooksError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2338,13 +2356,15 @@ pub enum ReposMergeError {
 
     // -- endpoint errors
 
-    #[error("response")]
-    Status404(PostReposMergeResponse409),
-    #[error("Merge conflict response")]
-    Status409(PostReposMergeResponse409),
+    #[error("Response when already merged")]
+    Status204,
+    #[error("Not Found when the base or head does not exist")]
+    Status404,
+    #[error("Conflict when there is a merge conflict")]
+    Status409,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2363,7 +2383,7 @@ pub enum ReposPingWebhookError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2382,7 +2402,7 @@ pub enum ReposRemoveAppAccessRestrictionsError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2418,9 +2438,9 @@ pub enum ReposRemoveStatusCheckContextsError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2456,7 +2476,7 @@ pub enum ReposRemoveTeamAccessRestrictionsError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2475,7 +2495,7 @@ pub enum ReposRemoveUserAccessRestrictionsError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2496,9 +2516,9 @@ pub enum ReposRenameBranchError {
 
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2517,11 +2537,11 @@ pub enum ReposReplaceAllTopicsError {
 
     // -- endpoint errors
 
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2574,7 +2594,7 @@ pub enum ReposSetAppAccessRestrictionsError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2593,9 +2613,9 @@ pub enum ReposSetStatusCheckContextsError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2614,7 +2634,7 @@ pub enum ReposSetTeamAccessRestrictionsError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2633,7 +2653,7 @@ pub enum ReposSetUserAccessRestrictionsError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2652,7 +2672,7 @@ pub enum ReposTestPushWebhookError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2690,9 +2710,9 @@ pub enum ReposUpdateError {
 
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2713,11 +2733,11 @@ pub enum ReposUpdateBranchProtectionError {
 
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationErrorSimple),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2736,7 +2756,7 @@ pub enum ReposUpdateCommitCommentError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2755,7 +2775,7 @@ pub enum ReposUpdateInformationAboutPagesSiteError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Bad Request")]
     Status400(BasicError),
@@ -2793,7 +2813,7 @@ pub enum ReposUpdatePullRequestReviewProtectionError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2812,6 +2832,8 @@ pub enum ReposUpdateReleaseError {
 
     // -- endpoint errors
 
+    #[error("Not Found if the discussion category name is invalid")]
+    Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -2846,9 +2868,9 @@ pub enum ReposUpdateStatusCheckProtectionError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2867,9 +2889,9 @@ pub enum ReposUpdateWebhookError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2910,37 +2932,46 @@ pub enum ReposUploadReleaseAssetError {
 }
 
 
-/// Query parameters for the [Create a fork](Repos::create_fork_async()) endpoint.
+/// Query parameters for the [Compare two commits](Repos::compare_commits_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct ReposCreateForkParams<'req> {
-    /// legacy query parameter for specifying the org.
-    org: Option<&'req str>, 
-    /// legacy query parameter for specifying the org.
-    organization: Option<&'req str>
+pub struct ReposCompareCommitsParams {
+    /// Page number of the results to fetch.
+    page: Option<u16>, 
+    /// Results per page (max 100)
+    per_page: Option<u16>
 }
 
-impl<'req> ReposCreateForkParams<'req> {
+impl ReposCompareCommitsParams {
     pub fn new() -> Self {
         Self::default()
     }
 
-    /// legacy query parameter for specifying the org.
-    pub fn org(self, org: &'req str) -> Self {
+    /// Page number of the results to fetch.
+    pub fn page(self, page: u16) -> Self {
         Self { 
-            org: Some(org),
-            organization: self.organization, 
+            page: Some(page),
+            per_page: self.per_page, 
         }
     }
 
-    /// legacy query parameter for specifying the org.
-    pub fn organization(self, organization: &'req str) -> Self {
+    /// Results per page (max 100)
+    pub fn per_page(self, per_page: u16) -> Self {
         Self { 
-            org: self.org, 
-            organization: Some(organization),
+            page: self.page, 
+            per_page: Some(per_page),
         }
     }
 }
 
+impl<'enc> From<&'enc PerPage> for ReposCompareCommitsParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [Get all repository topics](Repos::get_all_topics_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReposGetAllTopicsParams {
@@ -3121,14 +3152,14 @@ impl<'req> ReposGetReadmeParams<'req> {
     }
 }
 
-/// Query parameters for the [Get a repository README](Repos::get_readme_from_alt_path_async()) endpoint.
+/// Query parameters for the [Get a repository README for a directory](Repos::get_readme_in_directory_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct ReposGetReadmeFromAltPathParams<'req> {
+pub struct ReposGetReadmeInDirectoryParams<'req> {
     /// The name of the commit/branch/tag. Default: the repository’s default branch (usually `master`)
     git_ref: Option<&'req str>
 }
 
-impl<'req> ReposGetReadmeFromAltPathParams<'req> {
+impl<'req> ReposGetReadmeInDirectoryParams<'req> {
     pub fn new() -> Self {
         Self::default()
     }
@@ -3403,11 +3434,7 @@ pub struct ReposListCommitsParams<'req> {
     /// Results per page (max 100).
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
-    page: Option<u16>, 
-    /// legacy parameter for pagination.
-    top: Option<&'req str>, 
-    /// legacy parameter for pagination.
-    last_sha: Option<&'req str>
+    page: Option<u16>
 }
 
 impl<'req> ReposListCommitsParams<'req> {
@@ -3425,8 +3452,6 @@ impl<'req> ReposListCommitsParams<'req> {
             until: self.until, 
             per_page: self.per_page, 
             page: self.page, 
-            top: self.top, 
-            last_sha: self.last_sha, 
         }
     }
 
@@ -3440,8 +3465,6 @@ impl<'req> ReposListCommitsParams<'req> {
             until: self.until, 
             per_page: self.per_page, 
             page: self.page, 
-            top: self.top, 
-            last_sha: self.last_sha, 
         }
     }
 
@@ -3455,8 +3478,6 @@ impl<'req> ReposListCommitsParams<'req> {
             until: self.until, 
             per_page: self.per_page, 
             page: self.page, 
-            top: self.top, 
-            last_sha: self.last_sha, 
         }
     }
 
@@ -3470,8 +3491,6 @@ impl<'req> ReposListCommitsParams<'req> {
             until: self.until, 
             per_page: self.per_page, 
             page: self.page, 
-            top: self.top, 
-            last_sha: self.last_sha, 
         }
     }
 
@@ -3485,8 +3504,6 @@ impl<'req> ReposListCommitsParams<'req> {
             until: Some(until),
             per_page: self.per_page, 
             page: self.page, 
-            top: self.top, 
-            last_sha: self.last_sha, 
         }
     }
 
@@ -3500,8 +3517,6 @@ impl<'req> ReposListCommitsParams<'req> {
             until: self.until, 
             per_page: Some(per_page),
             page: self.page, 
-            top: self.top, 
-            last_sha: self.last_sha, 
         }
     }
 
@@ -3515,38 +3530,6 @@ impl<'req> ReposListCommitsParams<'req> {
             until: self.until, 
             per_page: self.per_page, 
             page: Some(page),
-            top: self.top, 
-            last_sha: self.last_sha, 
-        }
-    }
-
-    /// legacy parameter for pagination.
-    pub fn top(self, top: &'req str) -> Self {
-        Self { 
-            sha: self.sha, 
-            path: self.path, 
-            author: self.author, 
-            since: self.since, 
-            until: self.until, 
-            per_page: self.per_page, 
-            page: self.page, 
-            top: Some(top),
-            last_sha: self.last_sha, 
-        }
-    }
-
-    /// legacy parameter for pagination.
-    pub fn last_sha(self, last_sha: &'req str) -> Self {
-        Self { 
-            sha: self.sha, 
-            path: self.path, 
-            author: self.author, 
-            since: self.since, 
-            until: self.until, 
-            per_page: self.per_page, 
-            page: self.page, 
-            top: self.top, 
-            last_sha: Some(last_sha),
         }
     }
 }
@@ -4148,11 +4131,7 @@ pub struct ReposListForksParams<'req> {
     /// Results per page (max 100).
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
-    page: Option<u16>, 
-    /// legacy query parameter for specifying the org.
-    org: Option<&'req str>, 
-    /// legacy query parameter for specifying the org.
-    organization: Option<&'req str>
+    page: Option<u16>
 }
 
 impl<'req> ReposListForksParams<'req> {
@@ -4166,8 +4145,6 @@ impl<'req> ReposListForksParams<'req> {
             sort: Some(sort),
             per_page: self.per_page, 
             page: self.page, 
-            org: self.org, 
-            organization: self.organization, 
         }
     }
 
@@ -4177,8 +4154,6 @@ impl<'req> ReposListForksParams<'req> {
             sort: self.sort, 
             per_page: Some(per_page),
             page: self.page, 
-            org: self.org, 
-            organization: self.organization, 
         }
     }
 
@@ -4188,30 +4163,6 @@ impl<'req> ReposListForksParams<'req> {
             sort: self.sort, 
             per_page: self.per_page, 
             page: Some(page),
-            org: self.org, 
-            organization: self.organization, 
-        }
-    }
-
-    /// legacy query parameter for specifying the org.
-    pub fn org(self, org: &'req str) -> Self {
-        Self { 
-            sort: self.sort, 
-            per_page: self.per_page, 
-            page: self.page, 
-            org: Some(org),
-            organization: self.organization, 
-        }
-    }
-
-    /// legacy query parameter for specifying the org.
-    pub fn organization(self, organization: &'req str) -> Self {
-        Self { 
-            sort: self.sort, 
-            per_page: self.per_page, 
-            page: self.page, 
-            org: self.org, 
-            organization: Some(organization),
         }
     }
 }
@@ -5350,7 +5301,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Compare two commits
     ///
-    /// Both `:base` and `:head` must be branch names in `:repo`. To compare branches across other repositories in the same network as `:repo`, use the format `<USERNAME>:branch`.
+    /// The `basehead` param is comprised of two parts: `base` and `head`. Both must be branch names in `repo`. To compare branches across other repositories in the same network as `repo`, use the format `<USERNAME>:branch`.
     /// 
     /// The response from the API is equivalent to running the `git log base..head` command; however, commits are returned in chronological order. Pass the appropriate [media type](https://docs.github.com/rest/overview/media-types/#commits-commit-comparison-and-pull-requests) to fetch diff and patch formats.
     /// 
@@ -5358,10 +5309,9 @@ impl<'api> Repos<'api> {
     /// 
     /// **Working with large comparisons**
     /// 
-    /// The response will include a comparison of up to 250 commits. If you are working with a larger commit range, you can use the [List commits](https://docs.github.com/rest/reference/repos#list-commits) to enumerate all commits in the range.
+    /// To process a response with a large number of commits, you can use (`per_page` or `page`) to paginate the results. When using paging, the list of changed files is only returned with page 1, but includes all changed files for the entire comparison. For more information on working with pagination, see "[Traversing with pagination](/rest/guides/traversing-with-pagination)."
     /// 
-    /// For comparisons with extremely large diffs, you may receive an error response indicating that the diff took too long
-    /// to generate. You can typically resolve this error by using a smaller commit range.
+    /// When calling this API without any paging parameters (`per_page` or `page`), the returned list is limited to 250 commits and the last commit in the list is the most recent of the entire comparison. When a paging parameter is specified, the first commit in the returned list of each page is the earliest.
     /// 
     /// **Signature verification object**
     /// 
@@ -5395,10 +5345,14 @@ impl<'api> Repos<'api> {
     /// [GitHub API docs for compare_commits](https://docs.github.com/rest/reference/repos#compare-two-commits)
     ///
     /// ---
-    pub async fn compare_commits_async(&self, owner: &str, repo: &str, base: &str, head: &str) -> Result<CommitComparison, ReposCompareCommitsError> {
+    pub async fn compare_commits_async(&self, owner: &str, repo: &str, basehead: &str, query_params: Option<impl Into<ReposCompareCommitsParams>>) -> Result<CommitComparison, ReposCompareCommitsError> {
 
-        let request_uri = format!("{}/repos/{}/{}/compare/{}...{}", super::GITHUB_BASE_API_URL, owner, repo, base, head);
+        let mut request_uri = format!("{}/repos/{}/{}/compare/{}", super::GITHUB_BASE_API_URL, owner, repo, basehead);
 
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
 
         let req = GitHubRequest {
             uri: request_uri,
@@ -5430,7 +5384,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Compare two commits
     ///
-    /// Both `:base` and `:head` must be branch names in `:repo`. To compare branches across other repositories in the same network as `:repo`, use the format `<USERNAME>:branch`.
+    /// The `basehead` param is comprised of two parts: `base` and `head`. Both must be branch names in `repo`. To compare branches across other repositories in the same network as `repo`, use the format `<USERNAME>:branch`.
     /// 
     /// The response from the API is equivalent to running the `git log base..head` command; however, commits are returned in chronological order. Pass the appropriate [media type](https://docs.github.com/rest/overview/media-types/#commits-commit-comparison-and-pull-requests) to fetch diff and patch formats.
     /// 
@@ -5438,10 +5392,9 @@ impl<'api> Repos<'api> {
     /// 
     /// **Working with large comparisons**
     /// 
-    /// The response will include a comparison of up to 250 commits. If you are working with a larger commit range, you can use the [List commits](https://docs.github.com/rest/reference/repos#list-commits) to enumerate all commits in the range.
+    /// To process a response with a large number of commits, you can use (`per_page` or `page`) to paginate the results. When using paging, the list of changed files is only returned with page 1, but includes all changed files for the entire comparison. For more information on working with pagination, see "[Traversing with pagination](/rest/guides/traversing-with-pagination)."
     /// 
-    /// For comparisons with extremely large diffs, you may receive an error response indicating that the diff took too long
-    /// to generate. You can typically resolve this error by using a smaller commit range.
+    /// When calling this API without any paging parameters (`per_page` or `page`), the returned list is limited to 250 commits and the last commit in the list is the most recent of the entire comparison. When a paging parameter is specified, the first commit in the returned list of each page is the earliest.
     /// 
     /// **Signature verification object**
     /// 
@@ -5476,10 +5429,15 @@ impl<'api> Repos<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn compare_commits(&self, owner: &str, repo: &str, base: &str, head: &str) -> Result<CommitComparison, ReposCompareCommitsError> {
+    pub fn compare_commits(&self, owner: &str, repo: &str, basehead: &str, query_params: Option<impl Into<ReposCompareCommitsParams>>) -> Result<CommitComparison, ReposCompareCommitsError> {
 
-        let request_uri = format!("{}/repos/{}/{}/compare/{}...{}", super::GITHUB_BASE_API_URL, owner, repo, base, head);
+        let mut request_uri = format!("{}/repos/{}/{}/compare/{}", super::GITHUB_BASE_API_URL, owner, repo, basehead);
 
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: ReposCompareCommitsParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
 
         let req = GitHubRequest {
             uri: request_uri,
@@ -5922,7 +5880,7 @@ impl<'api> Repos<'api> {
         } else {
             match github_response.status_code() {
                 202 => Err(ReposCreateDeploymentError::Status202(crate::adapters::to_json_async(github_response).await?)),
-                409 => Err(ReposCreateDeploymentError::Status409(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(ReposCreateDeploymentError::Status409),
                 422 => Err(ReposCreateDeploymentError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposCreateDeploymentError::Generic { code }),
             }
@@ -6011,7 +5969,7 @@ impl<'api> Repos<'api> {
         } else {
             match github_response.status_code() {
                 202 => Err(ReposCreateDeploymentError::Status202(crate::adapters::to_json(github_response)?)),
-                409 => Err(ReposCreateDeploymentError::Status409(crate::adapters::to_json(github_response)?)),
+                409 => Err(ReposCreateDeploymentError::Status409),
                 422 => Err(ReposCreateDeploymentError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposCreateDeploymentError::Generic { code }),
             }
@@ -6332,14 +6290,10 @@ impl<'api> Repos<'api> {
     /// [GitHub API docs for create_fork](https://docs.github.com/rest/reference/repos#create-a-fork)
     ///
     /// ---
-    pub async fn create_fork_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposCreateForkParams<'api>>>, body: PostReposCreateFork) -> Result<Repository, ReposCreateForkError> {
+    pub async fn create_fork_async(&self, owner: &str, repo: &str, body: PostReposCreateFork) -> Result<FullRepository, ReposCreateForkError> {
 
-        let mut request_uri = format!("{}/repos/{}/{}/forks", super::GITHUB_BASE_API_URL, owner, repo);
+        let request_uri = format!("{}/repos/{}/{}/forks", super::GITHUB_BASE_API_URL, owner, repo);
 
-        if let Some(params) = query_params {
-            request_uri.push_str("?");
-            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
-        }
 
         let req = GitHubRequest {
             uri: request_uri,
@@ -6381,15 +6335,10 @@ impl<'api> Repos<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_fork(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposCreateForkParams<'api>>>, body: PostReposCreateFork) -> Result<Repository, ReposCreateForkError> {
+    pub fn create_fork(&self, owner: &str, repo: &str, body: PostReposCreateFork) -> Result<FullRepository, ReposCreateForkError> {
 
-        let mut request_uri = format!("{}/repos/{}/{}/forks", super::GITHUB_BASE_API_URL, owner, repo);
+        let request_uri = format!("{}/repos/{}/{}/forks", super::GITHUB_BASE_API_URL, owner, repo);
 
-        if let Some(params) = query_params {
-            request_uri.push_str("?");
-            let qp: ReposCreateForkParams = params.into();
-            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
-        }
 
         let req = GitHubRequest {
             uri: request_uri,
@@ -6824,6 +6773,7 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                404 => Err(ReposCreateReleaseError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(ReposCreateReleaseError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposCreateReleaseError::Generic { code }),
             }
@@ -6866,6 +6816,7 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                404 => Err(ReposCreateReleaseError::Status404(crate::adapters::to_json(github_response)?)),
                 422 => Err(ReposCreateReleaseError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposCreateReleaseError::Generic { code }),
             }
@@ -8981,7 +8932,7 @@ impl<'api> Repos<'api> {
             match github_response.status_code() {
                 403 => Err(ReposGetError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(ReposGetError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                301 => Err(ReposGetError::Status301),
+                301 => Err(ReposGetError::Status301(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetError::Generic { code }),
             }
         }
@@ -9030,7 +8981,7 @@ impl<'api> Repos<'api> {
             match github_response.status_code() {
                 403 => Err(ReposGetError::Status403(crate::adapters::to_json(github_response)?)),
                 404 => Err(ReposGetError::Status404(crate::adapters::to_json(github_response)?)),
-                301 => Err(ReposGetError::Status301),
+                301 => Err(ReposGetError::Status301(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetError::Generic { code }),
             }
         }
@@ -9566,6 +9517,7 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                301 => Err(ReposGetBranchError::Status301(crate::adapters::to_json_async(github_response).await?)),
                 415 => Err(ReposGetBranchError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(ReposGetBranchError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetBranchError::Generic { code }),
@@ -9605,6 +9557,7 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                301 => Err(ReposGetBranchError::Status301(crate::adapters::to_json(github_response)?)),
                 415 => Err(ReposGetBranchError::Status415(crate::adapters::to_json(github_response)?)),
                 404 => Err(ReposGetBranchError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetBranchError::Generic { code }),
@@ -9818,6 +9771,8 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                202 => Err(ReposGetCodeFrequencyStatsError::Status202(crate::adapters::to_json_async(github_response).await?)),
+                204 => Err(ReposGetCodeFrequencyStatsError::Status204),
                 code => Err(ReposGetCodeFrequencyStatsError::Generic { code }),
             }
         }
@@ -9857,6 +9812,8 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                202 => Err(ReposGetCodeFrequencyStatsError::Status202(crate::adapters::to_json(github_response)?)),
+                204 => Err(ReposGetCodeFrequencyStatsError::Status204),
                 code => Err(ReposGetCodeFrequencyStatsError::Generic { code }),
             }
         }
@@ -10240,6 +10197,8 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                202 => Err(ReposGetCommitActivityStatsError::Status202(crate::adapters::to_json_async(github_response).await?)),
+                204 => Err(ReposGetCommitActivityStatsError::Status204),
                 code => Err(ReposGetCommitActivityStatsError::Generic { code }),
             }
         }
@@ -10279,6 +10238,8 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                202 => Err(ReposGetCommitActivityStatsError::Status202(crate::adapters::to_json(github_response)?)),
+                204 => Err(ReposGetCommitActivityStatsError::Status204),
                 code => Err(ReposGetCommitActivityStatsError::Generic { code }),
             }
         }
@@ -10750,6 +10711,8 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                202 => Err(ReposGetContributorsStatsError::Status202(crate::adapters::to_json_async(github_response).await?)),
+                204 => Err(ReposGetContributorsStatsError::Status204),
                 code => Err(ReposGetContributorsStatsError::Generic { code }),
             }
         }
@@ -10795,6 +10758,8 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                202 => Err(ReposGetContributorsStatsError::Status202(crate::adapters::to_json(github_response)?)),
+                204 => Err(ReposGetContributorsStatsError::Status204),
                 code => Err(ReposGetContributorsStatsError::Generic { code }),
             }
         }
@@ -11631,6 +11596,7 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                204 => Err(ReposGetPunchCardStatsError::Status204),
                 code => Err(ReposGetPunchCardStatsError::Generic { code }),
             }
         }
@@ -11676,6 +11642,7 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                204 => Err(ReposGetPunchCardStatsError::Status204),
                 code => Err(ReposGetPunchCardStatsError::Generic { code }),
             }
         }
@@ -11777,16 +11744,16 @@ impl<'api> Repos<'api> {
 
     /// ---
     ///
-    /// # Get a repository README
+    /// # Get a repository README for a directory
     ///
-    /// Gets the preferred README for a repository.
+    /// Gets the README from a repository directory.
     /// 
     /// READMEs support [custom media types](https://docs.github.com/rest/reference/repos#custom-media-types) for retrieving the raw content or rendered HTML.
     /// 
-    /// [GitHub API docs for get_readme_from_alt_path](https://docs.github.com/rest/reference/repos#get-a-repository-readme)
+    /// [GitHub API docs for get_readme_in_directory](https://docs.github.com/rest/reference/repos#get-a-repository-directory-readme)
     ///
     /// ---
-    pub async fn get_readme_from_alt_path_async(&self, owner: &str, repo: &str, dir: &str, query_params: Option<impl Into<ReposGetReadmeFromAltPathParams<'api>>>) -> Result<ContentFile, ReposGetReadmeFromAltPathError> {
+    pub async fn get_readme_in_directory_async(&self, owner: &str, repo: &str, dir: &str, query_params: Option<impl Into<ReposGetReadmeInDirectoryParams<'api>>>) -> Result<ContentFile, ReposGetReadmeInDirectoryError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/readme/{}", super::GITHUB_BASE_API_URL, owner, repo, dir);
 
@@ -11814,32 +11781,32 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetReadmeFromAltPathError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(ReposGetReadmeFromAltPathError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ReposGetReadmeFromAltPathError::Generic { code }),
+                404 => Err(ReposGetReadmeInDirectoryError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReposGetReadmeInDirectoryError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ReposGetReadmeInDirectoryError::Generic { code }),
             }
         }
     }
 
     /// ---
     ///
-    /// # Get a repository README
+    /// # Get a repository README for a directory
     ///
-    /// Gets the preferred README for a repository.
+    /// Gets the README from a repository directory.
     /// 
     /// READMEs support [custom media types](https://docs.github.com/rest/reference/repos#custom-media-types) for retrieving the raw content or rendered HTML.
     /// 
-    /// [GitHub API docs for get_readme_from_alt_path](https://docs.github.com/rest/reference/repos#get-a-repository-readme)
+    /// [GitHub API docs for get_readme_in_directory](https://docs.github.com/rest/reference/repos#get-a-repository-directory-readme)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_readme_from_alt_path(&self, owner: &str, repo: &str, dir: &str, query_params: Option<impl Into<ReposGetReadmeFromAltPathParams<'api>>>) -> Result<ContentFile, ReposGetReadmeFromAltPathError> {
+    pub fn get_readme_in_directory(&self, owner: &str, repo: &str, dir: &str, query_params: Option<impl Into<ReposGetReadmeInDirectoryParams<'api>>>) -> Result<ContentFile, ReposGetReadmeInDirectoryError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/readme/{}", super::GITHUB_BASE_API_URL, owner, repo, dir);
 
         if let Some(params) = query_params {
             request_uri.push_str("?");
-            let qp: ReposGetReadmeFromAltPathParams = params.into();
+            let qp: ReposGetReadmeInDirectoryParams = params.into();
             request_uri.push_str(&serde_urlencoded::to_string(qp)?);
         }
 
@@ -11862,9 +11829,9 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetReadmeFromAltPathError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(ReposGetReadmeFromAltPathError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(ReposGetReadmeFromAltPathError::Generic { code }),
+                404 => Err(ReposGetReadmeInDirectoryError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReposGetReadmeInDirectoryError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(ReposGetReadmeInDirectoryError::Generic { code }),
             }
         }
     }
@@ -13255,7 +13222,7 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                301 => Err(ReposListCommitStatusesForRefError::Status301),
+                301 => Err(ReposListCommitStatusesForRefError::Status301(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposListCommitStatusesForRefError::Generic { code }),
             }
         }
@@ -13302,7 +13269,7 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                301 => Err(ReposListCommitStatusesForRefError::Status301),
+                301 => Err(ReposListCommitStatusesForRefError::Status301(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposListCommitStatusesForRefError::Generic { code }),
             }
         }
@@ -14635,7 +14602,7 @@ impl<'api> Repos<'api> {
     ///
     /// # List pull requests associated with a commit
     ///
-    /// Lists all pull requests containing the provided commit SHA, which can be from any point in the commit history. The results will include open and closed pull requests. Additional preview headers may be required to see certain details for associated pull requests, such as whether a pull request is in a draft state. For more information about previews that might affect this endpoint, see the [List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests) endpoint.
+    /// Lists the merged pull request that introduced the commit to the repository. If the commit is not present in the default branch, additionally returns open pull requests associated with the commit. The results may include open and closed pull requests. Additional preview headers may be required to see certain details for associated pull requests, such as whether a pull request is in a draft state. For more information about previews that might affect this endpoint, see the [List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests) endpoint.
     /// 
     /// [GitHub API docs for list_pull_requests_associated_with_commit](https://docs.github.com/rest/reference/repos#list-pull-requests-associated-with-a-commit)
     ///
@@ -14681,7 +14648,7 @@ impl<'api> Repos<'api> {
     ///
     /// # List pull requests associated with a commit
     ///
-    /// Lists all pull requests containing the provided commit SHA, which can be from any point in the commit history. The results will include open and closed pull requests. Additional preview headers may be required to see certain details for associated pull requests, such as whether a pull request is in a draft state. For more information about previews that might affect this endpoint, see the [List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests) endpoint.
+    /// Lists the merged pull request that introduced the commit to the repository. If the commit is not present in the default branch, additionally returns open pull requests associated with the commit. The results may include open and closed pull requests. Additional preview headers may be required to see certain details for associated pull requests, such as whether a pull request is in a draft state. For more information about previews that might affect this endpoint, see the [List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests) endpoint.
     /// 
     /// [GitHub API docs for list_pull_requests_associated_with_commit](https://docs.github.com/rest/reference/repos#list-pull-requests-associated-with-a-commit)
     ///
@@ -15178,8 +15145,9 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposMergeError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                409 => Err(ReposMergeError::Status409(crate::adapters::to_json_async(github_response).await?)),
+                204 => Err(ReposMergeError::Status204),
+                404 => Err(ReposMergeError::Status404),
+                409 => Err(ReposMergeError::Status409),
                 403 => Err(ReposMergeError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(ReposMergeError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposMergeError::Generic { code }),
@@ -15219,8 +15187,9 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposMergeError::Status404(crate::adapters::to_json(github_response)?)),
-                409 => Err(ReposMergeError::Status409(crate::adapters::to_json(github_response)?)),
+                204 => Err(ReposMergeError::Status204),
+                404 => Err(ReposMergeError::Status404),
+                409 => Err(ReposMergeError::Status409),
                 403 => Err(ReposMergeError::Status403(crate::adapters::to_json(github_response)?)),
                 422 => Err(ReposMergeError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposMergeError::Generic { code }),
@@ -16615,7 +16584,7 @@ impl<'api> Repos<'api> {
     /// [GitHub API docs for transfer](https://docs.github.com/rest/reference/repos/#transfer-a-repository)
     ///
     /// ---
-    pub async fn transfer_async(&self, owner: &str, repo: &str, body: PostReposTransfer) -> Result<Repository, ReposTransferError> {
+    pub async fn transfer_async(&self, owner: &str, repo: &str, body: PostReposTransfer) -> Result<MinimalRepository, ReposTransferError> {
 
         let request_uri = format!("{}/repos/{}/{}/transfer", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -16654,7 +16623,7 @@ impl<'api> Repos<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn transfer(&self, owner: &str, repo: &str, body: PostReposTransfer) -> Result<Repository, ReposTransferError> {
+    pub fn transfer(&self, owner: &str, repo: &str, body: PostReposTransfer) -> Result<MinimalRepository, ReposTransferError> {
 
         let request_uri = format!("{}/repos/{}/{}/transfer", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -17234,6 +17203,7 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                404 => Err(ReposUpdateReleaseError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposUpdateReleaseError::Generic { code }),
             }
         }
@@ -17273,6 +17243,7 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                404 => Err(ReposUpdateReleaseError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposUpdateReleaseError::Generic { code }),
             }
         }
