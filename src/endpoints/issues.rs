@@ -63,7 +63,7 @@ pub enum IssuesAddLabelsError {
 
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -103,11 +103,11 @@ pub enum IssuesCreateError {
 
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Service Unavailable")]
+    #[error("Service unavailable")]
     Status503(GetSearchUsersResponse503),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Gone")]
     Status410(BasicError),
@@ -132,9 +132,9 @@ pub enum IssuesCreateCommentError {
     Status403(BasicError),
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -153,9 +153,9 @@ pub enum IssuesCreateLabelError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -174,9 +174,9 @@ pub enum IssuesCreateMilestoneError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -229,7 +229,7 @@ pub enum IssuesDeleteMilestoneError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -248,13 +248,13 @@ pub enum IssuesGetError {
 
     // -- endpoint errors
 
-    #[error("Moved Permanently")]
-    Status301,
-    #[error("Resource Not Found")]
+    #[error("Moved permanently")]
+    Status301(BasicError),
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -273,7 +273,7 @@ pub enum IssuesGetCommentError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -292,7 +292,7 @@ pub enum IssuesGetEventError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Gone")]
     Status410(BasicError),
@@ -315,7 +315,7 @@ pub enum IssuesGetLabelError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -334,7 +334,7 @@ pub enum IssuesGetMilestoneError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -353,11 +353,11 @@ pub enum IssuesListError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -376,7 +376,7 @@ pub enum IssuesListAssigneesError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -395,7 +395,7 @@ pub enum IssuesListCommentsError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Gone")]
     Status410(BasicError),
@@ -416,9 +416,9 @@ pub enum IssuesListCommentsForRepoError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -456,7 +456,7 @@ pub enum IssuesListEventsForRepoError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -475,11 +475,11 @@ pub enum IssuesListEventsForTimelineError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -498,9 +498,9 @@ pub enum IssuesListForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -519,7 +519,7 @@ pub enum IssuesListForOrgError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -538,11 +538,11 @@ pub enum IssuesListForRepoError {
 
     // -- endpoint errors
 
-    #[error("Moved Permanently")]
-    Status301,
-    #[error("Validation Failed")]
+    #[error("Moved permanently")]
+    Status301(BasicError),
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -578,7 +578,7 @@ pub enum IssuesListLabelsForRepoError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -616,7 +616,7 @@ pub enum IssuesListMilestonesError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -639,9 +639,9 @@ pub enum IssuesLockError {
     Status403(BasicError),
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -696,7 +696,7 @@ pub enum IssuesRemoveLabelError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Gone")]
     Status410(BasicError),
@@ -719,7 +719,7 @@ pub enum IssuesSetLabelsError {
 
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -740,7 +740,7 @@ pub enum IssuesUnlockError {
 
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -759,15 +759,15 @@ pub enum IssuesUpdateError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Service Unavailable")]
+    #[error("Service unavailable")]
     Status503(GetSearchUsersResponse503),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Moved Permanently")]
-    Status301,
-    #[error("Resource Not Found")]
+    #[error("Moved permanently")]
+    Status301(BasicError),
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Gone")]
     Status410(BasicError),
@@ -788,7 +788,7 @@ pub enum IssuesUpdateCommentError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2957,7 +2957,7 @@ impl<'api> Issues<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                301 => Err(IssuesGetError::Status301),
+                301 => Err(IssuesGetError::Status301(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(IssuesGetError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 410 => Err(IssuesGetError::Status410(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(IssuesGetError::Status304),
@@ -3013,7 +3013,7 @@ impl<'api> Issues<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                301 => Err(IssuesGetError::Status301),
+                301 => Err(IssuesGetError::Status301(crate::adapters::to_json(github_response)?)),
                 404 => Err(IssuesGetError::Status404(crate::adapters::to_json(github_response)?)),
                 410 => Err(IssuesGetError::Status410(crate::adapters::to_json(github_response)?)),
                 304 => Err(IssuesGetError::Status304),
@@ -4265,7 +4265,7 @@ impl<'api> Issues<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                301 => Err(IssuesListForRepoError::Status301),
+                301 => Err(IssuesListForRepoError::Status301(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(IssuesListForRepoError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(IssuesListForRepoError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(IssuesListForRepoError::Generic { code }),
@@ -4320,7 +4320,7 @@ impl<'api> Issues<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                301 => Err(IssuesListForRepoError::Status301),
+                301 => Err(IssuesListForRepoError::Status301(crate::adapters::to_json(github_response)?)),
                 422 => Err(IssuesListForRepoError::Status422(crate::adapters::to_json(github_response)?)),
                 404 => Err(IssuesListForRepoError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(IssuesListForRepoError::Generic { code }),
@@ -5182,7 +5182,7 @@ impl<'api> Issues<'api> {
                 422 => Err(IssuesUpdateError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 503 => Err(IssuesUpdateError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 403 => Err(IssuesUpdateError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                301 => Err(IssuesUpdateError::Status301),
+                301 => Err(IssuesUpdateError::Status301(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(IssuesUpdateError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 410 => Err(IssuesUpdateError::Status410(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(IssuesUpdateError::Generic { code }),
@@ -5227,7 +5227,7 @@ impl<'api> Issues<'api> {
                 422 => Err(IssuesUpdateError::Status422(crate::adapters::to_json(github_response)?)),
                 503 => Err(IssuesUpdateError::Status503(crate::adapters::to_json(github_response)?)),
                 403 => Err(IssuesUpdateError::Status403(crate::adapters::to_json(github_response)?)),
-                301 => Err(IssuesUpdateError::Status301),
+                301 => Err(IssuesUpdateError::Status301(crate::adapters::to_json(github_response)?)),
                 404 => Err(IssuesUpdateError::Status404(crate::adapters::to_json(github_response)?)),
                 410 => Err(IssuesUpdateError::Status410(crate::adapters::to_json(github_response)?)),
                 code => Err(IssuesUpdateError::Generic { code }),

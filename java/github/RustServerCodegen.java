@@ -1,7 +1,5 @@
 package github;
 
-import static io.swagger.codegen.v3.generators.handlebars.ExtensionHelper.getBooleanValue;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,7 +54,7 @@ public class RustServerCodegen extends DefaultCodegenConfig {
     protected String packageVersion;
     protected String externCrateName;
     protected Map<String, Map<String, String>> pathSetMap = new HashMap<String, Map<String, String>>();
- 
+
     public RustServerCodegen() {
         super();
 
@@ -74,7 +72,7 @@ public class RustServerCodegen extends DefaultCodegenConfig {
          * for model, just put another entry in the `modelTemplateFiles` with a
          * different extension
          */
-        //modelTemplateFiles.put("models.mustache", ".rs");
+        // modelTemplateFiles.put("models.mustache", ".rs");
 
         /*
          * Api classes. You can write classes for each Api file with the
@@ -281,7 +279,7 @@ public class RustServerCodegen extends DefaultCodegenConfig {
         if (isReservedWord(sanitizedName) || sanitizedName.matches("^\\d.*")) {
             sanitizedName = escapeReservedWord(sanitizedName);
         }
-       
+
         return underscore(sanitizedName);
     }
 
@@ -581,7 +579,7 @@ public class RustServerCodegen extends DefaultCodegenConfig {
 
         }
         for (CodegenParameter param : op.bodyParams) {
- 
+
             param.vendorExtensions.put("uppercase_operation_id", underscore(op.operationId).toUpperCase());
 
             // Default to producing json if nothing else is specified
@@ -730,6 +728,7 @@ public class RustServerCodegen extends DefaultCodegenConfig {
                     property.getItems().setDatatype(toModelName(innerType));
                     property.getItems().setComplexType(toModelName(innerType));
                     property.setComplexType(toModelName(innerType));
+                    property.setDatatype("Vec<" + toModelName(innerType) + ">");
                 }
             }
 
@@ -750,7 +749,7 @@ public class RustServerCodegen extends DefaultCodegenConfig {
                 property.setComplexType(innerType);
             }
         }
- 
+
         if (getSchemaType(p) != null && getSchemaType(p).contains(" ")) {
             property.datatype = toModelName(getSchemaType(p));
         }
@@ -762,11 +761,10 @@ public class RustServerCodegen extends DefaultCodegenConfig {
         if (property.getDatatype().equals("datetime")) {
             property.setDatatype("DateTime<Utc>");
         }
-        if (getSchemaType(p) != null && getSchemaType(p).equals("array")) {
-            property.setComplexType("Value");
+        if (!(p instanceof ArraySchema) && getSchemaType(p) != null && getSchemaType(p).equals("array")) {
+            // fallback array type
             property.setDatatype("Vec<Value>");
         }
-
         return property;
     }
 
@@ -792,6 +790,7 @@ public class RustServerCodegen extends DefaultCodegenConfig {
     public CodegenModel fromModel(String name, Schema schema, Map<String, Schema> allDefinitions) {
         CodegenModel mdl = super.fromModel(name, schema, allDefinitions);
         mdl.vendorExtensions.put("upperCaseName", name.toUpperCase());
+
         return mdl;
     }
 
@@ -896,8 +895,6 @@ public class RustServerCodegen extends DefaultCodegenConfig {
                 } else if ("int64".equals(property.dataFormat)) {
                     property.datatype = unsigned ? "u64" : "i64";
                 } else {
-                    // LOGGER.warn("The integer format '{}' is not recognized and will be ignored.",
-                    // property.dataFormat);
                     property.datatype = matchingIntType(unsigned, inclusiveMinimum, inclusiveMaximum);
                 }
             }
@@ -954,7 +951,6 @@ public class RustServerCodegen extends DefaultCodegenConfig {
     @Override
     public Map<String, Object> postProcessModels(Map<String, Object> objs) {
         return super.postProcessModelsEnum(objs);
-
     }
 
     @Override
@@ -962,7 +958,7 @@ public class RustServerCodegen extends DefaultCodegenConfig {
         return "rust";
     }
 
-    //@Override
+    // @Override
     public CodegenResponse fromResponse(String responseCode, ApiResponse response) {
         CodegenResponse res = super.fromResponse(responseCode, response);
         String dataType = res.getDataType();
@@ -1021,7 +1017,7 @@ public class RustServerCodegen extends DefaultCodegenConfig {
         }
         return objs;
     }
-    
+
     @Override
     public CodegenParameter fromParameter(Parameter parameter, Set<String> imports) {
         CodegenParameter codegenParameter = super.fromParameter(parameter, imports);
@@ -1031,9 +1027,9 @@ public class RustServerCodegen extends DefaultCodegenConfig {
         }
         if (parameterSchema != null) {
             String collectionFormat = null;
-            if (!(parameterSchema instanceof ArraySchema) && !(parameterSchema instanceof MapSchema) 
-                && !(parameterSchema instanceof FileSchema) && !(parameterSchema instanceof BinarySchema) 
-                && !(parameterSchema instanceof IntegerSchema)) {
+            if (!(parameterSchema instanceof ArraySchema) && !(parameterSchema instanceof MapSchema)
+                    && !(parameterSchema instanceof FileSchema) && !(parameterSchema instanceof BinarySchema)
+                    && !(parameterSchema instanceof IntegerSchema)) {
                 codegenParameter.dataType = camelize(codegenParameter.dataType);
             }
         }

@@ -180,8 +180,6 @@ impl<'api> AuditLog<'api> {
     ///
     /// # Get the audit log for an enterprise
     ///
-    /// **Note:** The audit log REST API is currently in beta and is subject to change.
-    /// 
     /// Gets the audit log for an enterprise. To use this endpoint, you must be an enterprise admin, and you must use an access token with the `admin:enterprise` scope.
     /// 
     /// [GitHub API docs for get_audit_log](https://docs.github.com/rest/reference/enterprise-admin#get-the-audit-log-for-an-enterprise)
@@ -224,8 +222,6 @@ impl<'api> AuditLog<'api> {
     ///
     /// # Get the audit log for an enterprise
     ///
-    /// **Note:** The audit log REST API is currently in beta and is subject to change.
-    /// 
     /// Gets the audit log for an enterprise. To use this endpoint, you must be an enterprise admin, and you must use an access token with the `admin:enterprise` scope.
     /// 
     /// [GitHub API docs for get_audit_log](https://docs.github.com/rest/reference/enterprise-admin#get-the-audit-log-for-an-enterprise)

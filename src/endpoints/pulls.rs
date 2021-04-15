@@ -44,7 +44,7 @@ pub enum PullsCheckIfMergedError {
 
     // -- endpoint errors
 
-    #[error("Response if pull request has not been merged")]
+    #[error("Not Found if pull request has not been merged")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -65,7 +65,7 @@ pub enum PullsCreateError {
 
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -84,7 +84,7 @@ pub enum PullsCreateReplyForReviewCommentError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -103,7 +103,7 @@ pub enum PullsCreateReviewError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationErrorSimple),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -124,7 +124,7 @@ pub enum PullsCreateReviewCommentError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -145,9 +145,9 @@ pub enum PullsDeletePendingReviewError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationErrorSimple),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -166,7 +166,7 @@ pub enum PullsDeleteReviewCommentError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -185,9 +185,9 @@ pub enum PullsDismissReviewError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -206,11 +206,11 @@ pub enum PullsGetError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Internal Error")]
     Status500(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -229,7 +229,7 @@ pub enum PullsGetReviewError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -248,7 +248,7 @@ pub enum PullsGetReviewCommentError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -267,9 +267,9 @@ pub enum PullsListError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -288,7 +288,7 @@ pub enum PullsListCommentsForReviewError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -324,7 +324,7 @@ pub enum PullsListFilesError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Internal Error")]
     Status500(BasicError),
@@ -413,15 +413,15 @@ pub enum PullsMergeError {
 
     // -- endpoint errors
 
-    #[error("Response if merge cannot be performed")]
+    #[error("Method Not Allowed if merge cannot be performed")]
     Status405(PutTeamsAddOrUpdateProjectPermissionsLegacyResponse403),
-    #[error("Response if sha was provided and pull request head did not match")]
+    #[error("Conflict if sha was provided and pull request head did not match")]
     Status409(PutTeamsAddOrUpdateProjectPermissionsLegacyResponse403),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -440,7 +440,7 @@ pub enum PullsRemoveRequestedReviewersError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -459,7 +459,7 @@ pub enum PullsRequestReviewersError {
 
     // -- endpoint errors
 
-    #[error("Response if user is not a collaborator")]
+    #[error("Unprocessable Entity if user is not a collaborator")]
     Status422,
     #[error("Forbidden")]
     Status403(BasicError),
@@ -480,9 +480,9 @@ pub enum PullsSubmitReviewError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationErrorSimple),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -503,7 +503,7 @@ pub enum PullsUpdateError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -524,11 +524,11 @@ pub enum PullsUpdateBranchError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -547,7 +547,7 @@ pub enum PullsUpdateReviewError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2833,7 +2833,7 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for remove_requested_reviewers](https://docs.github.com/rest/reference/pulls#remove-requested-reviewers-from-a-pull-request)
     ///
     /// ---
-    pub async fn remove_requested_reviewers_async(&self, owner: &str, repo: &str, pull_number: i32, body: DeletePullsRemoveRequestedReviewers) -> Result<(), PullsRemoveRequestedReviewersError> {
+    pub async fn remove_requested_reviewers_async(&self, owner: &str, repo: &str, pull_number: i32, body: DeletePullsRemoveRequestedReviewers) -> Result<PullRequestSimple, PullsRemoveRequestedReviewersError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/requested_reviewers", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
@@ -2871,7 +2871,7 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_requested_reviewers(&self, owner: &str, repo: &str, pull_number: i32, body: DeletePullsRemoveRequestedReviewers) -> Result<(), PullsRemoveRequestedReviewersError> {
+    pub fn remove_requested_reviewers(&self, owner: &str, repo: &str, pull_number: i32, body: DeletePullsRemoveRequestedReviewers) -> Result<PullRequestSimple, PullsRemoveRequestedReviewersError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/requested_reviewers", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 

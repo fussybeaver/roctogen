@@ -44,17 +44,17 @@ pub enum ProjectsAddCollaboratorError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -73,15 +73,15 @@ pub enum ProjectsCreateCardError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(PostProjectsCreateCardResponse422),
-    #[error("Service Unavailable")]
+    #[error("Response")]
     Status503(PostProjectsCreateCardResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -100,13 +100,13 @@ pub enum ProjectsCreateColumnError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationErrorSimple),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -125,15 +125,15 @@ pub enum ProjectsCreateForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -152,15 +152,15 @@ pub enum ProjectsCreateForOrgError {
 
     // -- endpoint errors
 
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -179,15 +179,15 @@ pub enum ProjectsCreateForRepoError {
 
     // -- endpoint errors
 
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -206,15 +206,15 @@ pub enum ProjectsDeleteError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(PatchProjectsUpdateResponse403),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -233,13 +233,13 @@ pub enum ProjectsDeleteCardError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(PatchProjectsUpdateResponse403),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -258,11 +258,11 @@ pub enum ProjectsDeleteColumnError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -281,11 +281,11 @@ pub enum ProjectsGetError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -304,13 +304,13 @@ pub enum ProjectsGetCardError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -329,13 +329,13 @@ pub enum ProjectsGetColumnError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -354,17 +354,17 @@ pub enum ProjectsGetPermissionForUserError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -383,11 +383,11 @@ pub enum ProjectsListCardsError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -406,17 +406,17 @@ pub enum ProjectsListCollaboratorsError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -435,11 +435,11 @@ pub enum ProjectsListColumnsError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -458,7 +458,7 @@ pub enum ProjectsListForOrgError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -477,15 +477,15 @@ pub enum ProjectsListForRepoError {
 
     // -- endpoint errors
 
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -504,9 +504,9 @@ pub enum ProjectsListForUserError {
 
     // -- endpoint errors
 
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -525,15 +525,15 @@ pub enum ProjectsMoveCardError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(PostProjectsMoveCardResponse403),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Service Unavailable")]
+    #[error("Response")]
     Status503(PostProjectsCreateCardResponse503),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -552,13 +552,13 @@ pub enum ProjectsMoveColumnError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationErrorSimple),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -577,17 +577,17 @@ pub enum ProjectsRemoveCollaboratorError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview Header Missing")]
+    #[error("Preview header missing")]
     Status415(GetProjectsListForUserResponse415),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -606,17 +606,17 @@ pub enum ProjectsUpdateError {
 
     // -- endpoint errors
 
-    #[error("Response if the authenticated user does not have access to the project")]
+    #[error("Not Found if the authenticated user does not have access to the project")]
     Status404,
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(PatchProjectsUpdateResponse403),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -635,15 +635,15 @@ pub enum ProjectsUpdateCardError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -662,11 +662,11 @@ pub enum ProjectsUpdateColumnError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2747,7 +2747,7 @@ impl<'api> Projects<'api> {
     ///
     /// ---
     #[cfg(feature = "inertia")]
-    pub async fn move_card_async(&self, card_id: i32, body: PostProjectsMoveCard) -> Result<HashMap<(), ()>, ProjectsMoveCardError> {
+    pub async fn move_card_async(&self, card_id: i32, body: PostProjectsMoveCard) -> Result<HashMap<String, Value>, ProjectsMoveCardError> {
 
         let request_uri = format!("{}/projects/columns/cards/{}/moves", super::GITHUB_BASE_API_URL, card_id);
 
@@ -2792,7 +2792,7 @@ impl<'api> Projects<'api> {
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
-    pub fn move_card(&self, card_id: i32, body: PostProjectsMoveCard) -> Result<HashMap<(), ()>, ProjectsMoveCardError> {
+    pub fn move_card(&self, card_id: i32, body: PostProjectsMoveCard) -> Result<HashMap<String, Value>, ProjectsMoveCardError> {
 
         let request_uri = format!("{}/projects/columns/cards/{}/moves", super::GITHUB_BASE_API_URL, card_id);
 
@@ -2836,7 +2836,7 @@ impl<'api> Projects<'api> {
     ///
     /// ---
     #[cfg(feature = "inertia")]
-    pub async fn move_column_async(&self, column_id: i32, body: PostProjectsMoveColumn) -> Result<HashMap<(), ()>, ProjectsMoveColumnError> {
+    pub async fn move_column_async(&self, column_id: i32, body: PostProjectsMoveColumn) -> Result<HashMap<String, Value>, ProjectsMoveColumnError> {
 
         let request_uri = format!("{}/projects/columns/{}/moves", super::GITHUB_BASE_API_URL, column_id);
 
@@ -2880,7 +2880,7 @@ impl<'api> Projects<'api> {
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "inertia")]
-    pub fn move_column(&self, column_id: i32, body: PostProjectsMoveColumn) -> Result<HashMap<(), ()>, ProjectsMoveColumnError> {
+    pub fn move_column(&self, column_id: i32, body: PostProjectsMoveColumn) -> Result<HashMap<String, Value>, ProjectsMoveColumnError> {
 
         let request_uri = format!("{}/projects/columns/{}/moves", super::GITHUB_BASE_API_URL, column_id);
 

@@ -44,6 +44,8 @@ pub enum InteractionsGetRestrictionsForAuthenticatedUserError {
 
     // -- endpoint errors
 
+    #[error("Response when there are no restrictions")]
+    Status204,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -129,7 +131,7 @@ pub enum InteractionsRemoveRestrictionsForRepoError {
 
     // -- endpoint errors
 
-    #[error("Conflict")]
+    #[error("Response")]
     Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -148,7 +150,7 @@ pub enum InteractionsSetRestrictionsForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -167,7 +169,7 @@ pub enum InteractionsSetRestrictionsForOrgError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -186,7 +188,7 @@ pub enum InteractionsSetRestrictionsForRepoError {
 
     // -- endpoint errors
 
-    #[error("Conflict")]
+    #[error("Response")]
     Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -199,12 +201,12 @@ impl<'api> Interactions<'api> {
     ///
     /// # Get interaction restrictions for your public repositories
     ///
-    /// Shows which type of GitHub user can interact with your public repositories and when the restriction expires. If there are no restrictions, you will see an empty response.
+    /// Shows which type of GitHub user can interact with your public repositories and when the restriction expires.
     /// 
     /// [GitHub API docs for get_restrictions_for_authenticated_user](https://docs.github.com/rest/reference/interactions#get-interaction-restrictions-for-your-public-repositories)
     ///
     /// ---
-    pub async fn get_restrictions_for_authenticated_user_async(&self) -> Result<InteractionLimitResponse, InteractionsGetRestrictionsForAuthenticatedUserError> {
+    pub async fn get_restrictions_for_authenticated_user_async(&self) -> Result<GetInteractionsGetRestrictionsForAuthenticatedUserResponse200, InteractionsGetRestrictionsForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/interaction-limits", super::GITHUB_BASE_API_URL);
 
@@ -228,6 +230,7 @@ impl<'api> Interactions<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                204 => Err(InteractionsGetRestrictionsForAuthenticatedUserError::Status204),
                 code => Err(InteractionsGetRestrictionsForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -237,13 +240,13 @@ impl<'api> Interactions<'api> {
     ///
     /// # Get interaction restrictions for your public repositories
     ///
-    /// Shows which type of GitHub user can interact with your public repositories and when the restriction expires. If there are no restrictions, you will see an empty response.
+    /// Shows which type of GitHub user can interact with your public repositories and when the restriction expires.
     /// 
     /// [GitHub API docs for get_restrictions_for_authenticated_user](https://docs.github.com/rest/reference/interactions#get-interaction-restrictions-for-your-public-repositories)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_restrictions_for_authenticated_user(&self) -> Result<InteractionLimitResponse, InteractionsGetRestrictionsForAuthenticatedUserError> {
+    pub fn get_restrictions_for_authenticated_user(&self) -> Result<GetInteractionsGetRestrictionsForAuthenticatedUserResponse200, InteractionsGetRestrictionsForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/interaction-limits", super::GITHUB_BASE_API_URL);
 
@@ -267,6 +270,7 @@ impl<'api> Interactions<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                204 => Err(InteractionsGetRestrictionsForAuthenticatedUserError::Status204),
                 code => Err(InteractionsGetRestrictionsForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -281,7 +285,7 @@ impl<'api> Interactions<'api> {
     /// [GitHub API docs for get_restrictions_for_org](https://docs.github.com/rest/reference/interactions#get-interaction-restrictions-for-an-organization)
     ///
     /// ---
-    pub async fn get_restrictions_for_org_async(&self, org: &str) -> Result<InteractionLimitResponse, InteractionsGetRestrictionsForOrgError> {
+    pub async fn get_restrictions_for_org_async(&self, org: &str) -> Result<GetInteractionsGetRestrictionsForAuthenticatedUserResponse200, InteractionsGetRestrictionsForOrgError> {
 
         let request_uri = format!("{}/orgs/{}/interaction-limits", super::GITHUB_BASE_API_URL, org);
 
@@ -320,7 +324,7 @@ impl<'api> Interactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_restrictions_for_org(&self, org: &str) -> Result<InteractionLimitResponse, InteractionsGetRestrictionsForOrgError> {
+    pub fn get_restrictions_for_org(&self, org: &str) -> Result<GetInteractionsGetRestrictionsForAuthenticatedUserResponse200, InteractionsGetRestrictionsForOrgError> {
 
         let request_uri = format!("{}/orgs/{}/interaction-limits", super::GITHUB_BASE_API_URL, org);
 
@@ -358,7 +362,7 @@ impl<'api> Interactions<'api> {
     /// [GitHub API docs for get_restrictions_for_repo](https://docs.github.com/rest/reference/interactions#get-interaction-restrictions-for-a-repository)
     ///
     /// ---
-    pub async fn get_restrictions_for_repo_async(&self, owner: &str, repo: &str) -> Result<InteractionLimitResponse, InteractionsGetRestrictionsForRepoError> {
+    pub async fn get_restrictions_for_repo_async(&self, owner: &str, repo: &str) -> Result<GetInteractionsGetRestrictionsForAuthenticatedUserResponse200, InteractionsGetRestrictionsForRepoError> {
 
         let request_uri = format!("{}/repos/{}/{}/interaction-limits", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -397,7 +401,7 @@ impl<'api> Interactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_restrictions_for_repo(&self, owner: &str, repo: &str) -> Result<InteractionLimitResponse, InteractionsGetRestrictionsForRepoError> {
+    pub fn get_restrictions_for_repo(&self, owner: &str, repo: &str) -> Result<GetInteractionsGetRestrictionsForAuthenticatedUserResponse200, InteractionsGetRestrictionsForRepoError> {
 
         let request_uri = format!("{}/repos/{}/{}/interaction-limits", super::GITHUB_BASE_API_URL, owner, repo);
 

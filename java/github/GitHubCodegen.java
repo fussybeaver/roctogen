@@ -5,6 +5,7 @@ import static io.swagger.codegen.v3.generators.handlebars.ExtensionHelper.getBoo
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -26,8 +27,14 @@ import io.swagger.codegen.v3.SupportingFile;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.ComposedSchema;
+import io.swagger.v3.oas.models.media.IntegerSchema;
 import io.swagger.v3.oas.models.media.MapSchema;
+import io.swagger.v3.oas.models.media.NumberSchema;
+import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 
@@ -69,10 +76,113 @@ public class GitHubCodegen extends RustServerCodegen {
         // This is a "fallback" type, and allows some parts of the API
         // that receive an empty JSON '{}' value.
         if ("object".equals(type)) {
-            type = "HashMap<(), ()>";
+            type = "HashMap<String, Value>";
         }
 
         return type;
+    }
+    
+    @Override
+    public CodegenModel fromModel(String name, Schema schema, Map<String, Schema> allDefinitions) {
+        CodegenModel mdl = super.fromModel(name, schema, allDefinitions);
+ 
+        // Partially deal with inline object polymorphism: 'anyOf' and 'oneOf'
+        if (schema instanceof ComposedSchema) {
+            ComposedSchema composedSchema = (ComposedSchema) schema;
+            if (composedSchema.getOneOf() != null || composedSchema.getAnyOf() != null) {
+                List<Schema> schemas;
+                if (composedSchema.getOneOf() != null) {
+                    schemas = composedSchema.getOneOf();
+                } else {
+                    schemas = composedSchema.getAnyOf();
+                }
+                mdl.getVendorExtensions().put("x-rustgen-enum-one-of", "true");
+
+                int i = 0;
+
+                Map<String, Object> allowableValues = new HashMap<String, Object>();
+                List<CodegenProperty> subModels = (List<CodegenProperty>) new ArrayList();
+                allowableValues.put("count", schemas.size());
+                Boolean allDisplayableTypes = true;
+
+                for (Schema subSchema : schemas) {
+                    String subName = name + "_sub_" + i;
+                    CodegenProperty subMdl = fromProperty(subName, subSchema);
+                    String type = getTypeDeclaration(subSchema);
+                    if (subSchema instanceof ArraySchema) {
+
+                        final ArraySchema arraySchema = (ArraySchema) subSchema;
+                        Schema inner = arraySchema.getItems();
+                        if (inner == null) {
+                            LOGGER.warn("warning!  No inner type supplied for array parameter \"" + subMdl.getName()
+                                    + "\", using String");
+                            inner = new StringSchema().description("//TODO automatically added by swagger-codegen");
+                            arraySchema.setItems(inner);
+
+                        }
+
+                        CodegenProperty item = fromProperty("inner", inner);
+                        if (item != null && !getSchemaType(inner).equals("object")) {
+                            item.setDatatype(toModelName(item.getDatatype()));
+                        }
+                        subMdl.items = item;
+                        updatePropertyForArray(subMdl, item);
+
+                        subMdl.getVendorExtensions().put(CodegenConstants.IS_LIST_CONTAINER_EXT_NAME, Boolean.TRUE);
+                        subMdl.getVendorExtensions().put(CodegenConstants.IS_CONTAINER_EXT_NAME, Boolean.TRUE);
+
+                        allDisplayableTypes = false;
+                    } else if (subSchema.getProperties() != null) {
+
+                        if (isObjectSchema(subSchema)) {
+                            subMdl.getVendorExtensions().put("x-is-object", Boolean.TRUE);
+                        }
+
+                        Map<String, Schema> properties = subSchema.getProperties();
+                        Iterator<Schema> values = properties.values().iterator();
+
+                        // We concern ourselves with the first type in an object - this is probably
+                        // wrong for more complex definitions.
+                        if (values.hasNext()) {
+                            subMdl.getVendorExtensions().put(CodegenConstants.IS_MAP_CONTAINER_EXT_NAME, Boolean.TRUE);
+                            subMdl.getVendorExtensions().put(CodegenConstants.IS_CONTAINER_EXT_NAME, Boolean.TRUE);
+                            Schema innerSchema = values.next();
+                            CodegenProperty cp = fromProperty("inner", innerSchema);
+
+                            updatePropertyForMap(subMdl, cp);
+                        }
+                        allDisplayableTypes = false;
+                    } else if (!(subSchema instanceof NumberSchema) && !(subSchema instanceof IntegerSchema) && !(subSchema instanceof StringSchema) && type != null) {
+                        allDisplayableTypes = false;
+                        subMdl.datatype = toModelName(type);
+                    }
+
+                    // Don't re-add a type that's a duplicate (the use of Value can mean we get
+                    // dups)
+                    Boolean containsDatatype = false;
+                    for (CodegenProperty prop : subModels) {
+                        if (prop.datatype.equals(subMdl.datatype)) {
+                            containsDatatype = true;
+                        }
+                    }
+
+                    if (!containsDatatype) {
+                        subModels.add(subMdl);
+                        i++;
+                    }
+                }
+
+                // Some enums are used when generating a url, so they need to implement std::Display
+                if (allDisplayableTypes) {
+                    mdl.getVendorExtensions().put("x-rustgen-is-display", Boolean.TRUE);
+                }
+
+                mdl.setAllowableValues(allowableValues);
+                allowableValues.put("values", subModels);
+
+            }
+        }
+        return mdl;
     }
 
     @Override
@@ -139,22 +249,9 @@ public class GitHubCodegen extends RustServerCodegen {
                 model.vendorExtensions.put("x-rustgen-is-datetime", true);
                 model.vendorExtensions.put("has-vars", true);
             }
-            if (model.getClassname().equals("WorkflowId")) {
-                model.vendorExtensions.put("x-rustgen-is-untagged-enum", true);
-                model.vendorExtensions.put("is-enum", true);
-                model.allowableValues = new HashMap<String, Object>();
-
-                List<Map<String, String>> enumVars = new ArrayList<>();
-                Map<String, String> intEnumVar = new HashMap<String, String>();
-                intEnumVar.put("name", "Int");
-                intEnumVar.put("value", "i32");
-                enumVars.add(intEnumVar);
-                Map<String, String> strEnumVar = new HashMap<String, String>();
-                strEnumVar.put("name", "Str");
-                strEnumVar.put("value", "String");
-                enumVars.add(strEnumVar);
-                model.allowableValues.put("enumVars", enumVars);
-
+            if (model.arrayModelType != null) {
+                model.vendorExtensions.put("x-rustgen-is-array", true);
+                model.vendorExtensions.put("has-vars", true);
             }
             if (model.getIsEnum()) {
                 model.vendorExtensions.put("is-enum", true);
@@ -362,6 +459,12 @@ public class GitHubCodegen extends RustServerCodegen {
             }
         }
 
+        // Needed because of the static call to `::from_json`, which requires an unqualified type
+        if (schema instanceof ObjectSchema && param.getDataType().startsWith("HashMap")) {
+            param.getVendorExtensions().put(CodegenConstants.IS_MAP_CONTAINER_EXT_NAME, Boolean.TRUE);
+            param.getVendorExtensions().put(CodegenConstants.IS_CONTAINER_EXT_NAME, Boolean.TRUE);
+        }
+
         return param;
     }
 
@@ -417,5 +520,4 @@ public class GitHubCodegen extends RustServerCodegen {
         
         return super.toVarName(name);
     }
-
 }

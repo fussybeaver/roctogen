@@ -61,13 +61,13 @@ pub enum MigrationsDeleteArchiveForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -86,7 +86,7 @@ pub enum MigrationsDeleteArchiveForOrgError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -105,9 +105,9 @@ pub enum MigrationsDownloadArchiveForOrgError {
 
     // -- endpoint errors
 
-    #[error("response")]
+    #[error("Response")]
     Status302,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -126,13 +126,13 @@ pub enum MigrationsGetArchiveForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("response")]
+    #[error("Response")]
     Status302,
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -151,7 +151,7 @@ pub enum MigrationsGetCommitAuthorsError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -170,7 +170,7 @@ pub enum MigrationsGetImportStatusError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -206,13 +206,13 @@ pub enum MigrationsGetStatusForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -231,7 +231,7 @@ pub enum MigrationsGetStatusForOrgError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -250,11 +250,11 @@ pub enum MigrationsListForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -290,7 +290,7 @@ pub enum MigrationsListReposForOrgError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -309,7 +309,7 @@ pub enum MigrationsListReposForUserError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -328,9 +328,9 @@ pub enum MigrationsMapCommitAuthorError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -349,7 +349,7 @@ pub enum MigrationsSetLfsPreferenceError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -368,13 +368,13 @@ pub enum MigrationsStartForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -393,9 +393,9 @@ pub enum MigrationsStartForOrgError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -414,9 +414,9 @@ pub enum MigrationsStartImportError {
 
     // -- endpoint errors
 
-    #[error("Validation Failed")]
+    #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -435,13 +435,13 @@ pub enum MigrationsUnlockRepoForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Not Modified")]
+    #[error("Not modified")]
     Status304,
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Requires Authentication")]
+    #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -460,7 +460,7 @@ pub enum MigrationsUnlockRepoForOrgError {
 
     // -- endpoint errors
 
-    #[error("Resource Not Found")]
+    #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -508,7 +508,7 @@ impl MigrationsGetCommitAuthorsParams {
 #[derive(Default, Serialize)]
 pub struct MigrationsGetStatusForAuthenticatedUserParams {
     
-    exclude: Option<Vec<Value>>
+    exclude: Option<Vec<String>>
 }
 
 impl MigrationsGetStatusForAuthenticatedUserParams {
@@ -517,7 +517,7 @@ impl MigrationsGetStatusForAuthenticatedUserParams {
     }
 
     
-    pub fn exclude(self, exclude: Vec<Value>) -> Self {
+    pub fn exclude(self, exclude: Vec<String>) -> Self {
         Self { 
             exclude: Some(exclude),
         }
@@ -528,7 +528,7 @@ impl MigrationsGetStatusForAuthenticatedUserParams {
 #[derive(Default, Serialize)]
 pub struct MigrationsGetStatusForOrgParams {
     /// Exclude attributes from the API response to improve performance
-    exclude: Option<Vec<Value>>
+    exclude: Option<Vec<String>>
 }
 
 impl MigrationsGetStatusForOrgParams {
@@ -537,7 +537,7 @@ impl MigrationsGetStatusForOrgParams {
     }
 
     /// Exclude attributes from the API response to improve performance
-    pub fn exclude(self, exclude: Vec<Value>) -> Self {
+    pub fn exclude(self, exclude: Vec<String>) -> Self {
         Self { 
             exclude: Some(exclude),
         }
@@ -592,7 +592,7 @@ pub struct MigrationsListForOrgParams {
     /// Page number of the results to fetch.
     page: Option<u16>, 
     /// Exclude attributes from the API response to improve performance
-    exclude: Option<Vec<Value>>
+    exclude: Option<Vec<String>>
 }
 
 impl MigrationsListForOrgParams {
@@ -619,7 +619,7 @@ impl MigrationsListForOrgParams {
     }
 
     /// Exclude attributes from the API response to improve performance
-    pub fn exclude(self, exclude: Vec<Value>) -> Self {
+    pub fn exclude(self, exclude: Vec<String>) -> Self {
         Self { 
             per_page: self.per_page, 
             page: self.page, 
