@@ -5,9 +5,9 @@
 //! # Roctogen: a rust client library for the GitHub v3 API  
 //!
 //! This client API is generated from the [upstream OpenAPI
-//! specification](https://github.com/github/rest-api-description/). This library currently supports
-//! webassembly or a runtime-independent synchronous or asynchronous client through a choice of 
-//! different adapters, enabled through cargo features:
+//! specification](https://github.com/github/rest-api-description/). The library currently supports
+//! webassembly and both tokio and non-tokio based asynchronous requests and minimal dependency blocking 
+//! synchronous requests with a choice of different clients, enabled through cargo features:
 //!
 //!   - `isahc` feature (*sync* and non-tokio based *async*): [Isahc HTTP client](https://github.com/sagebind/isahc)
 //!   - `reqwest` feature (*async*) [Reqwest client](https://github.com/seanmonstar/reqwest)
