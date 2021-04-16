@@ -11323,6 +11323,11 @@ pub struct RunnerApplication {
     pub download_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub filename: Option<String>,
+    /// A short lived bearer token used to download the runner, if needed.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub temp_download_token: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha256_checksum: Option<String>,
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
