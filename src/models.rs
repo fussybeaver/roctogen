@@ -4061,6 +4061,9 @@ pub struct CodeScanningAnalysis {
     pub tool: Option<CodeScanningAnalysisTool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub deletable: Option<bool>,
+    /// Warning generated when processing the analysis
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub warning: Option<String>,
 }
 
 /// Identifies the configuration under which the analysis was executed. For example, in GitHub Actions this includes the workflow filename and job name.
@@ -8639,6 +8642,11 @@ pub struct Page {
     /// Whether the GitHub Pages site is publicly visible. If set to `true`, the site is accessible to anyone on the internet. If set to `false`, the site will only be accessible to users who have at least `read` access to the repository that published the site.
     #[serde(skip_serializing_if="Option::is_none")]
     pub public: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub https_certificate: Option<PagesHttpsCertificate>,
+    /// Whether https is enabled on the domain
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub https_enforced: Option<bool>,
 }
 
 /// Page Build
@@ -8675,6 +8683,19 @@ pub struct PageBuildStatus {
 pub struct PagebuildError {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub message: Option<String>,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PagesHttpsCertificate {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub description: Option<String>,
+    /// Array of the domain set and its alternate name (if it is configured)
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub domains: Option<Vec<Value>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub expires_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
