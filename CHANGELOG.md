@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.3.0 (25/04/2021)
+- [**closed**] Update due to upstream changes [#14](https://github.com/fussybeaver/roctogen/pull/14)
+- [**closed**] Tweak README and minor upstream change [#12](https://github.com/fussybeaver/roctogen/pull/12)
+- [**closed**] Re-word parts of readme [#10](https://github.com/fussybeaver/roctogen/pull/10)
+- [**closed**] Partial impl for one-of/any-of polymorphism [#9](https://github.com/fussybeaver/roctogen/pull/9)
+- [**closed**] GitHub update issue bot [#7](https://github.com/fussybeaver/roctogen/pull/7)
+
+---
+
 ## v0.2.2 (09/04/2021)
 - [**closed**] Allow build without any features [#5](https://github.com/fussybeaver/roctogen/pull/5)
 
