@@ -230,8 +230,6 @@ pub enum CodeScanningUploadSarifError {
 
     // -- endpoint errors
 
-    #[error("Response")]
-    Status202(CodeScanningSarifsReceipt),
     #[error("Bad Request if the sarif field is invalid")]
     Status400,
     #[error("Response if the repository is archived or if github advanced security is not enabled for this repository")]
@@ -1477,7 +1475,7 @@ impl<'api> CodeScanning<'api> {
     /// [GitHub API docs for upload_sarif](https://docs.github.com/rest/reference/code-scanning#upload-an-analysis-as-sarif-data)
     ///
     /// ---
-    pub async fn upload_sarif_async(&self, owner: &str, repo: &str, body: PostCodeScanningUploadSarif) -> Result<Value, CodeScanningUploadSarifError> {
+    pub async fn upload_sarif_async(&self, owner: &str, repo: &str, body: PostCodeScanningUploadSarif) -> Result<CodeScanningSarifsReceipt, CodeScanningUploadSarifError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/sarifs", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -1501,7 +1499,6 @@ impl<'api> CodeScanning<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                202 => Err(CodeScanningUploadSarifError::Status202(crate::adapters::to_json_async(github_response).await?)),
                 400 => Err(CodeScanningUploadSarifError::Status400),
                 403 => Err(CodeScanningUploadSarifError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(CodeScanningUploadSarifError::Status404(crate::adapters::to_json_async(github_response).await?)),
@@ -1538,7 +1535,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn upload_sarif(&self, owner: &str, repo: &str, body: PostCodeScanningUploadSarif) -> Result<Value, CodeScanningUploadSarifError> {
+    pub fn upload_sarif(&self, owner: &str, repo: &str, body: PostCodeScanningUploadSarif) -> Result<CodeScanningSarifsReceipt, CodeScanningUploadSarifError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/sarifs", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -1562,7 +1559,6 @@ impl<'api> CodeScanning<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                202 => Err(CodeScanningUploadSarifError::Status202(crate::adapters::to_json(github_response)?)),
                 400 => Err(CodeScanningUploadSarifError::Status400),
                 403 => Err(CodeScanningUploadSarifError::Status403(crate::adapters::to_json(github_response)?)),
                 404 => Err(CodeScanningUploadSarifError::Status404(crate::adapters::to_json(github_response)?)),
