@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.4.0 (05/05/2021)
+- [**closed**] Do not peg bindgen version [#18](https://github.com/fussybeaver/roctogen/pull/18)
+
+---
+
 ## v0.3.0 (25/04/2021)
 - [**closed**] Update due to upstream changes [#14](https://github.com/fussybeaver/roctogen/pull/14)
 - [**closed**] Tweak README and minor upstream change [#12](https://github.com/fussybeaver/roctogen/pull/12)
