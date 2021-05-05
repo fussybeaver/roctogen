@@ -1539,6 +1539,31 @@ pub enum ReposGetPagesBuildError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Get a DNS health check for GitHub Pages](Repos::get_pages_health_check_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ReposGetPagesHealthCheckError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Empty response")]
+    Status202(EmptyObject),
+    #[error("Custom domains are not available for GitHub Pages")]
+    Status400,
+    #[error("There isn&#x27;t a CNAME for this page")]
+    Status422,
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Get the weekly commit count](Repos::get_participation_stats_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetParticipationStatsError {
@@ -11387,6 +11412,99 @@ impl<'api> Repos<'api> {
         } else {
             match github_response.status_code() {
                 code => Err(ReposGetPagesBuildError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get a DNS health check for GitHub Pages
+    ///
+    /// Gets a health check of the DNS settings for the `CNAME` record configured for a repository's GitHub Pages.
+    /// 
+    /// The first request to this endpoint returns a `202 Accepted` status and starts an asynchronous background task to get the results for the domain. After the background task completes, subsequent requests to this endpoint return a `200 OK` status with the health check results in the response.
+    /// 
+    /// Users must have admin or owner permissions. GitHub Apps must have the `pages:write` and `administration:write` permission to use this endpoint.
+    /// 
+    /// [GitHub API docs for get_pages_health_check](https://docs.github.com/rest/reference/repos#get-a-dns-health-check-for-github-pages)
+    ///
+    /// ---
+    pub async fn get_pages_health_check_async(&self, owner: &str, repo: &str) -> Result<PagesHealthCheck, ReposGetPagesHealthCheckError> {
+
+        let request_uri = format!("{}/repos/{}/{}/pages/health", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                202 => Err(ReposGetPagesHealthCheckError::Status202(crate::adapters::to_json_async(github_response).await?)),
+                400 => Err(ReposGetPagesHealthCheckError::Status400),
+                422 => Err(ReposGetPagesHealthCheckError::Status422),
+                404 => Err(ReposGetPagesHealthCheckError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ReposGetPagesHealthCheckError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get a DNS health check for GitHub Pages
+    ///
+    /// Gets a health check of the DNS settings for the `CNAME` record configured for a repository's GitHub Pages.
+    /// 
+    /// The first request to this endpoint returns a `202 Accepted` status and starts an asynchronous background task to get the results for the domain. After the background task completes, subsequent requests to this endpoint return a `200 OK` status with the health check results in the response.
+    /// 
+    /// Users must have admin or owner permissions. GitHub Apps must have the `pages:write` and `administration:write` permission to use this endpoint.
+    /// 
+    /// [GitHub API docs for get_pages_health_check](https://docs.github.com/rest/reference/repos#get-a-dns-health-check-for-github-pages)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_pages_health_check(&self, owner: &str, repo: &str) -> Result<PagesHealthCheck, ReposGetPagesHealthCheckError> {
+
+        let request_uri = format!("{}/repos/{}/{}/pages/health", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                202 => Err(ReposGetPagesHealthCheckError::Status202(crate::adapters::to_json(github_response)?)),
+                400 => Err(ReposGetPagesHealthCheckError::Status400),
+                422 => Err(ReposGetPagesHealthCheckError::Status422),
+                404 => Err(ReposGetPagesHealthCheckError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(ReposGetPagesHealthCheckError::Generic { code }),
             }
         }
     }

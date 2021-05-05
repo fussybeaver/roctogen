@@ -2723,7 +2723,7 @@ impl<'api> Actions<'api> {
     /// [GitHub API docs for create_or_update_environment_secret](https://docs.github.com/rest/reference/actions#create-or-update-an-environment-secret)
     ///
     /// ---
-    pub async fn create_or_update_environment_secret_async(&self, repository_id: i32, environment_name: &str, secret_name: &str, body: PutActionsCreateOrUpdateEnvironmentSecret) -> Result<(), ActionsCreateOrUpdateEnvironmentSecretError> {
+    pub async fn create_or_update_environment_secret_async(&self, repository_id: i32, environment_name: &str, secret_name: &str, body: PutActionsCreateOrUpdateEnvironmentSecret) -> Result<EmptyObject, ActionsCreateOrUpdateEnvironmentSecretError> {
 
         let request_uri = format!("{}/repositories/{}/environments/{}/secrets/{}", super::GITHUB_BASE_API_URL, repository_id, environment_name, secret_name);
 
@@ -2837,7 +2837,7 @@ impl<'api> Actions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_or_update_environment_secret(&self, repository_id: i32, environment_name: &str, secret_name: &str, body: PutActionsCreateOrUpdateEnvironmentSecret) -> Result<(), ActionsCreateOrUpdateEnvironmentSecretError> {
+    pub fn create_or_update_environment_secret(&self, repository_id: i32, environment_name: &str, secret_name: &str, body: PutActionsCreateOrUpdateEnvironmentSecret) -> Result<EmptyObject, ActionsCreateOrUpdateEnvironmentSecretError> {
 
         let request_uri = format!("{}/repositories/{}/environments/{}/secrets/{}", super::GITHUB_BASE_API_URL, repository_id, environment_name, secret_name);
 
@@ -2950,7 +2950,7 @@ impl<'api> Actions<'api> {
     /// [GitHub API docs for create_or_update_org_secret](https://docs.github.com/rest/reference/actions#create-or-update-an-organization-secret)
     ///
     /// ---
-    pub async fn create_or_update_org_secret_async(&self, org: &str, secret_name: &str, body: PutActionsCreateOrUpdateOrgSecret) -> Result<HashMap<String, Value>, ActionsCreateOrUpdateOrgSecretError> {
+    pub async fn create_or_update_org_secret_async(&self, org: &str, secret_name: &str, body: PutActionsCreateOrUpdateOrgSecret) -> Result<EmptyObject, ActionsCreateOrUpdateOrgSecretError> {
 
         let request_uri = format!("{}/orgs/{}/actions/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
 
@@ -3064,7 +3064,7 @@ impl<'api> Actions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_or_update_org_secret(&self, org: &str, secret_name: &str, body: PutActionsCreateOrUpdateOrgSecret) -> Result<HashMap<String, Value>, ActionsCreateOrUpdateOrgSecretError> {
+    pub fn create_or_update_org_secret(&self, org: &str, secret_name: &str, body: PutActionsCreateOrUpdateOrgSecret) -> Result<EmptyObject, ActionsCreateOrUpdateOrgSecretError> {
 
         let request_uri = format!("{}/orgs/{}/actions/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
 
