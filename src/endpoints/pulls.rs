@@ -864,7 +864,7 @@ pub struct PullsListReviewCommentsParams<'req> {
     /// Can be either `asc` or `desc`. Ignored without `sort` parameter.
     direction: Option<&'req str>, 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    since: Option<&'req str>, 
+    since: Option<chrono::DateTime<chrono::Utc>>, 
     /// Results per page (max 100).
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
@@ -899,7 +899,7 @@ impl<'req> PullsListReviewCommentsParams<'req> {
     }
 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    pub fn since(self, since: &'req str) -> Self {
+    pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             sort: self.sort, 
             direction: self.direction, 
@@ -949,7 +949,7 @@ pub struct PullsListReviewCommentsForRepoParams<'req> {
     /// Can be either `asc` or `desc`. Ignored without `sort` parameter.
     direction: Option<&'req str>, 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    since: Option<&'req str>, 
+    since: Option<chrono::DateTime<chrono::Utc>>, 
     /// Results per page (max 100).
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
@@ -984,7 +984,7 @@ impl<'req> PullsListReviewCommentsForRepoParams<'req> {
     }
 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    pub fn since(self, since: &'req str) -> Self {
+    pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             sort: self.sort, 
             direction: self.direction, 
@@ -1072,7 +1072,7 @@ impl<'api> Pulls<'api> {
     ///
     /// # Check if a pull request has been merged
     /// 
-    /// [GitHub API docs for check_if_merged](https://docs.github.com/rest/reference/pulls/#check-if-a-pull-request-has-been-merged)
+    /// [GitHub API docs for check_if_merged](https://docs.github.com/rest/reference/pulls#check-if-a-pull-request-has-been-merged)
     ///
     /// ---
     pub async fn check_if_merged_async(&self, owner: &str, repo: &str, pull_number: i32) -> Result<(), PullsCheckIfMergedError> {
@@ -1109,7 +1109,7 @@ impl<'api> Pulls<'api> {
     ///
     /// # Check if a pull request has been merged
     /// 
-    /// [GitHub API docs for check_if_merged](https://docs.github.com/rest/reference/pulls/#check-if-a-pull-request-has-been-merged)
+    /// [GitHub API docs for check_if_merged](https://docs.github.com/rest/reference/pulls#check-if-a-pull-request-has-been-merged)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1155,7 +1155,7 @@ impl<'api> Pulls<'api> {
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for create](https://docs.github.com/rest/reference/pulls/#create-a-pull-request)
+    /// [GitHub API docs for create](https://docs.github.com/rest/reference/pulls#create-a-pull-request)
     ///
     /// ---
     pub async fn create_async(&self, owner: &str, repo: &str, body: PostPullsCreate) -> Result<PullRequest, PullsCreateError> {
@@ -1201,7 +1201,7 @@ impl<'api> Pulls<'api> {
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for create](https://docs.github.com/rest/reference/pulls/#create-a-pull-request)
+    /// [GitHub API docs for create](https://docs.github.com/rest/reference/pulls#create-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1770,7 +1770,7 @@ impl<'api> Pulls<'api> {
     /// 
     /// Pass the appropriate [media type](https://docs.github.com/rest/overview/media-types/#commits-commit-comparison-and-pull-requests) to fetch diff and patch formats.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/pulls/#get-a-pull-request)
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/pulls#get-a-pull-request)
     ///
     /// ---
     pub async fn get_async(&self, owner: &str, repo: &str, pull_number: i32) -> Result<PullRequest, PullsGetError> {
@@ -1825,7 +1825,7 @@ impl<'api> Pulls<'api> {
     /// 
     /// Pass the appropriate [media type](https://docs.github.com/rest/overview/media-types/#commits-commit-comparison-and-pull-requests) to fetch diff and patch formats.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/pulls/#get-a-pull-request)
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/pulls#get-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2031,7 +2031,7 @@ impl<'api> Pulls<'api> {
     ///
     /// Draft pull requests are available in public repositories with GitHub Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing plans, and in public and private repositories with GitHub Team and GitHub Enterprise Cloud. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/pulls/#list-pull-requests)
+    /// [GitHub API docs for list](https://docs.github.com/rest/reference/pulls#list-pull-requests)
     ///
     /// ---
     pub async fn list_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<PullsListParams<'api>>>) -> Result<Vec<PullRequestSimple>, PullsListError> {
@@ -2075,7 +2075,7 @@ impl<'api> Pulls<'api> {
     ///
     /// Draft pull requests are available in public repositories with GitHub Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing plans, and in public and private repositories with GitHub Team and GitHub Enterprise Cloud. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/pulls/#list-pull-requests)
+    /// [GitHub API docs for list](https://docs.github.com/rest/reference/pulls#list-pull-requests)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2209,7 +2209,7 @@ impl<'api> Pulls<'api> {
     ///
     /// Lists a maximum of 250 commits for a pull request. To receive a complete commit list for pull requests with more than 250 commits, use the [List commits](https://docs.github.com/rest/reference/repos#list-commits) endpoint.
     /// 
-    /// [GitHub API docs for list_commits](https://docs.github.com/rest/reference/pulls/#list-commits-on-a-pull-request)
+    /// [GitHub API docs for list_commits](https://docs.github.com/rest/reference/pulls#list-commits-on-a-pull-request)
     ///
     /// ---
     pub async fn list_commits_async(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListCommitsParams>>) -> Result<Vec<Commit>, PullsListCommitsError> {
@@ -2251,7 +2251,7 @@ impl<'api> Pulls<'api> {
     ///
     /// Lists a maximum of 250 commits for a pull request. To receive a complete commit list for pull requests with more than 250 commits, use the [List commits](https://docs.github.com/rest/reference/repos#list-commits) endpoint.
     /// 
-    /// [GitHub API docs for list_commits](https://docs.github.com/rest/reference/pulls/#list-commits-on-a-pull-request)
+    /// [GitHub API docs for list_commits](https://docs.github.com/rest/reference/pulls#list-commits-on-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2295,7 +2295,7 @@ impl<'api> Pulls<'api> {
     ///
     /// **Note:** Responses include a maximum of 3000 files. The paginated response returns 30 files per page by default.
     /// 
-    /// [GitHub API docs for list_files](https://docs.github.com/rest/reference/pulls/#list-pull-requests-files)
+    /// [GitHub API docs for list_files](https://docs.github.com/rest/reference/pulls#list-pull-requests-files)
     ///
     /// ---
     pub async fn list_files_async(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListFilesParams>>) -> Result<Vec<DiffEntry>, PullsListFilesError> {
@@ -2339,7 +2339,7 @@ impl<'api> Pulls<'api> {
     ///
     /// **Note:** Responses include a maximum of 3000 files. The paginated response returns 30 files per page by default.
     /// 
-    /// [GitHub API docs for list_files](https://docs.github.com/rest/reference/pulls/#list-pull-requests-files)
+    /// [GitHub API docs for list_files](https://docs.github.com/rest/reference/pulls#list-pull-requests-files)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2745,7 +2745,7 @@ impl<'api> Pulls<'api> {
     ///
     /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-abuse-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for merge](https://docs.github.com/rest/reference/pulls/#merge-a-pull-request)
+    /// [GitHub API docs for merge](https://docs.github.com/rest/reference/pulls#merge-a-pull-request)
     ///
     /// ---
     pub async fn merge_async(&self, owner: &str, repo: &str, pull_number: i32, body: PutPullsMerge) -> Result<PullRequestMergeResult, PullsMergeError> {
@@ -2788,7 +2788,7 @@ impl<'api> Pulls<'api> {
     ///
     /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-abuse-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for merge](https://docs.github.com/rest/reference/pulls/#merge-a-pull-request)
+    /// [GitHub API docs for merge](https://docs.github.com/rest/reference/pulls#merge-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3152,7 +3152,7 @@ impl<'api> Pulls<'api> {
     ///
     /// Updates the pull request branch with the latest upstream changes by merging HEAD from the base branch into the pull request branch.
     /// 
-    /// [GitHub API docs for update_branch](https://docs.github.com/rest/reference/pulls/#update-a-pull-request-branch)
+    /// [GitHub API docs for update_branch](https://docs.github.com/rest/reference/pulls#update-a-pull-request-branch)
     ///
     /// The `update_branch_async` endpoint is enabled with the `lydian` cargo feature.
     ///
@@ -3196,7 +3196,7 @@ impl<'api> Pulls<'api> {
     ///
     /// Updates the pull request branch with the latest upstream changes by merging HEAD from the base branch into the pull request branch.
     /// 
-    /// [GitHub API docs for update_branch](https://docs.github.com/rest/reference/pulls/#update-a-pull-request-branch)
+    /// [GitHub API docs for update_branch](https://docs.github.com/rest/reference/pulls#update-a-pull-request-branch)
     ///
     /// The `update_branch` endpoint is enabled with the `lydian` cargo feature.
     ///

@@ -197,7 +197,7 @@ impl<'api> Billing<'api> {
     /// 
     /// The authenticated user must be an enterprise admin.
     /// 
-    /// [GitHub API docs for get_github_actions_billing_ghe](https://docs.github.com/rest/reference/billing/#get-github-actions-billing-for-an-enterprise)
+    /// [GitHub API docs for get_github_actions_billing_ghe](https://docs.github.com/rest/reference/billing#get-github-actions-billing-for-an-enterprise)
     ///
     /// ---
     pub async fn get_github_actions_billing_ghe_async(&self, enterprise: &str) -> Result<ActionsBillingUsage, BillingGetGithubActionsBillingGheError> {
@@ -239,7 +239,7 @@ impl<'api> Billing<'api> {
     /// 
     /// The authenticated user must be an enterprise admin.
     /// 
-    /// [GitHub API docs for get_github_actions_billing_ghe](https://docs.github.com/rest/reference/billing/#get-github-actions-billing-for-an-enterprise)
+    /// [GitHub API docs for get_github_actions_billing_ghe](https://docs.github.com/rest/reference/billing#get-github-actions-billing-for-an-enterprise)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -282,7 +282,7 @@ impl<'api> Billing<'api> {
     /// 
     /// Access tokens must have the `repo` or `admin:org` scope.
     /// 
-    /// [GitHub API docs for get_github_actions_billing_org](https://docs.github.com/rest/reference/billing/#get-github-actions-billing-for-an-organization)
+    /// [GitHub API docs for get_github_actions_billing_org](https://docs.github.com/rest/reference/billing#get-github-actions-billing-for-an-organization)
     ///
     /// ---
     pub async fn get_github_actions_billing_org_async(&self, org: &str) -> Result<ActionsBillingUsage, BillingGetGithubActionsBillingOrgError> {
@@ -324,7 +324,7 @@ impl<'api> Billing<'api> {
     /// 
     /// Access tokens must have the `repo` or `admin:org` scope.
     /// 
-    /// [GitHub API docs for get_github_actions_billing_org](https://docs.github.com/rest/reference/billing/#get-github-actions-billing-for-an-organization)
+    /// [GitHub API docs for get_github_actions_billing_org](https://docs.github.com/rest/reference/billing#get-github-actions-billing-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -367,7 +367,7 @@ impl<'api> Billing<'api> {
     /// 
     /// Access tokens must have the `user` scope.
     /// 
-    /// [GitHub API docs for get_github_actions_billing_user](https://docs.github.com/rest/reference/billing/#get-github-actions-billing-for-a-user)
+    /// [GitHub API docs for get_github_actions_billing_user](https://docs.github.com/rest/reference/billing#get-github-actions-billing-for-a-user)
     ///
     /// ---
     pub async fn get_github_actions_billing_user_async(&self, username: &str) -> Result<ActionsBillingUsage, BillingGetGithubActionsBillingUserError> {
@@ -409,7 +409,7 @@ impl<'api> Billing<'api> {
     /// 
     /// Access tokens must have the `user` scope.
     /// 
-    /// [GitHub API docs for get_github_actions_billing_user](https://docs.github.com/rest/reference/billing/#get-github-actions-billing-for-a-user)
+    /// [GitHub API docs for get_github_actions_billing_user](https://docs.github.com/rest/reference/billing#get-github-actions-billing-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -452,7 +452,7 @@ impl<'api> Billing<'api> {
     /// 
     /// The authenticated user must be an enterprise admin.
     /// 
-    /// [GitHub API docs for get_github_packages_billing_ghe](https://docs.github.com/rest/reference/billing/#get-github-packages-billing-for-an-enterprise)
+    /// [GitHub API docs for get_github_packages_billing_ghe](https://docs.github.com/rest/reference/billing#get-github-packages-billing-for-an-enterprise)
     ///
     /// ---
     pub async fn get_github_packages_billing_ghe_async(&self, enterprise: &str) -> Result<PackagesBillingUsage, BillingGetGithubPackagesBillingGheError> {
@@ -494,7 +494,7 @@ impl<'api> Billing<'api> {
     /// 
     /// The authenticated user must be an enterprise admin.
     /// 
-    /// [GitHub API docs for get_github_packages_billing_ghe](https://docs.github.com/rest/reference/billing/#get-github-packages-billing-for-an-enterprise)
+    /// [GitHub API docs for get_github_packages_billing_ghe](https://docs.github.com/rest/reference/billing#get-github-packages-billing-for-an-enterprise)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -537,7 +537,7 @@ impl<'api> Billing<'api> {
     /// 
     /// Access tokens must have the `repo` or `admin:org` scope.
     /// 
-    /// [GitHub API docs for get_github_packages_billing_org](https://docs.github.com/rest/reference/billing/#get-github-packages-billing-for-an-organization)
+    /// [GitHub API docs for get_github_packages_billing_org](https://docs.github.com/rest/reference/billing#get-github-packages-billing-for-an-organization)
     ///
     /// ---
     pub async fn get_github_packages_billing_org_async(&self, org: &str) -> Result<PackagesBillingUsage, BillingGetGithubPackagesBillingOrgError> {
@@ -579,7 +579,7 @@ impl<'api> Billing<'api> {
     /// 
     /// Access tokens must have the `repo` or `admin:org` scope.
     /// 
-    /// [GitHub API docs for get_github_packages_billing_org](https://docs.github.com/rest/reference/billing/#get-github-packages-billing-for-an-organization)
+    /// [GitHub API docs for get_github_packages_billing_org](https://docs.github.com/rest/reference/billing#get-github-packages-billing-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -622,7 +622,7 @@ impl<'api> Billing<'api> {
     /// 
     /// Access tokens must have the `user` scope.
     /// 
-    /// [GitHub API docs for get_github_packages_billing_user](https://docs.github.com/rest/reference/billing/#get-github-packages-billing-for-a-user)
+    /// [GitHub API docs for get_github_packages_billing_user](https://docs.github.com/rest/reference/billing#get-github-packages-billing-for-a-user)
     ///
     /// ---
     pub async fn get_github_packages_billing_user_async(&self, username: &str) -> Result<PackagesBillingUsage, BillingGetGithubPackagesBillingUserError> {
@@ -664,7 +664,7 @@ impl<'api> Billing<'api> {
     /// 
     /// Access tokens must have the `user` scope.
     /// 
-    /// [GitHub API docs for get_github_packages_billing_user](https://docs.github.com/rest/reference/billing/#get-github-packages-billing-for-a-user)
+    /// [GitHub API docs for get_github_packages_billing_user](https://docs.github.com/rest/reference/billing#get-github-packages-billing-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -707,7 +707,7 @@ impl<'api> Billing<'api> {
     /// 
     /// The authenticated user must be an enterprise admin.
     /// 
-    /// [GitHub API docs for get_shared_storage_billing_ghe](https://docs.github.com/rest/reference/billing/#get-shared-storage-billing-for-an-enterprise)
+    /// [GitHub API docs for get_shared_storage_billing_ghe](https://docs.github.com/rest/reference/billing#get-shared-storage-billing-for-an-enterprise)
     ///
     /// ---
     pub async fn get_shared_storage_billing_ghe_async(&self, enterprise: &str) -> Result<CombinedBillingUsage, BillingGetSharedStorageBillingGheError> {
@@ -749,7 +749,7 @@ impl<'api> Billing<'api> {
     /// 
     /// The authenticated user must be an enterprise admin.
     /// 
-    /// [GitHub API docs for get_shared_storage_billing_ghe](https://docs.github.com/rest/reference/billing/#get-shared-storage-billing-for-an-enterprise)
+    /// [GitHub API docs for get_shared_storage_billing_ghe](https://docs.github.com/rest/reference/billing#get-shared-storage-billing-for-an-enterprise)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -792,7 +792,7 @@ impl<'api> Billing<'api> {
     /// 
     /// Access tokens must have the `repo` or `admin:org` scope.
     /// 
-    /// [GitHub API docs for get_shared_storage_billing_org](https://docs.github.com/rest/reference/billing/#get-shared-storage-billing-for-an-organization)
+    /// [GitHub API docs for get_shared_storage_billing_org](https://docs.github.com/rest/reference/billing#get-shared-storage-billing-for-an-organization)
     ///
     /// ---
     pub async fn get_shared_storage_billing_org_async(&self, org: &str) -> Result<CombinedBillingUsage, BillingGetSharedStorageBillingOrgError> {
@@ -834,7 +834,7 @@ impl<'api> Billing<'api> {
     /// 
     /// Access tokens must have the `repo` or `admin:org` scope.
     /// 
-    /// [GitHub API docs for get_shared_storage_billing_org](https://docs.github.com/rest/reference/billing/#get-shared-storage-billing-for-an-organization)
+    /// [GitHub API docs for get_shared_storage_billing_org](https://docs.github.com/rest/reference/billing#get-shared-storage-billing-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -877,7 +877,7 @@ impl<'api> Billing<'api> {
     /// 
     /// Access tokens must have the `user` scope.
     /// 
-    /// [GitHub API docs for get_shared_storage_billing_user](https://docs.github.com/rest/reference/billing/#get-shared-storage-billing-for-a-user)
+    /// [GitHub API docs for get_shared_storage_billing_user](https://docs.github.com/rest/reference/billing#get-shared-storage-billing-for-a-user)
     ///
     /// ---
     pub async fn get_shared_storage_billing_user_async(&self, username: &str) -> Result<CombinedBillingUsage, BillingGetSharedStorageBillingUserError> {
@@ -919,7 +919,7 @@ impl<'api> Billing<'api> {
     /// 
     /// Access tokens must have the `user` scope.
     /// 
-    /// [GitHub API docs for get_shared_storage_billing_user](https://docs.github.com/rest/reference/billing/#get-shared-storage-billing-for-a-user)
+    /// [GitHub API docs for get_shared_storage_billing_user](https://docs.github.com/rest/reference/billing#get-shared-storage-billing-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

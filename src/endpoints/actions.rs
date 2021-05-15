@@ -101,6 +101,27 @@ pub enum ActionsAddSelfHostedRunnerToGroupForOrgError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Approve a workflow run for a fork pull request](Actions::approve_workflow_run_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsApproveWorkflowRunError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Cancel a workflow run](Actions::cancel_workflow_run_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsCancelWorkflowRunError {
@@ -2559,6 +2580,95 @@ impl<'api> Actions<'api> {
         } else {
             match github_response.status_code() {
                 code => Err(ActionsAddSelfHostedRunnerToGroupForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Approve a workflow run for a fork pull request
+    ///
+    /// **Note:** This endpoint is currently in beta and is subject to change.
+    /// 
+    /// Approves a workflow run for a pull request from a public fork of a first time contributor. For more information, see ["Approving workflow runs from public forks](https://docs.github.com/actions/managing-workflow-runs/approving-workflow-runs-from-public-forks)."
+    /// 
+    /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
+    /// 
+    /// [GitHub API docs for approve_workflow_run](https://docs.github.com/rest/reference/actions#approve-a-workflow-run-for-a-fork-pull-request)
+    ///
+    /// ---
+    pub async fn approve_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<EmptyObject, ActionsApproveWorkflowRunError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/approve", super::GITHUB_BASE_API_URL, owner, repo, run_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsApproveWorkflowRunError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(ActionsApproveWorkflowRunError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ActionsApproveWorkflowRunError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Approve a workflow run for a fork pull request
+    ///
+    /// **Note:** This endpoint is currently in beta and is subject to change.
+    /// 
+    /// Approves a workflow run for a pull request from a public fork of a first time contributor. For more information, see ["Approving workflow runs from public forks](https://docs.github.com/actions/managing-workflow-runs/approving-workflow-runs-from-public-forks)."
+    /// 
+    /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
+    /// 
+    /// [GitHub API docs for approve_workflow_run](https://docs.github.com/rest/reference/actions#approve-a-workflow-run-for-a-fork-pull-request)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn approve_workflow_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<EmptyObject, ActionsApproveWorkflowRunError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/approve", super::GITHUB_BASE_API_URL, owner, repo, run_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsApproveWorkflowRunError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(ActionsApproveWorkflowRunError::Status403(crate::adapters::to_json(github_response)?)),
+                code => Err(ActionsApproveWorkflowRunError::Generic { code }),
             }
         }
     }

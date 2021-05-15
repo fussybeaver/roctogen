@@ -843,7 +843,7 @@ pub struct IssuesListParams<'req> {
     /// One of `asc` (ascending) or `desc` (descending).
     direction: Option<&'req str>, 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    since: Option<&'req str>, 
+    since: Option<chrono::DateTime<chrono::Utc>>, 
     
     collab: Option<bool>, 
     
@@ -954,7 +954,7 @@ impl<'req> IssuesListParams<'req> {
     }
 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    pub fn since(self, since: &'req str) -> Self {
+    pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             filter: self.filter, 
             state: self.state, 
@@ -1131,22 +1131,22 @@ impl<'enc> From<&'enc PerPage> for IssuesListAssigneesParams {
 }
 /// Query parameters for the [List issue comments](Issues::list_comments_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct IssuesListCommentsParams<'req> {
+pub struct IssuesListCommentsParams {
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    since: Option<&'req str>, 
+    since: Option<chrono::DateTime<chrono::Utc>>, 
     /// Results per page (max 100).
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
 }
 
-impl<'req> IssuesListCommentsParams<'req> {
+impl IssuesListCommentsParams {
     pub fn new() -> Self {
         Self::default()
     }
 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    pub fn since(self, since: &'req str) -> Self {
+    pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             since: Some(since),
             per_page: self.per_page, 
@@ -1173,7 +1173,7 @@ impl<'req> IssuesListCommentsParams<'req> {
     }
 }
 
-impl<'enc> From<&'enc PerPage> for IssuesListCommentsParams<'enc> {
+impl<'enc> From<&'enc PerPage> for IssuesListCommentsParams {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -1190,7 +1190,7 @@ pub struct IssuesListCommentsForRepoParams<'req> {
     /// Either `asc` or `desc`. Ignored without the `sort` parameter.
     direction: Option<&'req str>, 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    since: Option<&'req str>, 
+    since: Option<chrono::DateTime<chrono::Utc>>, 
     /// Results per page (max 100).
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
@@ -1225,7 +1225,7 @@ impl<'req> IssuesListCommentsForRepoParams<'req> {
     }
 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    pub fn since(self, since: &'req str) -> Self {
+    pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             sort: self.sort, 
             direction: self.direction, 
@@ -1401,7 +1401,7 @@ pub struct IssuesListForAuthenticatedUserParams<'req> {
     /// One of `asc` (ascending) or `desc` (descending).
     direction: Option<&'req str>, 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    since: Option<&'req str>, 
+    since: Option<chrono::DateTime<chrono::Utc>>, 
     /// Results per page (max 100).
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
@@ -1484,7 +1484,7 @@ impl<'req> IssuesListForAuthenticatedUserParams<'req> {
     }
 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    pub fn since(self, since: &'req str) -> Self {
+    pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             filter: self.filter, 
             state: self.state, 
@@ -1549,7 +1549,7 @@ pub struct IssuesListForOrgParams<'req> {
     /// One of `asc` (ascending) or `desc` (descending).
     direction: Option<&'req str>, 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    since: Option<&'req str>, 
+    since: Option<chrono::DateTime<chrono::Utc>>, 
     /// Results per page (max 100).
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
@@ -1632,7 +1632,7 @@ impl<'req> IssuesListForOrgParams<'req> {
     }
 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    pub fn since(self, since: &'req str) -> Self {
+    pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             filter: self.filter, 
             state: self.state, 
@@ -1703,7 +1703,7 @@ pub struct IssuesListForRepoParams<'req> {
     /// One of `asc` (ascending) or `desc` (descending).
     direction: Option<&'req str>, 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    since: Option<&'req str>, 
+    since: Option<chrono::DateTime<chrono::Utc>>, 
     /// Results per page (max 100).
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
@@ -1852,7 +1852,7 @@ impl<'req> IssuesListForRepoParams<'req> {
     }
 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    pub fn since(self, since: &'req str) -> Self {
+    pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             milestone: self.milestone, 
             state: self.state, 
@@ -2368,7 +2368,7 @@ impl<'api> Issues<'api> {
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-abuse-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for create](https://docs.github.com/rest/reference/issues/#create-an-issue)
+    /// [GitHub API docs for create](https://docs.github.com/rest/reference/issues#create-an-issue)
     ///
     /// ---
     pub async fn create_async(&self, owner: &str, repo: &str, body: PostIssuesCreate) -> Result<Issue, IssuesCreateError> {
@@ -2413,7 +2413,7 @@ impl<'api> Issues<'api> {
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in abuse rate limiting. See "[Abuse rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#abuse-rate-limits)" and "[Dealing with abuse rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-abuse-rate-limits)" for details.
     /// 
-    /// [GitHub API docs for create](https://docs.github.com/rest/reference/issues/#create-an-issue)
+    /// [GitHub API docs for create](https://docs.github.com/rest/reference/issues#create-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2927,7 +2927,7 @@ impl<'api> Issues<'api> {
     /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
     /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/issues/#get-an-issue)
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/issues#get-an-issue)
     ///
     /// The `get_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -2982,7 +2982,7 @@ impl<'api> Issues<'api> {
     /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
     /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/issues/#get-an-issue)
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/issues#get-an-issue)
     ///
     /// The `get` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -3352,7 +3352,7 @@ impl<'api> Issues<'api> {
     /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
     /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/issues/#list-issues-assigned-to-the-authenticated-user)
+    /// [GitHub API docs for list](https://docs.github.com/rest/reference/issues#list-issues-assigned-to-the-authenticated-user)
     ///
     /// The `list_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -3408,7 +3408,7 @@ impl<'api> Issues<'api> {
     /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
     /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/issues/#list-issues-assigned-to-the-authenticated-user)
+    /// [GitHub API docs for list](https://docs.github.com/rest/reference/issues#list-issues-assigned-to-the-authenticated-user)
     ///
     /// The `list` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -3552,7 +3552,7 @@ impl<'api> Issues<'api> {
     ///
     /// ---
     #[cfg(feature = "squirrel-girl")]
-    pub async fn list_comments_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListCommentsParams<'api>>>) -> Result<Vec<IssueComment>, IssuesListCommentsError> {
+    pub async fn list_comments_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListCommentsParams>>) -> Result<Vec<IssueComment>, IssuesListCommentsError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
@@ -3600,7 +3600,7 @@ impl<'api> Issues<'api> {
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "squirrel-girl")]
-    pub fn list_comments(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListCommentsParams<'api>>>) -> Result<Vec<IssueComment>, IssuesListCommentsError> {
+    pub fn list_comments(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListCommentsParams>>) -> Result<Vec<IssueComment>, IssuesListCommentsError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
@@ -4021,7 +4021,7 @@ impl<'api> Issues<'api> {
     /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
     /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/issues/#list-user-account-issues-assigned-to-the-authenticated-user)
+    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/issues#list-user-account-issues-assigned-to-the-authenticated-user)
     ///
     /// The `list_for_authenticated_user_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -4073,7 +4073,7 @@ impl<'api> Issues<'api> {
     /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
     /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/issues/#list-user-account-issues-assigned-to-the-authenticated-user)
+    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/issues#list-user-account-issues-assigned-to-the-authenticated-user)
     ///
     /// The `list_for_authenticated_user` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -4127,7 +4127,7 @@ impl<'api> Issues<'api> {
     /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
     /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/issues/#list-organization-issues-assigned-to-the-authenticated-user)
+    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/issues#list-organization-issues-assigned-to-the-authenticated-user)
     ///
     /// The `list_for_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -4178,7 +4178,7 @@ impl<'api> Issues<'api> {
     /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
     /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/issues/#list-organization-issues-assigned-to-the-authenticated-user)
+    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/issues#list-organization-issues-assigned-to-the-authenticated-user)
     ///
     /// The `list_for_org` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -4231,7 +4231,7 @@ impl<'api> Issues<'api> {
     /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
     /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/reference/issues/#list-repository-issues)
+    /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/reference/issues#list-repository-issues)
     ///
     /// The `list_for_repo_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -4284,7 +4284,7 @@ impl<'api> Issues<'api> {
     /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
     /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/reference/issues/#list-repository-issues)
+    /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/reference/issues#list-repository-issues)
     ///
     /// The `list_for_repo` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -4670,7 +4670,7 @@ impl<'api> Issues<'api> {
     /// 
     /// Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
     /// 
-    /// [GitHub API docs for lock](https://docs.github.com/rest/reference/issues/#lock-an-issue)
+    /// [GitHub API docs for lock](https://docs.github.com/rest/reference/issues#lock-an-issue)
     ///
     /// ---
     pub async fn lock_async(&self, owner: &str, repo: &str, issue_number: i32, body: PutIssuesLock) -> Result<(), IssuesLockError> {
@@ -4714,7 +4714,7 @@ impl<'api> Issues<'api> {
     /// 
     /// Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
     /// 
-    /// [GitHub API docs for lock](https://docs.github.com/rest/reference/issues/#lock-an-issue)
+    /// [GitHub API docs for lock](https://docs.github.com/rest/reference/issues#lock-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5071,7 +5071,7 @@ impl<'api> Issues<'api> {
     ///
     /// Users with push access can unlock an issue's conversation.
     /// 
-    /// [GitHub API docs for unlock](https://docs.github.com/rest/reference/issues/#unlock-an-issue)
+    /// [GitHub API docs for unlock](https://docs.github.com/rest/reference/issues#unlock-an-issue)
     ///
     /// ---
     pub async fn unlock_async(&self, owner: &str, repo: &str, issue_number: i32) -> Result<(), IssuesUnlockError> {
@@ -5111,7 +5111,7 @@ impl<'api> Issues<'api> {
     ///
     /// Users with push access can unlock an issue's conversation.
     /// 
-    /// [GitHub API docs for unlock](https://docs.github.com/rest/reference/issues/#unlock-an-issue)
+    /// [GitHub API docs for unlock](https://docs.github.com/rest/reference/issues#unlock-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

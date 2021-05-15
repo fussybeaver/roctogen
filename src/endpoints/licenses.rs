@@ -150,7 +150,7 @@ impl<'api> Licenses<'api> {
     ///
     /// # Get a license
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/licenses/#get-a-license)
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/licenses#get-a-license)
     ///
     /// ---
     pub async fn get_async(&self, license: &str) -> Result<License, LicensesGetError> {
@@ -189,7 +189,7 @@ impl<'api> Licenses<'api> {
     ///
     /// # Get a license
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/licenses/#get-a-license)
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/licenses#get-a-license)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -229,7 +229,7 @@ impl<'api> Licenses<'api> {
     ///
     /// # Get all commonly used licenses
     /// 
-    /// [GitHub API docs for get_all_commonly_used](https://docs.github.com/rest/reference/licenses/#get-all-commonly-used-licenses)
+    /// [GitHub API docs for get_all_commonly_used](https://docs.github.com/rest/reference/licenses#get-all-commonly-used-licenses)
     ///
     /// ---
     pub async fn get_all_commonly_used_async(&self, query_params: Option<impl Into<LicensesGetAllCommonlyUsedParams>>) -> Result<Vec<LicenseSimple>, LicensesGetAllCommonlyUsedError> {
@@ -270,7 +270,7 @@ impl<'api> Licenses<'api> {
     ///
     /// # Get all commonly used licenses
     /// 
-    /// [GitHub API docs for get_all_commonly_used](https://docs.github.com/rest/reference/licenses/#get-all-commonly-used-licenses)
+    /// [GitHub API docs for get_all_commonly_used](https://docs.github.com/rest/reference/licenses#get-all-commonly-used-licenses)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

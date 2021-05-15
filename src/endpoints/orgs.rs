@@ -2227,7 +2227,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// GitHub Apps with the `Organization plan` permission can use this endpoint to retrieve information about an organization's GitHub plan. See "[Authenticating with GitHub Apps](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/)" for details. For an example response, see 'Response with GitHub plan information' below."
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/orgs/#get-an-organization)
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/orgs#get-an-organization)
     ///
     /// The `get_async` endpoint is enabled with the `surtur` cargo feature.
     ///
@@ -2271,7 +2271,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// GitHub Apps with the `Organization plan` permission can use this endpoint to retrieve information about an organization's GitHub plan. See "[Authenticating with GitHub Apps](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/)" for details. For an example response, see 'Response with GitHub plan information' below."
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/orgs/#get-an-organization)
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/orgs#get-an-organization)
     ///
     /// The `get` endpoint is enabled with the `surtur` cargo feature.
     ///
@@ -2316,7 +2316,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// To use this endpoint, you must be an organization owner, and you must use an access token with the `admin:org` scope. GitHub Apps must have the `organization_administration` read permission to use this endpoint.
     /// 
-    /// [GitHub API docs for get_audit_log](https://docs.github.com/rest/reference/orgs#get-the-audit-log-for-an-organization)
+    /// [GitHub API docs for get_audit_log](https://docs.github.com/rest/reference/orgs#get-audit-log)
     ///
     /// ---
     pub async fn get_audit_log_async(&self, org: &str, query_params: Option<impl Into<OrgsGetAuditLogParams<'api>>>) -> Result<Vec<AuditLogEvent>, OrgsGetAuditLogError> {
@@ -2360,7 +2360,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// To use this endpoint, you must be an organization owner, and you must use an access token with the `admin:org` scope. GitHub Apps must have the `organization_administration` read permission to use this endpoint.
     /// 
-    /// [GitHub API docs for get_audit_log](https://docs.github.com/rest/reference/orgs#get-the-audit-log-for-an-organization)
+    /// [GitHub API docs for get_audit_log](https://docs.github.com/rest/reference/orgs#get-audit-log)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2724,7 +2724,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// **Note:** Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header) to get the URL for the next page of organizations.
     /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/orgs/#list-organizations)
+    /// [GitHub API docs for list](https://docs.github.com/rest/reference/orgs#list-organizations)
     ///
     /// ---
     pub async fn list_async(&self, query_params: Option<impl Into<OrgsListParams>>) -> Result<Vec<OrganizationSimple>, OrgsListError> {
@@ -2769,7 +2769,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// **Note:** Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header) to get the URL for the next page of organizations.
     /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/orgs/#list-organizations)
+    /// [GitHub API docs for list](https://docs.github.com/rest/reference/orgs#list-organizations)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2814,7 +2814,7 @@ impl<'api> Orgs<'api> {
     ///
     /// Lists all GitHub Apps in an organization. The installation count includes all GitHub Apps installed on repositories in the organization. You must be an organization owner with `admin:read` scope to use this endpoint.
     /// 
-    /// [GitHub API docs for list_app_installations](https://docs.github.com/rest/reference/orgs/#list-app-installations-for-an-organization)
+    /// [GitHub API docs for list_app_installations](https://docs.github.com/rest/reference/orgs#list-app-installations-for-an-organization)
     ///
     /// ---
     pub async fn list_app_installations_async(&self, org: &str, query_params: Option<impl Into<OrgsListAppInstallationsParams>>) -> Result<GetAppsListInstallationsForAuthenticatedUserResponse200, OrgsListAppInstallationsError> {
@@ -2856,7 +2856,7 @@ impl<'api> Orgs<'api> {
     ///
     /// Lists all GitHub Apps in an organization. The installation count includes all GitHub Apps installed on repositories in the organization. You must be an organization owner with `admin:read` scope to use this endpoint.
     /// 
-    /// [GitHub API docs for list_app_installations](https://docs.github.com/rest/reference/orgs/#list-app-installations-for-an-organization)
+    /// [GitHub API docs for list_app_installations](https://docs.github.com/rest/reference/orgs#list-app-installations-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3071,7 +3071,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// This only lists organizations that your authorization allows you to operate on in some way (e.g., you can list teams with `read:org` scope, you can publicize your organization membership with `user` scope, etc.). Therefore, this API requires at least `user` or `read:org` scope. OAuth requests with insufficient scope receive a `403 Forbidden` response.
     /// 
-    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/orgs/#list-organizations-for-the-authenticated-user)
+    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/orgs#list-organizations-for-the-authenticated-user)
     ///
     /// ---
     pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<OrgsListForAuthenticatedUserParams>>) -> Result<Vec<OrganizationSimple>, OrgsListForAuthenticatedUserError> {
@@ -3120,7 +3120,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// This only lists organizations that your authorization allows you to operate on in some way (e.g., you can list teams with `read:org` scope, you can publicize your organization membership with `user` scope, etc.). Therefore, this API requires at least `user` or `read:org` scope. OAuth requests with insufficient scope receive a `403 Forbidden` response.
     /// 
-    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/orgs/#list-organizations-for-the-authenticated-user)
+    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/orgs#list-organizations-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3169,7 +3169,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// This method only lists _public_ memberships, regardless of authentication. If you need to fetch all of the organization memberships (public and private) for the authenticated user, use the [List organizations for the authenticated user](https://docs.github.com/rest/reference/orgs#list-organizations-for-the-authenticated-user) API instead.
     /// 
-    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/orgs/#list-organizations-for-a-user)
+    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/orgs#list-organizations-for-a-user)
     ///
     /// ---
     pub async fn list_for_user_async(&self, username: &str, query_params: Option<impl Into<OrgsListForUserParams>>) -> Result<Vec<OrganizationSimple>, OrgsListForUserError> {
@@ -3213,7 +3213,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// This method only lists _public_ memberships, regardless of authentication. If you need to fetch all of the organization memberships (public and private) for the authenticated user, use the [List organizations for the authenticated user](https://docs.github.com/rest/reference/orgs#list-organizations-for-the-authenticated-user) API instead.
     /// 
-    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/orgs/#list-organizations-for-a-user)
+    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/orgs#list-organizations-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3787,7 +3787,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// An authenticated organization owner with the `read:org` scope can list all credential authorizations for an organization that uses SAML single sign-on (SSO). The credentials are either personal access tokens or SSH keys that organization members have authorized for the organization. For more information, see [About authentication with SAML single sign-on](https://help.github.com/en/articles/about-authentication-with-saml-single-sign-on).
     /// 
-    /// [GitHub API docs for list_saml_sso_authorizations](https://docs.github.com/rest/reference/orgs/#list-saml-sso-authorizations-for-an-organization)
+    /// [GitHub API docs for list_saml_sso_authorizations](https://docs.github.com/rest/reference/orgs#list-saml-sso-authorizations-for-an-organization)
     ///
     /// ---
     pub async fn list_saml_sso_authorizations_async(&self, org: &str) -> Result<Vec<CredentialAuthorization>, OrgsListSamlSsoAuthorizationsError> {
@@ -3827,7 +3827,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// An authenticated organization owner with the `read:org` scope can list all credential authorizations for an organization that uses SAML single sign-on (SSO). The credentials are either personal access tokens or SSH keys that organization members have authorized for the organization. For more information, see [About authentication with SAML single sign-on](https://help.github.com/en/articles/about-authentication-with-saml-single-sign-on).
     /// 
-    /// [GitHub API docs for list_saml_sso_authorizations](https://docs.github.com/rest/reference/orgs/#list-saml-sso-authorizations-for-an-organization)
+    /// [GitHub API docs for list_saml_sso_authorizations](https://docs.github.com/rest/reference/orgs#list-saml-sso-authorizations-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4347,7 +4347,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// An authenticated organization owner with the `admin:org` scope can remove a credential authorization for an organization that uses SAML SSO. Once you remove someone's credential authorization, they will need to create a new personal access token or SSH key and authorize it for the organization they want to access.
     /// 
-    /// [GitHub API docs for remove_saml_sso_authorization](https://docs.github.com/rest/reference/orgs/#remove-a-saml-sso-authorization-for-an-organization)
+    /// [GitHub API docs for remove_saml_sso_authorization](https://docs.github.com/rest/reference/orgs#remove-a-saml-sso-authorization-for-an-organization)
     ///
     /// ---
     pub async fn remove_saml_sso_authorization_async(&self, org: &str, credential_id: i32) -> Result<(), OrgsRemoveSamlSsoAuthorizationError> {
@@ -4388,7 +4388,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// An authenticated organization owner with the `admin:org` scope can remove a credential authorization for an organization that uses SAML SSO. Once you remove someone's credential authorization, they will need to create a new personal access token or SSH key and authorize it for the organization they want to access.
     /// 
-    /// [GitHub API docs for remove_saml_sso_authorization](https://docs.github.com/rest/reference/orgs/#remove-a-saml-sso-authorization-for-an-organization)
+    /// [GitHub API docs for remove_saml_sso_authorization](https://docs.github.com/rest/reference/orgs#remove-a-saml-sso-authorization-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

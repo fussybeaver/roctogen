@@ -24,7 +24,6 @@ pub mod projects;
 pub mod orgs;
 pub mod users;
 pub mod apps;
-pub mod audit_log;
 pub mod rate_limit;
 pub mod repos;
 pub mod secret_scanning;

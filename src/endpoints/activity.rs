@@ -703,22 +703,22 @@ impl<'enc> From<&'enc PerPage> for ActivityListEventsForAuthenticatedUserParams 
 }
 /// Query parameters for the [List notifications for the authenticated user](Activity::list_notifications_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct ActivityListNotificationsForAuthenticatedUserParams<'req> {
+pub struct ActivityListNotificationsForAuthenticatedUserParams {
     /// If `true`, show notifications marked as read.
     all: Option<bool>, 
     /// If `true`, only shows notifications in which the user is directly participating or mentioned.
     participating: Option<bool>, 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    since: Option<&'req str>, 
+    since: Option<chrono::DateTime<chrono::Utc>>, 
     /// Only show notifications updated before the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    before: Option<&'req str>, 
+    before: Option<chrono::DateTime<chrono::Utc>>, 
     /// Results per page (max 100).
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
 }
 
-impl<'req> ActivityListNotificationsForAuthenticatedUserParams<'req> {
+impl ActivityListNotificationsForAuthenticatedUserParams {
     pub fn new() -> Self {
         Self::default()
     }
@@ -748,7 +748,7 @@ impl<'req> ActivityListNotificationsForAuthenticatedUserParams<'req> {
     }
 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    pub fn since(self, since: &'req str) -> Self {
+    pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             all: self.all, 
             participating: self.participating, 
@@ -760,7 +760,7 @@ impl<'req> ActivityListNotificationsForAuthenticatedUserParams<'req> {
     }
 
     /// Only show notifications updated before the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    pub fn before(self, before: &'req str) -> Self {
+    pub fn before(self, before: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             all: self.all, 
             participating: self.participating, 
@@ -796,7 +796,7 @@ impl<'req> ActivityListNotificationsForAuthenticatedUserParams<'req> {
     }
 }
 
-impl<'enc> From<&'enc PerPage> for ActivityListNotificationsForAuthenticatedUserParams<'enc> {
+impl<'enc> From<&'enc PerPage> for ActivityListNotificationsForAuthenticatedUserParams {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -1127,22 +1127,22 @@ impl<'enc> From<&'enc PerPage> for ActivityListRepoEventsParams {
 }
 /// Query parameters for the [List repository notifications for the authenticated user](Activity::list_repo_notifications_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct ActivityListRepoNotificationsForAuthenticatedUserParams<'req> {
+pub struct ActivityListRepoNotificationsForAuthenticatedUserParams {
     /// If `true`, show notifications marked as read.
     all: Option<bool>, 
     /// If `true`, only shows notifications in which the user is directly participating or mentioned.
     participating: Option<bool>, 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    since: Option<&'req str>, 
+    since: Option<chrono::DateTime<chrono::Utc>>, 
     /// Only show notifications updated before the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    before: Option<&'req str>, 
+    before: Option<chrono::DateTime<chrono::Utc>>, 
     /// Results per page (max 100).
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
 }
 
-impl<'req> ActivityListRepoNotificationsForAuthenticatedUserParams<'req> {
+impl ActivityListRepoNotificationsForAuthenticatedUserParams {
     pub fn new() -> Self {
         Self::default()
     }
@@ -1172,7 +1172,7 @@ impl<'req> ActivityListRepoNotificationsForAuthenticatedUserParams<'req> {
     }
 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    pub fn since(self, since: &'req str) -> Self {
+    pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             all: self.all, 
             participating: self.participating, 
@@ -1184,7 +1184,7 @@ impl<'req> ActivityListRepoNotificationsForAuthenticatedUserParams<'req> {
     }
 
     /// Only show notifications updated before the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    pub fn before(self, before: &'req str) -> Self {
+    pub fn before(self, before: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             all: self.all, 
             participating: self.participating, 
@@ -1220,7 +1220,7 @@ impl<'req> ActivityListRepoNotificationsForAuthenticatedUserParams<'req> {
     }
 }
 
-impl<'enc> From<&'enc PerPage> for ActivityListRepoNotificationsForAuthenticatedUserParams<'enc> {
+impl<'enc> From<&'enc PerPage> for ActivityListRepoNotificationsForAuthenticatedUserParams {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -2203,7 +2203,7 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for list_notifications_for_authenticated_user](https://docs.github.com/rest/reference/activity#list-notifications-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_notifications_for_authenticated_user_async(&self, query_params: Option<impl Into<ActivityListNotificationsForAuthenticatedUserParams<'api>>>) -> Result<Vec<Thread>, ActivityListNotificationsForAuthenticatedUserError> {
+    pub async fn list_notifications_for_authenticated_user_async(&self, query_params: Option<impl Into<ActivityListNotificationsForAuthenticatedUserParams>>) -> Result<Vec<Thread>, ActivityListNotificationsForAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/notifications", super::GITHUB_BASE_API_URL);
 
@@ -2250,7 +2250,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_notifications_for_authenticated_user(&self, query_params: Option<impl Into<ActivityListNotificationsForAuthenticatedUserParams<'api>>>) -> Result<Vec<Thread>, ActivityListNotificationsForAuthenticatedUserError> {
+    pub fn list_notifications_for_authenticated_user(&self, query_params: Option<impl Into<ActivityListNotificationsForAuthenticatedUserParams>>) -> Result<Vec<Thread>, ActivityListNotificationsForAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/notifications", super::GITHUB_BASE_API_URL);
 
@@ -2979,7 +2979,7 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for list_repo_notifications_for_authenticated_user](https://docs.github.com/rest/reference/activity#list-repository-notifications-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_repo_notifications_for_authenticated_user_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListRepoNotificationsForAuthenticatedUserParams<'api>>>) -> Result<Vec<Thread>, ActivityListRepoNotificationsForAuthenticatedUserError> {
+    pub async fn list_repo_notifications_for_authenticated_user_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListRepoNotificationsForAuthenticatedUserParams>>) -> Result<Vec<Thread>, ActivityListRepoNotificationsForAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/notifications", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -3022,7 +3022,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_repo_notifications_for_authenticated_user(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListRepoNotificationsForAuthenticatedUserParams<'api>>>) -> Result<Vec<Thread>, ActivityListRepoNotificationsForAuthenticatedUserError> {
+    pub fn list_repo_notifications_for_authenticated_user(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListRepoNotificationsForAuthenticatedUserParams>>) -> Result<Vec<Thread>, ActivityListRepoNotificationsForAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/notifications", super::GITHUB_BASE_API_URL, owner, repo);
 

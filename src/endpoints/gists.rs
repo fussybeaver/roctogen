@@ -486,22 +486,22 @@ pub enum GistsUpdateCommentError {
 
 /// Query parameters for the [List gists for the authenticated user](Gists::list_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct GistsListParams<'req> {
+pub struct GistsListParams {
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    since: Option<&'req str>, 
+    since: Option<chrono::DateTime<chrono::Utc>>, 
     /// Results per page (max 100).
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
 }
 
-impl<'req> GistsListParams<'req> {
+impl GistsListParams {
     pub fn new() -> Self {
         Self::default()
     }
 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    pub fn since(self, since: &'req str) -> Self {
+    pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             since: Some(since),
             per_page: self.per_page, 
@@ -528,7 +528,7 @@ impl<'req> GistsListParams<'req> {
     }
 }
 
-impl<'enc> From<&'enc PerPage> for GistsListParams<'enc> {
+impl<'enc> From<&'enc PerPage> for GistsListParams {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -619,22 +619,22 @@ impl<'enc> From<&'enc PerPage> for GistsListCommitsParams {
 }
 /// Query parameters for the [List gists for a user](Gists::list_for_user_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct GistsListForUserParams<'req> {
+pub struct GistsListForUserParams {
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    since: Option<&'req str>, 
+    since: Option<chrono::DateTime<chrono::Utc>>, 
     /// Results per page (max 100).
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
 }
 
-impl<'req> GistsListForUserParams<'req> {
+impl GistsListForUserParams {
     pub fn new() -> Self {
         Self::default()
     }
 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    pub fn since(self, since: &'req str) -> Self {
+    pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             since: Some(since),
             per_page: self.per_page, 
@@ -661,7 +661,7 @@ impl<'req> GistsListForUserParams<'req> {
     }
 }
 
-impl<'enc> From<&'enc PerPage> for GistsListForUserParams<'enc> {
+impl<'enc> From<&'enc PerPage> for GistsListForUserParams {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -712,22 +712,22 @@ impl<'enc> From<&'enc PerPage> for GistsListForksParams {
 }
 /// Query parameters for the [List public gists](Gists::list_public_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct GistsListPublicParams<'req> {
+pub struct GistsListPublicParams {
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    since: Option<&'req str>, 
+    since: Option<chrono::DateTime<chrono::Utc>>, 
     /// Results per page (max 100).
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
 }
 
-impl<'req> GistsListPublicParams<'req> {
+impl GistsListPublicParams {
     pub fn new() -> Self {
         Self::default()
     }
 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    pub fn since(self, since: &'req str) -> Self {
+    pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             since: Some(since),
             per_page: self.per_page, 
@@ -754,7 +754,7 @@ impl<'req> GistsListPublicParams<'req> {
     }
 }
 
-impl<'enc> From<&'enc PerPage> for GistsListPublicParams<'enc> {
+impl<'enc> From<&'enc PerPage> for GistsListPublicParams {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -765,22 +765,22 @@ impl<'enc> From<&'enc PerPage> for GistsListPublicParams<'enc> {
 }
 /// Query parameters for the [List starred gists](Gists::list_starred_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct GistsListStarredParams<'req> {
+pub struct GistsListStarredParams {
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    since: Option<&'req str>, 
+    since: Option<chrono::DateTime<chrono::Utc>>, 
     /// Results per page (max 100).
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
 }
 
-impl<'req> GistsListStarredParams<'req> {
+impl GistsListStarredParams {
     pub fn new() -> Self {
         Self::default()
     }
 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    pub fn since(self, since: &'req str) -> Self {
+    pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             since: Some(since),
             per_page: self.per_page, 
@@ -807,7 +807,7 @@ impl<'req> GistsListStarredParams<'req> {
     }
 }
 
-impl<'enc> From<&'enc PerPage> for GistsListStarredParams<'enc> {
+impl<'enc> From<&'enc PerPage> for GistsListStarredParams {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -822,7 +822,7 @@ impl<'api> Gists<'api> {
     ///
     /// # Check if a gist is starred
     /// 
-    /// [GitHub API docs for check_is_starred](https://docs.github.com/rest/reference/gists/#check-if-a-gist-is-starred)
+    /// [GitHub API docs for check_is_starred](https://docs.github.com/rest/reference/gists#check-if-a-gist-is-starred)
     ///
     /// ---
     pub async fn check_is_starred_async(&self, gist_id: &str) -> Result<(), GistsCheckIsStarredError> {
@@ -861,7 +861,7 @@ impl<'api> Gists<'api> {
     ///
     /// # Check if a gist is starred
     /// 
-    /// [GitHub API docs for check_is_starred](https://docs.github.com/rest/reference/gists/#check-if-a-gist-is-starred)
+    /// [GitHub API docs for check_is_starred](https://docs.github.com/rest/reference/gists#check-if-a-gist-is-starred)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -905,7 +905,7 @@ impl<'api> Gists<'api> {
     /// 
     /// **Note:** Don't name your files "gistfile" with a numerical suffix. This is the format of the automatic naming scheme that Gist uses internally.
     /// 
-    /// [GitHub API docs for create](https://docs.github.com/rest/reference/gists/#create-a-gist)
+    /// [GitHub API docs for create](https://docs.github.com/rest/reference/gists#create-a-gist)
     ///
     /// ---
     pub async fn create_async(&self, body: PostGistsCreate) -> Result<GistSimple, GistsCreateError> {
@@ -949,7 +949,7 @@ impl<'api> Gists<'api> {
     /// 
     /// **Note:** Don't name your files "gistfile" with a numerical suffix. This is the format of the automatic naming scheme that Gist uses internally.
     /// 
-    /// [GitHub API docs for create](https://docs.github.com/rest/reference/gists/#create-a-gist)
+    /// [GitHub API docs for create](https://docs.github.com/rest/reference/gists#create-a-gist)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1069,7 +1069,7 @@ impl<'api> Gists<'api> {
     ///
     /// # Delete a gist
     /// 
-    /// [GitHub API docs for delete](https://docs.github.com/rest/reference/gists/#delete-a-gist)
+    /// [GitHub API docs for delete](https://docs.github.com/rest/reference/gists#delete-a-gist)
     ///
     /// ---
     pub async fn delete_async(&self, gist_id: &str) -> Result<(), GistsDeleteError> {
@@ -1108,7 +1108,7 @@ impl<'api> Gists<'api> {
     ///
     /// # Delete a gist
     /// 
-    /// [GitHub API docs for delete](https://docs.github.com/rest/reference/gists/#delete-a-gist)
+    /// [GitHub API docs for delete](https://docs.github.com/rest/reference/gists#delete-a-gist)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1229,7 +1229,7 @@ impl<'api> Gists<'api> {
     ///
     /// **Note**: This was previously `/gists/:gist_id/fork`.
     /// 
-    /// [GitHub API docs for fork](https://docs.github.com/rest/reference/gists/#fork-a-gist)
+    /// [GitHub API docs for fork](https://docs.github.com/rest/reference/gists#fork-a-gist)
     ///
     /// ---
     pub async fn fork_async(&self, gist_id: &str) -> Result<BaseGist, GistsForkError> {
@@ -1271,7 +1271,7 @@ impl<'api> Gists<'api> {
     ///
     /// **Note**: This was previously `/gists/:gist_id/fork`.
     /// 
-    /// [GitHub API docs for fork](https://docs.github.com/rest/reference/gists/#fork-a-gist)
+    /// [GitHub API docs for fork](https://docs.github.com/rest/reference/gists#fork-a-gist)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1312,7 +1312,7 @@ impl<'api> Gists<'api> {
     ///
     /// # Get a gist
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/gists/#get-a-gist)
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/gists#get-a-gist)
     ///
     /// ---
     pub async fn get_async(&self, gist_id: &str) -> Result<GistSimple, GistsGetError> {
@@ -1351,7 +1351,7 @@ impl<'api> Gists<'api> {
     ///
     /// # Get a gist
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/gists/#get-a-gist)
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/gists#get-a-gist)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1470,7 +1470,7 @@ impl<'api> Gists<'api> {
     ///
     /// # Get a gist revision
     /// 
-    /// [GitHub API docs for get_revision](https://docs.github.com/rest/reference/gists/#get-a-gist-revision)
+    /// [GitHub API docs for get_revision](https://docs.github.com/rest/reference/gists#get-a-gist-revision)
     ///
     /// ---
     pub async fn get_revision_async(&self, gist_id: &str, sha: &str) -> Result<GistSimple, GistsGetRevisionError> {
@@ -1509,7 +1509,7 @@ impl<'api> Gists<'api> {
     ///
     /// # Get a gist revision
     /// 
-    /// [GitHub API docs for get_revision](https://docs.github.com/rest/reference/gists/#get-a-gist-revision)
+    /// [GitHub API docs for get_revision](https://docs.github.com/rest/reference/gists#get-a-gist-revision)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1551,10 +1551,10 @@ impl<'api> Gists<'api> {
     ///
     /// Lists the authenticated user's gists or if called anonymously, this endpoint returns all public gists:
     /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/gists/#list-gists-for-the-authenticated-user)
+    /// [GitHub API docs for list](https://docs.github.com/rest/reference/gists#list-gists-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_async(&self, query_params: Option<impl Into<GistsListParams<'api>>>) -> Result<Vec<BaseGist>, GistsListError> {
+    pub async fn list_async(&self, query_params: Option<impl Into<GistsListParams>>) -> Result<Vec<BaseGist>, GistsListError> {
 
         let mut request_uri = format!("{}/gists", super::GITHUB_BASE_API_URL);
 
@@ -1595,11 +1595,11 @@ impl<'api> Gists<'api> {
     ///
     /// Lists the authenticated user's gists or if called anonymously, this endpoint returns all public gists:
     /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/gists/#list-gists-for-the-authenticated-user)
+    /// [GitHub API docs for list](https://docs.github.com/rest/reference/gists#list-gists-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list(&self, query_params: Option<impl Into<GistsListParams<'api>>>) -> Result<Vec<BaseGist>, GistsListError> {
+    pub fn list(&self, query_params: Option<impl Into<GistsListParams>>) -> Result<Vec<BaseGist>, GistsListError> {
 
         let mut request_uri = format!("{}/gists", super::GITHUB_BASE_API_URL);
 
@@ -1727,7 +1727,7 @@ impl<'api> Gists<'api> {
     ///
     /// # List gist commits
     /// 
-    /// [GitHub API docs for list_commits](https://docs.github.com/rest/reference/gists/#list-gist-commits)
+    /// [GitHub API docs for list_commits](https://docs.github.com/rest/reference/gists#list-gist-commits)
     ///
     /// ---
     pub async fn list_commits_async(&self, gist_id: &str, query_params: Option<impl Into<GistsListCommitsParams>>) -> Result<Vec<GistCommit>, GistsListCommitsError> {
@@ -1770,7 +1770,7 @@ impl<'api> Gists<'api> {
     ///
     /// # List gist commits
     /// 
-    /// [GitHub API docs for list_commits](https://docs.github.com/rest/reference/gists/#list-gist-commits)
+    /// [GitHub API docs for list_commits](https://docs.github.com/rest/reference/gists#list-gist-commits)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1817,10 +1817,10 @@ impl<'api> Gists<'api> {
     ///
     /// Lists public gists for the specified user:
     /// 
-    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/gists/#list-gists-for-a-user)
+    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/gists#list-gists-for-a-user)
     ///
     /// ---
-    pub async fn list_for_user_async(&self, username: &str, query_params: Option<impl Into<GistsListForUserParams<'api>>>) -> Result<Vec<BaseGist>, GistsListForUserError> {
+    pub async fn list_for_user_async(&self, username: &str, query_params: Option<impl Into<GistsListForUserParams>>) -> Result<Vec<BaseGist>, GistsListForUserError> {
 
         let mut request_uri = format!("{}/users/{}/gists", super::GITHUB_BASE_API_URL, username);
 
@@ -1860,11 +1860,11 @@ impl<'api> Gists<'api> {
     ///
     /// Lists public gists for the specified user:
     /// 
-    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/gists/#list-gists-for-a-user)
+    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/gists#list-gists-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_user(&self, username: &str, query_params: Option<impl Into<GistsListForUserParams<'api>>>) -> Result<Vec<BaseGist>, GistsListForUserError> {
+    pub fn list_for_user(&self, username: &str, query_params: Option<impl Into<GistsListForUserParams>>) -> Result<Vec<BaseGist>, GistsListForUserError> {
 
         let mut request_uri = format!("{}/users/{}/gists", super::GITHUB_BASE_API_URL, username);
 
@@ -1903,7 +1903,7 @@ impl<'api> Gists<'api> {
     ///
     /// # List gist forks
     /// 
-    /// [GitHub API docs for list_forks](https://docs.github.com/rest/reference/gists/#list-gist-forks)
+    /// [GitHub API docs for list_forks](https://docs.github.com/rest/reference/gists#list-gist-forks)
     ///
     /// ---
     pub async fn list_forks_async(&self, gist_id: &str, query_params: Option<impl Into<GistsListForksParams>>) -> Result<Vec<GistSimple>, GistsListForksError> {
@@ -1946,7 +1946,7 @@ impl<'api> Gists<'api> {
     ///
     /// # List gist forks
     /// 
-    /// [GitHub API docs for list_forks](https://docs.github.com/rest/reference/gists/#list-gist-forks)
+    /// [GitHub API docs for list_forks](https://docs.github.com/rest/reference/gists#list-gist-forks)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1995,10 +1995,10 @@ impl<'api> Gists<'api> {
     /// 
     /// Note: With [pagination](https://docs.github.com/rest/overview/resources-in-the-rest-api#pagination), you can fetch up to 3000 gists. For example, you can fetch 100 pages with 30 gists per page or 30 pages with 100 gists per page.
     /// 
-    /// [GitHub API docs for list_public](https://docs.github.com/rest/reference/gists/#list-public-gists)
+    /// [GitHub API docs for list_public](https://docs.github.com/rest/reference/gists#list-public-gists)
     ///
     /// ---
-    pub async fn list_public_async(&self, query_params: Option<impl Into<GistsListPublicParams<'api>>>) -> Result<Vec<BaseGist>, GistsListPublicError> {
+    pub async fn list_public_async(&self, query_params: Option<impl Into<GistsListPublicParams>>) -> Result<Vec<BaseGist>, GistsListPublicError> {
 
         let mut request_uri = format!("{}/gists/public", super::GITHUB_BASE_API_URL);
 
@@ -2042,11 +2042,11 @@ impl<'api> Gists<'api> {
     /// 
     /// Note: With [pagination](https://docs.github.com/rest/overview/resources-in-the-rest-api#pagination), you can fetch up to 3000 gists. For example, you can fetch 100 pages with 30 gists per page or 30 pages with 100 gists per page.
     /// 
-    /// [GitHub API docs for list_public](https://docs.github.com/rest/reference/gists/#list-public-gists)
+    /// [GitHub API docs for list_public](https://docs.github.com/rest/reference/gists#list-public-gists)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_public(&self, query_params: Option<impl Into<GistsListPublicParams<'api>>>) -> Result<Vec<BaseGist>, GistsListPublicError> {
+    pub fn list_public(&self, query_params: Option<impl Into<GistsListPublicParams>>) -> Result<Vec<BaseGist>, GistsListPublicError> {
 
         let mut request_uri = format!("{}/gists/public", super::GITHUB_BASE_API_URL);
 
@@ -2089,10 +2089,10 @@ impl<'api> Gists<'api> {
     ///
     /// List the authenticated user's starred gists:
     /// 
-    /// [GitHub API docs for list_starred](https://docs.github.com/rest/reference/gists/#list-starred-gists)
+    /// [GitHub API docs for list_starred](https://docs.github.com/rest/reference/gists#list-starred-gists)
     ///
     /// ---
-    pub async fn list_starred_async(&self, query_params: Option<impl Into<GistsListStarredParams<'api>>>) -> Result<Vec<BaseGist>, GistsListStarredError> {
+    pub async fn list_starred_async(&self, query_params: Option<impl Into<GistsListStarredParams>>) -> Result<Vec<BaseGist>, GistsListStarredError> {
 
         let mut request_uri = format!("{}/gists/starred", super::GITHUB_BASE_API_URL);
 
@@ -2134,11 +2134,11 @@ impl<'api> Gists<'api> {
     ///
     /// List the authenticated user's starred gists:
     /// 
-    /// [GitHub API docs for list_starred](https://docs.github.com/rest/reference/gists/#list-starred-gists)
+    /// [GitHub API docs for list_starred](https://docs.github.com/rest/reference/gists#list-starred-gists)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_starred(&self, query_params: Option<impl Into<GistsListStarredParams<'api>>>) -> Result<Vec<BaseGist>, GistsListStarredError> {
+    pub fn list_starred(&self, query_params: Option<impl Into<GistsListStarredParams>>) -> Result<Vec<BaseGist>, GistsListStarredError> {
 
         let mut request_uri = format!("{}/gists/starred", super::GITHUB_BASE_API_URL);
 
@@ -2181,7 +2181,7 @@ impl<'api> Gists<'api> {
     ///
     /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
     /// 
-    /// [GitHub API docs for star](https://docs.github.com/rest/reference/gists/#star-a-gist)
+    /// [GitHub API docs for star](https://docs.github.com/rest/reference/gists#star-a-gist)
     ///
     /// ---
     pub async fn star_async(&self, gist_id: &str) -> Result<(), GistsStarError> {
@@ -2222,7 +2222,7 @@ impl<'api> Gists<'api> {
     ///
     /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
     /// 
-    /// [GitHub API docs for star](https://docs.github.com/rest/reference/gists/#star-a-gist)
+    /// [GitHub API docs for star](https://docs.github.com/rest/reference/gists#star-a-gist)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2262,7 +2262,7 @@ impl<'api> Gists<'api> {
     ///
     /// # Unstar a gist
     /// 
-    /// [GitHub API docs for unstar](https://docs.github.com/rest/reference/gists/#unstar-a-gist)
+    /// [GitHub API docs for unstar](https://docs.github.com/rest/reference/gists#unstar-a-gist)
     ///
     /// ---
     pub async fn unstar_async(&self, gist_id: &str) -> Result<(), GistsUnstarError> {
@@ -2301,7 +2301,7 @@ impl<'api> Gists<'api> {
     ///
     /// # Unstar a gist
     /// 
-    /// [GitHub API docs for unstar](https://docs.github.com/rest/reference/gists/#unstar-a-gist)
+    /// [GitHub API docs for unstar](https://docs.github.com/rest/reference/gists#unstar-a-gist)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

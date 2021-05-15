@@ -125,9 +125,9 @@ pub enum CodeScanningGetSarifError {
     Generic { code: u16 },
 }
 
-/// Errors for the [List code scanning alerts for a repository](CodeScanning::list_alerts_for_repo_async()) endpoint.
+/// Errors for the [List instances of a code scanning alert](CodeScanning::list_alert_instances_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum CodeScanningListAlertsForRepoError {
+pub enum CodeScanningListAlertInstancesError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -148,9 +148,9 @@ pub enum CodeScanningListAlertsForRepoError {
     Generic { code: u16 },
 }
 
-/// Errors for the [List instances of a code scanning alert](CodeScanning::list_alerts_instances_async()) endpoint.
+/// Errors for the [List code scanning alerts for a repository](CodeScanning::list_alerts_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum CodeScanningListAlertsInstancesError {
+pub enum CodeScanningListAlertsForRepoError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -265,6 +265,59 @@ impl<'req> CodeScanningDeleteAnalysisParams<'req> {
     }
 }
 
+/// Query parameters for the [List instances of a code scanning alert](CodeScanning::list_alert_instances_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct CodeScanningListAlertInstancesParams {
+    /// Page number of the results to fetch.
+    page: Option<u16>, 
+    /// Results per page (max 100).
+    per_page: Option<u16>, 
+    /// The Git reference for the results you want to list. The `ref` for a branch can be formatted either as `refs/heads/<branch name>` or simply `<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
+    git_ref: Option<CodeScanningRef>
+}
+
+impl CodeScanningListAlertInstancesParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Page number of the results to fetch.
+    pub fn page(self, page: u16) -> Self {
+        Self { 
+            page: Some(page),
+            per_page: self.per_page, 
+            git_ref: self.git_ref, 
+        }
+    }
+
+    /// Results per page (max 100).
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self { 
+            page: self.page, 
+            per_page: Some(per_page),
+            git_ref: self.git_ref, 
+        }
+    }
+
+    /// The Git reference for the results you want to list. The `ref` for a branch can be formatted either as `refs/heads/<branch name>` or simply `<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
+    pub fn git_ref(self, git_ref: CodeScanningRef) -> Self {
+        Self { 
+            page: self.page, 
+            per_page: self.per_page, 
+            git_ref: Some(git_ref),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for CodeScanningListAlertInstancesParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [List code scanning alerts for a repository](CodeScanning::list_alerts_for_repo_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct CodeScanningListAlertsForRepoParams {
@@ -361,59 +414,6 @@ impl CodeScanningListAlertsForRepoParams {
 }
 
 impl<'enc> From<&'enc PerPage> for CodeScanningListAlertsForRepoParams {
-    fn from(per_page: &'enc PerPage) -> Self {
-        Self {
-            per_page: Some(per_page.per_page),
-            page: Some(per_page.page),
-            ..Default::default()
-        }
-    }
-}
-/// Query parameters for the [List instances of a code scanning alert](CodeScanning::list_alerts_instances_async()) endpoint.
-#[derive(Default, Serialize)]
-pub struct CodeScanningListAlertsInstancesParams {
-    /// Page number of the results to fetch.
-    page: Option<u16>, 
-    /// Results per page (max 100).
-    per_page: Option<u16>, 
-    /// The Git reference for the results you want to list. The `ref` for a branch can be formatted either as `refs/heads/<branch name>` or simply `<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
-    git_ref: Option<CodeScanningRef>
-}
-
-impl CodeScanningListAlertsInstancesParams {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    /// Page number of the results to fetch.
-    pub fn page(self, page: u16) -> Self {
-        Self { 
-            page: Some(page),
-            per_page: self.per_page, 
-            git_ref: self.git_ref, 
-        }
-    }
-
-    /// Results per page (max 100).
-    pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
-            page: self.page, 
-            per_page: Some(per_page),
-            git_ref: self.git_ref, 
-        }
-    }
-
-    /// The Git reference for the results you want to list. The `ref` for a branch can be formatted either as `refs/heads/<branch name>` or simply `<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
-    pub fn git_ref(self, git_ref: CodeScanningRef) -> Self {
-        Self { 
-            page: self.page, 
-            per_page: self.per_page, 
-            git_ref: Some(git_ref),
-        }
-    }
-}
-
-impl<'enc> From<&'enc PerPage> for CodeScanningListAlertsInstancesParams {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -968,7 +968,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// Gets information about a SARIF upload, including the status and the URL of the analysis that was uploaded so that you can retrieve details of the analysis. For more information, see "[Get a code scanning analysis for a repository](/rest/reference/code-scanning#get-a-code-scanning-analysis-for-a-repository)." You must use an access token with the `security_events` scope to use this endpoint. GitHub Apps must have the `security_events` read permission to use this endpoint.
     /// 
-    /// [GitHub API docs for get_sarif](https://docs.github.com/rest/reference/code-scanning#get-information-about-a-sarif-upload)
+    /// [GitHub API docs for get_sarif](https://docs.github.com/rest/reference/code-scanning#list-recent-code-scanning-analyses-for-a-repository)
     ///
     /// ---
     pub async fn get_sarif_async(&self, owner: &str, repo: &str, sarif_id: &str) -> Result<CodeScanningSarifsStatus, CodeScanningGetSarifError> {
@@ -1009,7 +1009,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// Gets information about a SARIF upload, including the status and the URL of the analysis that was uploaded so that you can retrieve details of the analysis. For more information, see "[Get a code scanning analysis for a repository](/rest/reference/code-scanning#get-a-code-scanning-analysis-for-a-repository)." You must use an access token with the `security_events` scope to use this endpoint. GitHub Apps must have the `security_events` read permission to use this endpoint.
     /// 
-    /// [GitHub API docs for get_sarif](https://docs.github.com/rest/reference/code-scanning#get-information-about-a-sarif-upload)
+    /// [GitHub API docs for get_sarif](https://docs.github.com/rest/reference/code-scanning#list-recent-code-scanning-analyses-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1041,6 +1041,98 @@ impl<'api> CodeScanning<'api> {
                 404 => Err(CodeScanningGetSarifError::Status404),
                 503 => Err(CodeScanningGetSarifError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(CodeScanningGetSarifError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List instances of a code scanning alert
+    ///
+    /// Lists all instances of the specified code scanning alert. You must use an access token with the `security_events` scope to use this endpoint. GitHub Apps must have the `security_events` read permission to use this endpoint.
+    /// 
+    /// [GitHub API docs for list_alert_instances](https://docs.github.com/rest/reference/code-scanning#list-instances-of-a-code-scanning-alert)
+    ///
+    /// ---
+    pub async fn list_alert_instances_async(&self, owner: &str, repo: &str, alert_number: AlertNumber, query_params: Option<impl Into<CodeScanningListAlertInstancesParams>>) -> Result<Vec<CodeScanningAlertInstance>, CodeScanningListAlertInstancesError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/code-scanning/alerts/{}/instances", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(CodeScanningListAlertInstancesError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodeScanningListAlertInstancesError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(CodeScanningListAlertInstancesError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodeScanningListAlertInstancesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List instances of a code scanning alert
+    ///
+    /// Lists all instances of the specified code scanning alert. You must use an access token with the `security_events` scope to use this endpoint. GitHub Apps must have the `security_events` read permission to use this endpoint.
+    /// 
+    /// [GitHub API docs for list_alert_instances](https://docs.github.com/rest/reference/code-scanning#list-instances-of-a-code-scanning-alert)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_alert_instances(&self, owner: &str, repo: &str, alert_number: AlertNumber, query_params: Option<impl Into<CodeScanningListAlertInstancesParams>>) -> Result<Vec<CodeScanningAlertInstance>, CodeScanningListAlertInstancesError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/code-scanning/alerts/{}/instances", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: CodeScanningListAlertInstancesParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(CodeScanningListAlertInstancesError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodeScanningListAlertInstancesError::Status404(crate::adapters::to_json(github_response)?)),
+                503 => Err(CodeScanningListAlertInstancesError::Status503(crate::adapters::to_json(github_response)?)),
+                code => Err(CodeScanningListAlertInstancesError::Generic { code }),
             }
         }
     }
@@ -1149,98 +1241,6 @@ impl<'api> CodeScanning<'api> {
                 404 => Err(CodeScanningListAlertsForRepoError::Status404(crate::adapters::to_json(github_response)?)),
                 503 => Err(CodeScanningListAlertsForRepoError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(CodeScanningListAlertsForRepoError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # List instances of a code scanning alert
-    ///
-    /// Lists all instances of the specified code scanning alert. You must use an access token with the `security_events` scope to use this endpoint. GitHub Apps must have the `security_events` read permission to use this endpoint.
-    /// 
-    /// [GitHub API docs for list_alerts_instances](https://docs.github.com/rest/reference/code-scanning#list-instances-of-a-code-scanning-alert)
-    ///
-    /// ---
-    pub async fn list_alerts_instances_async(&self, owner: &str, repo: &str, alert_number: AlertNumber, query_params: Option<impl Into<CodeScanningListAlertsInstancesParams>>) -> Result<Vec<CodeScanningAlertInstance>, CodeScanningListAlertsInstancesError> {
-
-        let mut request_uri = format!("{}/repos/{}/{}/code-scanning/alerts/{}/instances", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
-
-        if let Some(params) = query_params {
-            request_uri.push_str("?");
-            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
-        }
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch_async(request).await?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
-        } else {
-            match github_response.status_code() {
-                403 => Err(CodeScanningListAlertsInstancesError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodeScanningListAlertsInstancesError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(CodeScanningListAlertsInstancesError::Status503(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(CodeScanningListAlertsInstancesError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # List instances of a code scanning alert
-    ///
-    /// Lists all instances of the specified code scanning alert. You must use an access token with the `security_events` scope to use this endpoint. GitHub Apps must have the `security_events` read permission to use this endpoint.
-    /// 
-    /// [GitHub API docs for list_alerts_instances](https://docs.github.com/rest/reference/code-scanning#list-instances-of-a-code-scanning-alert)
-    ///
-    /// ---
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_alerts_instances(&self, owner: &str, repo: &str, alert_number: AlertNumber, query_params: Option<impl Into<CodeScanningListAlertsInstancesParams>>) -> Result<Vec<CodeScanningAlertInstance>, CodeScanningListAlertsInstancesError> {
-
-        let mut request_uri = format!("{}/repos/{}/{}/code-scanning/alerts/{}/instances", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
-
-        if let Some(params) = query_params {
-            request_uri.push_str("?");
-            let qp: CodeScanningListAlertsInstancesParams = params.into();
-            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
-        }
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch(request)?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
-        } else {
-            match github_response.status_code() {
-                403 => Err(CodeScanningListAlertsInstancesError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodeScanningListAlertsInstancesError::Status404(crate::adapters::to_json(github_response)?)),
-                503 => Err(CodeScanningListAlertsInstancesError::Status503(crate::adapters::to_json(github_response)?)),
-                code => Err(CodeScanningListAlertsInstancesError::Generic { code }),
             }
         }
     }
@@ -1472,7 +1472,7 @@ impl<'api> CodeScanning<'api> {
     /// You can use this ID to check the status of the upload by using this for the `/sarifs/{sarif_id}` endpoint.
     /// For more information, see "[Get information about a SARIF upload](/rest/reference/code-scanning#get-information-about-a-sarif-upload)."
     /// 
-    /// [GitHub API docs for upload_sarif](https://docs.github.com/rest/reference/code-scanning#upload-an-analysis-as-sarif-data)
+    /// [GitHub API docs for upload_sarif](https://docs.github.com/rest/reference/code-scanning#upload-a-sarif-file)
     ///
     /// ---
     pub async fn upload_sarif_async(&self, owner: &str, repo: &str, body: PostCodeScanningUploadSarif) -> Result<CodeScanningSarifsReceipt, CodeScanningUploadSarifError> {
@@ -1531,7 +1531,7 @@ impl<'api> CodeScanning<'api> {
     /// You can use this ID to check the status of the upload by using this for the `/sarifs/{sarif_id}` endpoint.
     /// For more information, see "[Get information about a SARIF upload](/rest/reference/code-scanning#get-information-about-a-sarif-upload)."
     /// 
-    /// [GitHub API docs for upload_sarif](https://docs.github.com/rest/reference/code-scanning#upload-an-analysis-as-sarif-data)
+    /// [GitHub API docs for upload_sarif](https://docs.github.com/rest/reference/code-scanning#upload-a-sarif-file)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

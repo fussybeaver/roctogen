@@ -598,6 +598,8 @@ pub enum ReposDeleteError {
 
     #[error("If an organization owner has configured the organization to prevent members from deleting organization-owned repositories, a member will get this response:")]
     Status403(PutTeamsAddOrUpdateProjectPermissionsLegacyResponse403),
+    #[error("Temporary Redirect")]
+    Status307(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
@@ -2733,6 +2735,8 @@ pub enum ReposUpdateError {
 
     // -- endpoint errors
 
+    #[error("Temporary Redirect")]
+    Status307(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Validation failed")]
@@ -3453,9 +3457,9 @@ pub struct ReposListCommitsParams<'req> {
     /// GitHub login or email address by which to filter by commit author.
     author: Option<&'req str>, 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    since: Option<&'req str>, 
+    since: Option<chrono::DateTime<chrono::Utc>>, 
     /// Only commits before this date will be returned. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    until: Option<&'req str>, 
+    until: Option<chrono::DateTime<chrono::Utc>>, 
     /// Results per page (max 100).
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
@@ -3507,7 +3511,7 @@ impl<'req> ReposListCommitsParams<'req> {
     }
 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    pub fn since(self, since: &'req str) -> Self {
+    pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             sha: self.sha, 
             path: self.path, 
@@ -3520,7 +3524,7 @@ impl<'req> ReposListCommitsParams<'req> {
     }
 
     /// Only commits before this date will be returned. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    pub fn until(self, until: &'req str) -> Self {
+    pub fn until(self, until: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             sha: self.sha, 
             path: self.path, 
@@ -3823,9 +3827,9 @@ pub struct ReposListForAuthenticatedUserParams<'req> {
     /// Page number of the results to fetch.
     page: Option<u16>, 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    since: Option<&'req str>, 
+    since: Option<chrono::DateTime<chrono::Utc>>, 
     /// Only show notifications updated before the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    before: Option<&'req str>
+    before: Option<chrono::DateTime<chrono::Utc>>
 }
 
 impl<'req> ReposListForAuthenticatedUserParams<'req> {
@@ -3939,7 +3943,7 @@ impl<'req> ReposListForAuthenticatedUserParams<'req> {
     }
 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    pub fn since(self, since: &'req str) -> Self {
+    pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             visibility: self.visibility, 
             affiliation: self.affiliation, 
@@ -3954,7 +3958,7 @@ impl<'req> ReposListForAuthenticatedUserParams<'req> {
     }
 
     /// Only show notifications updated before the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    pub fn before(self, before: &'req str) -> Self {
+    pub fn before(self, before: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             visibility: self.visibility, 
             affiliation: self.affiliation, 
@@ -3981,7 +3985,7 @@ impl<'enc> From<&'enc PerPage> for ReposListForAuthenticatedUserParams<'enc> {
 /// Query parameters for the [List organization repositories](Repos::list_for_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReposListForOrgParams<'req> {
-    /// Specifies the types of repositories you want returned. Can be one of `all`, `public`, `private`, `forks`, `sources`, `member`, `internal`. Note: For GitHub AE, can be one of `all`, `private`, `forks`, `sources`, `member`, `internal`. Default: `all`. If your organization is associated with an enterprise account using GitHub Enterprise Cloud or GitHub Enterprise Server 2.20+, `type` can also be `internal`.
+    /// Specifies the types of repositories you want returned. Can be one of `all`, `public`, `private`, `forks`, `sources`, `member`, `internal`. Note: For GitHub AE, can be one of `all`, `private`, `forks`, `sources`, `member`, `internal`. Default: `all`. If your organization is associated with an enterprise account using GitHub Enterprise Cloud or GitHub Enterprise Server 2.20+, `type` can also be `internal`. However, the `internal` value is not yet supported when a GitHub App calls this API with an installation access token.
     _type: Option<&'req str>, 
     /// Can be one of `created`, `updated`, `pushed`, `full_name`.
     sort: Option<&'req str>, 
@@ -3998,7 +4002,7 @@ impl<'req> ReposListForOrgParams<'req> {
         Self::default()
     }
 
-    /// Specifies the types of repositories you want returned. Can be one of `all`, `public`, `private`, `forks`, `sources`, `member`, `internal`. Note: For GitHub AE, can be one of `all`, `private`, `forks`, `sources`, `member`, `internal`. Default: `all`. If your organization is associated with an enterprise account using GitHub Enterprise Cloud or GitHub Enterprise Server 2.20+, `type` can also be `internal`.
+    /// Specifies the types of repositories you want returned. Can be one of `all`, `public`, `private`, `forks`, `sources`, `member`, `internal`. Note: For GitHub AE, can be one of `all`, `private`, `forks`, `sources`, `member`, `internal`. Default: `all`. If your organization is associated with an enterprise account using GitHub Enterprise Cloud or GitHub Enterprise Server 2.20+, `type` can also be `internal`. However, the `internal` value is not yet supported when a GitHub App calls this API with an installation access token.
     pub fn _type(self, _type: &'req str) -> Self {
         Self { 
             _type: Some(_type),
@@ -5243,7 +5247,7 @@ impl<'api> Repos<'api> {
     ///
     /// Shows whether dependency alerts are enabled or disabled for a repository. The authenticated user must have admin access to the repository. For more information, see "[About security alerts for vulnerable dependencies](https://help.github.com/en/articles/about-security-alerts-for-vulnerable-dependencies)".
     /// 
-    /// [GitHub API docs for check_vulnerability_alerts](https://docs.github.com/rest/reference/repos/#check-if-vulnerability-alerts-are-enabled-for-a-repository)
+    /// [GitHub API docs for check_vulnerability_alerts](https://docs.github.com/rest/reference/repos#check-if-vulnerability-alerts-are-enabled-for-a-repository)
     ///
     /// The `check_vulnerability_alerts_async` endpoint is enabled with the `dorian` cargo feature.
     ///
@@ -5285,7 +5289,7 @@ impl<'api> Repos<'api> {
     ///
     /// Shows whether dependency alerts are enabled or disabled for a repository. The authenticated user must have admin access to the repository. For more information, see "[About security alerts for vulnerable dependencies](https://help.github.com/en/articles/about-security-alerts-for-vulnerable-dependencies)".
     /// 
-    /// [GitHub API docs for check_vulnerability_alerts](https://docs.github.com/rest/reference/repos/#check-if-vulnerability-alerts-are-enabled-for-a-repository)
+    /// [GitHub API docs for check_vulnerability_alerts](https://docs.github.com/rest/reference/repos#check-if-vulnerability-alerts-are-enabled-for-a-repository)
     ///
     /// The `check_vulnerability_alerts` endpoint is enabled with the `dorian` cargo feature.
     ///
@@ -6109,7 +6113,7 @@ impl<'api> Repos<'api> {
     /// 
     /// This input example shows how you can use the `client_payload` as a test to debug your workflow.
     /// 
-    /// [GitHub API docs for create_dispatch_event](https://docs.github.com/rest/reference/repos/#create-a-repository-dispatch-event)
+    /// [GitHub API docs for create_dispatch_event](https://docs.github.com/rest/reference/repos#create-a-repository-dispatch-event)
     ///
     /// ---
     pub async fn create_dispatch_event_async(&self, owner: &str, repo: &str, body: PostReposCreateDispatchEvent) -> Result<(), ReposCreateDispatchEventError> {
@@ -6157,7 +6161,7 @@ impl<'api> Repos<'api> {
     /// 
     /// This input example shows how you can use the `client_payload` as a test to debug your workflow.
     /// 
-    /// [GitHub API docs for create_dispatch_event](https://docs.github.com/rest/reference/repos/#create-a-repository-dispatch-event)
+    /// [GitHub API docs for create_dispatch_event](https://docs.github.com/rest/reference/repos#create-a-repository-dispatch-event)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -6204,7 +6208,7 @@ impl<'api> Repos<'api> {
     /// *   `public_repo` scope or `repo` scope to create a public repository. Note: For GitHub AE, use `repo` scope to create an internal repository.
     /// *   `repo` scope to create a private repository.
     /// 
-    /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/reference/repos/#create-a-repository-for-the-authenticated-user)
+    /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/reference/repos#create-a-repository-for-the-authenticated-user)
     ///
     /// The `create_for_authenticated_user_async` endpoint is enabled with the `nebula` cargo feature.
     /// The `create_for_authenticated_user_async` endpoint is enabled with the `baptiste` cargo feature.
@@ -6260,7 +6264,7 @@ impl<'api> Repos<'api> {
     /// *   `public_repo` scope or `repo` scope to create a public repository. Note: For GitHub AE, use `repo` scope to create an internal repository.
     /// *   `repo` scope to create a private repository.
     /// 
-    /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/reference/repos/#create-a-repository-for-the-authenticated-user)
+    /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/reference/repos#create-a-repository-for-the-authenticated-user)
     ///
     /// The `create_for_authenticated_user` endpoint is enabled with the `nebula` cargo feature.
     /// The `create_for_authenticated_user` endpoint is enabled with the `baptiste` cargo feature.
@@ -6406,7 +6410,7 @@ impl<'api> Repos<'api> {
     /// *   `public_repo` scope or `repo` scope to create a public repository. Note: For GitHub AE, use `repo` scope to create an internal repository.
     /// *   `repo` scope to create a private repository
     /// 
-    /// [GitHub API docs for create_in_org](https://docs.github.com/rest/reference/repos/#create-an-organization-repository)
+    /// [GitHub API docs for create_in_org](https://docs.github.com/rest/reference/repos#create-an-organization-repository)
     ///
     /// The `create_in_org_async` endpoint is enabled with the `nebula` cargo feature.
     /// The `create_in_org_async` endpoint is enabled with the `baptiste` cargo feature.
@@ -6458,7 +6462,7 @@ impl<'api> Repos<'api> {
     /// *   `public_repo` scope or `repo` scope to create a public repository. Note: For GitHub AE, use `repo` scope to create an internal repository.
     /// *   `repo` scope to create a private repository
     /// 
-    /// [GitHub API docs for create_in_org](https://docs.github.com/rest/reference/repos/#create-an-organization-repository)
+    /// [GitHub API docs for create_in_org](https://docs.github.com/rest/reference/repos#create-an-organization-repository)
     ///
     /// The `create_in_org` endpoint is enabled with the `nebula` cargo feature.
     /// The `create_in_org` endpoint is enabled with the `baptiste` cargo feature.
@@ -6861,7 +6865,7 @@ impl<'api> Repos<'api> {
     /// *   `public_repo` scope or `repo` scope to create a public repository. Note: For GitHub AE, use `repo` scope to create an internal repository.
     /// *   `repo` scope to create a private repository
     /// 
-    /// [GitHub API docs for create_using_template](https://docs.github.com/rest/reference/repos/#create-a-repository-using-a-template)
+    /// [GitHub API docs for create_using_template](https://docs.github.com/rest/reference/repos#create-a-repository-using-a-template)
     ///
     /// The `create_using_template_async` endpoint is enabled with the `baptiste` cargo feature.
     ///
@@ -6909,7 +6913,7 @@ impl<'api> Repos<'api> {
     /// *   `public_repo` scope or `repo` scope to create a public repository. Note: For GitHub AE, use `repo` scope to create an internal repository.
     /// *   `repo` scope to create a private repository
     /// 
-    /// [GitHub API docs for create_using_template](https://docs.github.com/rest/reference/repos/#create-a-repository-using-a-template)
+    /// [GitHub API docs for create_using_template](https://docs.github.com/rest/reference/repos#create-a-repository-using-a-template)
     ///
     /// The `create_using_template` endpoint is enabled with the `baptiste` cargo feature.
     ///
@@ -7120,7 +7124,7 @@ impl<'api> Repos<'api> {
     /// If an organization owner has configured the organization to prevent members from deleting organization-owned
     /// repositories, you will get a `403 Forbidden` response.
     /// 
-    /// [GitHub API docs for delete](https://docs.github.com/rest/reference/repos/#delete-a-repository)
+    /// [GitHub API docs for delete](https://docs.github.com/rest/reference/repos#delete-a-repository)
     ///
     /// ---
     pub async fn delete_async(&self, owner: &str, repo: &str) -> Result<(), ReposDeleteError> {
@@ -7148,6 +7152,7 @@ impl<'api> Repos<'api> {
         } else {
             match github_response.status_code() {
                 403 => Err(ReposDeleteError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                307 => Err(ReposDeleteError::Status307(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(ReposDeleteError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposDeleteError::Generic { code }),
             }
@@ -7163,7 +7168,7 @@ impl<'api> Repos<'api> {
     /// If an organization owner has configured the organization to prevent members from deleting organization-owned
     /// repositories, you will get a `403 Forbidden` response.
     /// 
-    /// [GitHub API docs for delete](https://docs.github.com/rest/reference/repos/#delete-a-repository)
+    /// [GitHub API docs for delete](https://docs.github.com/rest/reference/repos#delete-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -7192,6 +7197,7 @@ impl<'api> Repos<'api> {
         } else {
             match github_response.status_code() {
                 403 => Err(ReposDeleteError::Status403(crate::adapters::to_json(github_response)?)),
+                307 => Err(ReposDeleteError::Status307(crate::adapters::to_json(github_response)?)),
                 404 => Err(ReposDeleteError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposDeleteError::Generic { code }),
             }
@@ -8419,7 +8425,7 @@ impl<'api> Repos<'api> {
     ///
     /// Disables automated security fixes for a repository. The authenticated user must have admin access to the repository. For more information, see "[Configuring automated security fixes](https://help.github.com/en/articles/configuring-automated-security-fixes)".
     /// 
-    /// [GitHub API docs for disable_automated_security_fixes](https://docs.github.com/rest/reference/repos/#disable-automated-security-fixes)
+    /// [GitHub API docs for disable_automated_security_fixes](https://docs.github.com/rest/reference/repos#disable-automated-security-fixes)
     ///
     /// The `disable_automated_security_fixes_async` endpoint is enabled with the `london` cargo feature.
     ///
@@ -8460,7 +8466,7 @@ impl<'api> Repos<'api> {
     ///
     /// Disables automated security fixes for a repository. The authenticated user must have admin access to the repository. For more information, see "[Configuring automated security fixes](https://help.github.com/en/articles/configuring-automated-security-fixes)".
     /// 
-    /// [GitHub API docs for disable_automated_security_fixes](https://docs.github.com/rest/reference/repos/#disable-automated-security-fixes)
+    /// [GitHub API docs for disable_automated_security_fixes](https://docs.github.com/rest/reference/repos#disable-automated-security-fixes)
     ///
     /// The `disable_automated_security_fixes` endpoint is enabled with the `london` cargo feature.
     ///
@@ -8502,7 +8508,7 @@ impl<'api> Repos<'api> {
     ///
     /// Disables dependency alerts and the dependency graph for a repository. The authenticated user must have admin access to the repository. For more information, see "[About security alerts for vulnerable dependencies](https://help.github.com/en/articles/about-security-alerts-for-vulnerable-dependencies)".
     /// 
-    /// [GitHub API docs for disable_vulnerability_alerts](https://docs.github.com/rest/reference/repos/#disable-vulnerability-alerts)
+    /// [GitHub API docs for disable_vulnerability_alerts](https://docs.github.com/rest/reference/repos#disable-vulnerability-alerts)
     ///
     /// The `disable_vulnerability_alerts_async` endpoint is enabled with the `dorian` cargo feature.
     ///
@@ -8543,7 +8549,7 @@ impl<'api> Repos<'api> {
     ///
     /// Disables dependency alerts and the dependency graph for a repository. The authenticated user must have admin access to the repository. For more information, see "[About security alerts for vulnerable dependencies](https://help.github.com/en/articles/about-security-alerts-for-vulnerable-dependencies)".
     /// 
-    /// [GitHub API docs for disable_vulnerability_alerts](https://docs.github.com/rest/reference/repos/#disable-vulnerability-alerts)
+    /// [GitHub API docs for disable_vulnerability_alerts](https://docs.github.com/rest/reference/repos#disable-vulnerability-alerts)
     ///
     /// The `disable_vulnerability_alerts` endpoint is enabled with the `dorian` cargo feature.
     ///
@@ -8755,7 +8761,7 @@ impl<'api> Repos<'api> {
     ///
     /// Enables automated security fixes for a repository. The authenticated user must have admin access to the repository. For more information, see "[Configuring automated security fixes](https://help.github.com/en/articles/configuring-automated-security-fixes)".
     /// 
-    /// [GitHub API docs for enable_automated_security_fixes](https://docs.github.com/rest/reference/repos/#enable-automated-security-fixes)
+    /// [GitHub API docs for enable_automated_security_fixes](https://docs.github.com/rest/reference/repos#enable-automated-security-fixes)
     ///
     /// The `enable_automated_security_fixes_async` endpoint is enabled with the `london` cargo feature.
     ///
@@ -8796,7 +8802,7 @@ impl<'api> Repos<'api> {
     ///
     /// Enables automated security fixes for a repository. The authenticated user must have admin access to the repository. For more information, see "[Configuring automated security fixes](https://help.github.com/en/articles/configuring-automated-security-fixes)".
     /// 
-    /// [GitHub API docs for enable_automated_security_fixes](https://docs.github.com/rest/reference/repos/#enable-automated-security-fixes)
+    /// [GitHub API docs for enable_automated_security_fixes](https://docs.github.com/rest/reference/repos#enable-automated-security-fixes)
     ///
     /// The `enable_automated_security_fixes` endpoint is enabled with the `london` cargo feature.
     ///
@@ -8838,7 +8844,7 @@ impl<'api> Repos<'api> {
     ///
     /// Enables dependency alerts and the dependency graph for a repository. The authenticated user must have admin access to the repository. For more information, see "[About security alerts for vulnerable dependencies](https://help.github.com/en/articles/about-security-alerts-for-vulnerable-dependencies)".
     /// 
-    /// [GitHub API docs for enable_vulnerability_alerts](https://docs.github.com/rest/reference/repos/#enable-vulnerability-alerts)
+    /// [GitHub API docs for enable_vulnerability_alerts](https://docs.github.com/rest/reference/repos#enable-vulnerability-alerts)
     ///
     /// The `enable_vulnerability_alerts_async` endpoint is enabled with the `dorian` cargo feature.
     ///
@@ -8879,7 +8885,7 @@ impl<'api> Repos<'api> {
     ///
     /// Enables dependency alerts and the dependency graph for a repository. The authenticated user must have admin access to the repository. For more information, see "[About security alerts for vulnerable dependencies](https://help.github.com/en/articles/about-security-alerts-for-vulnerable-dependencies)".
     /// 
-    /// [GitHub API docs for enable_vulnerability_alerts](https://docs.github.com/rest/reference/repos/#enable-vulnerability-alerts)
+    /// [GitHub API docs for enable_vulnerability_alerts](https://docs.github.com/rest/reference/repos#enable-vulnerability-alerts)
     ///
     /// The `enable_vulnerability_alerts` endpoint is enabled with the `dorian` cargo feature.
     ///
@@ -8923,7 +8929,7 @@ impl<'api> Repos<'api> {
     /// 
     /// The `parent` and `source` objects are present when the repository is a fork. `parent` is the repository this repository was forked from, `source` is the ultimate source for the network.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/repos/#get-a-repository)
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/repos#get-a-repository)
     ///
     /// The `get_async` endpoint is enabled with the `nebula` cargo feature.
     /// The `get_async` endpoint is enabled with the `scarlet-witch` cargo feature.
@@ -8971,7 +8977,7 @@ impl<'api> Repos<'api> {
     /// 
     /// The `parent` and `source` objects are present when the repository is a fork. `parent` is the repository this repository was forked from, `source` is the ultimate source for the network.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/repos/#get-a-repository)
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/repos#get-a-repository)
     ///
     /// The `get` endpoint is enabled with the `nebula` cargo feature.
     /// The `get` endpoint is enabled with the `scarlet-witch` cargo feature.
@@ -9340,7 +9346,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Get all repository topics
     /// 
-    /// [GitHub API docs for get_all_topics](https://docs.github.com/rest/reference/repos/#get-all-repository-topics)
+    /// [GitHub API docs for get_all_topics](https://docs.github.com/rest/reference/repos#get-all-repository-topics)
     ///
     /// The `get_all_topics_async` endpoint is enabled with the `mercy` cargo feature.
     ///
@@ -9385,7 +9391,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Get all repository topics
     /// 
-    /// [GitHub API docs for get_all_topics](https://docs.github.com/rest/reference/repos/#get-all-repository-topics)
+    /// [GitHub API docs for get_all_topics](https://docs.github.com/rest/reference/repos#get-all-repository-topics)
     ///
     /// The `get_all_topics` endpoint is enabled with the `mercy` cargo feature.
     ///
@@ -13549,7 +13555,7 @@ impl<'api> Repos<'api> {
     /// 
     /// GitHub identifies contributors by author email address. This endpoint groups contribution counts by GitHub user, which includes all associated email addresses. To improve performance, only the first 500 author email addresses in the repository link to GitHub users. The rest will appear as anonymous contributors without associated GitHub user information.
     /// 
-    /// [GitHub API docs for list_contributors](https://docs.github.com/rest/reference/repos/#list-repository-contributors)
+    /// [GitHub API docs for list_contributors](https://docs.github.com/rest/reference/repos#list-repository-contributors)
     ///
     /// ---
     pub async fn list_contributors_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListContributorsParams<'api>>>) -> Result<Vec<Contributor>, ReposListContributorsError> {
@@ -13596,7 +13602,7 @@ impl<'api> Repos<'api> {
     /// 
     /// GitHub identifies contributors by author email address. This endpoint groups contribution counts by GitHub user, which includes all associated email addresses. To improve performance, only the first 500 author email addresses in the repository link to GitHub users. The rest will appear as anonymous contributors without associated GitHub user information.
     /// 
-    /// [GitHub API docs for list_contributors](https://docs.github.com/rest/reference/repos/#list-repository-contributors)
+    /// [GitHub API docs for list_contributors](https://docs.github.com/rest/reference/repos#list-repository-contributors)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -13917,7 +13923,7 @@ impl<'api> Repos<'api> {
     /// 
     /// The authenticated user has explicit permission to access repositories they own, repositories where they are a collaborator, and repositories that they can access through an organization membership.
     /// 
-    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/repos/#list-repositories-for-the-authenticated-user)
+    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/repos#list-repositories-for-the-authenticated-user)
     ///
     /// ---
     pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<ReposListForAuthenticatedUserParams<'api>>>) -> Result<Vec<Repository>, ReposListForAuthenticatedUserError> {
@@ -13965,7 +13971,7 @@ impl<'api> Repos<'api> {
     /// 
     /// The authenticated user has explicit permission to access repositories they own, repositories where they are a collaborator, and repositories that they can access through an organization membership.
     /// 
-    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/repos/#list-repositories-for-the-authenticated-user)
+    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/repos#list-repositories-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -14013,7 +14019,7 @@ impl<'api> Repos<'api> {
     ///
     /// Lists repositories for the specified organization.
     /// 
-    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/repos/#list-organization-repositories)
+    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/repos#list-organization-repositories)
     ///
     /// The `list_for_org_async` endpoint is enabled with the `nebula` cargo feature.
     /// The `list_for_org_async` endpoint is enabled with the `baptiste` cargo feature.
@@ -14060,7 +14066,7 @@ impl<'api> Repos<'api> {
     ///
     /// Lists repositories for the specified organization.
     /// 
-    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/repos/#list-organization-repositories)
+    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/repos#list-organization-repositories)
     ///
     /// The `list_for_org` endpoint is enabled with the `nebula` cargo feature.
     /// The `list_for_org` endpoint is enabled with the `baptiste` cargo feature.
@@ -14109,7 +14115,7 @@ impl<'api> Repos<'api> {
     ///
     /// Lists public repositories for the specified user. Note: For GitHub AE, this endpoint will list internal repositories for the specified user.
     /// 
-    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/repos/#list-repositories-for-a-user)
+    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/repos#list-repositories-for-a-user)
     ///
     /// The `list_for_user_async` endpoint is enabled with the `nebula` cargo feature.
     ///
@@ -14154,7 +14160,7 @@ impl<'api> Repos<'api> {
     ///
     /// Lists public repositories for the specified user. Note: For GitHub AE, this endpoint will list internal repositories for the specified user.
     /// 
-    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/repos/#list-repositories-for-a-user)
+    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/repos#list-repositories-for-a-user)
     ///
     /// The `list_for_user` endpoint is enabled with the `nebula` cargo feature.
     ///
@@ -14465,7 +14471,7 @@ impl<'api> Repos<'api> {
     ///
     /// Lists languages for the specified repository. The value shown for each language is the number of bytes of code written in that language.
     /// 
-    /// [GitHub API docs for list_languages](https://docs.github.com/rest/reference/repos/#list-repository-languages)
+    /// [GitHub API docs for list_languages](https://docs.github.com/rest/reference/repos#list-repository-languages)
     ///
     /// ---
     pub async fn list_languages_async(&self, owner: &str, repo: &str) -> Result<Language, ReposListLanguagesError> {
@@ -14503,7 +14509,7 @@ impl<'api> Repos<'api> {
     ///
     /// Lists languages for the specified repository. The value shown for each language is the number of bytes of code written in that language.
     /// 
-    /// [GitHub API docs for list_languages](https://docs.github.com/rest/reference/repos/#list-repository-languages)
+    /// [GitHub API docs for list_languages](https://docs.github.com/rest/reference/repos#list-repository-languages)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -14628,7 +14634,7 @@ impl<'api> Repos<'api> {
     /// - For GitHub Enterprise Server and GitHub AE, this endpoint will only list repositories available to all users on the enterprise.
     /// - Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header) to get the URL for the next page of repositories.
     /// 
-    /// [GitHub API docs for list_public](https://docs.github.com/rest/reference/repos/#list-public-repositories)
+    /// [GitHub API docs for list_public](https://docs.github.com/rest/reference/repos#list-public-repositories)
     ///
     /// ---
     pub async fn list_public_async(&self, query_params: Option<impl Into<ReposListPublicParams>>) -> Result<Vec<MinimalRepository>, ReposListPublicError> {
@@ -14676,7 +14682,7 @@ impl<'api> Repos<'api> {
     /// - For GitHub Enterprise Server and GitHub AE, this endpoint will only list repositories available to all users on the enterprise.
     /// - Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header) to get the URL for the next page of repositories.
     /// 
-    /// [GitHub API docs for list_public](https://docs.github.com/rest/reference/repos/#list-public-repositories)
+    /// [GitHub API docs for list_public](https://docs.github.com/rest/reference/repos#list-public-repositories)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -14988,7 +14994,7 @@ impl<'api> Repos<'api> {
     ///
     /// # List repository tags
     /// 
-    /// [GitHub API docs for list_tags](https://docs.github.com/rest/reference/repos/#list-repository-tags)
+    /// [GitHub API docs for list_tags](https://docs.github.com/rest/reference/repos#list-repository-tags)
     ///
     /// ---
     pub async fn list_tags_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListTagsParams>>) -> Result<Vec<Tag>, ReposListTagsError> {
@@ -15028,7 +15034,7 @@ impl<'api> Repos<'api> {
     ///
     /// # List repository tags
     /// 
-    /// [GitHub API docs for list_tags](https://docs.github.com/rest/reference/repos/#list-repository-tags)
+    /// [GitHub API docs for list_tags](https://docs.github.com/rest/reference/repos#list-repository-tags)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -15070,7 +15076,7 @@ impl<'api> Repos<'api> {
     ///
     /// # List repository teams
     /// 
-    /// [GitHub API docs for list_teams](https://docs.github.com/rest/reference/repos/#list-repository-teams)
+    /// [GitHub API docs for list_teams](https://docs.github.com/rest/reference/repos#list-repository-teams)
     ///
     /// ---
     pub async fn list_teams_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListTeamsParams>>) -> Result<Vec<Team>, ReposListTeamsError> {
@@ -15110,7 +15116,7 @@ impl<'api> Repos<'api> {
     ///
     /// # List repository teams
     /// 
-    /// [GitHub API docs for list_teams](https://docs.github.com/rest/reference/repos/#list-repository-teams)
+    /// [GitHub API docs for list_teams](https://docs.github.com/rest/reference/repos#list-repository-teams)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -16013,7 +16019,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Replace all repository topics
     /// 
-    /// [GitHub API docs for replace_all_topics](https://docs.github.com/rest/reference/repos/#replace-all-repository-topics)
+    /// [GitHub API docs for replace_all_topics](https://docs.github.com/rest/reference/repos#replace-all-repository-topics)
     ///
     /// The `replace_all_topics_async` endpoint is enabled with the `mercy` cargo feature.
     ///
@@ -16055,7 +16061,7 @@ impl<'api> Repos<'api> {
     ///
     /// # Replace all repository topics
     /// 
-    /// [GitHub API docs for replace_all_topics](https://docs.github.com/rest/reference/repos/#replace-all-repository-topics)
+    /// [GitHub API docs for replace_all_topics](https://docs.github.com/rest/reference/repos#replace-all-repository-topics)
     ///
     /// The `replace_all_topics` endpoint is enabled with the `mercy` cargo feature.
     ///
@@ -16699,7 +16705,7 @@ impl<'api> Repos<'api> {
     ///
     /// A transfer request will need to be accepted by the new owner when transferring a personal repository to another user. The response will contain the original `owner`, and the transfer will continue asynchronously. For more details on the requirements to transfer personal and organization-owned repositories, see [about repository transfers](https://help.github.com/articles/about-repository-transfers/).
     /// 
-    /// [GitHub API docs for transfer](https://docs.github.com/rest/reference/repos/#transfer-a-repository)
+    /// [GitHub API docs for transfer](https://docs.github.com/rest/reference/repos#transfer-a-repository)
     ///
     /// ---
     pub async fn transfer_async(&self, owner: &str, repo: &str, body: PostReposTransfer) -> Result<MinimalRepository, ReposTransferError> {
@@ -16737,7 +16743,7 @@ impl<'api> Repos<'api> {
     ///
     /// A transfer request will need to be accepted by the new owner when transferring a personal repository to another user. The response will contain the original `owner`, and the transfer will continue asynchronously. For more details on the requirements to transfer personal and organization-owned repositories, see [about repository transfers](https://help.github.com/articles/about-repository-transfers/).
     /// 
-    /// [GitHub API docs for transfer](https://docs.github.com/rest/reference/repos/#transfer-a-repository)
+    /// [GitHub API docs for transfer](https://docs.github.com/rest/reference/repos#transfer-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -16808,6 +16814,7 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                307 => Err(ReposUpdateError::Status307(crate::adapters::to_json_async(github_response).await?)),
                 403 => Err(ReposUpdateError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(ReposUpdateError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(ReposUpdateError::Status404(crate::adapters::to_json_async(github_response).await?)),
@@ -16855,6 +16862,7 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                307 => Err(ReposUpdateError::Status307(crate::adapters::to_json(github_response)?)),
                 403 => Err(ReposUpdateError::Status403(crate::adapters::to_json(github_response)?)),
                 422 => Err(ReposUpdateError::Status422(crate::adapters::to_json(github_response)?)),
                 404 => Err(ReposUpdateError::Status404(crate::adapters::to_json(github_response)?)),
