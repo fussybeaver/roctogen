@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.5.0 (16/05/2021)
+- [**closed**] Update OpenAPI descriptions [#22](https://github.com/fussybeaver/roctogen/pull/22)
+
+---
+
 ## v0.4.0 (05/05/2021)
 - [**closed**] Do not peg bindgen version [#18](https://github.com/fussybeaver/roctogen/pull/18)
 
