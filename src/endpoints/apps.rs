@@ -992,7 +992,7 @@ pub struct AppsListInstallationsParams<'req> {
     /// Page number of the results to fetch.
     page: Option<u16>, 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    since: Option<&'req str>, 
+    since: Option<chrono::DateTime<chrono::Utc>>, 
     
     outdated: Option<&'req str>
 }
@@ -1023,7 +1023,7 @@ impl<'req> AppsListInstallationsParams<'req> {
     }
 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
-    pub fn since(self, since: &'req str) -> Self {
+    pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             per_page: self.per_page, 
             page: self.page, 
@@ -1654,7 +1654,7 @@ impl<'api> Apps<'api> {
     ///
     /// Use this endpoint to complete the handshake necessary when implementing the [GitHub App Manifest flow](https://docs.github.com/apps/building-github-apps/creating-github-apps-from-a-manifest/). When you create a GitHub App with the manifest flow, you receive a temporary `code` used to retrieve the GitHub App's `id`, `pem` (private key), and `webhook_secret`.
     /// 
-    /// [GitHub API docs for create_from_manifest](https://docs.github.com/rest/reference/apps/#create-a-github-app-from-a-manifest)
+    /// [GitHub API docs for create_from_manifest](https://docs.github.com/rest/reference/apps#create-a-github-app-from-a-manifest)
     ///
     /// ---
     pub async fn create_from_manifest_async(&self, code: &str, body: HashMap<String, Value>) -> Result<PostAppsCreateFromManifestResponse201, AppsCreateFromManifestError> {
@@ -1694,7 +1694,7 @@ impl<'api> Apps<'api> {
     ///
     /// Use this endpoint to complete the handshake necessary when implementing the [GitHub App Manifest flow](https://docs.github.com/apps/building-github-apps/creating-github-apps-from-a-manifest/). When you create a GitHub App with the manifest flow, you receive a temporary `code` used to retrieve the GitHub App's `id`, `pem` (private key), and `webhook_secret`.
     /// 
-    /// [GitHub API docs for create_from_manifest](https://docs.github.com/rest/reference/apps/#create-a-github-app-from-a-manifest)
+    /// [GitHub API docs for create_from_manifest](https://docs.github.com/rest/reference/apps#create-a-github-app-from-a-manifest)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1909,7 +1909,7 @@ impl<'api> Apps<'api> {
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
     /// 
-    /// [GitHub API docs for delete_installation](https://docs.github.com/rest/reference/apps/#delete-an-installation-for-the-authenticated-app)
+    /// [GitHub API docs for delete_installation](https://docs.github.com/rest/reference/apps#delete-an-installation-for-the-authenticated-app)
     ///
     /// ---
     pub async fn delete_installation_async(&self, installation_id: i32) -> Result<(), AppsDeleteInstallationError> {
@@ -1950,7 +1950,7 @@ impl<'api> Apps<'api> {
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
     /// 
-    /// [GitHub API docs for delete_installation](https://docs.github.com/rest/reference/apps/#delete-an-installation-for-the-authenticated-app)
+    /// [GitHub API docs for delete_installation](https://docs.github.com/rest/reference/apps#delete-an-installation-for-the-authenticated-app)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2071,7 +2071,7 @@ impl<'api> Apps<'api> {
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
     /// 
-    /// [GitHub API docs for get_authenticated](https://docs.github.com/rest/reference/apps/#get-the-authenticated-app)
+    /// [GitHub API docs for get_authenticated](https://docs.github.com/rest/reference/apps#get-the-authenticated-app)
     ///
     /// ---
     pub async fn get_authenticated_async(&self) -> Result<Integration, AppsGetAuthenticatedError> {
@@ -2111,7 +2111,7 @@ impl<'api> Apps<'api> {
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
     /// 
-    /// [GitHub API docs for get_authenticated](https://docs.github.com/rest/reference/apps/#get-the-authenticated-app)
+    /// [GitHub API docs for get_authenticated](https://docs.github.com/rest/reference/apps#get-the-authenticated-app)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2239,7 +2239,7 @@ impl<'api> Apps<'api> {
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
     /// 
-    /// [GitHub API docs for get_installation](https://docs.github.com/rest/reference/apps/#get-an-installation-for-the-authenticated-app)
+    /// [GitHub API docs for get_installation](https://docs.github.com/rest/reference/apps#get-an-installation-for-the-authenticated-app)
     ///
     /// ---
     pub async fn get_installation_async(&self, installation_id: i32) -> Result<Installation, AppsGetInstallationError> {
@@ -2281,7 +2281,7 @@ impl<'api> Apps<'api> {
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
     /// 
-    /// [GitHub API docs for get_installation](https://docs.github.com/rest/reference/apps/#get-an-installation-for-the-authenticated-app)
+    /// [GitHub API docs for get_installation](https://docs.github.com/rest/reference/apps#get-an-installation-for-the-authenticated-app)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2324,7 +2324,7 @@ impl<'api> Apps<'api> {
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
     /// 
-    /// [GitHub API docs for get_org_installation](https://docs.github.com/rest/reference/apps/#get-an-organization-installation-for-the-authenticated-app)
+    /// [GitHub API docs for get_org_installation](https://docs.github.com/rest/reference/apps#get-an-organization-installation-for-the-authenticated-app)
     ///
     /// ---
     pub async fn get_org_installation_async(&self, org: &str) -> Result<Installation, AppsGetOrgInstallationError> {
@@ -2364,7 +2364,7 @@ impl<'api> Apps<'api> {
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
     /// 
-    /// [GitHub API docs for get_org_installation](https://docs.github.com/rest/reference/apps/#get-an-organization-installation-for-the-authenticated-app)
+    /// [GitHub API docs for get_org_installation](https://docs.github.com/rest/reference/apps#get-an-organization-installation-for-the-authenticated-app)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2405,7 +2405,7 @@ impl<'api> Apps<'api> {
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
     /// 
-    /// [GitHub API docs for get_repo_installation](https://docs.github.com/rest/reference/apps/#get-a-repository-installation-for-the-authenticated-app)
+    /// [GitHub API docs for get_repo_installation](https://docs.github.com/rest/reference/apps#get-a-repository-installation-for-the-authenticated-app)
     ///
     /// ---
     pub async fn get_repo_installation_async(&self, owner: &str, repo: &str) -> Result<Installation, AppsGetRepoInstallationError> {
@@ -2447,7 +2447,7 @@ impl<'api> Apps<'api> {
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
     /// 
-    /// [GitHub API docs for get_repo_installation](https://docs.github.com/rest/reference/apps/#get-a-repository-installation-for-the-authenticated-app)
+    /// [GitHub API docs for get_repo_installation](https://docs.github.com/rest/reference/apps#get-a-repository-installation-for-the-authenticated-app)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2660,7 +2660,7 @@ impl<'api> Apps<'api> {
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
     /// 
-    /// [GitHub API docs for get_user_installation](https://docs.github.com/rest/reference/apps/#get-a-user-installation-for-the-authenticated-app)
+    /// [GitHub API docs for get_user_installation](https://docs.github.com/rest/reference/apps#get-a-user-installation-for-the-authenticated-app)
     ///
     /// ---
     pub async fn get_user_installation_async(&self, username: &str) -> Result<Installation, AppsGetUserInstallationError> {
@@ -2700,7 +2700,7 @@ impl<'api> Apps<'api> {
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
     /// 
-    /// [GitHub API docs for get_user_installation](https://docs.github.com/rest/reference/apps/#get-a-user-installation-for-the-authenticated-app)
+    /// [GitHub API docs for get_user_installation](https://docs.github.com/rest/reference/apps#get-a-user-installation-for-the-authenticated-app)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3120,7 +3120,7 @@ impl<'api> Apps<'api> {
     /// 
     /// The permissions the installation has are included under the `permissions` key.
     /// 
-    /// [GitHub API docs for list_installations](https://docs.github.com/rest/reference/apps/#list-installations-for-the-authenticated-app)
+    /// [GitHub API docs for list_installations](https://docs.github.com/rest/reference/apps#list-installations-for-the-authenticated-app)
     ///
     /// ---
     pub async fn list_installations_async(&self, query_params: Option<impl Into<AppsListInstallationsParams<'api>>>) -> Result<Vec<Installation>, AppsListInstallationsError> {
@@ -3164,7 +3164,7 @@ impl<'api> Apps<'api> {
     /// 
     /// The permissions the installation has are included under the `permissions` key.
     /// 
-    /// [GitHub API docs for list_installations](https://docs.github.com/rest/reference/apps/#list-installations-for-the-authenticated-app)
+    /// [GitHub API docs for list_installations](https://docs.github.com/rest/reference/apps#list-installations-for-the-authenticated-app)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4369,7 +4369,7 @@ impl<'api> Apps<'api> {
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
     /// 
-    /// [GitHub API docs for suspend_installation](https://docs.github.com/rest/reference/apps/#suspend-an-app-installation)
+    /// [GitHub API docs for suspend_installation](https://docs.github.com/rest/reference/apps#suspend-an-app-installation)
     ///
     /// ---
     pub async fn suspend_installation_async(&self, installation_id: i32) -> Result<(), AppsSuspendInstallationError> {
@@ -4410,7 +4410,7 @@ impl<'api> Apps<'api> {
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
     /// 
-    /// [GitHub API docs for suspend_installation](https://docs.github.com/rest/reference/apps/#suspend-an-app-installation)
+    /// [GitHub API docs for suspend_installation](https://docs.github.com/rest/reference/apps#suspend-an-app-installation)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4452,7 +4452,7 @@ impl<'api> Apps<'api> {
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
     /// 
-    /// [GitHub API docs for unsuspend_installation](https://docs.github.com/rest/reference/apps/#unsuspend-an-app-installation)
+    /// [GitHub API docs for unsuspend_installation](https://docs.github.com/rest/reference/apps#unsuspend-an-app-installation)
     ///
     /// ---
     pub async fn unsuspend_installation_async(&self, installation_id: i32) -> Result<(), AppsUnsuspendInstallationError> {
@@ -4493,7 +4493,7 @@ impl<'api> Apps<'api> {
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
     /// 
-    /// [GitHub API docs for unsuspend_installation](https://docs.github.com/rest/reference/apps/#unsuspend-an-app-installation)
+    /// [GitHub API docs for unsuspend_installation](https://docs.github.com/rest/reference/apps#unsuspend-an-app-installation)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

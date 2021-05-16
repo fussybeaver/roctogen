@@ -41,7 +41,6 @@
 //!   - [Orgs](https://docs.rs/roctogen/latest/roctogen/endpoints/orgs/struct.Orgs.html)
 //!   - [Users](https://docs.rs/roctogen/latest/roctogen/endpoints/users/struct.Users.html)
 //!   - [Apps](https://docs.rs/roctogen/latest/roctogen/endpoints/apps/struct.Apps.html)
-//!   - [AuditLog](https://docs.rs/roctogen/latest/roctogen/endpoints/audit_log/struct.AuditLog.html)
 //!   - [RateLimit](https://docs.rs/roctogen/latest/roctogen/endpoints/rate_limit/struct.RateLimit.html)
 //!   - [Repos](https://docs.rs/roctogen/latest/roctogen/endpoints/repos/struct.Repos.html)
 //!   - [SecretScanning](https://docs.rs/roctogen/latest/roctogen/endpoints/secret_scanning/struct.SecretScanning.html)

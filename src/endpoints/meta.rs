@@ -132,7 +132,7 @@ impl<'api> Meta<'api> {
     /// 
     /// **Note:** The IP addresses shown in the documentation's response are only example values. You must always query the API directly to get the latest list of IP addresses.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/meta/#get-github-meta-information)
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/meta#get-github-meta-information)
     ///
     /// ---
     pub async fn get_async(&self) -> Result<ApiOverview, MetaGetError> {
@@ -173,7 +173,7 @@ impl<'api> Meta<'api> {
     /// 
     /// **Note:** The IP addresses shown in the documentation's response are only example values. You must always query the API directly to get the latest list of IP addresses.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/meta/#get-github-meta-information)
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/meta#get-github-meta-information)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -212,7 +212,8 @@ impl<'api> Meta<'api> {
     /// # Get Octocat
     ///
     /// Get the octocat as ASCII art
-    
+    /// 
+    /// [GitHub API docs for get_octocat](https://docs.github.com/rest/reference/meta#get-octocat)
     ///
     /// ---
     pub async fn get_octocat_async(&self, query_params: Option<impl Into<MetaGetOctocatParams<'api>>>) -> Result<String, MetaGetOctocatError> {
@@ -253,7 +254,8 @@ impl<'api> Meta<'api> {
     /// # Get Octocat
     ///
     /// Get the octocat as ASCII art
-    
+    /// 
+    /// [GitHub API docs for get_octocat](https://docs.github.com/rest/reference/meta#get-octocat)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -371,7 +373,8 @@ impl<'api> Meta<'api> {
     /// # GitHub API Root
     ///
     /// Get Hypermedia links to resources accessible in GitHub's REST API
-    
+    /// 
+    /// [GitHub API docs for root](https://docs.github.com/rest/overview/resources-in-the-rest-api#root-endpoint)
     ///
     /// ---
     pub async fn root_async(&self) -> Result<GetMetaRootResponse200, MetaRootError> {
@@ -408,7 +411,8 @@ impl<'api> Meta<'api> {
     /// # GitHub API Root
     ///
     /// Get Hypermedia links to resources accessible in GitHub's REST API
-    
+    /// 
+    /// [GitHub API docs for root](https://docs.github.com/rest/overview/resources-in-the-rest-api#root-endpoint)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

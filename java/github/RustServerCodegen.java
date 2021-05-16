@@ -3,6 +3,7 @@ package github;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -259,7 +260,6 @@ public class RustServerCodegen extends DefaultCodegenConfig {
         }
 
         return camelizedName;
-
     }
 
     @Override
@@ -758,6 +758,7 @@ public class RustServerCodegen extends DefaultCodegenConfig {
         if (property.getDatatype() == null) {
             property.setDatatype("Value");
         }
+
         if (property.getDatatype().equals("datetime")) {
             property.setDatatype("DateTime<Utc>");
         }
@@ -840,9 +841,13 @@ public class RustServerCodegen extends DefaultCodegenConfig {
             }
         } else if (p instanceof IntegerSchema) {
             if (SchemaTypeUtil.INTEGER64_FORMAT.equals(p.getFormat())) {
-                return p.getDefault().toString();
+                if (p.getDefault() != null) {
+                    return p.getDefault().toString();
+                }
             } else if (SchemaTypeUtil.INTEGER32_FORMAT.equals(p.getFormat())) {
-                return p.getDefault().toString();
+                if (p.getDefault() != null) {
+                    return p.getDefault().toString();
+                }
             }
         }
 
@@ -1030,7 +1035,11 @@ public class RustServerCodegen extends DefaultCodegenConfig {
             if (!(parameterSchema instanceof ArraySchema) && !(parameterSchema instanceof MapSchema)
                     && !(parameterSchema instanceof FileSchema) && !(parameterSchema instanceof BinarySchema)
                     && !(parameterSchema instanceof IntegerSchema)) {
-                codegenParameter.dataType = camelize(codegenParameter.dataType);
+
+                Collection<String> typeMappingValues = typeMapping.values();
+                if (!typeMappingValues.contains(codegenParameter.dataType)) {
+                    codegenParameter.dataType = camelize(codegenParameter.dataType);
+                }
             }
         }
         return codegenParameter;

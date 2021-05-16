@@ -2193,7 +2193,7 @@ impl<'api> Users<'api> {
     /// 
     /// If the authenticated user is authenticated through OAuth without the `user` scope, then the response lists only public profile information.
     /// 
-    /// [GitHub API docs for get_authenticated](https://docs.github.com/rest/reference/users/#get-the-authenticated-user)
+    /// [GitHub API docs for get_authenticated](https://docs.github.com/rest/reference/users#get-the-authenticated-user)
     ///
     /// ---
     pub async fn get_authenticated_async(&self) -> Result<GetUsersGetByUsernameResponse200, UsersGetAuthenticatedError> {
@@ -2236,7 +2236,7 @@ impl<'api> Users<'api> {
     /// 
     /// If the authenticated user is authenticated through OAuth without the `user` scope, then the response lists only public profile information.
     /// 
-    /// [GitHub API docs for get_authenticated](https://docs.github.com/rest/reference/users/#get-the-authenticated-user)
+    /// [GitHub API docs for get_authenticated](https://docs.github.com/rest/reference/users#get-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2284,7 +2284,7 @@ impl<'api> Users<'api> {
     /// 
     /// The Emails API enables you to list all of your email addresses, and toggle a primary email to be visible publicly. For more information, see "[Emails API](https://docs.github.com/rest/reference/users#emails)".
     /// 
-    /// [GitHub API docs for get_by_username](https://docs.github.com/rest/reference/users/#get-a-user)
+    /// [GitHub API docs for get_by_username](https://docs.github.com/rest/reference/users#get-a-user)
     ///
     /// ---
     pub async fn get_by_username_async(&self, username: &str) -> Result<GetUsersGetByUsernameResponse200, UsersGetByUsernameError> {
@@ -2330,7 +2330,7 @@ impl<'api> Users<'api> {
     /// 
     /// The Emails API enables you to list all of your email addresses, and toggle a primary email to be visible publicly. For more information, see "[Emails API](https://docs.github.com/rest/reference/users#emails)".
     /// 
-    /// [GitHub API docs for get_by_username](https://docs.github.com/rest/reference/users/#get-a-user)
+    /// [GitHub API docs for get_by_username](https://docs.github.com/rest/reference/users#get-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2378,7 +2378,7 @@ impl<'api> Users<'api> {
     ///   https://api.github.com/users/octocat/hovercard?subject_type=repository&subject_id=1300192
     /// ```
     /// 
-    /// [GitHub API docs for get_context_for_user](https://docs.github.com/rest/reference/users/#get-contextual-information-for-a-user)
+    /// [GitHub API docs for get_context_for_user](https://docs.github.com/rest/reference/users#get-contextual-information-for-a-user)
     ///
     /// ---
     pub async fn get_context_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersGetContextForUserParams<'api>>>) -> Result<Hovercard, UsersGetContextForUserError> {
@@ -2429,7 +2429,7 @@ impl<'api> Users<'api> {
     ///   https://api.github.com/users/octocat/hovercard?subject_type=repository&subject_id=1300192
     /// ```
     /// 
-    /// [GitHub API docs for get_context_for_user](https://docs.github.com/rest/reference/users/#get-contextual-information-for-a-user)
+    /// [GitHub API docs for get_context_for_user](https://docs.github.com/rest/reference/users#get-contextual-information-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2647,7 +2647,7 @@ impl<'api> Users<'api> {
     /// 
     /// Note: Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header) to get the URL for the next page of users.
     /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/users/#list-users)
+    /// [GitHub API docs for list](https://docs.github.com/rest/reference/users#list-users)
     ///
     /// ---
     pub async fn list_async(&self, query_params: Option<impl Into<UsersListParams>>) -> Result<Vec<SimpleUser>, UsersListError> {
@@ -2692,7 +2692,7 @@ impl<'api> Users<'api> {
     /// 
     /// Note: Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header) to get the URL for the next page of users.
     /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/users/#list-users)
+    /// [GitHub API docs for list](https://docs.github.com/rest/reference/users#list-users)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

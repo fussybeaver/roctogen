@@ -235,6 +235,23 @@ pub enum EnterpriseAdminGetAllowedActionsEnterpriseError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Get the audit log for an enterprise](EnterpriseAdmin::get_audit_log_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum EnterpriseAdminGetAuditLogError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Get GitHub Actions permissions for an enterprise](EnterpriseAdmin::get_github_actions_permissions_enterprise_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum EnterpriseAdminGetGithubActionsPermissionsEnterpriseError {
@@ -695,6 +712,131 @@ pub enum EnterpriseAdminUpdateSelfHostedRunnerGroupForEnterpriseError {
 }
 
 
+/// Query parameters for the [Get the audit log for an enterprise](EnterpriseAdmin::get_audit_log_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct EnterpriseAdminGetAuditLogParams<'req> {
+    /// A search phrase. For more information, see [Searching the audit log](https://docs.github.com/github/setting-up-and-managing-organizations-and-teams/reviewing-the-audit-log-for-your-organization#searching-the-audit-log).
+    phrase: Option<&'req str>, 
+    /// The event types to include:  - `web` - returns web (non-Git) events - `git` - returns Git events - `all` - returns both web and Git events  The default is `web`.
+    include: Option<&'req str>, 
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header). If specified, the query only searches for events after this cursor.
+    after: Option<&'req str>, 
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header). If specified, the query only searches for events before this cursor.
+    before: Option<&'req str>, 
+    /// The order of audit log events. To list newest events first, specify `desc`. To list oldest events first, specify `asc`.  The default is `desc`.
+    order: Option<&'req str>, 
+    /// Page number of the results to fetch.
+    page: Option<u16>, 
+    /// Results per page (max 100).
+    per_page: Option<u16>
+}
+
+impl<'req> EnterpriseAdminGetAuditLogParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// A search phrase. For more information, see [Searching the audit log](https://docs.github.com/github/setting-up-and-managing-organizations-and-teams/reviewing-the-audit-log-for-your-organization#searching-the-audit-log).
+    pub fn phrase(self, phrase: &'req str) -> Self {
+        Self { 
+            phrase: Some(phrase),
+            include: self.include, 
+            after: self.after, 
+            before: self.before, 
+            order: self.order, 
+            page: self.page, 
+            per_page: self.per_page, 
+        }
+    }
+
+    /// The event types to include:  - `web` - returns web (non-Git) events - `git` - returns Git events - `all` - returns both web and Git events  The default is `web`.
+    pub fn include(self, include: &'req str) -> Self {
+        Self { 
+            phrase: self.phrase, 
+            include: Some(include),
+            after: self.after, 
+            before: self.before, 
+            order: self.order, 
+            page: self.page, 
+            per_page: self.per_page, 
+        }
+    }
+
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header). If specified, the query only searches for events after this cursor.
+    pub fn after(self, after: &'req str) -> Self {
+        Self { 
+            phrase: self.phrase, 
+            include: self.include, 
+            after: Some(after),
+            before: self.before, 
+            order: self.order, 
+            page: self.page, 
+            per_page: self.per_page, 
+        }
+    }
+
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header). If specified, the query only searches for events before this cursor.
+    pub fn before(self, before: &'req str) -> Self {
+        Self { 
+            phrase: self.phrase, 
+            include: self.include, 
+            after: self.after, 
+            before: Some(before),
+            order: self.order, 
+            page: self.page, 
+            per_page: self.per_page, 
+        }
+    }
+
+    /// The order of audit log events. To list newest events first, specify `desc`. To list oldest events first, specify `asc`.  The default is `desc`.
+    pub fn order(self, order: &'req str) -> Self {
+        Self { 
+            phrase: self.phrase, 
+            include: self.include, 
+            after: self.after, 
+            before: self.before, 
+            order: Some(order),
+            page: self.page, 
+            per_page: self.per_page, 
+        }
+    }
+
+    /// Page number of the results to fetch.
+    pub fn page(self, page: u16) -> Self {
+        Self { 
+            phrase: self.phrase, 
+            include: self.include, 
+            after: self.after, 
+            before: self.before, 
+            order: self.order, 
+            page: Some(page),
+            per_page: self.per_page, 
+        }
+    }
+
+    /// Results per page (max 100).
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self { 
+            phrase: self.phrase, 
+            include: self.include, 
+            after: self.after, 
+            before: self.before, 
+            order: self.order, 
+            page: self.page, 
+            per_page: Some(per_page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for EnterpriseAdminGetAuditLogParams<'enc> {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [Get SCIM provisioning information for an enterprise group](EnterpriseAdmin::get_provisioning_information_for_enterprise_group_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct EnterpriseAdminGetProvisioningInformationForEnterpriseGroupParams<'req> {
@@ -2016,6 +2158,92 @@ impl<'api> EnterpriseAdmin<'api> {
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminGetAllowedActionsEnterpriseError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get the audit log for an enterprise
+    ///
+    /// Gets the audit log for an enterprise. To use this endpoint, you must be an enterprise admin, and you must use an access token with the `admin:enterprise` scope.
+    /// 
+    /// [GitHub API docs for get_audit_log](https://docs.github.com/rest/reference/enterprise-admin#get-the-audit-log-for-an-enterprise)
+    ///
+    /// ---
+    pub async fn get_audit_log_async(&self, enterprise: &str, query_params: Option<impl Into<EnterpriseAdminGetAuditLogParams<'api>>>) -> Result<Vec<AuditLogEvent>, EnterpriseAdminGetAuditLogError> {
+
+        let mut request_uri = format!("{}/enterprises/{}/audit-log", super::GITHUB_BASE_API_URL, enterprise);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(EnterpriseAdminGetAuditLogError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get the audit log for an enterprise
+    ///
+    /// Gets the audit log for an enterprise. To use this endpoint, you must be an enterprise admin, and you must use an access token with the `admin:enterprise` scope.
+    /// 
+    /// [GitHub API docs for get_audit_log](https://docs.github.com/rest/reference/enterprise-admin#get-the-audit-log-for-an-enterprise)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_audit_log(&self, enterprise: &str, query_params: Option<impl Into<EnterpriseAdminGetAuditLogParams<'api>>>) -> Result<Vec<AuditLogEvent>, EnterpriseAdminGetAuditLogError> {
+
+        let mut request_uri = format!("{}/enterprises/{}/audit-log", super::GITHUB_BASE_API_URL, enterprise);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: EnterpriseAdminGetAuditLogParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(EnterpriseAdminGetAuditLogError::Generic { code }),
             }
         }
     }

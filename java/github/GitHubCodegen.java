@@ -211,7 +211,7 @@ public class GitHubCodegen extends RustServerCodegen {
                 mapLikeModels.put(name, listProps);
             }
         }
-
+    
         return property;
     }
 
@@ -286,13 +286,14 @@ public class GitHubCodegen extends RustServerCodegen {
                 if (prop.baseName.equals("score") && prop.datatype.equals("i64")) {
                     prop.datatype = "f32";
                 }
+
             }
 
             if (mapLikeModels.containsKey(model.name)) {
                 model.vars = mapLikeModels.get(model.name);
             }
         }
-
+   
         return newObjs;
     }
 

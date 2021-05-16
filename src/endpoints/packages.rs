@@ -1002,7 +1002,7 @@ impl<'api> Packages<'api> {
     /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
-    /// [GitHub API docs for get_all_package_versions_for_package_owned_by_org](https://docs.github.com/rest/reference/packages#get-all-package-versions-for-a-package-owned-by-the-authenticated-user)
+    /// [GitHub API docs for get_all_package_versions_for_package_owned_by_org](https://docs.github.com/rest/reference/packages#get-all-package-versions-for-a-package-owned-by-an-organization)
     ///
     /// ---
     pub async fn get_all_package_versions_for_package_owned_by_org_async(&self, package_type: &str, package_name: &str, org: &str, query_params: Option<impl Into<PackagesGetAllPackageVersionsForPackageOwnedByOrgParams<'api>>>) -> Result<Vec<PackageVersion>, PackagesGetAllPackageVersionsForPackageOwnedByOrgError> {
@@ -1050,7 +1050,7 @@ impl<'api> Packages<'api> {
     /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
-    /// [GitHub API docs for get_all_package_versions_for_package_owned_by_org](https://docs.github.com/rest/reference/packages#get-all-package-versions-for-a-package-owned-by-the-authenticated-user)
+    /// [GitHub API docs for get_all_package_versions_for_package_owned_by_org](https://docs.github.com/rest/reference/packages#get-all-package-versions-for-a-package-owned-by-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

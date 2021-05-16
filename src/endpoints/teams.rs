@@ -2339,7 +2339,7 @@ impl<'api> Teams<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `PUT /organizations/{org_id}/team/{team_id}/projects/{project_id}`.
     /// 
-    /// [GitHub API docs for add_or_update_project_permissions_in_org](https://docs.github.com/rest/reference/teams/#add-or-update-team-project-permissions)
+    /// [GitHub API docs for add_or_update_project_permissions_in_org](https://docs.github.com/rest/reference/teams#add-or-update-team-project-permissions)
     ///
     /// The `add_or_update_project_permissions_in_org_async` endpoint is enabled with the `inertia` cargo feature.
     ///
@@ -2383,7 +2383,7 @@ impl<'api> Teams<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `PUT /organizations/{org_id}/team/{team_id}/projects/{project_id}`.
     /// 
-    /// [GitHub API docs for add_or_update_project_permissions_in_org](https://docs.github.com/rest/reference/teams/#add-or-update-team-project-permissions)
+    /// [GitHub API docs for add_or_update_project_permissions_in_org](https://docs.github.com/rest/reference/teams#add-or-update-team-project-permissions)
     ///
     /// The `add_or_update_project_permissions_in_org` endpoint is enabled with the `inertia` cargo feature.
     ///
@@ -2697,7 +2697,7 @@ impl<'api> Teams<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/projects/{project_id}`.
     /// 
-    /// [GitHub API docs for check_permissions_for_project_in_org](https://docs.github.com/rest/reference/teams/#check-team-permissions-for-a-project)
+    /// [GitHub API docs for check_permissions_for_project_in_org](https://docs.github.com/rest/reference/teams#check-team-permissions-for-a-project)
     ///
     /// The `check_permissions_for_project_in_org_async` endpoint is enabled with the `inertia` cargo feature.
     ///
@@ -2741,7 +2741,7 @@ impl<'api> Teams<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/projects/{project_id}`.
     /// 
-    /// [GitHub API docs for check_permissions_for_project_in_org](https://docs.github.com/rest/reference/teams/#check-team-permissions-for-a-project)
+    /// [GitHub API docs for check_permissions_for_project_in_org](https://docs.github.com/rest/reference/teams#check-team-permissions-for-a-project)
     ///
     /// The `check_permissions_for_project_in_org` endpoint is enabled with the `inertia` cargo feature.
     ///
@@ -3059,7 +3059,7 @@ impl<'api> Teams<'api> {
     /// 
     /// When you create a new team, you automatically become a team maintainer without explicitly adding yourself to the optional array of `maintainers`. For more information, see "[About teams](https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/about-teams)".
     /// 
-    /// [GitHub API docs for create](https://docs.github.com/rest/reference/teams/#create-a-team)
+    /// [GitHub API docs for create](https://docs.github.com/rest/reference/teams#create-a-team)
     ///
     /// ---
     pub async fn create_async(&self, org: &str, body: PostTeamsCreate) -> Result<TeamFull, TeamsCreateError> {
@@ -3101,7 +3101,7 @@ impl<'api> Teams<'api> {
     /// 
     /// When you create a new team, you automatically become a team maintainer without explicitly adding yourself to the optional array of `maintainers`. For more information, see "[About teams](https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/about-teams)".
     /// 
-    /// [GitHub API docs for create](https://docs.github.com/rest/reference/teams/#create-a-team)
+    /// [GitHub API docs for create](https://docs.github.com/rest/reference/teams#create-a-team)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4008,7 +4008,7 @@ impl<'api> Teams<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}`.
     /// 
-    /// [GitHub API docs for delete_in_org](https://docs.github.com/rest/reference/teams/#delete-a-team)
+    /// [GitHub API docs for delete_in_org](https://docs.github.com/rest/reference/teams#delete-a-team)
     ///
     /// ---
     pub async fn delete_in_org_async(&self, org: &str, team_slug: &str) -> Result<(), TeamsDeleteInOrgError> {
@@ -4050,7 +4050,7 @@ impl<'api> Teams<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}`.
     /// 
-    /// [GitHub API docs for delete_in_org](https://docs.github.com/rest/reference/teams/#delete-a-team)
+    /// [GitHub API docs for delete_in_org](https://docs.github.com/rest/reference/teams#delete-a-team)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4180,7 +4180,7 @@ impl<'api> Teams<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}`.
     /// 
-    /// [GitHub API docs for get_by_name](https://docs.github.com/rest/reference/teams/#get-a-team-by-name)
+    /// [GitHub API docs for get_by_name](https://docs.github.com/rest/reference/teams#get-a-team-by-name)
     ///
     /// ---
     pub async fn get_by_name_async(&self, org: &str, team_slug: &str) -> Result<TeamFull, TeamsGetByNameError> {
@@ -4221,7 +4221,7 @@ impl<'api> Teams<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}`.
     /// 
-    /// [GitHub API docs for get_by_name](https://docs.github.com/rest/reference/teams/#get-a-team-by-name)
+    /// [GitHub API docs for get_by_name](https://docs.github.com/rest/reference/teams#get-a-team-by-name)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4969,7 +4969,7 @@ impl<'api> Teams<'api> {
     ///
     /// Lists all teams in an organization that are visible to the authenticated user.
     /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/teams/#list-teams)
+    /// [GitHub API docs for list](https://docs.github.com/rest/reference/teams#list-teams)
     ///
     /// ---
     pub async fn list_async(&self, org: &str, query_params: Option<impl Into<TeamsListParams>>) -> Result<Vec<Team>, TeamsListError> {
@@ -5012,7 +5012,7 @@ impl<'api> Teams<'api> {
     ///
     /// Lists all teams in an organization that are visible to the authenticated user.
     /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/teams/#list-teams)
+    /// [GitHub API docs for list](https://docs.github.com/rest/reference/teams#list-teams)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5059,7 +5059,7 @@ impl<'api> Teams<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/teams`.
     /// 
-    /// [GitHub API docs for list_child_in_org](https://docs.github.com/rest/reference/teams/#list-child-teams)
+    /// [GitHub API docs for list_child_in_org](https://docs.github.com/rest/reference/teams#list-child-teams)
     ///
     /// ---
     pub async fn list_child_in_org_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListChildInOrgParams>>) -> Result<Vec<Team>, TeamsListChildInOrgError> {
@@ -5103,7 +5103,7 @@ impl<'api> Teams<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/teams`.
     /// 
-    /// [GitHub API docs for list_child_in_org](https://docs.github.com/rest/reference/teams/#list-child-teams)
+    /// [GitHub API docs for list_child_in_org](https://docs.github.com/rest/reference/teams#list-child-teams)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5623,7 +5623,7 @@ impl<'api> Teams<'api> {
     ///
     /// List all of the teams across all of the organizations to which the authenticated user belongs. This method requires `user`, `repo`, or `read:org` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/) when authenticating via [OAuth](https://docs.github.com/apps/building-oauth-apps/).
     /// 
-    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/teams/#list-teams-for-the-authenticated-user)
+    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/teams#list-teams-for-the-authenticated-user)
     ///
     /// ---
     pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<TeamsListForAuthenticatedUserParams>>) -> Result<Vec<TeamFull>, TeamsListForAuthenticatedUserError> {
@@ -5668,7 +5668,7 @@ impl<'api> Teams<'api> {
     ///
     /// List all of the teams across all of the organizations to which the authenticated user belongs. This method requires `user`, `repo`, or `read:org` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/) when authenticating via [OAuth](https://docs.github.com/apps/building-oauth-apps/).
     /// 
-    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/teams/#list-teams-for-the-authenticated-user)
+    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/teams#list-teams-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -6347,7 +6347,7 @@ impl<'api> Teams<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/projects`.
     /// 
-    /// [GitHub API docs for list_projects_in_org](https://docs.github.com/rest/reference/teams/#list-team-projects)
+    /// [GitHub API docs for list_projects_in_org](https://docs.github.com/rest/reference/teams#list-team-projects)
     ///
     /// The `list_projects_in_org_async` endpoint is enabled with the `inertia` cargo feature.
     ///
@@ -6394,7 +6394,7 @@ impl<'api> Teams<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/projects`.
     /// 
-    /// [GitHub API docs for list_projects_in_org](https://docs.github.com/rest/reference/teams/#list-team-projects)
+    /// [GitHub API docs for list_projects_in_org](https://docs.github.com/rest/reference/teams#list-team-projects)
     ///
     /// The `list_projects_in_org` endpoint is enabled with the `inertia` cargo feature.
     ///
@@ -6543,7 +6543,7 @@ impl<'api> Teams<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/repos`.
     /// 
-    /// [GitHub API docs for list_repos_in_org](https://docs.github.com/rest/reference/teams/#list-team-repositories)
+    /// [GitHub API docs for list_repos_in_org](https://docs.github.com/rest/reference/teams#list-team-repositories)
     ///
     /// ---
     pub async fn list_repos_in_org_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListReposInOrgParams>>) -> Result<Vec<MinimalRepository>, TeamsListReposInOrgError> {
@@ -6587,7 +6587,7 @@ impl<'api> Teams<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/repos`.
     /// 
-    /// [GitHub API docs for list_repos_in_org](https://docs.github.com/rest/reference/teams/#list-team-repositories)
+    /// [GitHub API docs for list_repos_in_org](https://docs.github.com/rest/reference/teams#list-team-repositories)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -6998,7 +6998,7 @@ impl<'api> Teams<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}/projects/{project_id}`.
     /// 
-    /// [GitHub API docs for remove_project_in_org](https://docs.github.com/rest/reference/teams/#remove-a-project-from-a-team)
+    /// [GitHub API docs for remove_project_in_org](https://docs.github.com/rest/reference/teams#remove-a-project-from-a-team)
     ///
     /// ---
     pub async fn remove_project_in_org_async(&self, org: &str, team_slug: &str, project_id: i32) -> Result<(), TeamsRemoveProjectInOrgError> {
@@ -7038,7 +7038,7 @@ impl<'api> Teams<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}/projects/{project_id}`.
     /// 
-    /// [GitHub API docs for remove_project_in_org](https://docs.github.com/rest/reference/teams/#remove-a-project-from-a-team)
+    /// [GitHub API docs for remove_project_in_org](https://docs.github.com/rest/reference/teams#remove-a-project-from-a-team)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -7676,7 +7676,7 @@ impl<'api> Teams<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `PATCH /organizations/{org_id}/team/{team_id}`.
     /// 
-    /// [GitHub API docs for update_in_org](https://docs.github.com/rest/reference/teams/#update-a-team)
+    /// [GitHub API docs for update_in_org](https://docs.github.com/rest/reference/teams#update-a-team)
     ///
     /// ---
     pub async fn update_in_org_async(&self, org: &str, team_slug: &str, body: PatchTeamsUpdateInOrg) -> Result<TeamFull, TeamsUpdateInOrgError> {
@@ -7716,7 +7716,7 @@ impl<'api> Teams<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `PATCH /organizations/{org_id}/team/{team_id}`.
     /// 
-    /// [GitHub API docs for update_in_org](https://docs.github.com/rest/reference/teams/#update-a-team)
+    /// [GitHub API docs for update_in_org](https://docs.github.com/rest/reference/teams#update-a-team)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

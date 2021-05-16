@@ -750,6 +750,14 @@ pub struct AllOfcommunityprofileFilesCodeOfConduct {
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct AllOfcommunityprofileFilesCodeOfConductFile {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfcommunityprofileFilesContributing {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
@@ -2969,6 +2977,49 @@ pub struct AllOfpageBuildPusher {
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct AllOfpersonalAccessTokenUser {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub login: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub avatar_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub gravatar_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub followers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub following_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub gists_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub starred_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscriptions_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub organizations_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repos_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub received_events_url: Option<String>,
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub site_admin: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub starred_at: Option<String>,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfprojectCardCreator {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
@@ -4645,6 +4696,9 @@ pub struct AuditLogEvent {
     pub created_at: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub deploy_key_fingerprint: Option<String>,
+    /// A unique identifier for an audit event.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _document_id: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub emoji: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -5423,7 +5477,7 @@ pub struct PatchIssuesUpdateMilestone {
 pub struct PutActivityMarkRepoNotificationsAsRead {     
     /// Describes the last point that notifications were checked. Anything updated since this time will not be marked as read. If you omit this parameter, all notifications are marked as read. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`. Default: The current timestamp.
     #[serde(skip_serializing_if="Option::is_none")]
-    pub last_read_at: Option<String>,
+    pub last_read_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -8295,7 +8349,7 @@ pub struct CodeScanningAnalysis {
 pub struct CodeScanningAnalysisAnalysisKey {     
 }
 
-/// Identifies the configuration and environment under which the analysis was executed.
+/// Identifies the configuration under which the analysis was executed. Used to distinguish between multiple analyses for the same tool and commit, but performed on different languages or different parts of the code.
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CodeScanningAnalysisCategory {     
 }
@@ -8771,6 +8825,8 @@ pub struct CommunityProfile {
 pub struct CommunityprofileFiles {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub code_of_conduct: Option<AllOfcommunityprofileFilesCodeOfConduct>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub code_of_conduct_file: Option<AllOfcommunityprofileFilesCodeOfConductFile>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub license: Option<AllOfcommunityprofileFilesLicense>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -13213,6 +13269,38 @@ pub struct PendingdeploymentReviewers {
     pub reviewer: Option<AnyOfpendingdeploymentReviewersReviewer>,
 }
 
+/// The authorization for a Personal Access Token.
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PersonalAccessToken {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    /// A list of scopes that this authorization is in.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub scopes: Option<Vec<String>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub token: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub token_last_eight: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub hashed_token: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub note: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub note_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub fingerprint: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<AllOfpersonalAccessTokenUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub expiration: Option<chrono::DateTime<chrono::Utc>>,
+}
+
 /// Porter Author
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PorterAuthor {     
@@ -15568,7 +15656,7 @@ pub struct ReposownerrepogitcommitsAuthor {
     pub email: Option<String>,
     /// Indicates when this commit was authored (or committed). This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     #[serde(skip_serializing_if="Option::is_none")]
-    pub date: Option<String>,
+    pub date: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 /// Information about the person who is making the commit. By default, `committer` will use the information set in `author`. See the `author` and `committer` object below for details.
@@ -15582,7 +15670,7 @@ pub struct ReposownerrepogitcommitsCommitter {
     pub email: Option<String>,
     /// Indicates when this commit was authored (or committed). This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     #[serde(skip_serializing_if="Option::is_none")]
-    pub date: Option<String>,
+    pub date: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 /// An object with information about the individual creating the tag.
@@ -15596,7 +15684,7 @@ pub struct ReposownerrepogittagsTagger {
     pub email: Option<String>,
     /// When this object was tagged. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     #[serde(skip_serializing_if="Option::is_none")]
-    pub date: Option<String>,
+    pub date: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]

@@ -909,9 +909,9 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for a commit comment
     ///
-    /// Create a reaction to a [commit comment](https://docs.github.com/rest/reference/repos#comments). A response with a `Status: 200 OK` means that you already added the reaction type to this commit comment.
+    /// Create a reaction to a [commit comment](https://docs.github.com/rest/reference/repos#comments). A response with an HTTP `200` status means that you already added the reaction type to this commit comment.
     /// 
-    /// [GitHub API docs for create_for_commit_comment](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-commit-comment)
+    /// [GitHub API docs for create_for_commit_comment](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-commit-comment)
     ///
     /// The `create_for_commit_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -953,9 +953,9 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for a commit comment
     ///
-    /// Create a reaction to a [commit comment](https://docs.github.com/rest/reference/repos#comments). A response with a `Status: 200 OK` means that you already added the reaction type to this commit comment.
+    /// Create a reaction to a [commit comment](https://docs.github.com/rest/reference/repos#comments). A response with an HTTP `200` status means that you already added the reaction type to this commit comment.
     /// 
-    /// [GitHub API docs for create_for_commit_comment](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-commit-comment)
+    /// [GitHub API docs for create_for_commit_comment](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-commit-comment)
     ///
     /// The `create_for_commit_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -998,9 +998,9 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for an issue
     ///
-    /// Create a reaction to an [issue](https://docs.github.com/rest/reference/issues/). A response with a `Status: 200 OK` means that you already added the reaction type to this issue.
+    /// Create a reaction to an [issue](https://docs.github.com/rest/reference/issues/). A response with an HTTP `200` status means that you already added the reaction type to this issue.
     /// 
-    /// [GitHub API docs for create_for_issue](https://docs.github.com/rest/reference/reactions/#create-reaction-for-an-issue)
+    /// [GitHub API docs for create_for_issue](https://docs.github.com/rest/reference/reactions#create-reaction-for-an-issue)
     ///
     /// The `create_for_issue_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -1042,9 +1042,9 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for an issue
     ///
-    /// Create a reaction to an [issue](https://docs.github.com/rest/reference/issues/). A response with a `Status: 200 OK` means that you already added the reaction type to this issue.
+    /// Create a reaction to an [issue](https://docs.github.com/rest/reference/issues/). A response with an HTTP `200` status means that you already added the reaction type to this issue.
     /// 
-    /// [GitHub API docs for create_for_issue](https://docs.github.com/rest/reference/reactions/#create-reaction-for-an-issue)
+    /// [GitHub API docs for create_for_issue](https://docs.github.com/rest/reference/reactions#create-reaction-for-an-issue)
     ///
     /// The `create_for_issue` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -1087,9 +1087,9 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for an issue comment
     ///
-    /// Create a reaction to an [issue comment](https://docs.github.com/rest/reference/issues#comments). A response with a `Status: 200 OK` means that you already added the reaction type to this issue comment.
+    /// Create a reaction to an [issue comment](https://docs.github.com/rest/reference/issues#comments). A response with an HTTP `200` status means that you already added the reaction type to this issue comment.
     /// 
-    /// [GitHub API docs for create_for_issue_comment](https://docs.github.com/rest/reference/reactions/#create-reaction-for-an-issue-comment)
+    /// [GitHub API docs for create_for_issue_comment](https://docs.github.com/rest/reference/reactions#create-reaction-for-an-issue-comment)
     ///
     /// The `create_for_issue_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -1131,9 +1131,9 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for an issue comment
     ///
-    /// Create a reaction to an [issue comment](https://docs.github.com/rest/reference/issues#comments). A response with a `Status: 200 OK` means that you already added the reaction type to this issue comment.
+    /// Create a reaction to an [issue comment](https://docs.github.com/rest/reference/issues#comments). A response with an HTTP `200` status means that you already added the reaction type to this issue comment.
     /// 
-    /// [GitHub API docs for create_for_issue_comment](https://docs.github.com/rest/reference/reactions/#create-reaction-for-an-issue-comment)
+    /// [GitHub API docs for create_for_issue_comment](https://docs.github.com/rest/reference/reactions#create-reaction-for-an-issue-comment)
     ///
     /// The `create_for_issue_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -1176,9 +1176,9 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for a pull request review comment
     ///
-    /// Create a reaction to a [pull request review comment](https://docs.github.com/rest/reference/pulls#comments). A response with a `Status: 200 OK` means that you already added the reaction type to this pull request review comment.
+    /// Create a reaction to a [pull request review comment](https://docs.github.com/rest/reference/pulls#comments). A response with an HTTP `200` status means that you already added the reaction type to this pull request review comment.
     /// 
-    /// [GitHub API docs for create_for_pull_request_review_comment](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-pull-request-review-comment)
+    /// [GitHub API docs for create_for_pull_request_review_comment](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-pull-request-review-comment)
     ///
     /// The `create_for_pull_request_review_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -1220,9 +1220,9 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for a pull request review comment
     ///
-    /// Create a reaction to a [pull request review comment](https://docs.github.com/rest/reference/pulls#comments). A response with a `Status: 200 OK` means that you already added the reaction type to this pull request review comment.
+    /// Create a reaction to a [pull request review comment](https://docs.github.com/rest/reference/pulls#comments). A response with an HTTP `200` status means that you already added the reaction type to this pull request review comment.
     /// 
-    /// [GitHub API docs for create_for_pull_request_review_comment](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-pull-request-review-comment)
+    /// [GitHub API docs for create_for_pull_request_review_comment](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-pull-request-review-comment)
     ///
     /// The `create_for_pull_request_review_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -1265,11 +1265,11 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for a team discussion comment
     ///
-    /// Create a reaction to a [team discussion comment](https://docs.github.com/rest/reference/teams#discussion-comments). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with a `Status: 200 OK` means that you already added the reaction type to this team discussion comment.
+    /// Create a reaction to a [team discussion comment](https://docs.github.com/rest/reference/teams#discussion-comments). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with an HTTP `200` status means that you already added the reaction type to this team discussion comment.
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `POST /organizations/:org_id/team/:team_id/discussions/:discussion_number/comments/:comment_number/reactions`.
     /// 
-    /// [GitHub API docs for create_for_team_discussion_comment_in_org](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion-comment)
+    /// [GitHub API docs for create_for_team_discussion_comment_in_org](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-team-discussion-comment)
     ///
     /// The `create_for_team_discussion_comment_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -1309,11 +1309,11 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for a team discussion comment
     ///
-    /// Create a reaction to a [team discussion comment](https://docs.github.com/rest/reference/teams#discussion-comments). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with a `Status: 200 OK` means that you already added the reaction type to this team discussion comment.
+    /// Create a reaction to a [team discussion comment](https://docs.github.com/rest/reference/teams#discussion-comments). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with an HTTP `200` status means that you already added the reaction type to this team discussion comment.
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `POST /organizations/:org_id/team/:team_id/discussions/:discussion_number/comments/:comment_number/reactions`.
     /// 
-    /// [GitHub API docs for create_for_team_discussion_comment_in_org](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion-comment)
+    /// [GitHub API docs for create_for_team_discussion_comment_in_org](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-team-discussion-comment)
     ///
     /// The `create_for_team_discussion_comment_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -1356,7 +1356,7 @@ impl<'api> Reactions<'api> {
     ///
     /// **Deprecation Notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new "[Create reaction for a team discussion comment](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-team-discussion-comment)" endpoint.
     /// 
-    /// Create a reaction to a [team discussion comment](https://docs.github.com/rest/reference/teams#discussion-comments). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with a `Status: 200 OK` means that you already added the reaction type to this team discussion comment.
+    /// Create a reaction to a [team discussion comment](https://docs.github.com/rest/reference/teams#discussion-comments). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with an HTTP `200` status means that you already added the reaction type to this team discussion comment.
     /// 
     /// [GitHub API docs for create_for_team_discussion_comment_legacy](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion-comment-legacy)
     ///
@@ -1399,7 +1399,7 @@ impl<'api> Reactions<'api> {
     ///
     /// **Deprecation Notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new "[Create reaction for a team discussion comment](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-team-discussion-comment)" endpoint.
     /// 
-    /// Create a reaction to a [team discussion comment](https://docs.github.com/rest/reference/teams#discussion-comments). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with a `Status: 200 OK` means that you already added the reaction type to this team discussion comment.
+    /// Create a reaction to a [team discussion comment](https://docs.github.com/rest/reference/teams#discussion-comments). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with an HTTP `200` status means that you already added the reaction type to this team discussion comment.
     /// 
     /// [GitHub API docs for create_for_team_discussion_comment_legacy](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion-comment-legacy)
     ///
@@ -1441,11 +1441,11 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for a team discussion
     ///
-    /// Create a reaction to a [team discussion](https://docs.github.com/rest/reference/teams#discussions). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with a `Status: 200 OK` means that you already added the reaction type to this team discussion.
+    /// Create a reaction to a [team discussion](https://docs.github.com/rest/reference/teams#discussions). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with an HTTP `200` status means that you already added the reaction type to this team discussion.
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `POST /organizations/:org_id/team/:team_id/discussions/:discussion_number/reactions`.
     /// 
-    /// [GitHub API docs for create_for_team_discussion_in_org](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion)
+    /// [GitHub API docs for create_for_team_discussion_in_org](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-team-discussion)
     ///
     /// The `create_for_team_discussion_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -1485,11 +1485,11 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for a team discussion
     ///
-    /// Create a reaction to a [team discussion](https://docs.github.com/rest/reference/teams#discussions). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with a `Status: 200 OK` means that you already added the reaction type to this team discussion.
+    /// Create a reaction to a [team discussion](https://docs.github.com/rest/reference/teams#discussions). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with an HTTP `200` status means that you already added the reaction type to this team discussion.
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `POST /organizations/:org_id/team/:team_id/discussions/:discussion_number/reactions`.
     /// 
-    /// [GitHub API docs for create_for_team_discussion_in_org](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion)
+    /// [GitHub API docs for create_for_team_discussion_in_org](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-team-discussion)
     ///
     /// The `create_for_team_discussion_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -1532,7 +1532,7 @@ impl<'api> Reactions<'api> {
     ///
     /// **Deprecation Notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`Create reaction for a team discussion`](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-team-discussion) endpoint.
     /// 
-    /// Create a reaction to a [team discussion](https://docs.github.com/rest/reference/teams#discussions). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with a `Status: 200 OK` means that you already added the reaction type to this team discussion.
+    /// Create a reaction to a [team discussion](https://docs.github.com/rest/reference/teams#discussions). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with an HTTP `200` status means that you already added the reaction type to this team discussion.
     /// 
     /// [GitHub API docs for create_for_team_discussion_legacy](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion-legacy)
     ///
@@ -1575,7 +1575,7 @@ impl<'api> Reactions<'api> {
     ///
     /// **Deprecation Notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`Create reaction for a team discussion`](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-team-discussion) endpoint.
     /// 
-    /// Create a reaction to a [team discussion](https://docs.github.com/rest/reference/teams#discussions). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with a `Status: 200 OK` means that you already added the reaction type to this team discussion.
+    /// Create a reaction to a [team discussion](https://docs.github.com/rest/reference/teams#discussions). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with an HTTP `200` status means that you already added the reaction type to this team discussion.
     /// 
     /// [GitHub API docs for create_for_team_discussion_legacy](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion-legacy)
     ///
@@ -1621,7 +1621,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// Delete a reaction to a [commit comment](https://docs.github.com/rest/reference/repos#comments).
     /// 
-    /// [GitHub API docs for delete_for_commit_comment](https://docs.github.com/rest/reference/reactions/#delete-a-commit-comment-reaction)
+    /// [GitHub API docs for delete_for_commit_comment](https://docs.github.com/rest/reference/reactions#delete-a-commit-comment-reaction)
     ///
     /// The `delete_for_commit_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -1664,7 +1664,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// Delete a reaction to a [commit comment](https://docs.github.com/rest/reference/repos#comments).
     /// 
-    /// [GitHub API docs for delete_for_commit_comment](https://docs.github.com/rest/reference/reactions/#delete-a-commit-comment-reaction)
+    /// [GitHub API docs for delete_for_commit_comment](https://docs.github.com/rest/reference/reactions#delete-a-commit-comment-reaction)
     ///
     /// The `delete_for_commit_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -1708,7 +1708,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// Delete a reaction to an [issue](https://docs.github.com/rest/reference/issues/).
     /// 
-    /// [GitHub API docs for delete_for_issue](https://docs.github.com/rest/reference/reactions/#delete-an-issue-reaction)
+    /// [GitHub API docs for delete_for_issue](https://docs.github.com/rest/reference/reactions#delete-an-issue-reaction)
     ///
     /// The `delete_for_issue_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -1751,7 +1751,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// Delete a reaction to an [issue](https://docs.github.com/rest/reference/issues/).
     /// 
-    /// [GitHub API docs for delete_for_issue](https://docs.github.com/rest/reference/reactions/#delete-an-issue-reaction)
+    /// [GitHub API docs for delete_for_issue](https://docs.github.com/rest/reference/reactions#delete-an-issue-reaction)
     ///
     /// The `delete_for_issue` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -1795,7 +1795,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// Delete a reaction to an [issue comment](https://docs.github.com/rest/reference/issues#comments).
     /// 
-    /// [GitHub API docs for delete_for_issue_comment](https://docs.github.com/rest/reference/reactions/#delete-an-issue-comment-reaction)
+    /// [GitHub API docs for delete_for_issue_comment](https://docs.github.com/rest/reference/reactions#delete-an-issue-comment-reaction)
     ///
     /// The `delete_for_issue_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -1838,7 +1838,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// Delete a reaction to an [issue comment](https://docs.github.com/rest/reference/issues#comments).
     /// 
-    /// [GitHub API docs for delete_for_issue_comment](https://docs.github.com/rest/reference/reactions/#delete-an-issue-comment-reaction)
+    /// [GitHub API docs for delete_for_issue_comment](https://docs.github.com/rest/reference/reactions#delete-an-issue-comment-reaction)
     ///
     /// The `delete_for_issue_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -1882,7 +1882,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// Delete a reaction to a [pull request review comment](https://docs.github.com/rest/reference/pulls#review-comments).
     /// 
-    /// [GitHub API docs for delete_for_pull_request_comment](https://docs.github.com/rest/reference/reactions/#delete-a-pull-request-comment-reaction)
+    /// [GitHub API docs for delete_for_pull_request_comment](https://docs.github.com/rest/reference/reactions#delete-a-pull-request-comment-reaction)
     ///
     /// The `delete_for_pull_request_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -1925,7 +1925,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// Delete a reaction to a [pull request review comment](https://docs.github.com/rest/reference/pulls#review-comments).
     /// 
-    /// [GitHub API docs for delete_for_pull_request_comment](https://docs.github.com/rest/reference/reactions/#delete-a-pull-request-comment-reaction)
+    /// [GitHub API docs for delete_for_pull_request_comment](https://docs.github.com/rest/reference/reactions#delete-a-pull-request-comment-reaction)
     ///
     /// The `delete_for_pull_request_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -1969,7 +1969,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// Delete a reaction to a [team discussion](https://docs.github.com/rest/reference/teams#discussions). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
-    /// [GitHub API docs for delete_for_team_discussion](https://docs.github.com/rest/reference/reactions/#delete-team-discussion-reaction)
+    /// [GitHub API docs for delete_for_team_discussion](https://docs.github.com/rest/reference/reactions#delete-team-discussion-reaction)
     ///
     /// The `delete_for_team_discussion_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -2012,7 +2012,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// Delete a reaction to a [team discussion](https://docs.github.com/rest/reference/teams#discussions). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
-    /// [GitHub API docs for delete_for_team_discussion](https://docs.github.com/rest/reference/reactions/#delete-team-discussion-reaction)
+    /// [GitHub API docs for delete_for_team_discussion](https://docs.github.com/rest/reference/reactions#delete-team-discussion-reaction)
     ///
     /// The `delete_for_team_discussion` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -2056,7 +2056,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// Delete a reaction to a [team discussion comment](https://docs.github.com/rest/reference/teams#discussion-comments). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
-    /// [GitHub API docs for delete_for_team_discussion_comment](https://docs.github.com/rest/reference/reactions/#delete-team-discussion-comment-reaction)
+    /// [GitHub API docs for delete_for_team_discussion_comment](https://docs.github.com/rest/reference/reactions#delete-team-discussion-comment-reaction)
     ///
     /// The `delete_for_team_discussion_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -2099,7 +2099,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// Delete a reaction to a [team discussion comment](https://docs.github.com/rest/reference/teams#discussion-comments). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
-    /// [GitHub API docs for delete_for_team_discussion_comment](https://docs.github.com/rest/reference/reactions/#delete-team-discussion-comment-reaction)
+    /// [GitHub API docs for delete_for_team_discussion_comment](https://docs.github.com/rest/reference/reactions#delete-team-discussion-comment-reaction)
     ///
     /// The `delete_for_team_discussion_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -2238,7 +2238,7 @@ impl<'api> Reactions<'api> {
     ///
     /// List the reactions to a [commit comment](https://docs.github.com/rest/reference/repos#comments).
     /// 
-    /// [GitHub API docs for list_for_commit_comment](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-commit-comment)
+    /// [GitHub API docs for list_for_commit_comment](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-commit-comment)
     ///
     /// The `list_for_commit_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -2285,7 +2285,7 @@ impl<'api> Reactions<'api> {
     ///
     /// List the reactions to a [commit comment](https://docs.github.com/rest/reference/repos#comments).
     /// 
-    /// [GitHub API docs for list_for_commit_comment](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-commit-comment)
+    /// [GitHub API docs for list_for_commit_comment](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-commit-comment)
     ///
     /// The `list_for_commit_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -2334,7 +2334,7 @@ impl<'api> Reactions<'api> {
     ///
     /// List the reactions to an [issue](https://docs.github.com/rest/reference/issues).
     /// 
-    /// [GitHub API docs for list_for_issue](https://docs.github.com/rest/reference/reactions/#list-reactions-for-an-issue)
+    /// [GitHub API docs for list_for_issue](https://docs.github.com/rest/reference/reactions#list-reactions-for-an-issue)
     ///
     /// The `list_for_issue_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -2382,7 +2382,7 @@ impl<'api> Reactions<'api> {
     ///
     /// List the reactions to an [issue](https://docs.github.com/rest/reference/issues).
     /// 
-    /// [GitHub API docs for list_for_issue](https://docs.github.com/rest/reference/reactions/#list-reactions-for-an-issue)
+    /// [GitHub API docs for list_for_issue](https://docs.github.com/rest/reference/reactions#list-reactions-for-an-issue)
     ///
     /// The `list_for_issue` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -2432,7 +2432,7 @@ impl<'api> Reactions<'api> {
     ///
     /// List the reactions to an [issue comment](https://docs.github.com/rest/reference/issues#comments).
     /// 
-    /// [GitHub API docs for list_for_issue_comment](https://docs.github.com/rest/reference/reactions/#list-reactions-for-an-issue-comment)
+    /// [GitHub API docs for list_for_issue_comment](https://docs.github.com/rest/reference/reactions#list-reactions-for-an-issue-comment)
     ///
     /// The `list_for_issue_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -2479,7 +2479,7 @@ impl<'api> Reactions<'api> {
     ///
     /// List the reactions to an [issue comment](https://docs.github.com/rest/reference/issues#comments).
     /// 
-    /// [GitHub API docs for list_for_issue_comment](https://docs.github.com/rest/reference/reactions/#list-reactions-for-an-issue-comment)
+    /// [GitHub API docs for list_for_issue_comment](https://docs.github.com/rest/reference/reactions#list-reactions-for-an-issue-comment)
     ///
     /// The `list_for_issue_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -2528,7 +2528,7 @@ impl<'api> Reactions<'api> {
     ///
     /// List the reactions to a [pull request review comment](https://docs.github.com/rest/reference/pulls#review-comments).
     /// 
-    /// [GitHub API docs for list_for_pull_request_review_comment](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-pull-request-review-comment)
+    /// [GitHub API docs for list_for_pull_request_review_comment](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-pull-request-review-comment)
     ///
     /// The `list_for_pull_request_review_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -2575,7 +2575,7 @@ impl<'api> Reactions<'api> {
     ///
     /// List the reactions to a [pull request review comment](https://docs.github.com/rest/reference/pulls#review-comments).
     /// 
-    /// [GitHub API docs for list_for_pull_request_review_comment](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-pull-request-review-comment)
+    /// [GitHub API docs for list_for_pull_request_review_comment](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-pull-request-review-comment)
     ///
     /// The `list_for_pull_request_review_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -2626,7 +2626,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/:org_id/team/:team_id/discussions/:discussion_number/comments/:comment_number/reactions`.
     /// 
-    /// [GitHub API docs for list_for_team_discussion_comment_in_org](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-team-discussion-comment)
+    /// [GitHub API docs for list_for_team_discussion_comment_in_org](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-team-discussion-comment)
     ///
     /// The `list_for_team_discussion_comment_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -2673,7 +2673,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/:org_id/team/:team_id/discussions/:discussion_number/comments/:comment_number/reactions`.
     /// 
-    /// [GitHub API docs for list_for_team_discussion_comment_in_org](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-team-discussion-comment)
+    /// [GitHub API docs for list_for_team_discussion_comment_in_org](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-team-discussion-comment)
     ///
     /// The `list_for_team_discussion_comment_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -2818,7 +2818,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/:org_id/team/:team_id/discussions/:discussion_number/reactions`.
     /// 
-    /// [GitHub API docs for list_for_team_discussion_in_org](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-team-discussion)
+    /// [GitHub API docs for list_for_team_discussion_in_org](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-team-discussion)
     ///
     /// The `list_for_team_discussion_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
@@ -2865,7 +2865,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/:org_id/team/:team_id/discussions/:discussion_number/reactions`.
     /// 
-    /// [GitHub API docs for list_for_team_discussion_in_org](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-team-discussion)
+    /// [GitHub API docs for list_for_team_discussion_in_org](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-team-discussion)
     ///
     /// The `list_for_team_discussion_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///

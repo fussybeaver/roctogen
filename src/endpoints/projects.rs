@@ -1078,10 +1078,6 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Create a project card
-    ///
-    /// **Note**: GitHub's REST API v3 considers every pull request an issue, but not every issue is a pull request. For this reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by the `pull_request` key.
-    /// 
-    /// Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
     /// 
     /// [GitHub API docs for create_card](https://docs.github.com/rest/reference/projects#create-a-project-card)
     ///
@@ -1126,10 +1122,6 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Create a project card
-    ///
-    /// **Note**: GitHub's REST API v3 considers every pull request an issue, but not every issue is a pull request. For this reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by the `pull_request` key.
-    /// 
-    /// Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
     /// 
     /// [GitHub API docs for create_card](https://docs.github.com/rest/reference/projects#create-a-project-card)
     ///
@@ -1263,7 +1255,7 @@ impl<'api> Projects<'api> {
     ///
     /// # Create a user project
     /// 
-    /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/reference/projects/#create-a-user-project)
+    /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/reference/projects#create-a-user-project)
     ///
     /// The `create_for_authenticated_user_async` endpoint is enabled with the `inertia` cargo feature.
     ///
@@ -1307,7 +1299,7 @@ impl<'api> Projects<'api> {
     ///
     /// # Create a user project
     /// 
-    /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/reference/projects/#create-a-user-project)
+    /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/reference/projects#create-a-user-project)
     ///
     /// The `create_for_authenticated_user` endpoint is enabled with the `inertia` cargo feature.
     ///
@@ -1354,7 +1346,7 @@ impl<'api> Projects<'api> {
     ///
     /// Creates an organization project board. Returns a `404 Not Found` status if projects are disabled in the organization. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
     /// 
-    /// [GitHub API docs for create_for_org](https://docs.github.com/rest/reference/projects/#create-an-organization-project)
+    /// [GitHub API docs for create_for_org](https://docs.github.com/rest/reference/projects#create-an-organization-project)
     ///
     /// The `create_for_org_async` endpoint is enabled with the `inertia` cargo feature.
     ///
@@ -1400,7 +1392,7 @@ impl<'api> Projects<'api> {
     ///
     /// Creates an organization project board. Returns a `404 Not Found` status if projects are disabled in the organization. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
     /// 
-    /// [GitHub API docs for create_for_org](https://docs.github.com/rest/reference/projects/#create-an-organization-project)
+    /// [GitHub API docs for create_for_org](https://docs.github.com/rest/reference/projects#create-an-organization-project)
     ///
     /// The `create_for_org` endpoint is enabled with the `inertia` cargo feature.
     ///
@@ -1447,7 +1439,7 @@ impl<'api> Projects<'api> {
     ///
     /// Creates a repository project board. Returns a `404 Not Found` status if projects are disabled in the repository. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
     /// 
-    /// [GitHub API docs for create_for_repo](https://docs.github.com/rest/reference/projects/#create-a-repository-project)
+    /// [GitHub API docs for create_for_repo](https://docs.github.com/rest/reference/projects#create-a-repository-project)
     ///
     /// The `create_for_repo_async` endpoint is enabled with the `inertia` cargo feature.
     ///
@@ -1493,7 +1485,7 @@ impl<'api> Projects<'api> {
     ///
     /// Creates a repository project board. Returns a `404 Not Found` status if projects are disabled in the repository. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
     /// 
-    /// [GitHub API docs for create_for_repo](https://docs.github.com/rest/reference/projects/#create-a-repository-project)
+    /// [GitHub API docs for create_for_repo](https://docs.github.com/rest/reference/projects#create-a-repository-project)
     ///
     /// The `create_for_repo` endpoint is enabled with the `inertia` cargo feature.
     ///
@@ -1540,7 +1532,7 @@ impl<'api> Projects<'api> {
     ///
     /// Deletes a project board. Returns a `404 Not Found` status if projects are disabled.
     /// 
-    /// [GitHub API docs for delete](https://docs.github.com/rest/reference/projects/#delete-a-project)
+    /// [GitHub API docs for delete](https://docs.github.com/rest/reference/projects#delete-a-project)
     ///
     /// The `delete_async` endpoint is enabled with the `inertia` cargo feature.
     ///
@@ -1586,7 +1578,7 @@ impl<'api> Projects<'api> {
     ///
     /// Deletes a project board. Returns a `404 Not Found` status if projects are disabled.
     /// 
-    /// [GitHub API docs for delete](https://docs.github.com/rest/reference/projects/#delete-a-project)
+    /// [GitHub API docs for delete](https://docs.github.com/rest/reference/projects#delete-a-project)
     ///
     /// The `delete` endpoint is enabled with the `inertia` cargo feature.
     ///
@@ -1805,7 +1797,7 @@ impl<'api> Projects<'api> {
     ///
     /// Gets a project by its `id`. Returns a `404 Not Found` status if projects are disabled. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/projects/#get-a-project)
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/projects#get-a-project)
     ///
     /// The `get_async` endpoint is enabled with the `inertia` cargo feature.
     ///
@@ -1849,7 +1841,7 @@ impl<'api> Projects<'api> {
     ///
     /// Gets a project by its `id`. Returns a `404 Not Found` status if projects are disabled. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/projects/#get-a-project)
+    /// [GitHub API docs for get](https://docs.github.com/rest/reference/projects#get-a-project)
     ///
     /// The `get` endpoint is enabled with the `inertia` cargo feature.
     ///
@@ -2455,7 +2447,7 @@ impl<'api> Projects<'api> {
     ///
     /// Lists the projects in an organization. Returns a `404 Not Found` status if projects are disabled in the organization. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
     /// 
-    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/projects/#list-organization-projects)
+    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/projects#list-organization-projects)
     ///
     /// The `list_for_org_async` endpoint is enabled with the `inertia` cargo feature.
     ///
@@ -2501,7 +2493,7 @@ impl<'api> Projects<'api> {
     ///
     /// Lists the projects in an organization. Returns a `404 Not Found` status if projects are disabled in the organization. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
     /// 
-    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/projects/#list-organization-projects)
+    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/projects#list-organization-projects)
     ///
     /// The `list_for_org` endpoint is enabled with the `inertia` cargo feature.
     ///
@@ -2549,7 +2541,7 @@ impl<'api> Projects<'api> {
     ///
     /// Lists the projects in a repository. Returns a `404 Not Found` status if projects are disabled in the repository. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
     /// 
-    /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/reference/projects/#list-repository-projects)
+    /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/reference/projects#list-repository-projects)
     ///
     /// The `list_for_repo_async` endpoint is enabled with the `inertia` cargo feature.
     ///
@@ -2599,7 +2591,7 @@ impl<'api> Projects<'api> {
     ///
     /// Lists the projects in a repository. Returns a `404 Not Found` status if projects are disabled in the repository. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
     /// 
-    /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/reference/projects/#list-repository-projects)
+    /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/reference/projects#list-repository-projects)
     ///
     /// The `list_for_repo` endpoint is enabled with the `inertia` cargo feature.
     ///
@@ -2649,7 +2641,7 @@ impl<'api> Projects<'api> {
     ///
     /// # List user projects
     /// 
-    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/projects/#list-user-projects)
+    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/projects#list-user-projects)
     ///
     /// The `list_for_user_async` endpoint is enabled with the `inertia` cargo feature.
     ///
@@ -2694,7 +2686,7 @@ impl<'api> Projects<'api> {
     ///
     /// # List user projects
     /// 
-    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/projects/#list-user-projects)
+    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/projects#list-user-projects)
     ///
     /// The `list_for_user` endpoint is enabled with the `inertia` cargo feature.
     ///
@@ -3014,7 +3006,7 @@ impl<'api> Projects<'api> {
     ///
     /// Updates a project board's information. Returns a `404 Not Found` status if projects are disabled. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
     /// 
-    /// [GitHub API docs for update](https://docs.github.com/rest/reference/projects/#update-a-project)
+    /// [GitHub API docs for update](https://docs.github.com/rest/reference/projects#update-a-project)
     ///
     /// The `update_async` endpoint is enabled with the `inertia` cargo feature.
     ///
@@ -3061,7 +3053,7 @@ impl<'api> Projects<'api> {
     ///
     /// Updates a project board's information. Returns a `404 Not Found` status if projects are disabled. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
     /// 
-    /// [GitHub API docs for update](https://docs.github.com/rest/reference/projects/#update-a-project)
+    /// [GitHub API docs for update](https://docs.github.com/rest/reference/projects#update-a-project)
     ///
     /// The `update` endpoint is enabled with the `inertia` cargo feature.
     ///
