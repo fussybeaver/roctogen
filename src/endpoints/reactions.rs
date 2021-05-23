@@ -47,7 +47,7 @@ pub enum ReactionsCreateForCommitCommentError {
     #[error("Reaction created")]
     Status201(Reaction),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
@@ -70,7 +70,7 @@ pub enum ReactionsCreateForIssueError {
     #[error("Response")]
     Status201(Reaction),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
@@ -93,7 +93,7 @@ pub enum ReactionsCreateForIssueCommentError {
     #[error("Reaction created")]
     Status201(Reaction),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
@@ -116,7 +116,30 @@ pub enum ReactionsCreateForPullRequestReviewCommentError {
     #[error("Reaction created")]
     Status201(Reaction),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
+    #[error("Validation failed")]
+    Status422(ValidationError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Create reaction for a release](Reactions::create_for_release_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ReactionsCreateForReleaseError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Reaction created")]
+    Status201(Reaction),
+    #[error("Preview header missing")]
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
@@ -319,7 +342,7 @@ pub enum ReactionsDeleteLegacyError {
     #[error("Gone")]
     Status410(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -340,7 +363,7 @@ pub enum ReactionsListForCommitCommentError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -363,7 +386,7 @@ pub enum ReactionsListForIssueError {
     #[error("Gone")]
     Status410(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -384,7 +407,7 @@ pub enum ReactionsListForIssueCommentError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -405,7 +428,7 @@ pub enum ReactionsListForPullRequestReviewCommentError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1257,6 +1280,95 @@ impl<'api> Reactions<'api> {
                 415 => Err(ReactionsCreateForPullRequestReviewCommentError::Status415(crate::adapters::to_json(github_response)?)),
                 422 => Err(ReactionsCreateForPullRequestReviewCommentError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReactionsCreateForPullRequestReviewCommentError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create reaction for a release
+    ///
+    /// Create a reaction to a [release](https://docs.github.com/rest/reference/repos#releases). A response with a `Status: 200 OK` means that you already added the reaction type to this release.
+    /// 
+    /// [GitHub API docs for create_for_release](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-release)
+    ///
+    /// The `create_for_release_async` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
+    /// ---
+    #[cfg(feature = "squirrel-girl")]
+    pub async fn create_for_release_async(&self, owner: &str, repo: &str, release_id: i32, body: PostReactionsCreateForRelease) -> Result<Reaction, ReactionsCreateForReleaseError> {
+
+        let request_uri = format!("{}/repos/{}/{}/releases/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, release_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostReactionsCreateForRelease::from_json(body)?),
+            method: "POST",
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                201 => Err(ReactionsCreateForReleaseError::Status201(crate::adapters::to_json_async(github_response).await?)),
+                415 => Err(ReactionsCreateForReleaseError::Status415(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReactionsCreateForReleaseError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ReactionsCreateForReleaseError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create reaction for a release
+    ///
+    /// Create a reaction to a [release](https://docs.github.com/rest/reference/repos#releases). A response with a `Status: 200 OK` means that you already added the reaction type to this release.
+    /// 
+    /// [GitHub API docs for create_for_release](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-release)
+    ///
+    /// The `create_for_release` endpoint is enabled with the `squirrel-girl` cargo feature.
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(feature = "squirrel-girl")]
+    pub fn create_for_release(&self, owner: &str, repo: &str, release_id: i32, body: PostReactionsCreateForRelease) -> Result<Reaction, ReactionsCreateForReleaseError> {
+
+        let request_uri = format!("{}/repos/{}/{}/releases/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, release_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostReactionsCreateForRelease::from_json(body)?),
+            method: "POST",
+            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                201 => Err(ReactionsCreateForReleaseError::Status201(crate::adapters::to_json(github_response)?)),
+                415 => Err(ReactionsCreateForReleaseError::Status415(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReactionsCreateForReleaseError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(ReactionsCreateForReleaseError::Generic { code }),
             }
         }
     }

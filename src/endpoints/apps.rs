@@ -114,7 +114,7 @@ pub enum AppsCreateContentAttachmentError {
     #[error("Gone")]
     Status410(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -160,7 +160,7 @@ pub enum AppsCreateInstallationAccessTokenError {
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Resource not found")]
@@ -263,7 +263,7 @@ pub enum AppsGetBySlugError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -284,7 +284,7 @@ pub enum AppsGetInstallationError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -505,7 +505,7 @@ pub enum AppsListInstallationsForAuthenticatedUserError {
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1549,7 +1549,7 @@ impl<'api> Apps<'api> {
     ///
     /// # Create a content attachment
     ///
-    /// Creates an attachment under a content reference URL in the body or comment of an issue or pull request. Use the `id` of the content reference from the [`content_reference` event](https://docs.github.com/webhooks/event-payloads/#content_reference) to create an attachment.
+    /// Creates an attachment under a content reference URL in the body or comment of an issue or pull request. Use the `id` and `repository` `full_name` of the content reference from the [`content_reference` event](https://docs.github.com/webhooks/event-payloads/#content_reference) to create an attachment.
     /// 
     /// The app must create a content attachment within six hours of the content reference URL being posted. See "[Using content attachments](https://docs.github.com/apps/using-content-attachments/)" for details about content attachments.
     /// 
@@ -1561,9 +1561,9 @@ impl<'api> Apps<'api> {
     ///
     /// ---
     #[cfg(feature = "corsair")]
-    pub async fn create_content_attachment_async(&self, content_reference_id: i32, body: PostAppsCreateContentAttachment) -> Result<ContentReferenceAttachment, AppsCreateContentAttachmentError> {
+    pub async fn create_content_attachment_async(&self, owner: &str, repo: &str, content_reference_id: i32, body: PostAppsCreateContentAttachment) -> Result<ContentReferenceAttachment, AppsCreateContentAttachmentError> {
 
-        let request_uri = format!("{}/content_references/{}/attachments", super::GITHUB_BASE_API_URL, content_reference_id);
+        let request_uri = format!("{}/{}/{}/content_references/{}/attachments", super::GITHUB_BASE_API_URL, owner, repo, content_reference_id);
 
 
         let req = GitHubRequest {
@@ -1600,7 +1600,7 @@ impl<'api> Apps<'api> {
     ///
     /// # Create a content attachment
     ///
-    /// Creates an attachment under a content reference URL in the body or comment of an issue or pull request. Use the `id` of the content reference from the [`content_reference` event](https://docs.github.com/webhooks/event-payloads/#content_reference) to create an attachment.
+    /// Creates an attachment under a content reference URL in the body or comment of an issue or pull request. Use the `id` and `repository` `full_name` of the content reference from the [`content_reference` event](https://docs.github.com/webhooks/event-payloads/#content_reference) to create an attachment.
     /// 
     /// The app must create a content attachment within six hours of the content reference URL being posted. See "[Using content attachments](https://docs.github.com/apps/using-content-attachments/)" for details about content attachments.
     /// 
@@ -1613,9 +1613,9 @@ impl<'api> Apps<'api> {
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "corsair")]
-    pub fn create_content_attachment(&self, content_reference_id: i32, body: PostAppsCreateContentAttachment) -> Result<ContentReferenceAttachment, AppsCreateContentAttachmentError> {
+    pub fn create_content_attachment(&self, owner: &str, repo: &str, content_reference_id: i32, body: PostAppsCreateContentAttachment) -> Result<ContentReferenceAttachment, AppsCreateContentAttachmentError> {
 
-        let request_uri = format!("{}/content_references/{}/attachments", super::GITHUB_BASE_API_URL, content_reference_id);
+        let request_uri = format!("{}/{}/{}/content_references/{}/attachments", super::GITHUB_BASE_API_URL, owner, repo, content_reference_id);
 
 
         let req = GitHubRequest {

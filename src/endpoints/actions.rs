@@ -31,23 +31,6 @@ pub fn new(auth: &Auth) -> Actions {
     Actions { auth }
 }
 
-/// Errors for the [Get GitHub Actions permissions for an organization](Actions::actions_policies_get_github_actions_permissions_organization_async()) endpoint.
-#[derive(Debug, thiserror::Error)]
-pub enum ActionsActionsPoliciesGetGithubActionsPermissionsOrganizationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
-    #[error("Status code: {}", code)]
-    Generic { code: u16 },
-}
-
 /// Errors for the [Add repository access to a self-hosted runner group in an organization](Actions::add_repo_access_to_self_hosted_runner_group_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsAddRepoAccessToSelfHostedRunnerGroupInOrgError {
@@ -647,6 +630,23 @@ pub enum ActionsGetEnvironmentPublicKeyError {
 /// Errors for the [Get an environment secret](Actions::get_environment_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetEnvironmentSecretError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get GitHub Actions permissions for an organization](Actions::get_github_actions_permissions_organization_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsGetGithubActionsPermissionsOrganizationError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -2246,87 +2246,6 @@ impl<'enc> From<&'enc PerPage> for ActionsListWorkflowRunsForRepoParams<'enc> {
 }
 
 impl<'api> Actions<'api> {
-    /// ---
-    ///
-    /// # Get GitHub Actions permissions for an organization
-    ///
-    /// Gets the GitHub Actions permissions policy for repositories and allowed actions in an organization.
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
-    /// 
-    /// [GitHub API docs for actions_policies_get_github_actions_permissions_organization](https://docs.github.com/rest/reference/actions#get-github-actions-permissions-for-an-organization)
-    ///
-    /// ---
-    pub async fn actions_policies_get_github_actions_permissions_organization_async(&self, org: &str) -> Result<ActionsOrganizationPermissions, ActionsActionsPoliciesGetGithubActionsPermissionsOrganizationError> {
-
-        let request_uri = format!("{}/orgs/{}/actions/permissions", super::GITHUB_BASE_API_URL, org);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch_async(request).await?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
-        } else {
-            match github_response.status_code() {
-                code => Err(ActionsActionsPoliciesGetGithubActionsPermissionsOrganizationError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Get GitHub Actions permissions for an organization
-    ///
-    /// Gets the GitHub Actions permissions policy for repositories and allowed actions in an organization.
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
-    /// 
-    /// [GitHub API docs for actions_policies_get_github_actions_permissions_organization](https://docs.github.com/rest/reference/actions#get-github-actions-permissions-for-an-organization)
-    ///
-    /// ---
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn actions_policies_get_github_actions_permissions_organization(&self, org: &str) -> Result<ActionsOrganizationPermissions, ActionsActionsPoliciesGetGithubActionsPermissionsOrganizationError> {
-
-        let request_uri = format!("{}/orgs/{}/actions/permissions", super::GITHUB_BASE_API_URL, org);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch(request)?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
-        } else {
-            match github_response.status_code() {
-                code => Err(ActionsActionsPoliciesGetGithubActionsPermissionsOrganizationError::Generic { code }),
-            }
-        }
-    }
-
     /// ---
     ///
     /// # Add repository access to a self-hosted runner group in an organization
@@ -5670,6 +5589,87 @@ impl<'api> Actions<'api> {
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetEnvironmentSecretError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get GitHub Actions permissions for an organization
+    ///
+    /// Gets the GitHub Actions permissions policy for repositories and allowed actions in an organization.
+    /// 
+    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
+    /// 
+    /// [GitHub API docs for get_github_actions_permissions_organization](https://docs.github.com/rest/reference/actions#get-github-actions-permissions-for-an-organization)
+    ///
+    /// ---
+    pub async fn get_github_actions_permissions_organization_async(&self, org: &str) -> Result<ActionsOrganizationPermissions, ActionsGetGithubActionsPermissionsOrganizationError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/permissions", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetGithubActionsPermissionsOrganizationError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get GitHub Actions permissions for an organization
+    ///
+    /// Gets the GitHub Actions permissions policy for repositories and allowed actions in an organization.
+    /// 
+    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
+    /// 
+    /// [GitHub API docs for get_github_actions_permissions_organization](https://docs.github.com/rest/reference/actions#get-github-actions-permissions-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_github_actions_permissions_organization(&self, org: &str) -> Result<ActionsOrganizationPermissions, ActionsGetGithubActionsPermissionsOrganizationError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/permissions", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetGithubActionsPermissionsOrganizationError::Generic { code }),
             }
         }
     }
