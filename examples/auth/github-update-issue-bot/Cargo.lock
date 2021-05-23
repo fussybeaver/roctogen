@@ -266,7 +266,7 @@ checksum = "24d5f089152e60f62d28b835fbff2cd2e8dc0baf1ac13343bef92ab7eed84548"
 
 [[package]]
 name = "roctogen"
-version = "0.2.2"
+version = "0.6.0"
 dependencies = [
  "base64",
  "cfg-if 0.1.10",

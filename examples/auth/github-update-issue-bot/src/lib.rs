@@ -133,7 +133,7 @@ pub async fn run(jwt_js: JsValue, app_id_js: JsValue) -> Result<JsValue, JsValue
     }
 
     let commit_comparison = repos
-        .compare_commits_async("github", "rest-api-description", &last_commit, &sha)
+        .compare_commits_async("github", "rest-api-description", &format!("{}...{}", &last_commit, &sha), Some(&per_page))
         .await
         .map_err(to_js_error)?;
 
@@ -159,7 +159,7 @@ pub async fn run(jwt_js: JsValue, app_id_js: JsValue) -> Result<JsValue, JsValue
             commit:
                 Some(models::CommitCommit {
                     author:
-                        Some(models::GitUser {
+                        Some(models::AllOfcommitCommitAuthor {
                             name: Some(author), ..
                         }),
                     message: Some(message),
@@ -186,9 +186,9 @@ pub async fn run(jwt_js: JsValue, app_id_js: JsValue) -> Result<JsValue, JsValue
     if !markdown.is_empty() {
         info!("Posting markdown: {}", &markdown);
         let post_issues_create = models::PostIssuesCreate {
-            title: Some(Value::String(format!("Notify rest-api-description changes {}..{}", &last_commit[..8], &sha[..8]))),
+            title: Some(format!("Notify rest-api-description changes {}..{}", &last_commit[..8], &sha[..8]).into()),
             body: Some(markdown),
-            labels: Some(vec![Value::String("openapi".to_owned())]),
+            labels: Some(vec!["openapi".to_owned().into()]),
             assignees: Some(vec!["fussybeaver".to_owned()]),
             ..Default::default()
         };
