@@ -47,7 +47,7 @@ pub enum CodesOfConductGetAllCodesOfConductError {
     #[error("Not modified")]
     Status304,
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -70,7 +70,7 @@ pub enum CodesOfConductGetConductCodeError {
     #[error("Not modified")]
     Status304,
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }

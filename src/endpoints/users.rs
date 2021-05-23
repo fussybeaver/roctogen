@@ -468,7 +468,7 @@ pub enum UsersListBlockedByAuthenticatedError {
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }

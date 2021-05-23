@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.github.jknack.handlebars.Handlebars;
 
@@ -28,6 +30,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.BooleanSchema;
 import io.swagger.v3.oas.models.media.ComposedSchema;
 import io.swagger.v3.oas.models.media.IntegerSchema;
 import io.swagger.v3.oas.models.media.MapSchema;
@@ -53,6 +56,7 @@ public class GitHubCodegen extends RustServerCodegen {
 
     private static HashMap<String, Object> patchOperationBodyNames = new HashMap();
     private static HashMap<String, Object> patchOperationResponseNames = new HashMap();
+    private static HashMap<String, HashMap<String, Object>> patchOneOfProperties = new HashMap();
 
     @Override
     public void preprocessOpenAPI(OpenAPI openAPI) {
@@ -85,7 +89,7 @@ public class GitHubCodegen extends RustServerCodegen {
     @Override
     public CodegenModel fromModel(String name, Schema schema, Map<String, Schema> allDefinitions) {
         CodegenModel mdl = super.fromModel(name, schema, allDefinitions);
- 
+
         // Partially deal with inline object polymorphism: 'anyOf' and 'oneOf'
         if (schema instanceof ComposedSchema) {
             ComposedSchema composedSchema = (ComposedSchema) schema;
@@ -182,6 +186,7 @@ public class GitHubCodegen extends RustServerCodegen {
 
             }
         }
+
         return mdl;
     }
 
@@ -211,7 +216,70 @@ public class GitHubCodegen extends RustServerCodegen {
                 mapLikeModels.put(name, listProps);
             }
         }
-    
+
+        // Deal with OneOf and AnyOf schemas in model properties. 
+        // We store the enum values as parseable untagged enums in a vendorExtension. 
+        // This currently only supports plain OneOf, AnyOf and Vectors of both.
+        ComposedSchema composedSchema = null;
+        if (p instanceof ArraySchema) {
+            final ArraySchema arraySchema = (ArraySchema) p;
+            Schema inner = arraySchema.getItems();
+            if (inner instanceof ComposedSchema) {
+                composedSchema = (ComposedSchema) inner;
+            }            
+        }
+
+        if (p instanceof ComposedSchema) {
+            composedSchema = (ComposedSchema) p;
+        }
+
+        if (composedSchema != null && (composedSchema.getOneOf() != null || composedSchema.getAnyOf() != null)) {
+ 
+            List<Schema> schemas;
+            if (composedSchema.getOneOf() != null) {
+                schemas = composedSchema.getOneOf();
+            } else {
+                schemas = composedSchema.getAnyOf();
+            }
+
+            int i = 0;
+
+            Map<String, Object> allowableValues = new HashMap<String, Object>();
+            List<CodegenProperty> subModels = (List<CodegenProperty>) new ArrayList();
+            allowableValues.put("count", schemas.size());
+
+            for (Schema subSchema : schemas) {
+                String subName = name + "_sub_" + i;
+                CodegenProperty subMdl = fromProperty(subName, subSchema);
+                String type = getTypeDeclaration(subSchema);
+                
+                if (!(subSchema instanceof BooleanSchema) && !(subSchema instanceof ArraySchema)  && !(subSchema instanceof ComposedSchema) && !(subSchema instanceof MapSchema) && !(subSchema instanceof NumberSchema) && !(subSchema instanceof IntegerSchema) && !(subSchema instanceof StringSchema) && type != null) {
+                    if (isObjectSchema(subSchema) && !type.startsWith("HashMap")) {
+                        subMdl.datatype = toModelName(type);
+                    }                
+                }
+
+                // Don't re-add a type that's a duplicate (the use of Value can mean we get
+                // dups)
+                Boolean containsDatatype = false;
+                for (CodegenProperty prop : subModels) {
+                    if (prop.datatype.equals(subMdl.datatype)) {
+                        containsDatatype = true;
+                    }
+                }
+
+                if (!containsDatatype) {
+                    subModels.add(subMdl);
+                    i++;
+                }
+
+            }
+
+            allowableValues.put("values", subModels);
+            property.vendorExtensions.put("x-codegen-one-of-schema", allowableValues);
+
+        }     
+
         return property;
     }
 
@@ -228,6 +296,17 @@ public class GitHubCodegen extends RustServerCodegen {
             for (Map<String, Object> mo : models) {
                 CodegenModel cm = (CodegenModel) mo.get("model");
                 allModels.put(modelName, cm);
+
+                // Parse out OneOf and AnyOf enum values from a property. We need to do this here, because the affected models need to know their enum values.
+                for (CodegenProperty prop : cm.vars) {
+                    if (prop.vendorExtensions.get("x-codegen-one-of-schema") != null) {
+                        if (prop.getItems() != null) {
+                            patchOneOfProperties.put(prop.getItems().datatype, (HashMap<String, Object>) prop.vendorExtensions.get("x-codegen-one-of-schema"));
+                        } else {
+                            patchOneOfProperties.put(prop.datatype, (HashMap<String, Object>) prop.vendorExtensions.get("x-codegen-one-of-schema"));
+                        }
+                    }
+                }
             }
         }
 
@@ -256,12 +335,23 @@ public class GitHubCodegen extends RustServerCodegen {
             if (model.getIsEnum()) {
                 model.vendorExtensions.put("is-enum", true);
             }
+
+            // Patch in the enum values for a OneOf or AnyOf schema found in a previous model property.
+            if (model.classname.startsWith("OneOf") || model.classname.startsWith("AnyOf")) {
+                if (patchOneOfProperties.containsKey(model.classname)) {
+                    model.allowableValues = patchOneOfProperties.get(model.classname);
+                    model.getVendorExtensions().put("x-rustgen-enum-one-of", "true");
+                } else {
+                    newObjs.remove(model.classname);
+                }
+            }
+
             for (CodegenProperty prop : model.vars) {
                 if (prop.dataFormat != null && prop.dataFormat.equals("dateTime")) {
                     // set DateTime format on properties where appropriate
                     prop.datatype = "DateTime<Utc>";
                 }
-
+                
                 if (getBooleanValue(prop, CodegenConstants.IS_ENUM_EXT_NAME)) {
                     ArrayList<HashMap<String, String>> vars = (ArrayList<HashMap<String, String>>) prop.allowableValues
                             .get("enumVars");
@@ -335,6 +425,51 @@ public class GitHubCodegen extends RustServerCodegen {
             String resName = (String) patchOperationResponseNames.get(camelize(cm.getName()));
             if (resName != null) {
                 cm.setClassname(toModelName(resName));
+            }
+
+            // Sanitize OneOf and AnyOf names, replace the /body[0-9]+/ naming with nicer names stored previously.
+            Pattern reBody = Pattern.compile("(^Body[0-9]+)");
+
+            cm.classname = camelize(cm.classname.replaceFirst("OneOf", ""));
+            cm.classname = camelize(cm.classname.replaceFirst("AnyOf", ""));
+            Matcher matchBody = reBody.matcher(cm.classname);
+
+            for (CodegenProperty property : cm.vars) {
+                if (property.datatype.startsWith("OneOf")) {
+                    property.datatype = camelize(property.datatype.replaceFirst("OneOf", ""));
+                } else if (property.datatype.startsWith("AnyOf")) {                
+                    property.datatype = camelize(property.datatype.replaceFirst("AnyOf", ""));
+                }
+
+                if (property.getItems() != null && property.getItems().datatype.startsWith("OneOf")) {
+                    property.getItems().datatype = camelize(property.getItems().datatype.replace("OneOf", ""));
+                } else if (property.getItems() != null && property.getItems().datatype.startsWith("AnyOf")) {
+                    property.getItems().datatype = camelize(property.getItems().datatype.replace("AnyOf", ""));
+                }
+            }
+        
+            if (matchBody.find()) {
+                String body = matchBody.group(0);
+    
+                if (patchOperationBodyNames.containsKey(body)) {
+                    cm.classname = cm.classname.replace(body, camelize((String) patchOperationBodyNames.get(body))) + "Enum";
+                }
+            }
+
+            for (CodegenProperty property : cm.vars) {
+
+                Matcher matchProp = reBody.matcher(property.datatype);
+                if (matchProp.find()) {
+                    property.datatype = property.datatype.replace(matchProp.group(0), camelize((String) patchOperationBodyNames.get(matchProp.group(0)))) + "Enum";
+                }
+
+                if (property.getItems() != null) {
+                    matchProp = reBody.matcher(property.getItems().datatype);
+ 
+                    if (matchProp.find()) {
+                        property.getItems().datatype = property.getItems().datatype.replace(matchProp.group(0), camelize((String) patchOperationBodyNames.get(matchProp.group(0)))) + "Enum";
+                    }
+                }
             }
         }
 
@@ -436,6 +571,8 @@ public class GitHubCodegen extends RustServerCodegen {
             // needed for windows
             property.datatype = "i64";
         }
+
+
     }
 
     @Override
@@ -467,6 +604,11 @@ public class GitHubCodegen extends RustServerCodegen {
         }
 
         return param;
+    }
+
+    @Override
+    public void addParentContainer(CodegenModel codegenModel, String name, Schema schema) {
+        super.addParentContainer(codegenModel, name, schema);
     }
 
     @Override

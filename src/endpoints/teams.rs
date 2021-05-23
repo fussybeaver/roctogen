@@ -135,7 +135,7 @@ pub enum TeamsAddOrUpdateProjectPermissionsLegacyError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
@@ -215,7 +215,7 @@ pub enum TeamsCheckPermissionsForProjectLegacyError {
     #[error("Not Found if project is not managed by this team")]
     Status404,
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -966,7 +966,7 @@ pub enum TeamsListProjectsLegacyError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1097,7 +1097,7 @@ pub enum TeamsRemoveProjectLegacyError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]

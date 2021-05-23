@@ -490,7 +490,7 @@ pub enum ReposCreatePagesSiteError {
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Conflict")]
     Status409(BasicError),
     #[error("Status code: {}", code)]
@@ -812,7 +812,7 @@ pub enum ReposDeletePagesSiteError {
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
@@ -1106,7 +1106,7 @@ pub enum ReposGetAllTopicsError {
     // -- endpoint errors
 
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
@@ -1148,7 +1148,7 @@ pub enum ReposGetBranchError {
     #[error("Moved permanently")]
     Status301(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
@@ -1449,7 +1449,7 @@ pub enum ReposGetDeploymentStatusError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1698,7 +1698,7 @@ pub enum ReposGetReleaseAssetError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Found")]
     Status302,
     #[error("Status code: {}", code)]
@@ -1907,7 +1907,7 @@ pub enum ReposListBranchesForHeadCommitError {
     // -- endpoint errors
 
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
@@ -2276,7 +2276,7 @@ pub enum ReposListPullRequestsAssociatedWithCommitError {
     // -- endpoint errors
 
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -2565,7 +2565,7 @@ pub enum ReposReplaceAllTopicsError {
     // -- endpoint errors
 
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed")]
@@ -2763,7 +2763,7 @@ pub enum ReposUpdateBranchProtectionError {
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostAppsCreateContentAttachmentResponse415),
     #[error("Validation failed")]
     Status422(ValidationErrorSimple),
     #[error("Resource not found")]
@@ -14630,8 +14630,8 @@ impl<'api> Repos<'api> {
     ///
     /// Lists all public repositories in the order that they were created.
     /// 
-    /// Notes:
-    /// - For GitHub Enterprise Server and GitHub AE, this endpoint will only list repositories available to all users on the enterprise.
+    /// Note:
+    /// - For GitHub Enterprise Server, this endpoint will only list repositories available to all users on the enterprise.
     /// - Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header) to get the URL for the next page of repositories.
     /// 
     /// [GitHub API docs for list_public](https://docs.github.com/rest/reference/repos#list-public-repositories)
@@ -14678,8 +14678,8 @@ impl<'api> Repos<'api> {
     ///
     /// Lists all public repositories in the order that they were created.
     /// 
-    /// Notes:
-    /// - For GitHub Enterprise Server and GitHub AE, this endpoint will only list repositories available to all users on the enterprise.
+    /// Note:
+    /// - For GitHub Enterprise Server, this endpoint will only list repositories available to all users on the enterprise.
     /// - Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header) to get the URL for the next page of repositories.
     /// 
     /// [GitHub API docs for list_public](https://docs.github.com/rest/reference/repos#list-public-repositories)
