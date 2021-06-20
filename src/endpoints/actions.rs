@@ -7734,7 +7734,7 @@ impl<'api> Actions<'api> {
     /// [GitHub API docs for list_selected_repositories_enabled_github_actions_organization](https://docs.github.com/rest/reference/actions#list-selected-repositories-enabled-for-github-actions-in-an-organization)
     ///
     /// ---
-    pub async fn list_selected_repositories_enabled_github_actions_organization_async(&self, org: &str, query_params: Option<impl Into<ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationParams>>) -> Result<GetActionsListRepoAccessToSelfHostedRunnerGroupInOrgResponse200, ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationError> {
+    pub async fn list_selected_repositories_enabled_github_actions_organization_async(&self, org: &str, query_params: Option<impl Into<ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationParams>>) -> Result<GetActionsListSelectedRepositoriesEnabledGithubActionsOrganizationResponse200, ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationError> {
 
         let mut request_uri = format!("{}/orgs/{}/actions/permissions/repositories", super::GITHUB_BASE_API_URL, org);
 
@@ -7779,7 +7779,7 @@ impl<'api> Actions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_selected_repositories_enabled_github_actions_organization(&self, org: &str, query_params: Option<impl Into<ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationParams>>) -> Result<GetActionsListRepoAccessToSelfHostedRunnerGroupInOrgResponse200, ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationError> {
+    pub fn list_selected_repositories_enabled_github_actions_organization(&self, org: &str, query_params: Option<impl Into<ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationParams>>) -> Result<GetActionsListSelectedRepositoriesEnabledGithubActionsOrganizationResponse200, ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationError> {
 
         let mut request_uri = format!("{}/orgs/{}/actions/permissions/repositories", super::GITHUB_BASE_API_URL, org);
 

@@ -72,7 +72,7 @@ pub enum SearchCommitsError {
     #[error("Not modified")]
     Status304,
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -166,7 +166,7 @@ pub enum SearchTopicsError {
     #[error("Not modified")]
     Status304,
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
