@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.7.0 (20/06/2021)
+- [**closed**] Update upstream openapi changes [#32](https://github.com/fussybeaver/roctogen/pull/32)
+
+---
+
 ## v0.6.0 (23/05/2021)
 - [**closed**] Fix OneOf/AnyOf references in props [#27](https://github.com/fussybeaver/roctogen/pull/27)
 
