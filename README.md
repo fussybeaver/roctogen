@@ -19,7 +19,7 @@ Add the following to your `Cargo.toml` file
 
 ```nocompile
 [dependencies]
-roctogen = "0.6"
+roctogen = "0.7"
 ```
 
 ## API
