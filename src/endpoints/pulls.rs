@@ -529,7 +529,7 @@ pub enum PullsUpdateBranchError {
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }

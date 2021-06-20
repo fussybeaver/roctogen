@@ -480,7 +480,7 @@ pub enum IssuesListEventsForTimelineError {
     #[error("Gone")]
     Status410(BasicError),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }

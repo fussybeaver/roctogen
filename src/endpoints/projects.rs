@@ -47,7 +47,7 @@ pub enum ProjectsAddCollaboratorError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Not modified")]
@@ -132,7 +132,7 @@ pub enum ProjectsCreateForAuthenticatedUserError {
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
@@ -357,7 +357,7 @@ pub enum ProjectsGetPermissionForUserError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Not modified")]
@@ -409,7 +409,7 @@ pub enum ProjectsListCollaboratorsError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Not modified")]
@@ -505,7 +505,7 @@ pub enum ProjectsListForUserError {
     // -- endpoint errors
 
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
@@ -582,7 +582,7 @@ pub enum ProjectsRemoveCollaboratorError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Validation failed")]

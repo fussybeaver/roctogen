@@ -490,7 +490,7 @@ pub enum ReposCreatePagesSiteError {
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Conflict")]
     Status409(BasicError),
     #[error("Status code: {}", code)]
@@ -812,7 +812,7 @@ pub enum ReposDeletePagesSiteError {
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
@@ -1106,7 +1106,7 @@ pub enum ReposGetAllTopicsError {
     // -- endpoint errors
 
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
@@ -1148,7 +1148,7 @@ pub enum ReposGetBranchError {
     #[error("Moved permanently")]
     Status301(BasicError),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
@@ -1449,7 +1449,7 @@ pub enum ReposGetDeploymentStatusError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1698,7 +1698,7 @@ pub enum ReposGetReleaseAssetError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Found")]
     Status302,
     #[error("Status code: {}", code)]
@@ -1907,7 +1907,7 @@ pub enum ReposListBranchesForHeadCommitError {
     // -- endpoint errors
 
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
@@ -2276,7 +2276,7 @@ pub enum ReposListPullRequestsAssociatedWithCommitError {
     // -- endpoint errors
 
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -2565,7 +2565,7 @@ pub enum ReposReplaceAllTopicsError {
     // -- endpoint errors
 
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed")]
@@ -2763,7 +2763,7 @@ pub enum ReposUpdateBranchProtectionError {
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationErrorSimple),
     #[error("Resource not found")]

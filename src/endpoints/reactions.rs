@@ -47,7 +47,7 @@ pub enum ReactionsCreateForCommitCommentError {
     #[error("Reaction created")]
     Status201(Reaction),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
@@ -70,7 +70,7 @@ pub enum ReactionsCreateForIssueError {
     #[error("Response")]
     Status201(Reaction),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
@@ -93,7 +93,7 @@ pub enum ReactionsCreateForIssueCommentError {
     #[error("Reaction created")]
     Status201(Reaction),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
@@ -116,7 +116,7 @@ pub enum ReactionsCreateForPullRequestReviewCommentError {
     #[error("Reaction created")]
     Status201(Reaction),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
@@ -139,7 +139,7 @@ pub enum ReactionsCreateForReleaseError {
     #[error("Reaction created")]
     Status201(Reaction),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
@@ -342,7 +342,7 @@ pub enum ReactionsDeleteLegacyError {
     #[error("Gone")]
     Status410(BasicError),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -363,7 +363,7 @@ pub enum ReactionsListForCommitCommentError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -386,7 +386,7 @@ pub enum ReactionsListForIssueError {
     #[error("Gone")]
     Status410(BasicError),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -407,7 +407,7 @@ pub enum ReactionsListForIssueCommentError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -428,7 +428,7 @@ pub enum ReactionsListForPullRequestReviewCommentError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }

@@ -114,7 +114,7 @@ pub enum AppsCreateContentAttachmentError {
     #[error("Gone")]
     Status410(BasicError),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -160,7 +160,7 @@ pub enum AppsCreateInstallationAccessTokenError {
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Resource not found")]
@@ -263,7 +263,7 @@ pub enum AppsGetBySlugError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -284,7 +284,7 @@ pub enum AppsGetInstallationError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -505,7 +505,7 @@ pub enum AppsListInstallationsForAuthenticatedUserError {
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Preview header missing")]
-    Status415(PostAppsCreateContentAttachmentResponse415),
+    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1563,7 +1563,7 @@ impl<'api> Apps<'api> {
     #[cfg(feature = "corsair")]
     pub async fn create_content_attachment_async(&self, owner: &str, repo: &str, content_reference_id: i32, body: PostAppsCreateContentAttachment) -> Result<ContentReferenceAttachment, AppsCreateContentAttachmentError> {
 
-        let request_uri = format!("{}/{}/{}/content_references/{}/attachments", super::GITHUB_BASE_API_URL, owner, repo, content_reference_id);
+        let request_uri = format!("{}/repos/{}/{}/content_references/{}/attachments", super::GITHUB_BASE_API_URL, owner, repo, content_reference_id);
 
 
         let req = GitHubRequest {
@@ -1615,7 +1615,7 @@ impl<'api> Apps<'api> {
     #[cfg(feature = "corsair")]
     pub fn create_content_attachment(&self, owner: &str, repo: &str, content_reference_id: i32, body: PostAppsCreateContentAttachment) -> Result<ContentReferenceAttachment, AppsCreateContentAttachmentError> {
 
-        let request_uri = format!("{}/{}/{}/content_references/{}/attachments", super::GITHUB_BASE_API_URL, owner, repo, content_reference_id);
+        let request_uri = format!("{}/repos/{}/{}/content_references/{}/attachments", super::GITHUB_BASE_API_URL, owner, repo, content_reference_id);
 
 
         let req = GitHubRequest {
