@@ -460,7 +460,11 @@ pub struct SearchLabelsParams<'req> {
     /// Sorts the results of your query by when the label was `created` or `updated`. Default: [best match](https://docs.github.com/rest/reference/search#ranking-search-results)
     sort: Option<&'req str>, 
     /// Determines whether the first search result returned is the highest number of matches (`desc`) or lowest number of matches (`asc`). This parameter is ignored unless you provide `sort`.
-    order: Option<&'req str>
+    order: Option<&'req str>, 
+    /// Results per page (max 100).
+    per_page: Option<u16>, 
+    /// Page number of the results to fetch.
+    page: Option<u16>
 }
 
 impl<'req> SearchLabelsParams<'req> {
@@ -475,6 +479,8 @@ impl<'req> SearchLabelsParams<'req> {
             q: self.q, 
             sort: self.sort, 
             order: self.order, 
+            per_page: self.per_page, 
+            page: self.page, 
         }
     }
 
@@ -485,6 +491,8 @@ impl<'req> SearchLabelsParams<'req> {
             q: q,
             sort: self.sort, 
             order: self.order, 
+            per_page: self.per_page, 
+            page: self.page, 
         }
     }
 
@@ -495,6 +503,8 @@ impl<'req> SearchLabelsParams<'req> {
             q: self.q, 
             sort: Some(sort),
             order: self.order, 
+            per_page: self.per_page, 
+            page: self.page, 
         }
     }
 
@@ -505,10 +515,45 @@ impl<'req> SearchLabelsParams<'req> {
             q: self.q, 
             sort: self.sort, 
             order: Some(order),
+            per_page: self.per_page, 
+            page: self.page, 
+        }
+    }
+
+    /// Results per page (max 100).
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self { 
+            repository_id: self.repository_id, 
+            q: self.q, 
+            sort: self.sort, 
+            order: self.order, 
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// Page number of the results to fetch.
+    pub fn page(self, page: u16) -> Self {
+        Self { 
+            repository_id: self.repository_id, 
+            q: self.q, 
+            sort: self.sort, 
+            order: self.order, 
+            per_page: self.per_page, 
+            page: Some(page),
         }
     }
 }
 
+impl<'enc> From<&'enc PerPage> for SearchLabelsParams<'enc> {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [Search repositories](Search::repos_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct SearchReposParams<'req> {
@@ -598,7 +643,11 @@ impl<'enc> From<&'enc PerPage> for SearchReposParams<'enc> {
 #[derive(Default, Serialize)]
 pub struct SearchTopicsParams<'req> {
     /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as GitHub.com. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/reference/search#constructing-a-search-query).
-    q: &'req str
+    q: &'req str, 
+    /// Results per page (max 100).
+    per_page: Option<u16>, 
+    /// Page number of the results to fetch.
+    page: Option<u16>
 }
 
 impl<'req> SearchTopicsParams<'req> {
@@ -610,10 +659,39 @@ impl<'req> SearchTopicsParams<'req> {
     pub fn q(self, q: &'req str) -> Self {
         Self { 
             q: q,
+            per_page: self.per_page, 
+            page: self.page, 
+        }
+    }
+
+    /// Results per page (max 100).
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self { 
+            q: self.q, 
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// Page number of the results to fetch.
+    pub fn page(self, page: u16) -> Self {
+        Self { 
+            q: self.q, 
+            per_page: self.per_page, 
+            page: Some(page),
         }
     }
 }
 
+impl<'enc> From<&'enc PerPage> for SearchTopicsParams<'enc> {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [Search users](Search::users_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct SearchUsersParams<'req> {

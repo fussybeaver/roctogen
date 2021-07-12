@@ -3924,7 +3924,7 @@ impl<'api> Issues<'api> {
     /// ---
     #[cfg(feature = "mockingbird")]
     #[cfg(feature = "starfox")]
-    pub async fn list_events_for_timeline_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListEventsForTimelineParams>>) -> Result<Vec<IssueEventForIssue>, IssuesListEventsForTimelineError> {
+    pub async fn list_events_for_timeline_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListEventsForTimelineParams>>) -> Result<Vec<TimelineIssueEvents>, IssuesListEventsForTimelineError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/{}/timeline", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
@@ -3973,7 +3973,7 @@ impl<'api> Issues<'api> {
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "mockingbird")]
     #[cfg(feature = "starfox")]
-    pub fn list_events_for_timeline(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListEventsForTimelineParams>>) -> Result<Vec<IssueEventForIssue>, IssuesListEventsForTimelineError> {
+    pub fn list_events_for_timeline(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListEventsForTimelineParams>>) -> Result<Vec<TimelineIssueEvents>, IssuesListEventsForTimelineError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/{}/timeline", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 

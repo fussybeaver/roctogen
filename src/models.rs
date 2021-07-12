@@ -141,6 +141,47 @@ pub struct Actor {
     pub avatar_url: Option<String>,
 }
 
+/// Added to Project Issue Event
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct AddedToProjectIssueEvent {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub actor: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub performed_via_github_app: Option<Integration>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub project_card: Option<AddedtoprojectissueeventProjectCard>,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct AddedtoprojectissueeventProjectCard {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub project_id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub project_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub column_name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub previous_column_name: Option<String>,
+}
+
 /// The time that the alert was created in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
 pub type AlertCreatedAt = DateTime<Utc>;
 
@@ -164,6 +205,10 @@ pub struct AlertUrl {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfGistOwner {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -208,6 +253,10 @@ pub struct AllOfGistOwner {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfGistUser {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -250,6 +299,10 @@ pub struct AllOfGistUser {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfapplicationGrantUser {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -313,6 +366,10 @@ pub struct AllOfauthorizationInstallation {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfauthorizationUser {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -356,6 +413,10 @@ pub struct AllOfauthorizationUser {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfbaseGistOwner {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -398,6 +459,10 @@ pub struct AllOfbaseGistOwner {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfbaseGistUser {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -528,6 +593,10 @@ pub struct AllOfcheckSuiteApp {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfcommitAuthor {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -570,6 +639,10 @@ pub struct AllOfcommitAuthor {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfcommitCommentUser {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -634,6 +707,10 @@ pub struct AllOfcommitCommitCommitter {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfcommitCommitter {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -676,6 +753,10 @@ pub struct AllOfcommitCommitter {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfcommitSearchResultItemAuthor {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -808,6 +889,10 @@ pub struct AllOfcommunityprofileFilesReadme {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfcontributorActivityAuthor {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -850,6 +935,10 @@ pub struct AllOfcontributorActivityAuthor {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfdeploymentCreator {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -980,6 +1069,10 @@ pub struct AllOfdeploymentSimplePerformedViaGithubApp {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfdeploymentStatusCreator {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -1081,6 +1174,10 @@ pub struct AllOffullRepositoryLicense {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOffullRepositoryOrganization {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1321,6 +1418,10 @@ pub struct AllOffullRepositoryTemplateRepository {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfgistCommentUser {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -1363,6 +1464,10 @@ pub struct AllOfgistCommentUser {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfgistCommitUser {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1407,6 +1512,57 @@ pub struct AllOfgistCommitUser {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfinstallationSuspendedBy {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub login: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub avatar_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub gravatar_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub followers_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub following_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub gists_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub starred_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub subscriptions_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub organizations_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repos_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub events_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub received_events_url: Option<String>,
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub site_admin: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub starred_at: Option<String>,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct AllOfintegrationOwner {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -1450,6 +1606,10 @@ pub struct AllOfinstallationSuspendedBy {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfissueAssignee {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -1492,6 +1652,10 @@ pub struct AllOfissueAssignee {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfissueClosedBy {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1579,6 +1743,10 @@ pub struct AllOfissueCommentPerformedViaGithubApp {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfissueCommentUser {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -1621,6 +1789,10 @@ pub struct AllOfissueCommentUser {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfissueEventActor {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1665,6 +1837,10 @@ pub struct AllOfissueEventActor {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfissueEventAssignee {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -1707,6 +1883,10 @@ pub struct AllOfissueEventAssignee {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfissueEventAssigner {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1794,6 +1974,10 @@ pub struct AllOfissueEventPerformedViaGithubApp {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfissueEventRequestedReviewer {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -1836,6 +2020,10 @@ pub struct AllOfissueEventRequestedReviewer {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfissueEventReviewRequester {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -1962,6 +2150,10 @@ pub struct AllOfissuePerformedViaGithubApp {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfissueSearchResultItemAssignee {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -2087,6 +2279,10 @@ pub struct AllOfissueSearchResultItemPerformedViaGithubApp {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfissueSearchResultItemUser {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -2129,6 +2325,10 @@ pub struct AllOfissueSearchResultItemUser {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfissueSimpleAssignee {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2255,6 +2455,10 @@ pub struct AllOfissueSimplePerformedViaGithubApp {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfissueSimpleUser {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -2297,6 +2501,10 @@ pub struct AllOfissueSimpleUser {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfissueUser {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2357,6 +2565,10 @@ pub struct AllOflicenseContentLicense {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfmigrationOwner {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -2400,6 +2612,10 @@ pub struct AllOfmigrationOwner {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfmilestoneCreator {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -2442,6 +2658,10 @@ pub struct AllOfmilestoneCreator {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfminimalRepositoryOwner {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2682,6 +2902,10 @@ pub struct AllOfminimalRepositoryTemplateRepository {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOforgMembershipUser {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -2724,6 +2948,10 @@ pub struct AllOforgMembershipUser {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfpackageOwner {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2912,7 +3140,7 @@ pub struct AllOfpackageRepository {
     #[serde(skip_serializing_if="Option::is_none")]
     pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(skip_serializing_if="Option::is_none")]
-    pub permissions: Option<RepositoryTemplateRepositoryPermissions>,
+    pub permissions: Option<MinimalrepositoryPermissions>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub template_repository: Option<Repository>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2923,6 +3151,8 @@ pub struct AllOfpackageRepository {
     pub subscribers_count: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub network_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub code_of_conduct: Option<CodeOfConduct>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub license: Option<MinimalrepositoryLicense>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2936,48 +3166,9 @@ pub struct AllOfpackageRepository {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfpageBuildPusher {     
     #[serde(skip_serializing_if="Option::is_none")]
-    pub login: Option<String>,
+    pub name: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
-    pub id: Option<i64>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub node_id: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub avatar_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub gravatar_id: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub html_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub followers_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub following_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub gists_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub starred_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub subscriptions_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub organizations_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub repos_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub events_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub received_events_url: Option<String>,
-    #[serde(rename = "type")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub _type: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub site_admin: Option<bool>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub starred_at: Option<String>,
-}
-
-#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
-pub struct AllOfpersonalAccessTokenUser {     
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3022,6 +3213,10 @@ pub struct AllOfpersonalAccessTokenUser {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfprojectCardCreator {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -3064,6 +3259,10 @@ pub struct AllOfprojectCardCreator {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfprojectCreator {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3108,6 +3307,10 @@ pub struct AllOfprojectCreator {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfpullRequestAssignee {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -3150,6 +3353,10 @@ pub struct AllOfpullRequestAssignee {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfpullRequestMergedBy {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3233,6 +3440,10 @@ pub struct AllOfpullRequestMilestone {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfpullRequestReviewUser {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -3275,6 +3486,10 @@ pub struct AllOfpullRequestReviewUser {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfpullRequestSimpleAssignee {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3358,6 +3573,10 @@ pub struct AllOfpullRequestSimpleMilestone {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfpullRequestSimpleUser {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -3400,6 +3619,10 @@ pub struct AllOfpullRequestSimpleUser {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfpullRequestUser {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3460,6 +3683,10 @@ pub struct AllOfpullrequestBaseRepoLicense {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfpullrequestsimpleHeadUser {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -3503,6 +3730,10 @@ pub struct AllOfpullrequestsimpleHeadUser {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfreactionUser {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -3545,6 +3776,10 @@ pub struct AllOfreactionUser {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfreleaseAssetUploader {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3605,6 +3840,10 @@ pub struct AllOfrepoSearchResultItemLicense {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfrepoSearchResultItemOwner {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -3647,6 +3886,10 @@ pub struct AllOfrepoSearchResultItemOwner {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfrepositoryCollaboratorPermissionUser {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3691,6 +3934,10 @@ pub struct AllOfrepositoryCollaboratorPermissionUser {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfrepositoryInvitationInvitee {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -3733,6 +3980,10 @@ pub struct AllOfrepositoryInvitationInvitee {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfrepositoryInvitationInviter {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3793,6 +4044,10 @@ pub struct AllOfrepositoryLicense {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfrepositoryOrganization {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -3835,6 +4090,10 @@ pub struct AllOfrepositoryOrganization {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfrepositoryOwner {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3879,6 +4138,10 @@ pub struct AllOfrepositoryOwner {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfreviewCommentUser {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -3921,6 +4184,10 @@ pub struct AllOfreviewCommentUser {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfstargazerUser {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -3965,6 +4232,10 @@ pub struct AllOfstargazerUser {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfteamDiscussionAuthor {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -4007,6 +4278,10 @@ pub struct AllOfteamDiscussionAuthor {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfteamDiscussionCommentAuthor {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -4136,6 +4411,10 @@ pub struct AllOfteamRepositoryLicense {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfteamRepositoryOwner {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -4481,7 +4760,7 @@ impl From<Enterprise> for InstallationAccount {
 #[serde(untagged)]
 pub enum PendingdeploymentReviewersReviewer { 
     PendingdeploymentReviewersReviewerVariant0(SimpleUser),
-    PendingdeploymentReviewersReviewerVariant1(TeamSimple),
+    PendingdeploymentReviewersReviewerVariant1(Team),
 }
 
 impl From<SimpleUser> for PendingdeploymentReviewersReviewer {
@@ -4490,8 +4769,8 @@ impl From<SimpleUser> for PendingdeploymentReviewersReviewer {
     }
 }
 
-impl From<TeamSimple> for PendingdeploymentReviewersReviewer {
-    fn from(value: TeamSimple) -> Self {
+impl From<Team> for PendingdeploymentReviewersReviewer {
+    fn from(value: Team) -> Self {
         PendingdeploymentReviewersReviewer::PendingdeploymentReviewersReviewerVariant1(value)
     }
 }
@@ -4614,6 +4893,9 @@ pub struct AppPermissions {
     /// The level of permission to grant the access token to manage organization projects, columns, and cards. Can be one of: `read`, `write`, or `admin`.
     #[serde(skip_serializing_if="Option::is_none")]
     pub organization_projects: Option<String>,
+    /// The level of permission to grant the access token for organization packages published to GitHub Packages. Can be one of: `read` or `write`.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub organization_packages: Option<String>,
     /// The level of permission to grant the access token to manage organization secrets. Can be one of: `read` or `write`.
     #[serde(skip_serializing_if="Option::is_none")]
     pub organization_secrets: Option<String>,
@@ -4685,6 +4967,33 @@ pub struct Artifact {
     pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
+/// Assigned Issue Event
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct AssignedIssueEvent {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub actor: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub performed_via_github_app: Option<Integration>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub assignee: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub assigner: Option<SimpleUser>,
+}
+
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AuditLogEvent {     
     /// The time the audit log event occurred, given as a [Unix timestamp](http://en.wikipedia.org/wiki/Unix_time).
@@ -4701,6 +5010,15 @@ pub struct AuditLogEvent {
     /// The actor who performed the action.
     #[serde(skip_serializing_if="Option::is_none")]
     pub actor: Option<String>,
+    /// The id of the actor who performed the action.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub actor_id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub actor_location: Option<AuditlogeventActorLocation>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub data: Option<HashMap<String, HashMap<String, Value>>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub org_id: Option<i64>,
     /// The username of the account being blocked.
     #[serde(skip_serializing_if="Option::is_none")]
     pub blocked_user: Option<String>,
@@ -4772,6 +5090,12 @@ pub struct AuditLogEvent {
     /// The repository visibility, for example `public` or `private`.
     #[serde(skip_serializing_if="Option::is_none")]
     pub visibility: Option<String>,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct AuditlogeventActorLocation {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub country_name: Option<String>,
 }
 
 /// Authentication Token
@@ -6216,10 +6540,7 @@ pub struct PatchUsersUpdateAuthenticated {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PatchUsersSetPrimaryEmailVisibilityForAuthenticated {     
-    /// An email address associated with the GitHub user account to manage.
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub email: Option<String>,
-    /// Denotes whether an email is publically visible.
+    /// Denotes whether an email is publicly visible.
     #[serde(skip_serializing_if="Option::is_none")]
     pub visibility: Option<String>,
 }
@@ -6974,6 +7295,8 @@ pub struct PatchReposUpdate {
     /// Can be `public` or `private`. If your organization is associated with an enterprise account using GitHub Enterprise Cloud or GitHub Enterprise Server 2.20+, `visibility` can also be `internal`. The `visibility` parameter overrides the `private` parameter when you use both along with the `nebula-preview` preview header.
     #[serde(skip_serializing_if="Option::is_none")]
     pub visibility: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub security_and_analysis: Option<ReposownerrepoSecurityAndAnalysis>,
     /// Either `true` to enable issues for this repository or `false` to disable them.
     #[serde(skip_serializing_if="Option::is_none")]
     pub has_issues: Option<bool>,
@@ -7068,6 +7391,9 @@ pub struct PutReposUpdateBranchProtection {
     /// Allows deletion of the protected branch by anyone with write access to the repository. Set to `false` to prevent deletion of the protected branch. Default: `false`. For more information, see \"[Enabling force pushes to a protected branch](https://help.github.com/en/github/administering-a-repository/enabling-force-pushes-to-a-protected-branch)\" in the GitHub Help documentation.
     #[serde(skip_serializing_if="Option::is_none")]
     pub allow_deletions: Option<bool>,
+    /// Requires all conversations on code to be resolved before a pull request can be merged into a branch that matches this rule. Set to `false` to disable. Default: `false`.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub required_conversation_resolution: Option<bool>,
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
@@ -7629,6 +7955,8 @@ pub struct BranchProtection {
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub enabled: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub required_status_checks: Option<BranchprotectionRequiredStatusChecks>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub enforce_admins: Option<ProtectedBranchAdminEnforced>,
@@ -7727,6 +8055,8 @@ pub struct BranchprotectionRequiredStatusChecks {
     pub contexts: Option<Vec<String>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub contexts_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub strict: Option<bool>,
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
@@ -7804,6 +8134,8 @@ pub struct BranchrestrictionpolicyOwner {
     #[serde(rename = "type")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub _type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub site_admin: Option<bool>,
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
@@ -8256,6 +8588,9 @@ pub struct CodeScanningAlertRule {
     /// The severity of the alert.
     #[serde(skip_serializing_if="Option::is_none")]
     pub severity: Option<String>,
+    /// The security severity of the alert.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub security_severity_level: Option<String>,
     /// A short description of the rule used to detect the alert.
     #[serde(skip_serializing_if="Option::is_none")]
     pub description: Option<String>,
@@ -8399,6 +8734,8 @@ pub struct CodeScanningAnalysis {
     /// Warning generated when processing the analysis
     #[serde(skip_serializing_if="Option::is_none")]
     pub warning: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tool_name: Option<String>,
 }
 
 /// Identifies the configuration under which the analysis was executed. For example, in GitHub Actions this includes the workflow filename and job name.
@@ -8543,6 +8880,10 @@ pub struct Collaborator {
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub node_id: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -9189,6 +9530,31 @@ pub struct ContributoractivityWeeks {
     pub c: Option<i64>,
 }
 
+/// Converted Note to Issue Issue Event
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ConvertedNoteToIssueIssueEvent {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub actor: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub performed_via_github_app: Option<Integration>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub project_card: Option<AddedtoprojectissueeventProjectCard>,
+}
+
 /// Credential Authorization
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CredentialAuthorization {     
@@ -9224,6 +9590,31 @@ pub struct CredentialAuthorization {
     /// The note given to the token. This will only be present when the credential is a token.
     #[serde(skip_serializing_if="Option::is_none")]
     pub authorized_credential_note: Option<String>,
+}
+
+/// Demilestoned Issue Event
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct DemilestonedIssueEvent {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub actor: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub performed_via_github_app: Option<Integration>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub milestone: Option<MilestonedissueeventMilestone>,
 }
 
 /// An SSH key granting access to a single repository.
@@ -10040,7 +10431,7 @@ pub struct FullRepository {
     #[serde(skip_serializing_if="Option::is_none")]
     pub code_of_conduct: Option<CodeOfConductSimple>,
     #[serde(skip_serializing_if="Option::is_none")]
-    pub has_advanced_security: Option<bool>,
+    pub security_and_analysis: Option<FullrepositorySecurityAndAnalysis>,
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
@@ -10051,6 +10442,20 @@ pub struct FullrepositoryPermissions {
     pub pull: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub push: Option<bool>,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct FullrepositorySecurityAndAnalysis {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub advanced_security: Option<FullrepositorySecurityAndAnalysisAdvancedSecurity>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub secret_scanning: Option<FullrepositorySecurityAndAnalysisAdvancedSecurity>,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct FullrepositorySecurityAndAnalysisAdvancedSecurity {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub status: Option<String>,
 }
 
 /// Gist
@@ -10130,18 +10535,33 @@ pub struct GistCommit {
     #[serde(skip_serializing_if="Option::is_none")]
     pub user: Option<AllOfgistCommitUser>,
     #[serde(skip_serializing_if="Option::is_none")]
-    pub change_status: Option<GistcommitChangeStatus>,
+    pub change_status: Option<GisthistoryChangeStatus>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub committed_at: Option<chrono::DateTime<chrono::Utc>>,
+}
+
+/// Gist History
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct GistHistory {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub version: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub committed_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub change_status: Option<GisthistoryChangeStatus>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
 }
 
 /// Gist Simple
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GistSimple {     
     #[serde(skip_serializing_if="Option::is_none")]
-    pub forks: Option<Vec<Value>>,
+    pub forks: Option<Vec<GistsimpleForks>>,
     #[serde(skip_serializing_if="Option::is_none")]
-    pub history: Option<Vec<Value>>,
+    pub history: Option<Vec<GistHistory>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub fork_of: Option<Gist>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10183,7 +10603,7 @@ pub struct GistSimple {
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
-pub struct GistcommitChangeStatus {     
+pub struct GisthistoryChangeStatus {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub total: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -10226,6 +10646,20 @@ pub struct GistsimpleFiles {
     pub truncated: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub content: Option<String>,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct GistsimpleForks {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<PublicUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 /// Low-level Git commit operations within a repository
@@ -11318,7 +11752,7 @@ pub struct Installation {
     #[serde(skip_serializing_if="Option::is_none")]
     pub target_type: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
-    pub permissions: Option<InstallationPermissions>,
+    pub permissions: Option<AppPermissions>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub events: Option<Vec<String>>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -11341,26 +11775,6 @@ pub struct Installation {
     pub contact_email: Option<String>,
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
-pub struct InstallationPermissions {     
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub deployments: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub checks: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub metadata: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub contents: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub pull_requests: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub statuses: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub issues: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub organization_administration: Option<String>,
-}
-
 /// Authentication token for a GitHub App installed on a user or org.
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct InstallationToken {     
@@ -11369,7 +11783,7 @@ pub struct InstallationToken {
     #[serde(skip_serializing_if="Option::is_none")]
     pub expires_at: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
-    pub permissions: Option<InstallationtokenPermissions>,
+    pub permissions: Option<AppPermissions>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub repository_selection: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -11382,75 +11796,46 @@ pub struct InstallationToken {
     pub single_file_paths: Option<Vec<String>>,
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
-pub struct InstallationtokenPermissions {     
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub issues: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub contents: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub metadata: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub single_file: Option<String>,
-}
-
 /// GitHub apps are a new way to extend GitHub. They can be installed directly on organizations and user accounts and granted access to specific repositories. They come with granular permissions and built-in webhooks. GitHub apps are first class actors within GitHub.
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Integration {     
     /// Unique identifier of the GitHub app
-    #[serde(rename = "id")]
     #[serde(skip_serializing_if="Option::is_none")]
-    pub id: Option<i32>,
+    pub id: Option<i64>,
     /// The slug name of the GitHub app
-    #[serde(rename = "slug")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub slug: Option<String>,
-    #[serde(rename = "node_id")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub node_id: Option<String>,
-    #[serde(rename = "owner")]
     #[serde(skip_serializing_if="Option::is_none")]
-    pub owner: Option<SimpleUser>,
+    pub owner: Option<AllOfintegrationOwner>,
     /// The name of the GitHub app
-    #[serde(rename = "name")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
-    #[serde(rename = "description")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub description: Option<String>,
-    #[serde(rename = "external_url")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub external_url: Option<String>,
-    #[serde(rename = "html_url")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub html_url: Option<String>,
-    #[serde(rename = "created_at")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub created_at: Option<chrono::DateTime<chrono::Utc>>,
-    #[serde(rename = "updated_at")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
-    #[serde(rename = "permissions")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub permissions: Option<IntegrationPermissions>,
     /// The list of events for the GitHub app
-    #[serde(rename = "events")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub events: Option<Vec<String>>,
     /// The number of installations associated with the GitHub app
-    #[serde(rename = "installations_count")]
     #[serde(skip_serializing_if="Option::is_none")]
-    pub installations_count: Option<i32>,
-    #[serde(rename = "client_id")]
+    pub installations_count: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub client_id: Option<String>,
-    #[serde(rename = "client_secret")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub client_secret: Option<String>,
-    #[serde(rename = "webhook_secret")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub webhook_secret: Option<String>,
-    #[serde(rename = "pem")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub pem: Option<String>,
 }
@@ -11747,50 +12132,114 @@ pub struct IssueEventDismissedReview {
 }
 
 /// Issue Event for Issue
-#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
-pub struct IssueEventForIssue {     
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub id: Option<i64>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub node_id: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub actor: Option<SimpleUser>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub event: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub commit_id: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub commit_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub created_at: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub sha: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub html_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub message: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub issue_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub updated_at: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub author_association: Option<AuthorAssociation>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub body: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub lock_reason: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub submitted_at: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub state: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub pull_request_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub body_html: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub body_text: Option<String>,
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum IssueEventForIssue { 
+    IssueEventForIssueVariant0(LabeledIssueEvent),
+    IssueEventForIssueVariant1(UnlabeledIssueEvent),
+    IssueEventForIssueVariant2(AssignedIssueEvent),
+    IssueEventForIssueVariant3(UnassignedIssueEvent),
+    IssueEventForIssueVariant4(MilestonedIssueEvent),
+    IssueEventForIssueVariant5(DemilestonedIssueEvent),
+    IssueEventForIssueVariant6(RenamedIssueEvent),
+    IssueEventForIssueVariant7(ReviewRequestedIssueEvent),
+    IssueEventForIssueVariant8(ReviewRequestRemovedIssueEvent),
+    IssueEventForIssueVariant9(ReviewDismissedIssueEvent),
+    IssueEventForIssueVariant10(LockedIssueEvent),
+    IssueEventForIssueVariant11(AddedToProjectIssueEvent),
+    IssueEventForIssueVariant12(MovedColumnInProjectIssueEvent),
+    IssueEventForIssueVariant13(RemovedFromProjectIssueEvent),
+    IssueEventForIssueVariant14(ConvertedNoteToIssueIssueEvent),
+}
+
+impl From<LabeledIssueEvent> for IssueEventForIssue {
+    fn from(value: LabeledIssueEvent) -> Self {
+        IssueEventForIssue::IssueEventForIssueVariant0(value)
+    }
+}
+
+impl From<UnlabeledIssueEvent> for IssueEventForIssue {
+    fn from(value: UnlabeledIssueEvent) -> Self {
+        IssueEventForIssue::IssueEventForIssueVariant1(value)
+    }
+}
+
+impl From<AssignedIssueEvent> for IssueEventForIssue {
+    fn from(value: AssignedIssueEvent) -> Self {
+        IssueEventForIssue::IssueEventForIssueVariant2(value)
+    }
+}
+
+impl From<UnassignedIssueEvent> for IssueEventForIssue {
+    fn from(value: UnassignedIssueEvent) -> Self {
+        IssueEventForIssue::IssueEventForIssueVariant3(value)
+    }
+}
+
+impl From<MilestonedIssueEvent> for IssueEventForIssue {
+    fn from(value: MilestonedIssueEvent) -> Self {
+        IssueEventForIssue::IssueEventForIssueVariant4(value)
+    }
+}
+
+impl From<DemilestonedIssueEvent> for IssueEventForIssue {
+    fn from(value: DemilestonedIssueEvent) -> Self {
+        IssueEventForIssue::IssueEventForIssueVariant5(value)
+    }
+}
+
+impl From<RenamedIssueEvent> for IssueEventForIssue {
+    fn from(value: RenamedIssueEvent) -> Self {
+        IssueEventForIssue::IssueEventForIssueVariant6(value)
+    }
+}
+
+impl From<ReviewRequestedIssueEvent> for IssueEventForIssue {
+    fn from(value: ReviewRequestedIssueEvent) -> Self {
+        IssueEventForIssue::IssueEventForIssueVariant7(value)
+    }
+}
+
+impl From<ReviewRequestRemovedIssueEvent> for IssueEventForIssue {
+    fn from(value: ReviewRequestRemovedIssueEvent) -> Self {
+        IssueEventForIssue::IssueEventForIssueVariant8(value)
+    }
+}
+
+impl From<ReviewDismissedIssueEvent> for IssueEventForIssue {
+    fn from(value: ReviewDismissedIssueEvent) -> Self {
+        IssueEventForIssue::IssueEventForIssueVariant9(value)
+    }
+}
+
+impl From<LockedIssueEvent> for IssueEventForIssue {
+    fn from(value: LockedIssueEvent) -> Self {
+        IssueEventForIssue::IssueEventForIssueVariant10(value)
+    }
+}
+
+impl From<AddedToProjectIssueEvent> for IssueEventForIssue {
+    fn from(value: AddedToProjectIssueEvent) -> Self {
+        IssueEventForIssue::IssueEventForIssueVariant11(value)
+    }
+}
+
+impl From<MovedColumnInProjectIssueEvent> for IssueEventForIssue {
+    fn from(value: MovedColumnInProjectIssueEvent) -> Self {
+        IssueEventForIssue::IssueEventForIssueVariant12(value)
+    }
+}
+
+impl From<RemovedFromProjectIssueEvent> for IssueEventForIssue {
+    fn from(value: RemovedFromProjectIssueEvent) -> Self {
+        IssueEventForIssue::IssueEventForIssueVariant13(value)
+    }
+}
+
+impl From<ConvertedNoteToIssueIssueEvent> for IssueEventForIssue {
+    fn from(value: ConvertedNoteToIssueIssueEvent) -> Self {
+        IssueEventForIssue::IssueEventForIssueVariant14(value)
+    }
 }
 
 /// Issue Event Label
@@ -12139,6 +12588,39 @@ pub struct LabelSearchResultItem {
     pub text_matches: Option<SearchResultTextMatches>,
 }
 
+/// Labeled Issue Event
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct LabeledIssueEvent {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub actor: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub performed_via_github_app: Option<Integration>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub label: Option<LabeledissueeventLabel>,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct LabeledissueeventLabel {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub color: Option<String>,
+}
+
 /// Language
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Language {     
@@ -12239,6 +12721,31 @@ pub struct LinkWithType {
     #[serde(rename = "type")]
     #[serde(skip_serializing_if="Option::is_none")]
     pub _type: Option<String>,
+}
+
+/// Locked Issue Event
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct LockedIssueEvent {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub actor: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub performed_via_github_app: Option<Integration>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub lock_reason: Option<String>,
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
@@ -12418,6 +12925,37 @@ pub struct Milestone {
     pub due_on: Option<chrono::DateTime<chrono::Utc>>,
 }
 
+/// Milestoned Issue Event
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct MilestonedIssueEvent {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub actor: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub performed_via_github_app: Option<Integration>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub milestone: Option<MilestonedissueeventMilestone>,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct MilestonedissueeventMilestone {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub title: Option<String>,
+}
+
 /// Minimal Repository
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct MinimalRepository {     
@@ -12566,7 +13104,7 @@ pub struct MinimalRepository {
     #[serde(skip_serializing_if="Option::is_none")]
     pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(skip_serializing_if="Option::is_none")]
-    pub permissions: Option<RepositoryTemplateRepositoryPermissions>,
+    pub permissions: Option<MinimalrepositoryPermissions>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub template_repository: Option<AllOfminimalRepositoryTemplateRepository>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -12577,6 +13115,8 @@ pub struct MinimalRepository {
     pub subscribers_count: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub network_count: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub code_of_conduct: Option<CodeOfConduct>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub license: Option<MinimalrepositoryLicense>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -12599,6 +13139,45 @@ pub struct MinimalrepositoryLicense {
     pub url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub node_id: Option<String>,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct MinimalrepositoryPermissions {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub admin: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub push: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pull: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub maintain: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub triage: Option<bool>,
+}
+
+/// Moved Column in Project Issue Event
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct MovedColumnInProjectIssueEvent {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub actor: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub performed_via_github_app: Option<Integration>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub project_card: Option<AddedtoprojectissueeventProjectCard>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -12756,12 +13335,12 @@ impl From<String> for PostReposCreateDeploymentPayloadEnum {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum DeploymentPayload { 
-    DeploymentPayloadVariant0(HashMap<String, Value>),
+    DeploymentPayloadVariant0(HashMap<String, HashMap<String, Value>>),
     DeploymentPayloadVariant1(String),
 }
 
-impl From<HashMap<String, Value>> for DeploymentPayload {
-    fn from(value: HashMap<String, Value>) -> Self {
+impl From<HashMap<String, HashMap<String, Value>>> for DeploymentPayload {
+    fn from(value: HashMap<String, HashMap<String, Value>>) -> Self {
         DeploymentPayload::DeploymentPayloadVariant0(value)
     }
 }
@@ -13478,38 +14057,6 @@ pub struct PendingdeploymentReviewers {
     pub reviewer: Option<PendingdeploymentReviewersReviewer>,
 }
 
-/// The authorization for a Personal Access Token.
-#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
-pub struct PersonalAccessToken {     
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub id: Option<i64>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub url: Option<String>,
-    /// A list of scopes that this authorization is in.
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub scopes: Option<Vec<String>>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub token: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub token_last_eight: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub hashed_token: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub note: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub note_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub fingerprint: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub user: Option<AllOfpersonalAccessTokenUser>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub expires_at: Option<chrono::DateTime<chrono::Utc>>,
-}
-
 /// Porter Author
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PorterAuthor {     
@@ -13623,25 +14170,13 @@ pub struct PrivateUser {
     #[serde(skip_serializing_if="Option::is_none")]
     pub two_factor_authentication: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
-    pub plan: Option<PrivateuserPlan>,
+    pub plan: Option<PublicuserPlan>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub suspended_at: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub business_plus: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub ldap_dn: Option<String>,
-}
-
-#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
-pub struct PrivateuserPlan {     
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub collaborators: Option<i64>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub name: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub space: Option<i64>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub private_repos: Option<i64>,
 }
 
 /// Projects are a way to organize columns and cards of work.
@@ -13705,6 +14240,10 @@ pub struct ProjectCard {
     /// Whether or not the card is archived
     #[serde(skip_serializing_if="Option::is_none")]
     pub archived: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub column_name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub project_id: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub column_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -13912,7 +14451,7 @@ pub struct PublicUser {
     #[serde(skip_serializing_if="Option::is_none")]
     pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(skip_serializing_if="Option::is_none")]
-    pub plan: Option<PrivateuserPlan>,
+    pub plan: Option<PublicuserPlan>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub suspended_at: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -13925,6 +14464,18 @@ pub struct PublicUser {
     pub disk_usage: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub collaborators: Option<i64>,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PublicuserPlan {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub collaborators: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub space: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub private_repos: Option<i64>,
 }
 
 /// Pull requests let you tell others about changes you've pushed to a repository on GitHub. Once a pull request is sent, interested parties can review the set of changes, discuss potential modifications, and even push follow-up commits if necessary.
@@ -14078,7 +14629,7 @@ pub struct PullRequestReview {
     #[serde(skip_serializing_if="Option::is_none")]
     pub pull_request_url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
-    pub _links: Option<PullrequestreviewLinks>,
+    pub _links: Option<TimelinereviewedeventLinks>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub submitted_at: Option<chrono::DateTime<chrono::Utc>>,
     /// A commit SHA for the review.
@@ -14179,7 +14730,7 @@ pub struct PullRequestReviewRequest {
     #[serde(skip_serializing_if="Option::is_none")]
     pub users: Option<Vec<SimpleUser>>,
     #[serde(skip_serializing_if="Option::is_none")]
-    pub teams: Option<Vec<TeamSimple>>,
+    pub teams: Option<Vec<Team>>,
 }
 
 /// Pull Request Simple
@@ -14244,7 +14795,7 @@ pub struct PullRequestSimple {
     #[serde(skip_serializing_if="Option::is_none")]
     pub requested_reviewers: Option<Vec<SimpleUser>>,
     #[serde(skip_serializing_if="Option::is_none")]
-    pub requested_teams: Option<Vec<TeamSimple>>,
+    pub requested_teams: Option<Vec<Team>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub head: Option<PullrequestsimpleHead>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -14713,20 +15264,6 @@ pub struct PullrequestminimalHeadRepo {
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
-pub struct PullrequestreviewLinks {     
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub html: Option<PullrequestreviewLinksHtml>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub pull_request: Option<PullrequestreviewLinksHtml>,
-}
-
-#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
-pub struct PullrequestreviewLinksHtml {     
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub href: Option<String>,
-}
-
-#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PullrequestreviewcommentLinks {     
     #[serde(rename = "self")]
     #[serde(skip_serializing_if="Option::is_none")]
@@ -14817,6 +15354,8 @@ pub struct RateLimit {
     pub remaining: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub reset: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub used: Option<i64>,
 }
 
 /// Rate Limit Overview
@@ -14982,6 +15521,64 @@ pub struct ReleaseAsset {
     pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub uploader: Option<AllOfreleaseAssetUploader>,
+}
+
+/// Removed from Project Issue Event
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct RemovedFromProjectIssueEvent {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub actor: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub performed_via_github_app: Option<Integration>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub project_card: Option<AddedtoprojectissueeventProjectCard>,
+}
+
+/// Renamed Issue Event
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct RenamedIssueEvent {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub actor: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub performed_via_github_app: Option<Integration>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub rename: Option<RenamedissueeventRename>,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct RenamedissueeventRename {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub from: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub to: Option<String>,
 }
 
 /// Repo Search Result Item
@@ -15639,6 +16236,31 @@ pub struct RepositoryTemplateRepositoryPermissions {
     pub pull: Option<bool>,
 }
 
+/// Specify which security and analysis features to enable or disable. For example, to enable GitHub Advanced Security, use this data in the body of the PATCH request: `{\"security_and_analysis\": {\"advanced_security\": {\"status\": \"enabled\"}}}`. If you have admin permissions for a private repository covered by an Advanced Security license, you can check which security and analysis features are currently enabled by using a `GET /repos/{owner}/{repo}` request.
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ReposownerrepoSecurityAndAnalysis {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub advanced_security: Option<ReposownerrepoSecurityAndAnalysisAdvancedSecurity>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub secret_scanning: Option<ReposownerrepoSecurityAndAnalysisSecretScanning>,
+}
+
+/// Use the `status` property to enable or disable GitHub Advanced Security for this repository. For more information, see \"[About GitHub Advanced Security](/github/getting-started-with-github/learning-about-github/about-github-advanced-security).\"
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ReposownerrepoSecurityAndAnalysisAdvancedSecurity {     
+    /// Can be `enabled` or `disabled`.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub status: Option<String>,
+}
+
+/// Use the `status` property to enable or disable secret scanning for this repository. For more information, see \"[About secret scanning](/code-security/secret-security/about-secret-scanning).\"
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ReposownerrepoSecurityAndAnalysisSecretScanning {     
+    /// Can be `enabled` or `disabled`.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub status: Option<String>,
+}
+
 /// Require at least one approving review on a pull request, before merging. Set to `null` to disable.
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReposownerrepobranchesbranchprotectionRequiredPullRequestReviews {     
@@ -16035,6 +16657,8 @@ pub struct ReviewComment {
     pub body_text: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub body_html: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub reactions: Option<ReactionRollup>,
     /// The side of the first line of the range for a multi-line comment.
     #[serde(skip_serializing_if="Option::is_none")]
     pub side: Option<String>,
@@ -16055,6 +16679,89 @@ pub struct ReviewComment {
     pub original_start_line: Option<i64>,
 }
 
+/// Review Dismissed Issue Event
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ReviewDismissedIssueEvent {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub actor: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub performed_via_github_app: Option<Integration>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub dismissed_review: Option<ReviewdismissedissueeventDismissedReview>,
+}
+
+/// Review Request Removed Issue Event
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ReviewRequestRemovedIssueEvent {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub actor: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub performed_via_github_app: Option<Integration>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub review_requester: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub requested_team: Option<Team>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub requested_reviewer: Option<SimpleUser>,
+}
+
+/// Review Requested Issue Event
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ReviewRequestedIssueEvent {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub actor: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub performed_via_github_app: Option<Integration>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub review_requester: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub requested_team: Option<Team>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub requested_reviewer: Option<SimpleUser>,
+}
+
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReviewcommentLinks {     
     #[serde(rename = "self")]
@@ -16064,6 +16771,18 @@ pub struct ReviewcommentLinks {
     pub html: Option<Link>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub pull_request: Option<Link>,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ReviewdismissedissueeventDismissedReview {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub review_id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub dismissal_message: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub dismissal_commit_id: Option<String>,
 }
 
 /// A self hosted runner
@@ -16801,6 +17520,10 @@ pub struct SimpleCommitStatus {
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SimpleUser {     
     #[serde(skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub login: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
@@ -16939,6 +17662,8 @@ pub struct Team {
     pub privacy: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub permission: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub permissions: Option<TeamPermissions>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -17090,6 +17815,20 @@ pub struct TeamMembership {
     /// The state of the user's membership in the team.
     #[serde(skip_serializing_if="Option::is_none")]
     pub state: Option<String>,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct TeamPermissions {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pull: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub triage: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub push: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub maintain: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub admin: Option<bool>,
 }
 
 /// A team's access to a project.
@@ -17444,6 +18183,376 @@ pub struct ThreadSubscription {
     pub repository_url: Option<String>,
 }
 
+/// Timeline Assigned Issue Event
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct TimelineAssignedIssueEvent {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub actor: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub performed_via_github_app: Option<Integration>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub assignee: Option<SimpleUser>,
+}
+
+/// Timeline Comment Event
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct TimelineCommentEvent {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub actor: Option<SimpleUser>,
+    /// Unique identifier of the issue comment
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    /// URL for the issue comment
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    /// Contents of the issue comment
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body_text: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body_html: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issue_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author_association: Option<AuthorAssociation>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub performed_via_github_app: Option<Integration>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub reactions: Option<ReactionRollup>,
+}
+
+/// Timeline Commit Commented Event
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct TimelineCommitCommentedEvent {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments: Option<Vec<CommitComment>>,
+}
+
+/// Timeline Committed Event
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct TimelineCommittedEvent {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    /// SHA for the commit
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author: Option<GitcommitAuthor>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub committer: Option<GitcommitAuthor>,
+    /// Message describing the purpose of the commit
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub message: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub tree: Option<GitcommitTree>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub parents: Option<Vec<GitcommitParents>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub verification: Option<GitcommitVerification>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+}
+
+/// Timeline Cross Referenced Event
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct TimelineCrossReferencedEvent {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub actor: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub source: Option<TimelinecrossreferencedeventSource>,
+}
+
+/// Timeline Event
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum TimelineIssueEvents { 
+    TimelineIssueEventsVariant0(LabeledIssueEvent),
+    TimelineIssueEventsVariant1(UnlabeledIssueEvent),
+    TimelineIssueEventsVariant2(MilestonedIssueEvent),
+    TimelineIssueEventsVariant3(DemilestonedIssueEvent),
+    TimelineIssueEventsVariant4(RenamedIssueEvent),
+    TimelineIssueEventsVariant5(ReviewRequestedIssueEvent),
+    TimelineIssueEventsVariant6(ReviewRequestRemovedIssueEvent),
+    TimelineIssueEventsVariant7(ReviewDismissedIssueEvent),
+    TimelineIssueEventsVariant8(LockedIssueEvent),
+    TimelineIssueEventsVariant9(AddedToProjectIssueEvent),
+    TimelineIssueEventsVariant10(MovedColumnInProjectIssueEvent),
+    TimelineIssueEventsVariant11(RemovedFromProjectIssueEvent),
+    TimelineIssueEventsVariant12(ConvertedNoteToIssueIssueEvent),
+    TimelineIssueEventsVariant13(TimelineCommentEvent),
+    TimelineIssueEventsVariant14(TimelineCrossReferencedEvent),
+    TimelineIssueEventsVariant15(TimelineCommittedEvent),
+    TimelineIssueEventsVariant16(TimelineReviewedEvent),
+    TimelineIssueEventsVariant17(TimelineLineCommentedEvent),
+    TimelineIssueEventsVariant18(TimelineCommitCommentedEvent),
+    TimelineIssueEventsVariant19(TimelineAssignedIssueEvent),
+    TimelineIssueEventsVariant20(TimelineUnassignedIssueEvent),
+}
+
+impl From<LabeledIssueEvent> for TimelineIssueEvents {
+    fn from(value: LabeledIssueEvent) -> Self {
+        TimelineIssueEvents::TimelineIssueEventsVariant0(value)
+    }
+}
+
+impl From<UnlabeledIssueEvent> for TimelineIssueEvents {
+    fn from(value: UnlabeledIssueEvent) -> Self {
+        TimelineIssueEvents::TimelineIssueEventsVariant1(value)
+    }
+}
+
+impl From<MilestonedIssueEvent> for TimelineIssueEvents {
+    fn from(value: MilestonedIssueEvent) -> Self {
+        TimelineIssueEvents::TimelineIssueEventsVariant2(value)
+    }
+}
+
+impl From<DemilestonedIssueEvent> for TimelineIssueEvents {
+    fn from(value: DemilestonedIssueEvent) -> Self {
+        TimelineIssueEvents::TimelineIssueEventsVariant3(value)
+    }
+}
+
+impl From<RenamedIssueEvent> for TimelineIssueEvents {
+    fn from(value: RenamedIssueEvent) -> Self {
+        TimelineIssueEvents::TimelineIssueEventsVariant4(value)
+    }
+}
+
+impl From<ReviewRequestedIssueEvent> for TimelineIssueEvents {
+    fn from(value: ReviewRequestedIssueEvent) -> Self {
+        TimelineIssueEvents::TimelineIssueEventsVariant5(value)
+    }
+}
+
+impl From<ReviewRequestRemovedIssueEvent> for TimelineIssueEvents {
+    fn from(value: ReviewRequestRemovedIssueEvent) -> Self {
+        TimelineIssueEvents::TimelineIssueEventsVariant6(value)
+    }
+}
+
+impl From<ReviewDismissedIssueEvent> for TimelineIssueEvents {
+    fn from(value: ReviewDismissedIssueEvent) -> Self {
+        TimelineIssueEvents::TimelineIssueEventsVariant7(value)
+    }
+}
+
+impl From<LockedIssueEvent> for TimelineIssueEvents {
+    fn from(value: LockedIssueEvent) -> Self {
+        TimelineIssueEvents::TimelineIssueEventsVariant8(value)
+    }
+}
+
+impl From<AddedToProjectIssueEvent> for TimelineIssueEvents {
+    fn from(value: AddedToProjectIssueEvent) -> Self {
+        TimelineIssueEvents::TimelineIssueEventsVariant9(value)
+    }
+}
+
+impl From<MovedColumnInProjectIssueEvent> for TimelineIssueEvents {
+    fn from(value: MovedColumnInProjectIssueEvent) -> Self {
+        TimelineIssueEvents::TimelineIssueEventsVariant10(value)
+    }
+}
+
+impl From<RemovedFromProjectIssueEvent> for TimelineIssueEvents {
+    fn from(value: RemovedFromProjectIssueEvent) -> Self {
+        TimelineIssueEvents::TimelineIssueEventsVariant11(value)
+    }
+}
+
+impl From<ConvertedNoteToIssueIssueEvent> for TimelineIssueEvents {
+    fn from(value: ConvertedNoteToIssueIssueEvent) -> Self {
+        TimelineIssueEvents::TimelineIssueEventsVariant12(value)
+    }
+}
+
+impl From<TimelineCommentEvent> for TimelineIssueEvents {
+    fn from(value: TimelineCommentEvent) -> Self {
+        TimelineIssueEvents::TimelineIssueEventsVariant13(value)
+    }
+}
+
+impl From<TimelineCrossReferencedEvent> for TimelineIssueEvents {
+    fn from(value: TimelineCrossReferencedEvent) -> Self {
+        TimelineIssueEvents::TimelineIssueEventsVariant14(value)
+    }
+}
+
+impl From<TimelineCommittedEvent> for TimelineIssueEvents {
+    fn from(value: TimelineCommittedEvent) -> Self {
+        TimelineIssueEvents::TimelineIssueEventsVariant15(value)
+    }
+}
+
+impl From<TimelineReviewedEvent> for TimelineIssueEvents {
+    fn from(value: TimelineReviewedEvent) -> Self {
+        TimelineIssueEvents::TimelineIssueEventsVariant16(value)
+    }
+}
+
+impl From<TimelineLineCommentedEvent> for TimelineIssueEvents {
+    fn from(value: TimelineLineCommentedEvent) -> Self {
+        TimelineIssueEvents::TimelineIssueEventsVariant17(value)
+    }
+}
+
+impl From<TimelineCommitCommentedEvent> for TimelineIssueEvents {
+    fn from(value: TimelineCommitCommentedEvent) -> Self {
+        TimelineIssueEvents::TimelineIssueEventsVariant18(value)
+    }
+}
+
+impl From<TimelineAssignedIssueEvent> for TimelineIssueEvents {
+    fn from(value: TimelineAssignedIssueEvent) -> Self {
+        TimelineIssueEvents::TimelineIssueEventsVariant19(value)
+    }
+}
+
+impl From<TimelineUnassignedIssueEvent> for TimelineIssueEvents {
+    fn from(value: TimelineUnassignedIssueEvent) -> Self {
+        TimelineIssueEvents::TimelineIssueEventsVariant20(value)
+    }
+}
+
+/// Timeline Line Commented Event
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct TimelineLineCommentedEvent {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments: Option<Vec<PullRequestReviewComment>>,
+}
+
+/// Timeline Reviewed Event
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct TimelineReviewedEvent {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    /// Unique identifier of the review
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub user: Option<SimpleUser>,
+    /// The text of the review.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub state: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pull_request_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _links: Option<TimelinereviewedeventLinks>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub submitted_at: Option<chrono::DateTime<chrono::Utc>>,
+    /// A commit SHA for the review.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body_html: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub body_text: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub author_association: Option<AuthorAssociation>,
+}
+
+/// Timeline Unassigned Issue Event
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct TimelineUnassignedIssueEvent {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub actor: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub performed_via_github_app: Option<Integration>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub assignee: Option<SimpleUser>,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct TimelinecrossreferencedeventSource {     
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub _type: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub issue: Option<IssueSimple>,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct TimelinereviewedeventLinks {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub html: Option<TimelinereviewedeventLinksHtml>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub pull_request: Option<TimelinereviewedeventLinksHtml>,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct TimelinereviewedeventLinksHtml {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub href: Option<String>,
+}
+
 /// A topic aggregates entities that are related to a subject.
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Topic {     
@@ -17514,6 +18623,58 @@ pub struct Traffic {
     pub uniques: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub count: Option<i64>,
+}
+
+/// Unassigned Issue Event
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UnassignedIssueEvent {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub actor: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub performed_via_github_app: Option<Integration>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub assignee: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub assigner: Option<SimpleUser>,
+}
+
+/// Unlabeled Issue Event
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UnlabeledIssueEvent {     
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub actor: Option<SimpleUser>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub event: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_id: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub commit_url: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub performed_via_github_app: Option<Integration>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub label: Option<LabeledissueeventLabel>,
 }
 
 /// User Marketplace Purchase
