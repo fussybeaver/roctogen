@@ -102,6 +102,8 @@ pub enum SecretScanningUpdateAlertError {
 pub struct SecretScanningListAlertsForRepoParams<'req> {
     /// Set to `open` or `resolved` to only list secret scanning alerts in a specific state.
     state: Option<&'req str>, 
+    /// A comma separated list of secret types to return. By default all secret types are returned.
+    secret_type: Option<&'req str>, 
     /// Page number of the results to fetch.
     page: Option<u16>, 
     /// Results per page (max 100).
@@ -117,6 +119,17 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
     pub fn state(self, state: &'req str) -> Self {
         Self { 
             state: Some(state),
+            secret_type: self.secret_type, 
+            page: self.page, 
+            per_page: self.per_page, 
+        }
+    }
+
+    /// A comma separated list of secret types to return. By default all secret types are returned.
+    pub fn secret_type(self, secret_type: &'req str) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: Some(secret_type),
             page: self.page, 
             per_page: self.per_page, 
         }
@@ -126,6 +139,7 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
     pub fn page(self, page: u16) -> Self {
         Self { 
             state: self.state, 
+            secret_type: self.secret_type, 
             page: Some(page),
             per_page: self.per_page, 
         }
@@ -135,6 +149,7 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             state: self.state, 
+            secret_type: self.secret_type, 
             page: self.page, 
             per_page: Some(per_page),
         }
