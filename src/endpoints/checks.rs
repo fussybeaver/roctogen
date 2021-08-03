@@ -224,7 +224,7 @@ pub enum ChecksUpdateError {
 /// Query parameters for the [List check run annotations](Checks::list_annotations_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ChecksListAnnotationsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -235,7 +235,7 @@ impl ChecksListAnnotationsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -270,7 +270,7 @@ pub struct ChecksListForRefParams<'req> {
     status: Option<&'req str>, 
     /// Filters check runs by their `completed_at` timestamp. Can be one of `latest` (returning the most recent check runs) or `all`.
     filter: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>, 
@@ -319,7 +319,7 @@ impl<'req> ChecksListForRefParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             check_name: self.check_name, 
@@ -374,7 +374,7 @@ pub struct ChecksListForSuiteParams<'req> {
     status: Option<&'req str>, 
     /// Filters check runs by their `completed_at` timestamp. Can be one of `latest` (returning the most recent check runs) or `all`.
     filter: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -418,7 +418,7 @@ impl<'req> ChecksListForSuiteParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             check_name: self.check_name, 
@@ -457,7 +457,7 @@ pub struct ChecksListSuitesForRefParams<'req> {
     app_id: Option<i32>, 
     /// Returns check runs with the specified `name`.
     check_name: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -488,7 +488,7 @@ impl<'req> ChecksListSuitesForRefParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             app_id: self.app_id, 

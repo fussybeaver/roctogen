@@ -547,7 +547,7 @@ impl MigrationsGetStatusForOrgParams {
 /// Query parameters for the [List user migrations](Migrations::list_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct MigrationsListForAuthenticatedUserParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -558,7 +558,7 @@ impl MigrationsListForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -587,7 +587,7 @@ impl<'enc> From<&'enc PerPage> for MigrationsListForAuthenticatedUserParams {
 /// Query parameters for the [List organization migrations](Migrations::list_for_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct MigrationsListForOrgParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>, 
@@ -600,7 +600,7 @@ impl MigrationsListForOrgParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -640,7 +640,7 @@ impl<'enc> From<&'enc PerPage> for MigrationsListForOrgParams {
 /// Query parameters for the [List repositories in an organization migration](Migrations::list_repos_for_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct MigrationsListReposForOrgParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -651,7 +651,7 @@ impl MigrationsListReposForOrgParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -680,7 +680,7 @@ impl<'enc> From<&'enc PerPage> for MigrationsListReposForOrgParams {
 /// Query parameters for the [List repositories for a user migration](Migrations::list_repos_for_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct MigrationsListReposForUserParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -691,7 +691,7 @@ impl MigrationsListReposForUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),

@@ -832,7 +832,7 @@ pub enum IssuesUpdateMilestoneError {
 /// Query parameters for the [List issues assigned to the authenticated user](Issues::list_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct IssuesListParams<'req> {
-    /// Indicates which sorts of issues to return. Can be one of:   \\* `assigned`: Issues assigned to you   \\* `created`: Issues created by you   \\* `mentioned`: Issues mentioning you   \\* `subscribed`: Issues you're subscribed to updates for   \\* `all`: All issues the authenticated user can see, regardless of participation or creation
+    /// Indicates which sorts of issues to return. Can be one of:   \\* `assigned`: Issues assigned to you   \\* `created`: Issues created by you   \\* `mentioned`: Issues mentioning you   \\* `subscribed`: Issues you're subscribed to updates for   \\* `all` or `repos`: All issues the authenticated user can see, regardless of participation or creation
     filter: Option<&'req str>, 
     /// Indicates the state of the issues to return. Can be either `open`, `closed`, or `all`.
     state: Option<&'req str>, 
@@ -852,7 +852,7 @@ pub struct IssuesListParams<'req> {
     owned: Option<bool>, 
     
     pulls: Option<bool>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -863,7 +863,7 @@ impl<'req> IssuesListParams<'req> {
         Self::default()
     }
 
-    /// Indicates which sorts of issues to return. Can be one of:   \\* `assigned`: Issues assigned to you   \\* `created`: Issues created by you   \\* `mentioned`: Issues mentioning you   \\* `subscribed`: Issues you're subscribed to updates for   \\* `all`: All issues the authenticated user can see, regardless of participation or creation
+    /// Indicates which sorts of issues to return. Can be one of:   \\* `assigned`: Issues assigned to you   \\* `created`: Issues created by you   \\* `mentioned`: Issues mentioning you   \\* `subscribed`: Issues you're subscribed to updates for   \\* `all` or `repos`: All issues the authenticated user can see, regardless of participation or creation
     pub fn filter(self, filter: &'req str) -> Self {
         Self { 
             filter: Some(filter),
@@ -1043,7 +1043,7 @@ impl<'req> IssuesListParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             filter: self.filter, 
@@ -1092,7 +1092,7 @@ impl<'enc> From<&'enc PerPage> for IssuesListParams<'enc> {
 /// Query parameters for the [List assignees](Issues::list_assignees_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct IssuesListAssigneesParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1103,7 +1103,7 @@ impl IssuesListAssigneesParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1134,7 +1134,7 @@ impl<'enc> From<&'enc PerPage> for IssuesListAssigneesParams {
 pub struct IssuesListCommentsParams {
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1154,7 +1154,7 @@ impl IssuesListCommentsParams {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             since: self.since, 
@@ -1191,7 +1191,7 @@ pub struct IssuesListCommentsForRepoParams<'req> {
     direction: Option<&'req str>, 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1235,7 +1235,7 @@ impl<'req> IssuesListCommentsForRepoParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             sort: self.sort, 
@@ -1270,7 +1270,7 @@ impl<'enc> From<&'enc PerPage> for IssuesListCommentsForRepoParams<'enc> {
 /// Query parameters for the [List issue events](Issues::list_events_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct IssuesListEventsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1281,7 +1281,7 @@ impl IssuesListEventsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1310,7 +1310,7 @@ impl<'enc> From<&'enc PerPage> for IssuesListEventsParams {
 /// Query parameters for the [List issue events for a repository](Issues::list_events_for_repo_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct IssuesListEventsForRepoParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1321,7 +1321,7 @@ impl IssuesListEventsForRepoParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1350,7 +1350,7 @@ impl<'enc> From<&'enc PerPage> for IssuesListEventsForRepoParams {
 /// Query parameters for the [List timeline events for an issue](Issues::list_events_for_timeline_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct IssuesListEventsForTimelineParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1361,7 +1361,7 @@ impl IssuesListEventsForTimelineParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1390,7 +1390,7 @@ impl<'enc> From<&'enc PerPage> for IssuesListEventsForTimelineParams {
 /// Query parameters for the [List user account issues assigned to the authenticated user](Issues::list_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct IssuesListForAuthenticatedUserParams<'req> {
-    /// Indicates which sorts of issues to return. Can be one of:   \\* `assigned`: Issues assigned to you   \\* `created`: Issues created by you   \\* `mentioned`: Issues mentioning you   \\* `subscribed`: Issues you're subscribed to updates for   \\* `all`: All issues the authenticated user can see, regardless of participation or creation
+    /// Indicates which sorts of issues to return. Can be one of:   \\* `assigned`: Issues assigned to you   \\* `created`: Issues created by you   \\* `mentioned`: Issues mentioning you   \\* `subscribed`: Issues you're subscribed to updates for   \\* `all` or `repos`: All issues the authenticated user can see, regardless of participation or creation
     filter: Option<&'req str>, 
     /// Indicates the state of the issues to return. Can be either `open`, `closed`, or `all`.
     state: Option<&'req str>, 
@@ -1402,7 +1402,7 @@ pub struct IssuesListForAuthenticatedUserParams<'req> {
     direction: Option<&'req str>, 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1413,7 +1413,7 @@ impl<'req> IssuesListForAuthenticatedUserParams<'req> {
         Self::default()
     }
 
-    /// Indicates which sorts of issues to return. Can be one of:   \\* `assigned`: Issues assigned to you   \\* `created`: Issues created by you   \\* `mentioned`: Issues mentioning you   \\* `subscribed`: Issues you're subscribed to updates for   \\* `all`: All issues the authenticated user can see, regardless of participation or creation
+    /// Indicates which sorts of issues to return. Can be one of:   \\* `assigned`: Issues assigned to you   \\* `created`: Issues created by you   \\* `mentioned`: Issues mentioning you   \\* `subscribed`: Issues you're subscribed to updates for   \\* `all` or `repos`: All issues the authenticated user can see, regardless of participation or creation
     pub fn filter(self, filter: &'req str) -> Self {
         Self { 
             filter: Some(filter),
@@ -1497,7 +1497,7 @@ impl<'req> IssuesListForAuthenticatedUserParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             filter: self.filter, 
@@ -1538,7 +1538,7 @@ impl<'enc> From<&'enc PerPage> for IssuesListForAuthenticatedUserParams<'enc> {
 /// Query parameters for the [List organization issues assigned to the authenticated user](Issues::list_for_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct IssuesListForOrgParams<'req> {
-    /// Indicates which sorts of issues to return. Can be one of:   \\* `assigned`: Issues assigned to you   \\* `created`: Issues created by you   \\* `mentioned`: Issues mentioning you   \\* `subscribed`: Issues you're subscribed to updates for   \\* `all`: All issues the authenticated user can see, regardless of participation or creation
+    /// Indicates which sorts of issues to return. Can be one of:   \\* `assigned`: Issues assigned to you   \\* `created`: Issues created by you   \\* `mentioned`: Issues mentioning you   \\* `subscribed`: Issues you're subscribed to updates for   \\* `all` or `repos`: All issues the authenticated user can see, regardless of participation or creation
     filter: Option<&'req str>, 
     /// Indicates the state of the issues to return. Can be either `open`, `closed`, or `all`.
     state: Option<&'req str>, 
@@ -1550,7 +1550,7 @@ pub struct IssuesListForOrgParams<'req> {
     direction: Option<&'req str>, 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1561,7 +1561,7 @@ impl<'req> IssuesListForOrgParams<'req> {
         Self::default()
     }
 
-    /// Indicates which sorts of issues to return. Can be one of:   \\* `assigned`: Issues assigned to you   \\* `created`: Issues created by you   \\* `mentioned`: Issues mentioning you   \\* `subscribed`: Issues you're subscribed to updates for   \\* `all`: All issues the authenticated user can see, regardless of participation or creation
+    /// Indicates which sorts of issues to return. Can be one of:   \\* `assigned`: Issues assigned to you   \\* `created`: Issues created by you   \\* `mentioned`: Issues mentioning you   \\* `subscribed`: Issues you're subscribed to updates for   \\* `all` or `repos`: All issues the authenticated user can see, regardless of participation or creation
     pub fn filter(self, filter: &'req str) -> Self {
         Self { 
             filter: Some(filter),
@@ -1645,7 +1645,7 @@ impl<'req> IssuesListForOrgParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             filter: self.filter, 
@@ -1704,7 +1704,7 @@ pub struct IssuesListForRepoParams<'req> {
     direction: Option<&'req str>, 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1868,7 +1868,7 @@ impl<'req> IssuesListForRepoParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             milestone: self.milestone, 
@@ -1915,7 +1915,7 @@ impl<'enc> From<&'enc PerPage> for IssuesListForRepoParams<'enc> {
 /// Query parameters for the [List labels for issues in a milestone](Issues::list_labels_for_milestone_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct IssuesListLabelsForMilestoneParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1926,7 +1926,7 @@ impl IssuesListLabelsForMilestoneParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1955,7 +1955,7 @@ impl<'enc> From<&'enc PerPage> for IssuesListLabelsForMilestoneParams {
 /// Query parameters for the [List labels for a repository](Issues::list_labels_for_repo_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct IssuesListLabelsForRepoParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1966,7 +1966,7 @@ impl IssuesListLabelsForRepoParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1995,7 +1995,7 @@ impl<'enc> From<&'enc PerPage> for IssuesListLabelsForRepoParams {
 /// Query parameters for the [List labels for an issue](Issues::list_labels_on_issue_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct IssuesListLabelsOnIssueParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -2006,7 +2006,7 @@ impl IssuesListLabelsOnIssueParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -2041,7 +2041,7 @@ pub struct IssuesListMilestonesParams<'req> {
     sort: Option<&'req str>, 
     /// The direction of the sort. Either `asc` or `desc`.
     direction: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -2085,7 +2085,7 @@ impl<'req> IssuesListMilestonesParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             state: self.state, 

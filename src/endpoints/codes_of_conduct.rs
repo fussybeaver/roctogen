@@ -46,8 +46,6 @@ pub enum CodesOfConductGetAllCodesOfConductError {
 
     #[error("Not modified")]
     Status304,
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -69,8 +67,6 @@ pub enum CodesOfConductGetConductCodeError {
     Status404(BasicError),
     #[error("Not modified")]
     Status304,
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -101,10 +97,7 @@ impl<'api> CodesOfConduct<'api> {
     /// 
     /// [GitHub API docs for get_all_codes_of_conduct](https://docs.github.com/rest/reference/codes-of-conduct#get-all-codes-of-conduct)
     ///
-    /// The `get_all_codes_of_conduct_async` endpoint is enabled with the `scarlet-witch` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "scarlet-witch")]
     pub async fn get_all_codes_of_conduct_async(&self) -> Result<Vec<CodeOfConduct>, CodesOfConductGetAllCodesOfConductError> {
 
         let request_uri = format!("{}/codes_of_conduct", super::GITHUB_BASE_API_URL);
@@ -114,7 +107,7 @@ impl<'api> CodesOfConduct<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.scarlet-witch-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -130,7 +123,6 @@ impl<'api> CodesOfConduct<'api> {
         } else {
             match github_response.status_code() {
                 304 => Err(CodesOfConductGetAllCodesOfConductError::Status304),
-                415 => Err(CodesOfConductGetAllCodesOfConductError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(CodesOfConductGetAllCodesOfConductError::Generic { code }),
             }
         }
@@ -142,11 +134,8 @@ impl<'api> CodesOfConduct<'api> {
     /// 
     /// [GitHub API docs for get_all_codes_of_conduct](https://docs.github.com/rest/reference/codes-of-conduct#get-all-codes-of-conduct)
     ///
-    /// The `get_all_codes_of_conduct` endpoint is enabled with the `scarlet-witch` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "scarlet-witch")]
     pub fn get_all_codes_of_conduct(&self) -> Result<Vec<CodeOfConduct>, CodesOfConductGetAllCodesOfConductError> {
 
         let request_uri = format!("{}/codes_of_conduct", super::GITHUB_BASE_API_URL);
@@ -156,7 +145,7 @@ impl<'api> CodesOfConduct<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.scarlet-witch-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -172,7 +161,6 @@ impl<'api> CodesOfConduct<'api> {
         } else {
             match github_response.status_code() {
                 304 => Err(CodesOfConductGetAllCodesOfConductError::Status304),
-                415 => Err(CodesOfConductGetAllCodesOfConductError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(CodesOfConductGetAllCodesOfConductError::Generic { code }),
             }
         }
@@ -184,10 +172,7 @@ impl<'api> CodesOfConduct<'api> {
     /// 
     /// [GitHub API docs for get_conduct_code](https://docs.github.com/rest/reference/codes-of-conduct#get-a-code-of-conduct)
     ///
-    /// The `get_conduct_code_async` endpoint is enabled with the `scarlet-witch` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "scarlet-witch")]
     pub async fn get_conduct_code_async(&self, key: &str) -> Result<CodeOfConduct, CodesOfConductGetConductCodeError> {
 
         let request_uri = format!("{}/codes_of_conduct/{}", super::GITHUB_BASE_API_URL, key);
@@ -197,7 +182,7 @@ impl<'api> CodesOfConduct<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.scarlet-witch-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -214,7 +199,6 @@ impl<'api> CodesOfConduct<'api> {
             match github_response.status_code() {
                 404 => Err(CodesOfConductGetConductCodeError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(CodesOfConductGetConductCodeError::Status304),
-                415 => Err(CodesOfConductGetConductCodeError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(CodesOfConductGetConductCodeError::Generic { code }),
             }
         }
@@ -226,11 +210,8 @@ impl<'api> CodesOfConduct<'api> {
     /// 
     /// [GitHub API docs for get_conduct_code](https://docs.github.com/rest/reference/codes-of-conduct#get-a-code-of-conduct)
     ///
-    /// The `get_conduct_code` endpoint is enabled with the `scarlet-witch` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "scarlet-witch")]
     pub fn get_conduct_code(&self, key: &str) -> Result<CodeOfConduct, CodesOfConductGetConductCodeError> {
 
         let request_uri = format!("{}/codes_of_conduct/{}", super::GITHUB_BASE_API_URL, key);
@@ -240,7 +221,7 @@ impl<'api> CodesOfConduct<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.scarlet-witch-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -257,7 +238,6 @@ impl<'api> CodesOfConduct<'api> {
             match github_response.status_code() {
                 404 => Err(CodesOfConductGetConductCodeError::Status404(crate::adapters::to_json(github_response)?)),
                 304 => Err(CodesOfConductGetConductCodeError::Status304),
-                415 => Err(CodesOfConductGetConductCodeError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(CodesOfConductGetConductCodeError::Generic { code }),
             }
         }

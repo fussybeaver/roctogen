@@ -1466,7 +1466,7 @@ pub enum ActionsUpdateSelfHostedRunnerGroupForOrgError {
 /// Query parameters for the [List artifacts for a repository](Actions::list_artifacts_for_repo_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsListArtifactsForRepoParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1477,7 +1477,7 @@ impl ActionsListArtifactsForRepoParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1506,7 +1506,7 @@ impl<'enc> From<&'enc PerPage> for ActionsListArtifactsForRepoParams {
 /// Query parameters for the [List environment secrets](Actions::list_environment_secrets_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsListEnvironmentSecretsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1517,7 +1517,7 @@ impl ActionsListEnvironmentSecretsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1548,7 +1548,7 @@ impl<'enc> From<&'enc PerPage> for ActionsListEnvironmentSecretsParams {
 pub struct ActionsListJobsForWorkflowRunParams<'req> {
     /// Filters jobs by their `completed_at` timestamp. Can be one of:   \\* `latest`: Returns jobs from the most recent execution of the workflow run.   \\* `all`: Returns all jobs for a workflow run, including from old executions of the workflow run.
     filter: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1568,7 +1568,7 @@ impl<'req> ActionsListJobsForWorkflowRunParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             filter: self.filter, 
@@ -1599,7 +1599,7 @@ impl<'enc> From<&'enc PerPage> for ActionsListJobsForWorkflowRunParams<'enc> {
 /// Query parameters for the [List organization secrets](Actions::list_org_secrets_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsListOrgSecretsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1610,7 +1610,7 @@ impl ActionsListOrgSecretsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1641,7 +1641,7 @@ impl<'enc> From<&'enc PerPage> for ActionsListOrgSecretsParams {
 pub struct ActionsListRepoAccessToSelfHostedRunnerGroupInOrgParams {
     /// Page number of the results to fetch.
     page: Option<u16>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>
 }
 
@@ -1658,7 +1658,7 @@ impl ActionsListRepoAccessToSelfHostedRunnerGroupInOrgParams {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             page: self.page, 
@@ -1679,7 +1679,7 @@ impl<'enc> From<&'enc PerPage> for ActionsListRepoAccessToSelfHostedRunnerGroupI
 /// Query parameters for the [List repository secrets](Actions::list_repo_secrets_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsListRepoSecretsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1690,7 +1690,7 @@ impl ActionsListRepoSecretsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1719,7 +1719,7 @@ impl<'enc> From<&'enc PerPage> for ActionsListRepoSecretsParams {
 /// Query parameters for the [List repository workflows](Actions::list_repo_workflows_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsListRepoWorkflowsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1730,7 +1730,7 @@ impl ActionsListRepoWorkflowsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1761,7 +1761,7 @@ impl<'enc> From<&'enc PerPage> for ActionsListRepoWorkflowsParams {
 pub struct ActionsListSelectedReposForOrgSecretParams {
     /// Page number of the results to fetch.
     page: Option<u16>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>
 }
 
@@ -1778,7 +1778,7 @@ impl ActionsListSelectedReposForOrgSecretParams {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             page: self.page, 
@@ -1799,7 +1799,7 @@ impl<'enc> From<&'enc PerPage> for ActionsListSelectedReposForOrgSecretParams {
 /// Query parameters for the [List selected repositories enabled for GitHub Actions in an organization](Actions::list_selected_repositories_enabled_github_actions_organization_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1810,7 +1810,7 @@ impl ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1839,7 +1839,7 @@ impl<'enc> From<&'enc PerPage> for ActionsListSelectedRepositoriesEnabledGithubA
 /// Query parameters for the [List self-hosted runner groups for an organization](Actions::list_self_hosted_runner_groups_for_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsListSelfHostedRunnerGroupsForOrgParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1850,7 +1850,7 @@ impl ActionsListSelfHostedRunnerGroupsForOrgParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1879,7 +1879,7 @@ impl<'enc> From<&'enc PerPage> for ActionsListSelfHostedRunnerGroupsForOrgParams
 /// Query parameters for the [List self-hosted runners for an organization](Actions::list_self_hosted_runners_for_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsListSelfHostedRunnersForOrgParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1890,7 +1890,7 @@ impl ActionsListSelfHostedRunnersForOrgParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1919,7 +1919,7 @@ impl<'enc> From<&'enc PerPage> for ActionsListSelfHostedRunnersForOrgParams {
 /// Query parameters for the [List self-hosted runners for a repository](Actions::list_self_hosted_runners_for_repo_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsListSelfHostedRunnersForRepoParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1930,7 +1930,7 @@ impl ActionsListSelfHostedRunnersForRepoParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1959,7 +1959,7 @@ impl<'enc> From<&'enc PerPage> for ActionsListSelfHostedRunnersForRepoParams {
 /// Query parameters for the [List self-hosted runners in a group for an organization](Actions::list_self_hosted_runners_in_group_for_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsListSelfHostedRunnersInGroupForOrgParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1970,7 +1970,7 @@ impl ActionsListSelfHostedRunnersInGroupForOrgParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1999,7 +1999,7 @@ impl<'enc> From<&'enc PerPage> for ActionsListSelfHostedRunnersInGroupForOrgPara
 /// Query parameters for the [List workflow run artifacts](Actions::list_workflow_run_artifacts_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsListWorkflowRunArtifactsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -2010,7 +2010,7 @@ impl ActionsListWorkflowRunArtifactsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -2047,10 +2047,12 @@ pub struct ActionsListWorkflowRunsParams<'req> {
     event: Option<&'req str>, 
     /// Returns workflow runs with the check run `status` or `conclusion` that you specify. For example, a conclusion can be `success` or a status can be `in_progress`. Only GitHub can set a status of `waiting` or `requested`. For a list of the possible `status` and `conclusion` options, see \"[Create a check run](https://docs.github.com/rest/reference/checks#create-a-check-run).\"
     status: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
-    page: Option<u16>
+    page: Option<u16>, 
+    
+    created: Option<chrono::DateTime<chrono::Utc>>
 }
 
 impl<'req> ActionsListWorkflowRunsParams<'req> {
@@ -2067,6 +2069,7 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
             status: self.status, 
             per_page: self.per_page, 
             page: self.page, 
+            created: self.created, 
         }
     }
 
@@ -2079,6 +2082,7 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
             status: self.status, 
             per_page: self.per_page, 
             page: self.page, 
+            created: self.created, 
         }
     }
 
@@ -2091,6 +2095,7 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
             status: self.status, 
             per_page: self.per_page, 
             page: self.page, 
+            created: self.created, 
         }
     }
 
@@ -2103,10 +2108,11 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
             status: Some(status),
             per_page: self.per_page, 
             page: self.page, 
+            created: self.created, 
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             actor: self.actor, 
@@ -2115,6 +2121,7 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
             status: self.status, 
             per_page: Some(per_page),
             page: self.page, 
+            created: self.created, 
         }
     }
 
@@ -2127,6 +2134,20 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
             status: self.status, 
             per_page: self.per_page, 
             page: Some(page),
+            created: self.created, 
+        }
+    }
+
+    
+    pub fn created(self, created: chrono::DateTime<chrono::Utc>) -> Self {
+        Self { 
+            actor: self.actor, 
+            branch: self.branch, 
+            event: self.event, 
+            status: self.status, 
+            per_page: self.per_page, 
+            page: self.page, 
+            created: Some(created),
         }
     }
 }
@@ -2151,10 +2172,12 @@ pub struct ActionsListWorkflowRunsForRepoParams<'req> {
     event: Option<&'req str>, 
     /// Returns workflow runs with the check run `status` or `conclusion` that you specify. For example, a conclusion can be `success` or a status can be `in_progress`. Only GitHub can set a status of `waiting` or `requested`. For a list of the possible `status` and `conclusion` options, see \"[Create a check run](https://docs.github.com/rest/reference/checks#create-a-check-run).\"
     status: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
-    page: Option<u16>
+    page: Option<u16>, 
+    
+    created: Option<chrono::DateTime<chrono::Utc>>
 }
 
 impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
@@ -2171,6 +2194,7 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
             status: self.status, 
             per_page: self.per_page, 
             page: self.page, 
+            created: self.created, 
         }
     }
 
@@ -2183,6 +2207,7 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
             status: self.status, 
             per_page: self.per_page, 
             page: self.page, 
+            created: self.created, 
         }
     }
 
@@ -2195,6 +2220,7 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
             status: self.status, 
             per_page: self.per_page, 
             page: self.page, 
+            created: self.created, 
         }
     }
 
@@ -2207,10 +2233,11 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
             status: Some(status),
             per_page: self.per_page, 
             page: self.page, 
+            created: self.created, 
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             actor: self.actor, 
@@ -2219,6 +2246,7 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
             status: self.status, 
             per_page: Some(per_page),
             page: self.page, 
+            created: self.created, 
         }
     }
 
@@ -2231,6 +2259,20 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
             status: self.status, 
             per_page: self.per_page, 
             page: Some(page),
+            created: self.created, 
+        }
+    }
+
+    
+    pub fn created(self, created: chrono::DateTime<chrono::Utc>) -> Self {
+        Self { 
+            actor: self.actor, 
+            branch: self.branch, 
+            event: self.event, 
+            status: self.status, 
+            per_page: self.per_page, 
+            page: self.page, 
+            created: Some(created),
         }
     }
 }
@@ -2507,8 +2549,6 @@ impl<'api> Actions<'api> {
     ///
     /// # Approve a workflow run for a fork pull request
     ///
-    /// **Note:** This endpoint is currently in beta and is subject to change.
-    /// 
     /// Approves a workflow run for a pull request from a public fork of a first time contributor. For more information, see ["Approving workflow runs from public forks](https://docs.github.com/actions/managing-workflow-runs/approving-workflow-runs-from-public-forks)."
     /// 
     /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
@@ -2551,8 +2591,6 @@ impl<'api> Actions<'api> {
     ///
     /// # Approve a workflow run for a fork pull request
     ///
-    /// **Note:** This endpoint is currently in beta and is subject to change.
-    /// 
     /// Approves a workflow run for a pull request from a public fork of a first time contributor. For more information, see ["Approving workflow runs from public forks](https://docs.github.com/actions/managing-workflow-runs/approving-workflow-runs-from-public-forks)."
     /// 
     /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
