@@ -392,7 +392,7 @@ pub enum PackagesRestorePackageVersionForOrgError {
 pub struct PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserParams<'req> {
     /// Page number of the results to fetch.
     page: Option<u16>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// The state of the package, either active or deleted.
     state: Option<&'req str>
@@ -412,7 +412,7 @@ impl<'req> PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserParams
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             page: self.page, 
@@ -445,7 +445,7 @@ impl<'enc> From<&'enc PerPage> for PackagesGetAllPackageVersionsForPackageOwnedB
 pub struct PackagesGetAllPackageVersionsForPackageOwnedByOrgParams<'req> {
     /// Page number of the results to fetch.
     page: Option<u16>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// The state of the package, either active or deleted.
     state: Option<&'req str>
@@ -465,7 +465,7 @@ impl<'req> PackagesGetAllPackageVersionsForPackageOwnedByOrgParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             page: self.page, 

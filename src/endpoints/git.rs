@@ -318,7 +318,7 @@ impl<'req> GitGetTreeParams<'req> {
 /// Query parameters for the [List matching references](Git::list_matching_refs_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct GitListMatchingRefsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -329,7 +329,7 @@ impl GitListMatchingRefsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),

@@ -96,7 +96,7 @@ pub enum LicensesGetForRepoError {
 pub struct LicensesGetAllCommonlyUsedParams {
     
     featured: Option<bool>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -116,7 +116,7 @@ impl LicensesGetAllCommonlyUsedParams {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             featured: self.featured, 

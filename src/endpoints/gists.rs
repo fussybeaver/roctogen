@@ -489,7 +489,7 @@ pub enum GistsUpdateCommentError {
 pub struct GistsListParams {
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -509,7 +509,7 @@ impl GistsListParams {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             since: self.since, 
@@ -540,7 +540,7 @@ impl<'enc> From<&'enc PerPage> for GistsListParams {
 /// Query parameters for the [List gist comments](Gists::list_comments_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct GistsListCommentsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -551,7 +551,7 @@ impl GistsListCommentsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -580,7 +580,7 @@ impl<'enc> From<&'enc PerPage> for GistsListCommentsParams {
 /// Query parameters for the [List gist commits](Gists::list_commits_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct GistsListCommitsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -591,7 +591,7 @@ impl GistsListCommitsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -622,7 +622,7 @@ impl<'enc> From<&'enc PerPage> for GistsListCommitsParams {
 pub struct GistsListForUserParams {
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -642,7 +642,7 @@ impl GistsListForUserParams {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             since: self.since, 
@@ -673,7 +673,7 @@ impl<'enc> From<&'enc PerPage> for GistsListForUserParams {
 /// Query parameters for the [List gist forks](Gists::list_forks_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct GistsListForksParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -684,7 +684,7 @@ impl GistsListForksParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -715,7 +715,7 @@ impl<'enc> From<&'enc PerPage> for GistsListForksParams {
 pub struct GistsListPublicParams {
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -735,7 +735,7 @@ impl GistsListPublicParams {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             since: self.since, 
@@ -768,7 +768,7 @@ impl<'enc> From<&'enc PerPage> for GistsListPublicParams {
 pub struct GistsListStarredParams {
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -788,7 +788,7 @@ impl GistsListStarredParams {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             since: self.since, 

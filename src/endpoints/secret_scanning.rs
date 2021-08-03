@@ -106,7 +106,7 @@ pub struct SecretScanningListAlertsForRepoParams<'req> {
     secret_type: Option<&'req str>, 
     /// Page number of the results to fetch.
     page: Option<u16>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>
 }
 
@@ -145,7 +145,7 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             state: self.state, 

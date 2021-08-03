@@ -584,7 +584,7 @@ pub struct PullsListParams<'req> {
     sort: Option<&'req str>, 
     /// The direction of the sort. Can be either `asc` or `desc`. Default: `desc` when sort is `created` or sort is not specified, otherwise `asc`.
     direction: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -660,7 +660,7 @@ impl<'req> PullsListParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             state: self.state, 
@@ -699,7 +699,7 @@ impl<'enc> From<&'enc PerPage> for PullsListParams<'enc> {
 /// Query parameters for the [List comments for a pull request review](Pulls::list_comments_for_review_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct PullsListCommentsForReviewParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -710,7 +710,7 @@ impl PullsListCommentsForReviewParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -739,7 +739,7 @@ impl<'enc> From<&'enc PerPage> for PullsListCommentsForReviewParams {
 /// Query parameters for the [List commits on a pull request](Pulls::list_commits_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct PullsListCommitsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -750,7 +750,7 @@ impl PullsListCommitsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -779,7 +779,7 @@ impl<'enc> From<&'enc PerPage> for PullsListCommitsParams {
 /// Query parameters for the [List pull requests files](Pulls::list_files_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct PullsListFilesParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -790,7 +790,7 @@ impl PullsListFilesParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -819,7 +819,7 @@ impl<'enc> From<&'enc PerPage> for PullsListFilesParams {
 /// Query parameters for the [List requested reviewers for a pull request](Pulls::list_requested_reviewers_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct PullsListRequestedReviewersParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -830,7 +830,7 @@ impl PullsListRequestedReviewersParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -865,7 +865,7 @@ pub struct PullsListReviewCommentsParams<'req> {
     direction: Option<&'req str>, 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -909,7 +909,7 @@ impl<'req> PullsListReviewCommentsParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             sort: self.sort, 
@@ -950,7 +950,7 @@ pub struct PullsListReviewCommentsForRepoParams<'req> {
     direction: Option<&'req str>, 
     /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -994,7 +994,7 @@ impl<'req> PullsListReviewCommentsForRepoParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             sort: self.sort, 
@@ -1029,7 +1029,7 @@ impl<'enc> From<&'enc PerPage> for PullsListReviewCommentsForRepoParams<'enc> {
 /// Query parameters for the [List reviews for a pull request](Pulls::list_reviews_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct PullsListReviewsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1040,7 +1040,7 @@ impl PullsListReviewsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),

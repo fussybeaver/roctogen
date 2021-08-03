@@ -664,7 +664,7 @@ pub enum ActivityUnstarRepoForAuthenticatedUserError {
 /// Query parameters for the [List events for the authenticated user](Activity::list_events_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListEventsForAuthenticatedUserParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -675,7 +675,7 @@ impl ActivityListEventsForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -712,7 +712,7 @@ pub struct ActivityListNotificationsForAuthenticatedUserParams {
     since: Option<chrono::DateTime<chrono::Utc>>, 
     /// Only show notifications updated before the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     before: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -771,7 +771,7 @@ impl ActivityListNotificationsForAuthenticatedUserParams {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             all: self.all, 
@@ -808,7 +808,7 @@ impl<'enc> From<&'enc PerPage> for ActivityListNotificationsForAuthenticatedUser
 /// Query parameters for the [List organization events for the authenticated user](Activity::list_org_events_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListOrgEventsForAuthenticatedUserParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -819,7 +819,7 @@ impl ActivityListOrgEventsForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -848,7 +848,7 @@ impl<'enc> From<&'enc PerPage> for ActivityListOrgEventsForAuthenticatedUserPara
 /// Query parameters for the [List public events](Activity::list_public_events_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListPublicEventsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -859,7 +859,7 @@ impl ActivityListPublicEventsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -888,7 +888,7 @@ impl<'enc> From<&'enc PerPage> for ActivityListPublicEventsParams {
 /// Query parameters for the [List public events for a network of repositories](Activity::list_public_events_for_repo_network_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListPublicEventsForRepoNetworkParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -899,7 +899,7 @@ impl ActivityListPublicEventsForRepoNetworkParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -928,7 +928,7 @@ impl<'enc> From<&'enc PerPage> for ActivityListPublicEventsForRepoNetworkParams 
 /// Query parameters for the [List public events for a user](Activity::list_public_events_for_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListPublicEventsForUserParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -939,7 +939,7 @@ impl ActivityListPublicEventsForUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -968,7 +968,7 @@ impl<'enc> From<&'enc PerPage> for ActivityListPublicEventsForUserParams {
 /// Query parameters for the [List public organization events](Activity::list_public_org_events_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListPublicOrgEventsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -979,7 +979,7 @@ impl ActivityListPublicOrgEventsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1008,7 +1008,7 @@ impl<'enc> From<&'enc PerPage> for ActivityListPublicOrgEventsParams {
 /// Query parameters for the [List events received by the authenticated user](Activity::list_received_events_for_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListReceivedEventsForUserParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1019,7 +1019,7 @@ impl ActivityListReceivedEventsForUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1048,7 +1048,7 @@ impl<'enc> From<&'enc PerPage> for ActivityListReceivedEventsForUserParams {
 /// Query parameters for the [List public events received by a user](Activity::list_received_public_events_for_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListReceivedPublicEventsForUserParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1059,7 +1059,7 @@ impl ActivityListReceivedPublicEventsForUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1088,7 +1088,7 @@ impl<'enc> From<&'enc PerPage> for ActivityListReceivedPublicEventsForUserParams
 /// Query parameters for the [List repository events](Activity::list_repo_events_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListRepoEventsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1099,7 +1099,7 @@ impl ActivityListRepoEventsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1136,7 +1136,7 @@ pub struct ActivityListRepoNotificationsForAuthenticatedUserParams {
     since: Option<chrono::DateTime<chrono::Utc>>, 
     /// Only show notifications updated before the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     before: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1195,7 +1195,7 @@ impl ActivityListRepoNotificationsForAuthenticatedUserParams {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             all: self.all, 
@@ -1236,7 +1236,7 @@ pub struct ActivityListReposStarredByAuthenticatedUserParams<'req> {
     sort: Option<&'req str>, 
     /// One of `asc` (ascending) or `desc` (descending).
     direction: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1267,7 +1267,7 @@ impl<'req> ActivityListReposStarredByAuthenticatedUserParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             sort: self.sort, 
@@ -1304,7 +1304,7 @@ pub struct ActivityListReposStarredByUserParams<'req> {
     sort: Option<&'req str>, 
     /// One of `asc` (ascending) or `desc` (descending).
     direction: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1335,7 +1335,7 @@ impl<'req> ActivityListReposStarredByUserParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             sort: self.sort, 
@@ -1368,7 +1368,7 @@ impl<'enc> From<&'enc PerPage> for ActivityListReposStarredByUserParams<'enc> {
 /// Query parameters for the [List repositories watched by a user](Activity::list_repos_watched_by_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListReposWatchedByUserParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1379,7 +1379,7 @@ impl ActivityListReposWatchedByUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1408,7 +1408,7 @@ impl<'enc> From<&'enc PerPage> for ActivityListReposWatchedByUserParams {
 /// Query parameters for the [List stargazers](Activity::list_stargazers_for_repo_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListStargazersForRepoParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1419,7 +1419,7 @@ impl ActivityListStargazersForRepoParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1448,7 +1448,7 @@ impl<'enc> From<&'enc PerPage> for ActivityListStargazersForRepoParams {
 /// Query parameters for the [List repositories watched by the authenticated user](Activity::list_watched_repos_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListWatchedReposForAuthenticatedUserParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1459,7 +1459,7 @@ impl ActivityListWatchedReposForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1488,7 +1488,7 @@ impl<'enc> From<&'enc PerPage> for ActivityListWatchedReposForAuthenticatedUserP
 /// Query parameters for the [List watchers](Activity::list_watchers_for_repo_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListWatchersForRepoParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1499,7 +1499,7 @@ impl ActivityListWatchersForRepoParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),

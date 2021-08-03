@@ -727,7 +727,7 @@ pub struct EnterpriseAdminGetAuditLogParams<'req> {
     order: Option<&'req str>, 
     /// Page number of the results to fetch.
     page: Option<u16>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>
 }
 
@@ -814,7 +814,7 @@ impl<'req> EnterpriseAdminGetAuditLogParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             phrase: self.phrase, 
@@ -860,7 +860,7 @@ impl<'req> EnterpriseAdminGetProvisioningInformationForEnterpriseGroupParams<'re
 /// Query parameters for the [List organization access to a self-hosted runner group in an enterprise](EnterpriseAdmin::list_org_access_to_self_hosted_runner_group_in_enterprise_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct EnterpriseAdminListOrgAccessToSelfHostedRunnerGroupInEnterpriseParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -871,7 +871,7 @@ impl EnterpriseAdminListOrgAccessToSelfHostedRunnerGroupInEnterpriseParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1003,7 +1003,7 @@ impl<'req> EnterpriseAdminListProvisionedIdentitiesEnterpriseParams<'req> {
 /// Query parameters for the [List selected organizations enabled for GitHub Actions in an enterprise](EnterpriseAdmin::list_selected_organizations_enabled_github_actions_enterprise_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct EnterpriseAdminListSelectedOrganizationsEnabledGithubActionsEnterpriseParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1014,7 +1014,7 @@ impl EnterpriseAdminListSelectedOrganizationsEnabledGithubActionsEnterpriseParam
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1043,7 +1043,7 @@ impl<'enc> From<&'enc PerPage> for EnterpriseAdminListSelectedOrganizationsEnabl
 /// Query parameters for the [List self-hosted runner groups for an enterprise](EnterpriseAdmin::list_self_hosted_runner_groups_for_enterprise_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct EnterpriseAdminListSelfHostedRunnerGroupsForEnterpriseParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1054,7 +1054,7 @@ impl EnterpriseAdminListSelfHostedRunnerGroupsForEnterpriseParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1083,7 +1083,7 @@ impl<'enc> From<&'enc PerPage> for EnterpriseAdminListSelfHostedRunnerGroupsForE
 /// Query parameters for the [List self-hosted runners for an enterprise](EnterpriseAdmin::list_self_hosted_runners_for_enterprise_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct EnterpriseAdminListSelfHostedRunnersForEnterpriseParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1094,7 +1094,7 @@ impl EnterpriseAdminListSelfHostedRunnersForEnterpriseParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1123,7 +1123,7 @@ impl<'enc> From<&'enc PerPage> for EnterpriseAdminListSelfHostedRunnersForEnterp
 /// Query parameters for the [List self-hosted runners in a group for an enterprise](EnterpriseAdmin::list_self_hosted_runners_in_group_for_enterprise_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct EnterpriseAdminListSelfHostedRunnersInGroupForEnterpriseParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1134,7 +1134,7 @@ impl EnterpriseAdminListSelfHostedRunnersInGroupForEnterpriseParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),

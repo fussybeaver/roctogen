@@ -507,7 +507,7 @@ pub enum ReactionsListForTeamDiscussionLegacyError {
 pub struct ReactionsListForCommitCommentParams<'req> {
     /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to a commit comment.
     content: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -527,7 +527,7 @@ impl<'req> ReactionsListForCommitCommentParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             content: self.content, 
@@ -560,7 +560,7 @@ impl<'enc> From<&'enc PerPage> for ReactionsListForCommitCommentParams<'enc> {
 pub struct ReactionsListForIssueParams<'req> {
     /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to an issue.
     content: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -580,7 +580,7 @@ impl<'req> ReactionsListForIssueParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             content: self.content, 
@@ -613,7 +613,7 @@ impl<'enc> From<&'enc PerPage> for ReactionsListForIssueParams<'enc> {
 pub struct ReactionsListForIssueCommentParams<'req> {
     /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to an issue comment.
     content: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -633,7 +633,7 @@ impl<'req> ReactionsListForIssueCommentParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             content: self.content, 
@@ -666,7 +666,7 @@ impl<'enc> From<&'enc PerPage> for ReactionsListForIssueCommentParams<'enc> {
 pub struct ReactionsListForPullRequestReviewCommentParams<'req> {
     /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to a pull request review comment.
     content: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -686,7 +686,7 @@ impl<'req> ReactionsListForPullRequestReviewCommentParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             content: self.content, 
@@ -719,7 +719,7 @@ impl<'enc> From<&'enc PerPage> for ReactionsListForPullRequestReviewCommentParam
 pub struct ReactionsListForTeamDiscussionCommentInOrgParams<'req> {
     /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to a team discussion comment.
     content: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -739,7 +739,7 @@ impl<'req> ReactionsListForTeamDiscussionCommentInOrgParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             content: self.content, 
@@ -772,7 +772,7 @@ impl<'enc> From<&'enc PerPage> for ReactionsListForTeamDiscussionCommentInOrgPar
 pub struct ReactionsListForTeamDiscussionCommentLegacyParams<'req> {
     /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to a team discussion comment.
     content: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -792,7 +792,7 @@ impl<'req> ReactionsListForTeamDiscussionCommentLegacyParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             content: self.content, 
@@ -825,7 +825,7 @@ impl<'enc> From<&'enc PerPage> for ReactionsListForTeamDiscussionCommentLegacyPa
 pub struct ReactionsListForTeamDiscussionInOrgParams<'req> {
     /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to a team discussion.
     content: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -845,7 +845,7 @@ impl<'req> ReactionsListForTeamDiscussionInOrgParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             content: self.content, 
@@ -878,7 +878,7 @@ impl<'enc> From<&'enc PerPage> for ReactionsListForTeamDiscussionInOrgParams<'en
 pub struct ReactionsListForTeamDiscussionLegacyParams<'req> {
     /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to a team discussion.
     content: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -898,7 +898,7 @@ impl<'req> ReactionsListForTeamDiscussionLegacyParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             content: self.content, 

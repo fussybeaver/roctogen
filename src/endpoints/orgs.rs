@@ -328,6 +328,27 @@ pub enum OrgsGetWebhookConfigForOrgError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Get a webhook delivery for an organization webhook](Orgs::get_webhook_delivery_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsGetWebhookDeliveryError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Bad Request")]
+    Status400(BasicError),
+    #[error("Validation failed")]
+    Status422(ValidationError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [List organizations](Orgs::list_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListError {
@@ -577,6 +598,27 @@ pub enum OrgsListSamlSsoAuthorizationsError {
     Generic { code: u16 },
 }
 
+/// Errors for the [List deliveries for an organization webhook](Orgs::list_webhook_deliveries_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsListWebhookDeliveriesError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Bad Request")]
+    Status400(BasicError),
+    #[error("Validation failed")]
+    Status422(ValidationError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [List organization webhooks](Orgs::list_webhooks_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListWebhooksError {
@@ -611,6 +653,27 @@ pub enum OrgsPingWebhookError {
 
     #[error("Resource not found")]
     Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Redeliver a delivery for an organization webhook](Orgs::redeliver_webhook_delivery_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsRedeliverWebhookDeliveryError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Bad Request")]
+    Status400(BasicError),
+    #[error("Validation failed")]
+    Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -865,7 +928,7 @@ pub struct OrgsGetAuditLogParams<'req> {
     before: Option<&'req str>, 
     /// The order of audit log events. To list newest events first, specify `desc`. To list oldest events first, specify `asc`.  The default is `desc`.
     order: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -941,7 +1004,7 @@ impl<'req> OrgsGetAuditLogParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             phrase: self.phrase, 
@@ -982,7 +1045,7 @@ impl<'enc> From<&'enc PerPage> for OrgsGetAuditLogParams<'enc> {
 pub struct OrgsListParams {
     /// An organization ID. Only return organizations with an ID greater than this ID.
     since: Option<i32>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>
 }
 
@@ -999,7 +1062,7 @@ impl OrgsListParams {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             since: self.since, 
@@ -1011,7 +1074,7 @@ impl OrgsListParams {
 /// Query parameters for the [List app installations for an organization](Orgs::list_app_installations_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsListAppInstallationsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1022,7 +1085,7 @@ impl OrgsListAppInstallationsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1051,7 +1114,7 @@ impl<'enc> From<&'enc PerPage> for OrgsListAppInstallationsParams {
 /// Query parameters for the [List failed organization invitations](Orgs::list_failed_invitations_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsListFailedInvitationsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1062,7 +1125,7 @@ impl OrgsListFailedInvitationsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1091,7 +1154,7 @@ impl<'enc> From<&'enc PerPage> for OrgsListFailedInvitationsParams {
 /// Query parameters for the [List organizations for the authenticated user](Orgs::list_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsListForAuthenticatedUserParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1102,7 +1165,7 @@ impl OrgsListForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1131,7 +1194,7 @@ impl<'enc> From<&'enc PerPage> for OrgsListForAuthenticatedUserParams {
 /// Query parameters for the [List organizations for a user](Orgs::list_for_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsListForUserParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1142,7 +1205,7 @@ impl OrgsListForUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1171,7 +1234,7 @@ impl<'enc> From<&'enc PerPage> for OrgsListForUserParams {
 /// Query parameters for the [List organization invitation teams](Orgs::list_invitation_teams_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsListInvitationTeamsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1182,7 +1245,7 @@ impl OrgsListInvitationTeamsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1215,7 +1278,7 @@ pub struct OrgsListMembersParams<'req> {
     filter: Option<&'req str>, 
     /// Filter members returned by their role. Can be one of:   \\* `all` - All members of the organization, regardless of role.   \\* `admin` - Organization owners.   \\* `member` - Non-owner organization members.
     role: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1246,7 +1309,7 @@ impl<'req> OrgsListMembersParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             filter: self.filter, 
@@ -1281,7 +1344,7 @@ impl<'enc> From<&'enc PerPage> for OrgsListMembersParams<'enc> {
 pub struct OrgsListMembershipsForAuthenticatedUserParams<'req> {
     /// Indicates the state of the memberships to return. Can be either `active` or `pending`. If not specified, the API returns both active and pending memberships.
     state: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1301,7 +1364,7 @@ impl<'req> OrgsListMembershipsForAuthenticatedUserParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             state: self.state, 
@@ -1334,7 +1397,7 @@ impl<'enc> From<&'enc PerPage> for OrgsListMembershipsForAuthenticatedUserParams
 pub struct OrgsListOutsideCollaboratorsParams<'req> {
     /// Filter the list of outside collaborators. Can be one of:   \\* `2fa_disabled`: Outside collaborators without [two-factor authentication](https://github.com/blog/1614-two-factor-authentication) enabled.   \\* `all`: All outside collaborators.
     filter: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1354,7 +1417,7 @@ impl<'req> OrgsListOutsideCollaboratorsParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             filter: self.filter, 
@@ -1385,7 +1448,7 @@ impl<'enc> From<&'enc PerPage> for OrgsListOutsideCollaboratorsParams<'enc> {
 /// Query parameters for the [List pending organization invitations](Orgs::list_pending_invitations_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsListPendingInvitationsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1396,7 +1459,7 @@ impl OrgsListPendingInvitationsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1425,7 +1488,7 @@ impl<'enc> From<&'enc PerPage> for OrgsListPendingInvitationsParams {
 /// Query parameters for the [List public organization members](Orgs::list_public_members_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsListPublicMembersParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1436,7 +1499,7 @@ impl OrgsListPublicMembersParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1462,10 +1525,41 @@ impl<'enc> From<&'enc PerPage> for OrgsListPublicMembersParams {
         }
     }
 }
+/// Query parameters for the [List deliveries for an organization webhook](Orgs::list_webhook_deliveries_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct OrgsListWebhookDeliveriesParams<'req> {
+    /// Results per page (max 100)
+    per_page: Option<u16>, 
+    /// Used for pagination: the starting delivery from which the page of deliveries is fetched. Refer to the `link` header for the next and previous page cursors.
+    cursor: Option<&'req str>
+}
+
+impl<'req> OrgsListWebhookDeliveriesParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Results per page (max 100)
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self { 
+            per_page: Some(per_page),
+            cursor: self.cursor, 
+        }
+    }
+
+    /// Used for pagination: the starting delivery from which the page of deliveries is fetched. Refer to the `link` header for the next and previous page cursors.
+    pub fn cursor(self, cursor: &'req str) -> Self {
+        Self { 
+            per_page: self.per_page, 
+            cursor: Some(cursor),
+        }
+    }
+}
+
 /// Query parameters for the [List organization webhooks](Orgs::list_webhooks_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsListWebhooksParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1476,7 +1570,7 @@ impl OrgsListWebhooksParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -2718,6 +2812,87 @@ impl<'api> Orgs<'api> {
 
     /// ---
     ///
+    /// # Get a webhook delivery for an organization webhook
+    ///
+    /// Returns a delivery for a webhook configured in an organization.
+    /// 
+    /// [GitHub API docs for get_webhook_delivery](https://docs.github.com/rest/reference/orgs#get-a-webhook-delivery-for-an-organization-webhook)
+    ///
+    /// ---
+    pub async fn get_webhook_delivery_async(&self, org: &str, hook_id: i32, delivery_id: i32) -> Result<HookDelivery, OrgsGetWebhookDeliveryError> {
+
+        let request_uri = format!("{}/orgs/{}/hooks/{}/deliveries/{}", super::GITHUB_BASE_API_URL, org, hook_id, delivery_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(OrgsGetWebhookDeliveryError::Status400(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(OrgsGetWebhookDeliveryError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(OrgsGetWebhookDeliveryError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get a webhook delivery for an organization webhook
+    ///
+    /// Returns a delivery for a webhook configured in an organization.
+    /// 
+    /// [GitHub API docs for get_webhook_delivery](https://docs.github.com/rest/reference/orgs#get-a-webhook-delivery-for-an-organization-webhook)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_webhook_delivery(&self, org: &str, hook_id: i32, delivery_id: i32) -> Result<HookDelivery, OrgsGetWebhookDeliveryError> {
+
+        let request_uri = format!("{}/orgs/{}/hooks/{}/deliveries/{}", super::GITHUB_BASE_API_URL, org, hook_id, delivery_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(OrgsGetWebhookDeliveryError::Status400(crate::adapters::to_json(github_response)?)),
+                422 => Err(OrgsGetWebhookDeliveryError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(OrgsGetWebhookDeliveryError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List organizations
     ///
     /// Lists all organizations, in the order that they were created on GitHub.
@@ -3862,6 +4037,96 @@ impl<'api> Orgs<'api> {
 
     /// ---
     ///
+    /// # List deliveries for an organization webhook
+    ///
+    /// Returns a list of webhook deliveries for a webhook configured in an organization.
+    /// 
+    /// [GitHub API docs for list_webhook_deliveries](https://docs.github.com/rest/reference/orgs#list-deliveries-for-an-organization-webhook)
+    ///
+    /// ---
+    pub async fn list_webhook_deliveries_async(&self, org: &str, hook_id: i32, query_params: Option<impl Into<OrgsListWebhookDeliveriesParams<'api>>>) -> Result<Vec<HookDeliveryItem>, OrgsListWebhookDeliveriesError> {
+
+        let mut request_uri = format!("{}/orgs/{}/hooks/{}/deliveries", super::GITHUB_BASE_API_URL, org, hook_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(OrgsListWebhookDeliveriesError::Status400(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(OrgsListWebhookDeliveriesError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(OrgsListWebhookDeliveriesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List deliveries for an organization webhook
+    ///
+    /// Returns a list of webhook deliveries for a webhook configured in an organization.
+    /// 
+    /// [GitHub API docs for list_webhook_deliveries](https://docs.github.com/rest/reference/orgs#list-deliveries-for-an-organization-webhook)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_webhook_deliveries(&self, org: &str, hook_id: i32, query_params: Option<impl Into<OrgsListWebhookDeliveriesParams<'api>>>) -> Result<Vec<HookDeliveryItem>, OrgsListWebhookDeliveriesError> {
+
+        let mut request_uri = format!("{}/orgs/{}/hooks/{}/deliveries", super::GITHUB_BASE_API_URL, org, hook_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: OrgsListWebhookDeliveriesParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(OrgsListWebhookDeliveriesError::Status400(crate::adapters::to_json(github_response)?)),
+                422 => Err(OrgsListWebhookDeliveriesError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(OrgsListWebhookDeliveriesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List organization webhooks
     /// 
     /// [GitHub API docs for list_webhooks](https://docs.github.com/rest/reference/orgs#list-organization-webhooks)
@@ -4019,6 +4284,87 @@ impl<'api> Orgs<'api> {
             match github_response.status_code() {
                 404 => Err(OrgsPingWebhookError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsPingWebhookError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Redeliver a delivery for an organization webhook
+    ///
+    /// Redeliver a delivery for a webhook configured in an organization.
+    /// 
+    /// [GitHub API docs for redeliver_webhook_delivery](https://docs.github.com/rest/reference/orgs#redeliver-a-delivery-for-an-organization-webhook)
+    ///
+    /// ---
+    pub async fn redeliver_webhook_delivery_async(&self, org: &str, hook_id: i32, delivery_id: i32) -> Result<HashMap<String, Value>, OrgsRedeliverWebhookDeliveryError> {
+
+        let request_uri = format!("{}/orgs/{}/hooks/{}/deliveries/{}/attempts", super::GITHUB_BASE_API_URL, org, hook_id, delivery_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(OrgsRedeliverWebhookDeliveryError::Status400(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(OrgsRedeliverWebhookDeliveryError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(OrgsRedeliverWebhookDeliveryError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Redeliver a delivery for an organization webhook
+    ///
+    /// Redeliver a delivery for a webhook configured in an organization.
+    /// 
+    /// [GitHub API docs for redeliver_webhook_delivery](https://docs.github.com/rest/reference/orgs#redeliver-a-delivery-for-an-organization-webhook)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn redeliver_webhook_delivery(&self, org: &str, hook_id: i32, delivery_id: i32) -> Result<HashMap<String, Value>, OrgsRedeliverWebhookDeliveryError> {
+
+        let request_uri = format!("{}/orgs/{}/hooks/{}/deliveries/{}/attempts", super::GITHUB_BASE_API_URL, org, hook_id, delivery_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(OrgsRedeliverWebhookDeliveryError::Status400(crate::adapters::to_json(github_response)?)),
+                422 => Err(OrgsRedeliverWebhookDeliveryError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(OrgsRedeliverWebhookDeliveryError::Generic { code }),
             }
         }
     }

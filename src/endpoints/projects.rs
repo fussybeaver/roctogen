@@ -678,7 +678,7 @@ pub enum ProjectsUpdateColumnError {
 pub struct ProjectsListCardsParams<'req> {
     /// Filters the project cards that are returned by the card's state. Can be one of `all`,`archived`, or `not_archived`.
     archived_state: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -698,7 +698,7 @@ impl<'req> ProjectsListCardsParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             archived_state: self.archived_state, 
@@ -731,7 +731,7 @@ impl<'enc> From<&'enc PerPage> for ProjectsListCardsParams<'enc> {
 pub struct ProjectsListCollaboratorsParams<'req> {
     /// Filters the collaborators by their affiliation. Can be one of:   \\* `outside`: Outside collaborators of a project that are not a member of the project's organization.   \\* `direct`: Collaborators with permissions to a project, regardless of organization membership status.   \\* `all`: All collaborators the authenticated user can see.
     affiliation: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -751,7 +751,7 @@ impl<'req> ProjectsListCollaboratorsParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             affiliation: self.affiliation, 
@@ -782,7 +782,7 @@ impl<'enc> From<&'enc PerPage> for ProjectsListCollaboratorsParams<'enc> {
 /// Query parameters for the [List project columns](Projects::list_columns_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ProjectsListColumnsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -793,7 +793,7 @@ impl ProjectsListColumnsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -824,7 +824,7 @@ impl<'enc> From<&'enc PerPage> for ProjectsListColumnsParams {
 pub struct ProjectsListForOrgParams<'req> {
     /// Indicates the state of the projects to return. Can be either `open`, `closed`, or `all`.
     state: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -844,7 +844,7 @@ impl<'req> ProjectsListForOrgParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             state: self.state, 
@@ -877,7 +877,7 @@ impl<'enc> From<&'enc PerPage> for ProjectsListForOrgParams<'enc> {
 pub struct ProjectsListForRepoParams<'req> {
     /// Indicates the state of the projects to return. Can be either `open`, `closed`, or `all`.
     state: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -897,7 +897,7 @@ impl<'req> ProjectsListForRepoParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             state: self.state, 
@@ -930,7 +930,7 @@ impl<'enc> From<&'enc PerPage> for ProjectsListForRepoParams<'enc> {
 pub struct ProjectsListForUserParams<'req> {
     /// Indicates the state of the projects to return. Can be either `open`, `closed`, or `all`.
     state: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -950,7 +950,7 @@ impl<'req> ProjectsListForUserParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             state: self.state, 

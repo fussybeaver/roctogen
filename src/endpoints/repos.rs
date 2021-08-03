@@ -218,6 +218,25 @@ pub enum ReposCompareCommitsError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Create an autolink reference for a repository](Repos::create_autolink_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ReposCreateAutolinkError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Validation failed")]
+    Status422(ValidationError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Create a commit comment](Repos::create_commit_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateCommitCommentError {
@@ -655,6 +674,25 @@ pub enum ReposDeleteAnEnvironmentError {
 
     // -- endpoint errors
 
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Delete an autolink reference from a repository](Repos::delete_autolink_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ReposDeleteAutolinkError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1116,6 +1154,25 @@ pub enum ReposGetAllTopicsError {
 /// Errors for the [Get apps with access to the protected branch](Repos::get_apps_with_access_to_protected_branch_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetAppsWithAccessToProtectedBranchError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get an autolink reference of a repository](Repos::get_autolink_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ReposGetAutolinkError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -1874,6 +1931,44 @@ pub enum ReposGetWebhookConfigForRepoError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Get a delivery for a repository webhook](Repos::get_webhook_delivery_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ReposGetWebhookDeliveryError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Bad Request")]
+    Status400(BasicError),
+    #[error("Validation failed")]
+    Status422(ValidationError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List all autolinks of a repository](Repos::list_autolinks_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ReposListAutolinksError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [List branches](Repos::list_branches_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListBranchesError {
@@ -2351,6 +2446,27 @@ pub enum ReposListTeamsError {
     Generic { code: u16 },
 }
 
+/// Errors for the [List deliveries for a repository webhook](Repos::list_webhook_deliveries_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ReposListWebhookDeliveriesError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Bad Request")]
+    Status400(BasicError),
+    #[error("Validation failed")]
+    Status422(ValidationError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [List repository webhooks](Repos::list_webhooks_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListWebhooksError {
@@ -2412,6 +2528,27 @@ pub enum ReposPingWebhookError {
 
     #[error("Resource not found")]
     Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Redeliver a delivery for a repository webhook](Repos::redeliver_webhook_delivery_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ReposRedeliverWebhookDeliveryError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Bad Request")]
+    Status400(BasicError),
+    #[error("Validation failed")]
+    Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -3006,7 +3143,7 @@ impl<'enc> From<&'enc PerPage> for ReposCompareCommitsParams {
 pub struct ReposGetAllTopicsParams {
     /// Page number of the results to fetch.
     page: Option<u16>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>
 }
 
@@ -3023,7 +3160,7 @@ impl ReposGetAllTopicsParams {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             page: self.page, 
@@ -3064,7 +3201,7 @@ impl<'req> ReposGetClonesParams<'req> {
 /// Query parameters for the [Get the combined status for a specific reference](Repos::get_combined_status_for_ref_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReposGetCombinedStatusForRefParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -3075,7 +3212,7 @@ impl ReposGetCombinedStatusForRefParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -3106,7 +3243,7 @@ impl<'enc> From<&'enc PerPage> for ReposGetCombinedStatusForRefParams {
 pub struct ReposGetCommitParams {
     /// Page number of the results to fetch.
     page: Option<u16>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>
 }
 
@@ -3123,7 +3260,7 @@ impl ReposGetCommitParams {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             page: self.page, 
@@ -3221,12 +3358,32 @@ impl<'req> ReposGetViewsParams<'req> {
     }
 }
 
+/// Query parameters for the [List all autolinks of a repository](Repos::list_autolinks_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct ReposListAutolinksParams {
+    /// Page number of the results to fetch.
+    page: Option<u16>
+}
+
+impl ReposListAutolinksParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Page number of the results to fetch.
+    pub fn page(self, page: u16) -> Self {
+        Self { 
+            page: Some(page),
+        }
+    }
+}
+
 /// Query parameters for the [List branches](Repos::list_branches_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReposListBranchesParams {
     /// Setting to `true` returns only protected branches. When set to `false`, only unprotected branches are returned. Omitting this parameter returns all branches.
     protected: Option<bool>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -3246,7 +3403,7 @@ impl ReposListBranchesParams {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             protected: self.protected, 
@@ -3279,7 +3436,7 @@ impl<'enc> From<&'enc PerPage> for ReposListBranchesParams {
 pub struct ReposListCollaboratorsParams<'req> {
     /// Filter collaborators returned by their affiliation. Can be one of:   \\* `outside`: All outside collaborators of an organization-owned repository.   \\* `direct`: All collaborators with permissions to an organization-owned repository, regardless of organization membership status.   \\* `all`: All collaborators the authenticated user can see.
     affiliation: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -3299,7 +3456,7 @@ impl<'req> ReposListCollaboratorsParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             affiliation: self.affiliation, 
@@ -3330,7 +3487,7 @@ impl<'enc> From<&'enc PerPage> for ReposListCollaboratorsParams<'enc> {
 /// Query parameters for the [List commit comments](Repos::list_comments_for_commit_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReposListCommentsForCommitParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -3341,7 +3498,7 @@ impl ReposListCommentsForCommitParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -3370,7 +3527,7 @@ impl<'enc> From<&'enc PerPage> for ReposListCommentsForCommitParams {
 /// Query parameters for the [List commit comments for a repository](Repos::list_commit_comments_for_repo_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReposListCommitCommentsForRepoParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -3381,7 +3538,7 @@ impl ReposListCommitCommentsForRepoParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -3410,7 +3567,7 @@ impl<'enc> From<&'enc PerPage> for ReposListCommitCommentsForRepoParams {
 /// Query parameters for the [List commit statuses for a reference](Repos::list_commit_statuses_for_ref_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReposListCommitStatusesForRefParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -3421,7 +3578,7 @@ impl ReposListCommitStatusesForRefParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -3460,7 +3617,7 @@ pub struct ReposListCommitsParams<'req> {
     since: Option<chrono::DateTime<chrono::Utc>>, 
     /// Only commits before this date will be returned. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     until: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -3536,7 +3693,7 @@ impl<'req> ReposListCommitsParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             sha: self.sha, 
@@ -3577,7 +3734,7 @@ impl<'enc> From<&'enc PerPage> for ReposListCommitsParams<'enc> {
 pub struct ReposListContributorsParams<'req> {
     /// Set to `1` or `true` to include anonymous contributors in results.
     anon: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -3597,7 +3754,7 @@ impl<'req> ReposListContributorsParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             anon: self.anon, 
@@ -3628,7 +3785,7 @@ impl<'enc> From<&'enc PerPage> for ReposListContributorsParams<'enc> {
 /// Query parameters for the [List deploy keys](Repos::list_deploy_keys_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReposListDeployKeysParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -3639,7 +3796,7 @@ impl ReposListDeployKeysParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -3668,7 +3825,7 @@ impl<'enc> From<&'enc PerPage> for ReposListDeployKeysParams {
 /// Query parameters for the [List deployment statuses](Repos::list_deployment_statuses_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReposListDeploymentStatusesParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -3679,7 +3836,7 @@ impl ReposListDeploymentStatusesParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -3716,7 +3873,7 @@ pub struct ReposListDeploymentsParams<'req> {
     task: Option<&'req str>, 
     /// The name of the environment that was deployed to (e.g., `staging` or `production`).
     environment: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -3775,7 +3932,7 @@ impl<'req> ReposListDeploymentsParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             sha: self.sha, 
@@ -3822,7 +3979,7 @@ pub struct ReposListForAuthenticatedUserParams<'req> {
     sort: Option<&'req str>, 
     /// Can be one of `asc` or `desc`. Default: `asc` when using `full_name`, otherwise `desc`
     direction: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>, 
@@ -3912,7 +4069,7 @@ impl<'req> ReposListForAuthenticatedUserParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             visibility: self.visibility, 
@@ -3991,7 +4148,7 @@ pub struct ReposListForOrgParams<'req> {
     sort: Option<&'req str>, 
     /// Can be one of `asc` or `desc`. Default: when using `full_name`: `asc`, otherwise `desc`
     direction: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -4035,7 +4192,7 @@ impl<'req> ReposListForOrgParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             _type: self._type, 
@@ -4076,7 +4233,7 @@ pub struct ReposListForUserParams<'req> {
     sort: Option<&'req str>, 
     /// Can be one of `asc` or `desc`. Default: `asc` when using `full_name`, otherwise `desc`
     direction: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -4120,7 +4277,7 @@ impl<'req> ReposListForUserParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             _type: self._type, 
@@ -4157,7 +4314,7 @@ impl<'enc> From<&'enc PerPage> for ReposListForUserParams<'enc> {
 pub struct ReposListForksParams<'req> {
     /// The sort order. Can be either `newest`, `oldest`, or `stargazers`.
     sort: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -4177,7 +4334,7 @@ impl<'req> ReposListForksParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             sort: self.sort, 
@@ -4208,7 +4365,7 @@ impl<'enc> From<&'enc PerPage> for ReposListForksParams<'enc> {
 /// Query parameters for the [List repository invitations](Repos::list_invitations_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReposListInvitationsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -4219,7 +4376,7 @@ impl ReposListInvitationsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -4248,7 +4405,7 @@ impl<'enc> From<&'enc PerPage> for ReposListInvitationsParams {
 /// Query parameters for the [List repository invitations for the authenticated user](Repos::list_invitations_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReposListInvitationsForAuthenticatedUserParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -4259,7 +4416,7 @@ impl ReposListInvitationsForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -4288,7 +4445,7 @@ impl<'enc> From<&'enc PerPage> for ReposListInvitationsForAuthenticatedUserParam
 /// Query parameters for the [List GitHub Pages builds](Repos::list_pages_builds_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReposListPagesBuildsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -4299,7 +4456,7 @@ impl ReposListPagesBuildsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -4348,7 +4505,7 @@ impl ReposListPublicParams {
 /// Query parameters for the [List pull requests associated with a commit](Repos::list_pull_requests_associated_with_commit_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReposListPullRequestsAssociatedWithCommitParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -4359,7 +4516,7 @@ impl ReposListPullRequestsAssociatedWithCommitParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -4388,7 +4545,7 @@ impl<'enc> From<&'enc PerPage> for ReposListPullRequestsAssociatedWithCommitPara
 /// Query parameters for the [List release assets](Repos::list_release_assets_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReposListReleaseAssetsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -4399,7 +4556,7 @@ impl ReposListReleaseAssetsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -4428,7 +4585,7 @@ impl<'enc> From<&'enc PerPage> for ReposListReleaseAssetsParams {
 /// Query parameters for the [List releases](Repos::list_releases_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReposListReleasesParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -4439,7 +4596,7 @@ impl ReposListReleasesParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -4468,7 +4625,7 @@ impl<'enc> From<&'enc PerPage> for ReposListReleasesParams {
 /// Query parameters for the [List repository tags](Repos::list_tags_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReposListTagsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -4479,7 +4636,7 @@ impl ReposListTagsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -4508,7 +4665,7 @@ impl<'enc> From<&'enc PerPage> for ReposListTagsParams {
 /// Query parameters for the [List repository teams](Repos::list_teams_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReposListTeamsParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -4519,7 +4676,7 @@ impl ReposListTeamsParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -4545,10 +4702,41 @@ impl<'enc> From<&'enc PerPage> for ReposListTeamsParams {
         }
     }
 }
+/// Query parameters for the [List deliveries for a repository webhook](Repos::list_webhook_deliveries_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct ReposListWebhookDeliveriesParams<'req> {
+    /// Results per page (max 100)
+    per_page: Option<u16>, 
+    /// Used for pagination: the starting delivery from which the page of deliveries is fetched. Refer to the `link` header for the next and previous page cursors.
+    cursor: Option<&'req str>
+}
+
+impl<'req> ReposListWebhookDeliveriesParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Results per page (max 100)
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self { 
+            per_page: Some(per_page),
+            cursor: self.cursor, 
+        }
+    }
+
+    /// Used for pagination: the starting delivery from which the page of deliveries is fetched. Refer to the `link` header for the next and previous page cursors.
+    pub fn cursor(self, cursor: &'req str) -> Self {
+        Self { 
+            per_page: self.per_page, 
+            cursor: Some(cursor),
+        }
+    }
+}
+
 /// Query parameters for the [List repository webhooks](Repos::list_webhooks_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReposListWebhooksParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -4559,7 +4747,7 @@ impl ReposListWebhooksParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -4589,7 +4777,7 @@ impl<'enc> From<&'enc PerPage> for ReposListWebhooksParams {
 #[derive(Default, Serialize)]
 pub struct ReposUploadReleaseAssetParams<'req> {
     
-    name: Option<&'req str>, 
+    name: &'req str, 
     
     label: Option<&'req str>
 }
@@ -4602,7 +4790,7 @@ impl<'req> ReposUploadReleaseAssetParams<'req> {
     
     pub fn name(self, name: &'req str) -> Self {
         Self { 
-            name: Some(name),
+            name: name,
             label: self.label, 
         }
     }
@@ -5490,6 +5678,85 @@ impl<'api> Repos<'api> {
                 500 => Err(ReposCompareCommitsError::Status500(crate::adapters::to_json(github_response)?)),
                 404 => Err(ReposCompareCommitsError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposCompareCommitsError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create an autolink reference for a repository
+    ///
+    /// Users with admin access to the repository can create an autolink.
+    /// 
+    /// [GitHub API docs for create_autolink](https://docs.github.com/v3/repos#create-an-autolink)
+    ///
+    /// ---
+    pub async fn create_autolink_async(&self, owner: &str, repo: &str, body: PostReposCreateAutolink) -> Result<Autolink, ReposCreateAutolinkError> {
+
+        let request_uri = format!("{}/repos/{}/{}/autolinks", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostReposCreateAutolink::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                422 => Err(ReposCreateAutolinkError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ReposCreateAutolinkError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create an autolink reference for a repository
+    ///
+    /// Users with admin access to the repository can create an autolink.
+    /// 
+    /// [GitHub API docs for create_autolink](https://docs.github.com/v3/repos#create-an-autolink)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn create_autolink(&self, owner: &str, repo: &str, body: PostReposCreateAutolink) -> Result<Autolink, ReposCreateAutolinkError> {
+
+        let request_uri = format!("{}/repos/{}/{}/autolinks", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostReposCreateAutolink::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                422 => Err(ReposCreateAutolinkError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(ReposCreateAutolinkError::Generic { code }),
             }
         }
     }
@@ -7441,6 +7708,89 @@ impl<'api> Repos<'api> {
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteAnEnvironmentError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete an autolink reference from a repository
+    ///
+    /// This deletes a single autolink reference by ID that was configured for the given repository.
+    /// 
+    /// Information about autolinks are only available to repository administrators.
+    /// 
+    /// [GitHub API docs for delete_autolink](https://docs.github.com/v3/repos#delete-autolink)
+    ///
+    /// ---
+    pub async fn delete_autolink_async(&self, owner: &str, repo: &str, autolink_id: i32) -> Result<(), ReposDeleteAutolinkError> {
+
+        let request_uri = format!("{}/repos/{}/{}/autolinks/{}", super::GITHUB_BASE_API_URL, owner, repo, autolink_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ReposDeleteAutolinkError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ReposDeleteAutolinkError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete an autolink reference from a repository
+    ///
+    /// This deletes a single autolink reference by ID that was configured for the given repository.
+    /// 
+    /// Information about autolinks are only available to repository administrators.
+    /// 
+    /// [GitHub API docs for delete_autolink](https://docs.github.com/v3/repos#delete-autolink)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn delete_autolink(&self, owner: &str, repo: &str, autolink_id: i32) -> Result<(), ReposDeleteAutolinkError> {
+
+        let request_uri = format!("{}/repos/{}/{}/autolinks/{}", super::GITHUB_BASE_API_URL, owner, repo, autolink_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ReposDeleteAutolinkError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(ReposDeleteAutolinkError::Generic { code }),
             }
         }
     }
@@ -9513,6 +9863,89 @@ impl<'api> Repos<'api> {
             match github_response.status_code() {
                 404 => Err(ReposGetAppsWithAccessToProtectedBranchError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetAppsWithAccessToProtectedBranchError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get an autolink reference of a repository
+    ///
+    /// This returns a single autolink reference by ID that was configured for the given repository.
+    /// 
+    /// Information about autolinks are only available to repository administrators.
+    /// 
+    /// [GitHub API docs for get_autolink](https://docs.github.com/v3/repos#get-autolink)
+    ///
+    /// ---
+    pub async fn get_autolink_async(&self, owner: &str, repo: &str, autolink_id: i32) -> Result<Autolink, ReposGetAutolinkError> {
+
+        let request_uri = format!("{}/repos/{}/{}/autolinks/{}", super::GITHUB_BASE_API_URL, owner, repo, autolink_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ReposGetAutolinkError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ReposGetAutolinkError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get an autolink reference of a repository
+    ///
+    /// This returns a single autolink reference by ID that was configured for the given repository.
+    /// 
+    /// Information about autolinks are only available to repository administrators.
+    /// 
+    /// [GitHub API docs for get_autolink](https://docs.github.com/v3/repos#get-autolink)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_autolink(&self, owner: &str, repo: &str, autolink_id: i32) -> Result<Autolink, ReposGetAutolinkError> {
+
+        let request_uri = format!("{}/repos/{}/{}/autolinks/{}", super::GITHUB_BASE_API_URL, owner, repo, autolink_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ReposGetAutolinkError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(ReposGetAutolinkError::Generic { code }),
             }
         }
     }
@@ -12854,6 +13287,177 @@ impl<'api> Repos<'api> {
 
     /// ---
     ///
+    /// # Get a delivery for a repository webhook
+    ///
+    /// Returns a delivery for a webhook configured in a repository.
+    /// 
+    /// [GitHub API docs for get_webhook_delivery](https://docs.github.com/rest/reference/repos#get-a-delivery-for-a-repository-webhook)
+    ///
+    /// ---
+    pub async fn get_webhook_delivery_async(&self, owner: &str, repo: &str, hook_id: i32, delivery_id: i32) -> Result<HookDelivery, ReposGetWebhookDeliveryError> {
+
+        let request_uri = format!("{}/repos/{}/{}/hooks/{}/deliveries/{}", super::GITHUB_BASE_API_URL, owner, repo, hook_id, delivery_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(ReposGetWebhookDeliveryError::Status400(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReposGetWebhookDeliveryError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ReposGetWebhookDeliveryError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get a delivery for a repository webhook
+    ///
+    /// Returns a delivery for a webhook configured in a repository.
+    /// 
+    /// [GitHub API docs for get_webhook_delivery](https://docs.github.com/rest/reference/repos#get-a-delivery-for-a-repository-webhook)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_webhook_delivery(&self, owner: &str, repo: &str, hook_id: i32, delivery_id: i32) -> Result<HookDelivery, ReposGetWebhookDeliveryError> {
+
+        let request_uri = format!("{}/repos/{}/{}/hooks/{}/deliveries/{}", super::GITHUB_BASE_API_URL, owner, repo, hook_id, delivery_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(ReposGetWebhookDeliveryError::Status400(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReposGetWebhookDeliveryError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(ReposGetWebhookDeliveryError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List all autolinks of a repository
+    ///
+    /// This returns a list of autolinks configured for the given repository.
+    /// 
+    /// Information about autolinks are only available to repository administrators.
+    /// 
+    /// [GitHub API docs for list_autolinks](https://docs.github.com/v3/repos#list-autolinks)
+    ///
+    /// ---
+    pub async fn list_autolinks_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListAutolinksParams>>) -> Result<Vec<Autolink>, ReposListAutolinksError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/autolinks", super::GITHUB_BASE_API_URL, owner, repo);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ReposListAutolinksError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List all autolinks of a repository
+    ///
+    /// This returns a list of autolinks configured for the given repository.
+    /// 
+    /// Information about autolinks are only available to repository administrators.
+    /// 
+    /// [GitHub API docs for list_autolinks](https://docs.github.com/v3/repos#list-autolinks)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_autolinks(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListAutolinksParams>>) -> Result<Vec<Autolink>, ReposListAutolinksError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/autolinks", super::GITHUB_BASE_API_URL, owner, repo);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: ReposListAutolinksParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ReposListAutolinksError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List branches
     /// 
     /// [GitHub API docs for list_branches](https://docs.github.com/rest/reference/repos#list-branches)
@@ -15156,6 +15760,96 @@ impl<'api> Repos<'api> {
 
     /// ---
     ///
+    /// # List deliveries for a repository webhook
+    ///
+    /// Returns a list of webhook deliveries for a webhook configured in a repository.
+    /// 
+    /// [GitHub API docs for list_webhook_deliveries](https://docs.github.com/rest/reference/repos#list-deliveries-for-a-repository-webhook)
+    ///
+    /// ---
+    pub async fn list_webhook_deliveries_async(&self, owner: &str, repo: &str, hook_id: i32, query_params: Option<impl Into<ReposListWebhookDeliveriesParams<'api>>>) -> Result<Vec<HookDeliveryItem>, ReposListWebhookDeliveriesError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/hooks/{}/deliveries", super::GITHUB_BASE_API_URL, owner, repo, hook_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(ReposListWebhookDeliveriesError::Status400(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReposListWebhookDeliveriesError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ReposListWebhookDeliveriesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List deliveries for a repository webhook
+    ///
+    /// Returns a list of webhook deliveries for a webhook configured in a repository.
+    /// 
+    /// [GitHub API docs for list_webhook_deliveries](https://docs.github.com/rest/reference/repos#list-deliveries-for-a-repository-webhook)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_webhook_deliveries(&self, owner: &str, repo: &str, hook_id: i32, query_params: Option<impl Into<ReposListWebhookDeliveriesParams<'api>>>) -> Result<Vec<HookDeliveryItem>, ReposListWebhookDeliveriesError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/hooks/{}/deliveries", super::GITHUB_BASE_API_URL, owner, repo, hook_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: ReposListWebhookDeliveriesParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(ReposListWebhookDeliveriesError::Status400(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReposListWebhookDeliveriesError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(ReposListWebhookDeliveriesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List repository webhooks
     /// 
     /// [GitHub API docs for list_webhooks](https://docs.github.com/rest/reference/repos#list-repository-webhooks)
@@ -15396,6 +16090,87 @@ impl<'api> Repos<'api> {
             match github_response.status_code() {
                 404 => Err(ReposPingWebhookError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposPingWebhookError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Redeliver a delivery for a repository webhook
+    ///
+    /// Redeliver a webhook delivery for a webhook configured in a repository.
+    /// 
+    /// [GitHub API docs for redeliver_webhook_delivery](https://docs.github.com/rest/reference/repos#redeliver-a-delivery-for-a-repository-webhook)
+    ///
+    /// ---
+    pub async fn redeliver_webhook_delivery_async(&self, owner: &str, repo: &str, hook_id: i32, delivery_id: i32) -> Result<HashMap<String, Value>, ReposRedeliverWebhookDeliveryError> {
+
+        let request_uri = format!("{}/repos/{}/{}/hooks/{}/deliveries/{}/attempts", super::GITHUB_BASE_API_URL, owner, repo, hook_id, delivery_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(ReposRedeliverWebhookDeliveryError::Status400(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ReposRedeliverWebhookDeliveryError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ReposRedeliverWebhookDeliveryError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Redeliver a delivery for a repository webhook
+    ///
+    /// Redeliver a webhook delivery for a webhook configured in a repository.
+    /// 
+    /// [GitHub API docs for redeliver_webhook_delivery](https://docs.github.com/rest/reference/repos#redeliver-a-delivery-for-a-repository-webhook)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn redeliver_webhook_delivery(&self, owner: &str, repo: &str, hook_id: i32, delivery_id: i32) -> Result<HashMap<String, Value>, ReposRedeliverWebhookDeliveryError> {
+
+        let request_uri = format!("{}/repos/{}/{}/hooks/{}/deliveries/{}/attempts", super::GITHUB_BASE_API_URL, owner, repo, hook_id, delivery_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(ReposRedeliverWebhookDeliveryError::Status400(crate::adapters::to_json(github_response)?)),
+                422 => Err(ReposRedeliverWebhookDeliveryError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(ReposRedeliverWebhookDeliveryError::Generic { code }),
             }
         }
     }
@@ -17725,14 +18500,12 @@ impl<'api> Repos<'api> {
     /// [GitHub API docs for upload_release_asset](https://docs.github.com/rest/reference/repos#upload-a-release-asset)
     ///
     /// ---
-    pub async fn upload_release_asset_async(&self, owner: &str, repo: &str, release_id: i32, query_params: Option<impl Into<ReposUploadReleaseAssetParams<'api>>>, body: String) -> Result<ReleaseAsset, ReposUploadReleaseAssetError> {
+    pub async fn upload_release_asset_async(&self, owner: &str, repo: &str, release_id: i32, query_params: impl Into<ReposUploadReleaseAssetParams<'api>>, body: String) -> Result<ReleaseAsset, ReposUploadReleaseAssetError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/releases/{}/assets", super::GITHUB_BASE_API_URL, owner, repo, release_id);
 
-        if let Some(params) = query_params {
-            request_uri.push_str("?");
-            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
-        }
+        request_uri.push_str("?");
+        request_uri.push_str(&serde_urlencoded::to_string(query_params.into())?);
 
         let req = GitHubRequest {
             uri: request_uri,
@@ -17785,15 +18558,13 @@ impl<'api> Repos<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn upload_release_asset(&self, owner: &str, repo: &str, release_id: i32, query_params: Option<impl Into<ReposUploadReleaseAssetParams<'api>>>, body: String) -> Result<ReleaseAsset, ReposUploadReleaseAssetError> {
+    pub fn upload_release_asset(&self, owner: &str, repo: &str, release_id: i32, query_params: impl Into<ReposUploadReleaseAssetParams<'api>>, body: String) -> Result<ReleaseAsset, ReposUploadReleaseAssetError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/releases/{}/assets", super::GITHUB_BASE_API_URL, owner, repo, release_id);
 
-        if let Some(params) = query_params {
-            request_uri.push_str("?");
-            let qp: ReposUploadReleaseAssetParams = params.into();
-            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
-        }
+        request_uri.push_str("?");
+        let qp: ReposUploadReleaseAssetParams = query_params.into();
+        request_uri.push_str(&serde_urlencoded::to_string(qp)?);
 
         let req = GitHubRequest {
             uri: request_uri,

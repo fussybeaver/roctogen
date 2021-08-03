@@ -828,7 +828,7 @@ impl<'req> UsersGetContextForUserParams<'req> {
 pub struct UsersListParams {
     /// A user ID. Only return users with an ID greater than this ID.
     since: Option<i32>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>
 }
 
@@ -845,7 +845,7 @@ impl UsersListParams {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             since: self.since, 
@@ -857,7 +857,7 @@ impl UsersListParams {
 /// Query parameters for the [List email addresses for the authenticated user](Users::list_emails_for_authenticated_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct UsersListEmailsForAuthenticatedParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -868,7 +868,7 @@ impl UsersListEmailsForAuthenticatedParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -897,7 +897,7 @@ impl<'enc> From<&'enc PerPage> for UsersListEmailsForAuthenticatedParams {
 /// Query parameters for the [List the people the authenticated user follows](Users::list_followed_by_authenticated_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct UsersListFollowedByAuthenticatedParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -908,7 +908,7 @@ impl UsersListFollowedByAuthenticatedParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -937,7 +937,7 @@ impl<'enc> From<&'enc PerPage> for UsersListFollowedByAuthenticatedParams {
 /// Query parameters for the [List followers of the authenticated user](Users::list_followers_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct UsersListFollowersForAuthenticatedUserParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -948,7 +948,7 @@ impl UsersListFollowersForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -977,7 +977,7 @@ impl<'enc> From<&'enc PerPage> for UsersListFollowersForAuthenticatedUserParams 
 /// Query parameters for the [List followers of a user](Users::list_followers_for_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct UsersListFollowersForUserParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -988,7 +988,7 @@ impl UsersListFollowersForUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1017,7 +1017,7 @@ impl<'enc> From<&'enc PerPage> for UsersListFollowersForUserParams {
 /// Query parameters for the [List the people a user follows](Users::list_following_for_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct UsersListFollowingForUserParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1028,7 +1028,7 @@ impl UsersListFollowingForUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1057,7 +1057,7 @@ impl<'enc> From<&'enc PerPage> for UsersListFollowingForUserParams {
 /// Query parameters for the [List GPG keys for the authenticated user](Users::list_gpg_keys_for_authenticated_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct UsersListGpgKeysForAuthenticatedParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1068,7 +1068,7 @@ impl UsersListGpgKeysForAuthenticatedParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1097,7 +1097,7 @@ impl<'enc> From<&'enc PerPage> for UsersListGpgKeysForAuthenticatedParams {
 /// Query parameters for the [List GPG keys for a user](Users::list_gpg_keys_for_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct UsersListGpgKeysForUserParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1108,7 +1108,7 @@ impl UsersListGpgKeysForUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1137,7 +1137,7 @@ impl<'enc> From<&'enc PerPage> for UsersListGpgKeysForUserParams {
 /// Query parameters for the [List public email addresses for the authenticated user](Users::list_public_emails_for_authenticated_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct UsersListPublicEmailsForAuthenticatedParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1148,7 +1148,7 @@ impl UsersListPublicEmailsForAuthenticatedParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1177,7 +1177,7 @@ impl<'enc> From<&'enc PerPage> for UsersListPublicEmailsForAuthenticatedParams {
 /// Query parameters for the [List public keys for a user](Users::list_public_keys_for_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct UsersListPublicKeysForUserParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1188,7 +1188,7 @@ impl UsersListPublicKeysForUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1217,7 +1217,7 @@ impl<'enc> From<&'enc PerPage> for UsersListPublicKeysForUserParams {
 /// Query parameters for the [List public SSH keys for the authenticated user](Users::list_public_ssh_keys_for_authenticated_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct UsersListPublicSshKeysForAuthenticatedParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1228,7 +1228,7 @@ impl UsersListPublicSshKeysForAuthenticatedParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),

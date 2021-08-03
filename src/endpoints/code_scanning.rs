@@ -270,7 +270,7 @@ impl<'req> CodeScanningDeleteAnalysisParams<'req> {
 pub struct CodeScanningListAlertInstancesParams {
     /// Page number of the results to fetch.
     page: Option<u16>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// The Git reference for the results you want to list. The `ref` for a branch can be formatted either as `refs/heads/<branch name>` or simply `<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
     git_ref: Option<CodeScanningRef>
@@ -290,7 +290,7 @@ impl CodeScanningListAlertInstancesParams {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             page: self.page, 
@@ -327,7 +327,7 @@ pub struct CodeScanningListAlertsForRepoParams {
     tool_guid: Option<CodeScanningAnalysisToolGuid>, 
     /// Page number of the results to fetch.
     page: Option<u16>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// The Git reference for the results you want to list. The `ref` for a branch can be formatted either as `refs/heads/<branch name>` or simply `<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
     git_ref: Option<CodeScanningRef>, 
@@ -376,7 +376,7 @@ impl CodeScanningListAlertsForRepoParams {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             tool_name: self.tool_name, 
@@ -431,7 +431,7 @@ pub struct CodeScanningListRecentAnalysesParams {
     tool_guid: Option<CodeScanningAnalysisToolGuid>, 
     /// Page number of the results to fetch.
     page: Option<u16>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// The Git reference for the analyses you want to list. The `ref` for a branch can be formatted either as `refs/heads/<branch name>` or simply `<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
     git_ref: Option<CodeScanningRef>, 
@@ -480,7 +480,7 @@ impl CodeScanningListRecentAnalysesParams {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             tool_name: self.tool_name, 

@@ -403,6 +403,27 @@ pub enum AppsGetWebhookConfigForAppError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Get a delivery for an app webhook](Apps::get_webhook_delivery_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum AppsGetWebhookDeliveryError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Bad Request")]
+    Status400(BasicError),
+    #[error("Validation failed")]
+    Status422(ValidationError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [List accounts for a plan](Apps::list_accounts_for_plan_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsListAccountsForPlanError {
@@ -617,6 +638,48 @@ pub enum AppsListSubscriptionsForAuthenticatedUserStubbedError {
     Generic { code: u16 },
 }
 
+/// Errors for the [List deliveries for an app webhook](Apps::list_webhook_deliveries_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum AppsListWebhookDeliveriesError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Bad Request")]
+    Status400(BasicError),
+    #[error("Validation failed")]
+    Status422(ValidationError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Redeliver a delivery for an app webhook](Apps::redeliver_webhook_delivery_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum AppsRedeliverWebhookDeliveryError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Bad Request")]
+    Status400(BasicError),
+    #[error("Validation failed")]
+    Status422(ValidationError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Remove a repository from an app installation](Apps::remove_repo_from_installation_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsRemoveRepoFromInstallationError {
@@ -815,7 +878,7 @@ pub struct AppsListAccountsForPlanParams<'req> {
     sort: Option<&'req str>, 
     /// To return the oldest accounts first, set to `asc`. Can be one of `asc` or `desc`. Ignored without the `sort` parameter.
     direction: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -846,7 +909,7 @@ impl<'req> AppsListAccountsForPlanParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             sort: self.sort, 
@@ -883,7 +946,7 @@ pub struct AppsListAccountsForPlanStubbedParams<'req> {
     sort: Option<&'req str>, 
     /// To return the oldest accounts first, set to `asc`. Can be one of `asc` or `desc`. Ignored without the `sort` parameter.
     direction: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -914,7 +977,7 @@ impl<'req> AppsListAccountsForPlanStubbedParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             sort: self.sort, 
@@ -947,7 +1010,7 @@ impl<'enc> From<&'enc PerPage> for AppsListAccountsForPlanStubbedParams<'enc> {
 /// Query parameters for the [List repositories accessible to the user access token](Apps::list_installation_repos_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct AppsListInstallationReposForAuthenticatedUserParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -958,7 +1021,7 @@ impl AppsListInstallationReposForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -987,7 +1050,7 @@ impl<'enc> From<&'enc PerPage> for AppsListInstallationReposForAuthenticatedUser
 /// Query parameters for the [List installations for the authenticated app](Apps::list_installations_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct AppsListInstallationsParams<'req> {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>, 
@@ -1002,7 +1065,7 @@ impl<'req> AppsListInstallationsParams<'req> {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1055,7 +1118,7 @@ impl<'enc> From<&'enc PerPage> for AppsListInstallationsParams<'enc> {
 /// Query parameters for the [List app installations accessible to the user access token](Apps::list_installations_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct AppsListInstallationsForAuthenticatedUserParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1066,7 +1129,7 @@ impl AppsListInstallationsForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1095,7 +1158,7 @@ impl<'enc> From<&'enc PerPage> for AppsListInstallationsForAuthenticatedUserPara
 /// Query parameters for the [List plans](Apps::list_plans_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct AppsListPlansParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1106,7 +1169,7 @@ impl AppsListPlansParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1135,7 +1198,7 @@ impl<'enc> From<&'enc PerPage> for AppsListPlansParams {
 /// Query parameters for the [List plans (stubbed)](Apps::list_plans_stubbed_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct AppsListPlansStubbedParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1146,7 +1209,7 @@ impl AppsListPlansStubbedParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1175,7 +1238,7 @@ impl<'enc> From<&'enc PerPage> for AppsListPlansStubbedParams {
 /// Query parameters for the [List repositories accessible to the app installation](Apps::list_repos_accessible_to_installation_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct AppsListReposAccessibleToInstallationParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1186,7 +1249,7 @@ impl AppsListReposAccessibleToInstallationParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1215,7 +1278,7 @@ impl<'enc> From<&'enc PerPage> for AppsListReposAccessibleToInstallationParams {
 /// Query parameters for the [List subscriptions for the authenticated user](Apps::list_subscriptions_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct AppsListSubscriptionsForAuthenticatedUserParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1226,7 +1289,7 @@ impl AppsListSubscriptionsForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1255,7 +1318,7 @@ impl<'enc> From<&'enc PerPage> for AppsListSubscriptionsForAuthenticatedUserPara
 /// Query parameters for the [List subscriptions for the authenticated user (stubbed)](Apps::list_subscriptions_for_authenticated_user_stubbed_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct AppsListSubscriptionsForAuthenticatedUserStubbedParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1266,7 +1329,7 @@ impl AppsListSubscriptionsForAuthenticatedUserStubbedParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1292,6 +1355,37 @@ impl<'enc> From<&'enc PerPage> for AppsListSubscriptionsForAuthenticatedUserStub
         }
     }
 }
+/// Query parameters for the [List deliveries for an app webhook](Apps::list_webhook_deliveries_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct AppsListWebhookDeliveriesParams<'req> {
+    /// Results per page (max 100)
+    per_page: Option<u16>, 
+    /// Used for pagination: the starting delivery from which the page of deliveries is fetched. Refer to the `link` header for the next and previous page cursors.
+    cursor: Option<&'req str>
+}
+
+impl<'req> AppsListWebhookDeliveriesParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Results per page (max 100)
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self { 
+            per_page: Some(per_page),
+            cursor: self.cursor, 
+        }
+    }
+
+    /// Used for pagination: the starting delivery from which the page of deliveries is fetched. Refer to the `link` header for the next and previous page cursors.
+    pub fn cursor(self, cursor: &'req str) -> Self {
+        Self { 
+            per_page: self.per_page, 
+            cursor: Some(cursor),
+        }
+    }
+}
+
 
 impl<'api> Apps<'api> {
     /// ---
@@ -2816,6 +2910,91 @@ impl<'api> Apps<'api> {
 
     /// ---
     ///
+    /// # Get a delivery for an app webhook
+    ///
+    /// Returns a delivery for the webhook configured for a GitHub App.
+    /// 
+    /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
+    /// 
+    /// [GitHub API docs for get_webhook_delivery](https://docs.github.com/rest/reference/apps#get-a-delivery-for-an-app-webhook)
+    ///
+    /// ---
+    pub async fn get_webhook_delivery_async(&self, delivery_id: i32) -> Result<HookDelivery, AppsGetWebhookDeliveryError> {
+
+        let request_uri = format!("{}/app/hook/deliveries/{}", super::GITHUB_BASE_API_URL, delivery_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(AppsGetWebhookDeliveryError::Status400(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(AppsGetWebhookDeliveryError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(AppsGetWebhookDeliveryError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get a delivery for an app webhook
+    ///
+    /// Returns a delivery for the webhook configured for a GitHub App.
+    /// 
+    /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
+    /// 
+    /// [GitHub API docs for get_webhook_delivery](https://docs.github.com/rest/reference/apps#get-a-delivery-for-an-app-webhook)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_webhook_delivery(&self, delivery_id: i32) -> Result<HookDelivery, AppsGetWebhookDeliveryError> {
+
+        let request_uri = format!("{}/app/hook/deliveries/{}", super::GITHUB_BASE_API_URL, delivery_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(AppsGetWebhookDeliveryError::Status400(crate::adapters::to_json(github_response)?)),
+                422 => Err(AppsGetWebhookDeliveryError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(AppsGetWebhookDeliveryError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List accounts for a plan
     ///
     /// Returns user and organization accounts associated with the specified plan, including free plans. For per-seat pricing, you see the list of accounts that have purchased the plan, including the number of seats purchased. When someone submits a plan change that won't be processed until the end of their billing cycle, you will also see the upcoming pending change.
@@ -3774,6 +3953,185 @@ impl<'api> Apps<'api> {
                 304 => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Status304),
                 401 => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List deliveries for an app webhook
+    ///
+    /// Returns a list of webhook deliveries for the webhook configured for a GitHub App.
+    /// 
+    /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
+    /// 
+    /// [GitHub API docs for list_webhook_deliveries](https://docs.github.com/rest/reference/apps#list-deliveries-for-an-app-webhook)
+    ///
+    /// ---
+    pub async fn list_webhook_deliveries_async(&self, query_params: Option<impl Into<AppsListWebhookDeliveriesParams<'api>>>) -> Result<Vec<HookDeliveryItem>, AppsListWebhookDeliveriesError> {
+
+        let mut request_uri = format!("{}/app/hook/deliveries", super::GITHUB_BASE_API_URL);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(AppsListWebhookDeliveriesError::Status400(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(AppsListWebhookDeliveriesError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(AppsListWebhookDeliveriesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List deliveries for an app webhook
+    ///
+    /// Returns a list of webhook deliveries for the webhook configured for a GitHub App.
+    /// 
+    /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
+    /// 
+    /// [GitHub API docs for list_webhook_deliveries](https://docs.github.com/rest/reference/apps#list-deliveries-for-an-app-webhook)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_webhook_deliveries(&self, query_params: Option<impl Into<AppsListWebhookDeliveriesParams<'api>>>) -> Result<Vec<HookDeliveryItem>, AppsListWebhookDeliveriesError> {
+
+        let mut request_uri = format!("{}/app/hook/deliveries", super::GITHUB_BASE_API_URL);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: AppsListWebhookDeliveriesParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(AppsListWebhookDeliveriesError::Status400(crate::adapters::to_json(github_response)?)),
+                422 => Err(AppsListWebhookDeliveriesError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(AppsListWebhookDeliveriesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Redeliver a delivery for an app webhook
+    ///
+    /// Redeliver a delivery for the webhook configured for a GitHub App.
+    /// 
+    /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
+    /// 
+    /// [GitHub API docs for redeliver_webhook_delivery](https://docs.github.com/rest/reference/apps#redeliver-a-delivery-for-an-app-webhook)
+    ///
+    /// ---
+    pub async fn redeliver_webhook_delivery_async(&self, delivery_id: i32) -> Result<HashMap<String, Value>, AppsRedeliverWebhookDeliveryError> {
+
+        let request_uri = format!("{}/app/hook/deliveries/{}/attempts", super::GITHUB_BASE_API_URL, delivery_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(AppsRedeliverWebhookDeliveryError::Status400(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(AppsRedeliverWebhookDeliveryError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(AppsRedeliverWebhookDeliveryError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Redeliver a delivery for an app webhook
+    ///
+    /// Redeliver a delivery for the webhook configured for a GitHub App.
+    /// 
+    /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
+    /// 
+    /// [GitHub API docs for redeliver_webhook_delivery](https://docs.github.com/rest/reference/apps#redeliver-a-delivery-for-an-app-webhook)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn redeliver_webhook_delivery(&self, delivery_id: i32) -> Result<HashMap<String, Value>, AppsRedeliverWebhookDeliveryError> {
+
+        let request_uri = format!("{}/app/hook/deliveries/{}/attempts", super::GITHUB_BASE_API_URL, delivery_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(AppsRedeliverWebhookDeliveryError::Status400(crate::adapters::to_json(github_response)?)),
+                422 => Err(AppsRedeliverWebhookDeliveryError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(AppsRedeliverWebhookDeliveryError::Generic { code }),
             }
         }
     }

@@ -1252,7 +1252,7 @@ pub enum TeamsUpdateLegacyError {
 /// Query parameters for the [List teams](Teams::list_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct TeamsListParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1263,7 +1263,7 @@ impl TeamsListParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1292,7 +1292,7 @@ impl<'enc> From<&'enc PerPage> for TeamsListParams {
 /// Query parameters for the [List child teams](Teams::list_child_in_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct TeamsListChildInOrgParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1303,7 +1303,7 @@ impl TeamsListChildInOrgParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1332,7 +1332,7 @@ impl<'enc> From<&'enc PerPage> for TeamsListChildInOrgParams {
 /// Query parameters for the [List child teams (Legacy)](Teams::list_child_legacy_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct TeamsListChildLegacyParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1343,7 +1343,7 @@ impl TeamsListChildLegacyParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1374,7 +1374,7 @@ impl<'enc> From<&'enc PerPage> for TeamsListChildLegacyParams {
 pub struct TeamsListDiscussionCommentsInOrgParams<'req> {
     /// One of `asc` (ascending) or `desc` (descending).
     direction: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1394,7 +1394,7 @@ impl<'req> TeamsListDiscussionCommentsInOrgParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             direction: self.direction, 
@@ -1427,7 +1427,7 @@ impl<'enc> From<&'enc PerPage> for TeamsListDiscussionCommentsInOrgParams<'enc> 
 pub struct TeamsListDiscussionCommentsLegacyParams<'req> {
     /// One of `asc` (ascending) or `desc` (descending).
     direction: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1447,7 +1447,7 @@ impl<'req> TeamsListDiscussionCommentsLegacyParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             direction: self.direction, 
@@ -1480,7 +1480,7 @@ impl<'enc> From<&'enc PerPage> for TeamsListDiscussionCommentsLegacyParams<'enc>
 pub struct TeamsListDiscussionsInOrgParams<'req> {
     /// One of `asc` (ascending) or `desc` (descending).
     direction: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>, 
@@ -1503,7 +1503,7 @@ impl<'req> TeamsListDiscussionsInOrgParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             direction: self.direction, 
@@ -1548,7 +1548,7 @@ impl<'enc> From<&'enc PerPage> for TeamsListDiscussionsInOrgParams<'enc> {
 pub struct TeamsListDiscussionsLegacyParams<'req> {
     /// One of `asc` (ascending) or `desc` (descending).
     direction: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1568,7 +1568,7 @@ impl<'req> TeamsListDiscussionsLegacyParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             direction: self.direction, 
@@ -1599,7 +1599,7 @@ impl<'enc> From<&'enc PerPage> for TeamsListDiscussionsLegacyParams<'enc> {
 /// Query parameters for the [List teams for the authenticated user](Teams::list_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct TeamsListForAuthenticatedUserParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1610,7 +1610,7 @@ impl TeamsListForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1639,7 +1639,7 @@ impl<'enc> From<&'enc PerPage> for TeamsListForAuthenticatedUserParams {
 /// Query parameters for the [List IdP groups for an organization](Teams::list_idp_groups_for_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct TeamsListIdpGroupsForOrgParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page token
     page: Option<u16>
@@ -1650,7 +1650,7 @@ impl TeamsListIdpGroupsForOrgParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1681,7 +1681,7 @@ impl<'enc> From<&'enc PerPage> for TeamsListIdpGroupsForOrgParams {
 pub struct TeamsListMembersInOrgParams<'req> {
     /// Filters members returned by their role in the team. Can be one of:   \\* `member` - normal members of the team.   \\* `maintainer` - team maintainers.   \\* `all` - all members of the team.
     role: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1701,7 +1701,7 @@ impl<'req> TeamsListMembersInOrgParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             role: self.role, 
@@ -1734,7 +1734,7 @@ impl<'enc> From<&'enc PerPage> for TeamsListMembersInOrgParams<'enc> {
 pub struct TeamsListMembersLegacyParams<'req> {
     /// Filters members returned by their role in the team. Can be one of:   \\* `member` - normal members of the team.   \\* `maintainer` - team maintainers.   \\* `all` - all members of the team.
     role: Option<&'req str>, 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1754,7 +1754,7 @@ impl<'req> TeamsListMembersLegacyParams<'req> {
         }
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             role: self.role, 
@@ -1785,7 +1785,7 @@ impl<'enc> From<&'enc PerPage> for TeamsListMembersLegacyParams<'enc> {
 /// Query parameters for the [List pending team invitations](Teams::list_pending_invitations_in_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct TeamsListPendingInvitationsInOrgParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1796,7 +1796,7 @@ impl TeamsListPendingInvitationsInOrgParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1825,7 +1825,7 @@ impl<'enc> From<&'enc PerPage> for TeamsListPendingInvitationsInOrgParams {
 /// Query parameters for the [List pending team invitations (Legacy)](Teams::list_pending_invitations_legacy_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct TeamsListPendingInvitationsLegacyParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1836,7 +1836,7 @@ impl TeamsListPendingInvitationsLegacyParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1865,7 +1865,7 @@ impl<'enc> From<&'enc PerPage> for TeamsListPendingInvitationsLegacyParams {
 /// Query parameters for the [List team projects](Teams::list_projects_in_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct TeamsListProjectsInOrgParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1876,7 +1876,7 @@ impl TeamsListProjectsInOrgParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1905,7 +1905,7 @@ impl<'enc> From<&'enc PerPage> for TeamsListProjectsInOrgParams {
 /// Query parameters for the [List team projects (Legacy)](Teams::list_projects_legacy_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct TeamsListProjectsLegacyParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1916,7 +1916,7 @@ impl TeamsListProjectsLegacyParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1945,7 +1945,7 @@ impl<'enc> From<&'enc PerPage> for TeamsListProjectsLegacyParams {
 /// Query parameters for the [List team repositories](Teams::list_repos_in_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct TeamsListReposInOrgParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1956,7 +1956,7 @@ impl TeamsListReposInOrgParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1985,7 +1985,7 @@ impl<'enc> From<&'enc PerPage> for TeamsListReposInOrgParams {
 /// Query parameters for the [List team repositories (Legacy)](Teams::list_repos_legacy_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct TeamsListReposLegacyParams {
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
@@ -1996,7 +1996,7 @@ impl TeamsListReposLegacyParams {
         Self::default()
     }
 
-    /// Results per page (max 100).
+    /// Results per page (max 100)
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
