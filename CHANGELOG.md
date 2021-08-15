@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.10.0 (15/08/2021)
+- [**closed**] Update sync with upstream [#46](https://github.com/fussybeaver/roctogen/pull/46)
+
+---
+
 ## v0.9.0 (03/08/2021)
 - [**closed**] Update from upstream [#43](https://github.com/fussybeaver/roctogen/pull/43)
 
