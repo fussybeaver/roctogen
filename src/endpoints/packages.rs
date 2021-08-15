@@ -541,7 +541,7 @@ impl<'api> Packages<'api> {
     ///
     /// Deletes a package owned by the authenticated user. You cannot delete a public package if any version of the package has more than 5,000 downloads. In this scenario, contact GitHub support for further assistance.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:delete` scope.
+    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:delete` scopes.
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for delete_package_for_authenticated_user](https://docs.github.com/rest/reference/packages#delete-a-package-for-the-authenticated-user)
@@ -585,7 +585,7 @@ impl<'api> Packages<'api> {
     ///
     /// Deletes a package owned by the authenticated user. You cannot delete a public package if any version of the package has more than 5,000 downloads. In this scenario, contact GitHub support for further assistance.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:delete` scope.
+    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:delete` scopes.
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for delete_package_for_authenticated_user](https://docs.github.com/rest/reference/packages#delete-a-package-for-the-authenticated-user)
@@ -630,7 +630,7 @@ impl<'api> Packages<'api> {
     ///
     /// Deletes an entire package in an organization. You cannot delete a public package if any version of the package has more than 5,000 downloads. In this scenario, contact GitHub support for further assistance.
     /// 
-    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` scope. In addition:
+    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:delete` scopes. In addition:
     /// - If `package_type` is not `container`, your token must also include the `repo` scope.
     /// - If `package_type` is `container`, you must also have admin permissions to the container you want to delete.
     /// 
@@ -675,7 +675,7 @@ impl<'api> Packages<'api> {
     ///
     /// Deletes an entire package in an organization. You cannot delete a public package if any version of the package has more than 5,000 downloads. In this scenario, contact GitHub support for further assistance.
     /// 
-    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` scope. In addition:
+    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:delete` scopes. In addition:
     /// - If `package_type` is not `container`, your token must also include the `repo` scope.
     /// - If `package_type` is `container`, you must also have admin permissions to the container you want to delete.
     /// 
@@ -721,7 +721,7 @@ impl<'api> Packages<'api> {
     ///
     /// Deletes a specific package version for a package owned by the authenticated user.  If the package is public and the package version has more than 5,000 downloads, you cannot delete the package version. In this scenario, contact GitHub support for further assistance.
     /// 
-    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` scope.
+    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:delete` scopes.
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for delete_package_version_for_authenticated_user](https://docs.github.com/rest/reference/packages#delete-a-package-version-for-the-authenticated-user)
@@ -765,7 +765,7 @@ impl<'api> Packages<'api> {
     ///
     /// Deletes a specific package version for a package owned by the authenticated user.  If the package is public and the package version has more than 5,000 downloads, you cannot delete the package version. In this scenario, contact GitHub support for further assistance.
     /// 
-    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` scope.
+    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:delete` scopes.
     /// If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for delete_package_version_for_authenticated_user](https://docs.github.com/rest/reference/packages#delete-a-package-version-for-the-authenticated-user)
@@ -810,7 +810,7 @@ impl<'api> Packages<'api> {
     ///
     /// Deletes a specific package version in an organization. If the package is public and the package version has more than 5,000 downloads, you cannot delete the package version. In this scenario, contact GitHub support for further assistance.
     /// 
-    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` scope. In addition:
+    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:delete` scopes. In addition:
     /// - If `package_type` is not `container`, your token must also include the `repo` scope.
     /// - If `package_type` is `container`, you must also have admin permissions to the container you want to delete.
     /// 
@@ -855,7 +855,7 @@ impl<'api> Packages<'api> {
     ///
     /// Deletes a specific package version in an organization. If the package is public and the package version has more than 5,000 downloads, you cannot delete the package version. In this scenario, contact GitHub support for further assistance.
     /// 
-    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` scope. In addition:
+    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:delete` scopes. In addition:
     /// - If `package_type` is not `container`, your token must also include the `repo` scope.
     /// - If `package_type` is `container`, you must also have admin permissions to the container you want to delete.
     /// 
@@ -1688,7 +1688,7 @@ impl<'api> Packages<'api> {
     ///   - The package was deleted within the last 30 days.
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scope. If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scopes. If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for restore_package_for_authenticated_user](https://docs.github.com/rest/reference/packages#restore-a-package-for-the-authenticated-user)
     ///
@@ -1739,7 +1739,7 @@ impl<'api> Packages<'api> {
     ///   - The package was deleted within the last 30 days.
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scope. If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scopes. If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for restore_package_for_authenticated_user](https://docs.github.com/rest/reference/packages#restore-a-package-for-the-authenticated-user)
     ///
@@ -1792,7 +1792,7 @@ impl<'api> Packages<'api> {
     ///   - The package was deleted within the last 30 days.
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
-    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:write` scope. In addition:
+    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:write` scopes. In addition:
     /// - If `package_type` is not `container`, your token must also include the `repo` scope.
     /// - If `package_type` is `container`, you must also have admin permissions to the container that you want to restore.
     /// 
@@ -1845,7 +1845,7 @@ impl<'api> Packages<'api> {
     ///   - The package was deleted within the last 30 days.
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
-    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:write` scope. In addition:
+    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:write` scopes. In addition:
     /// - If `package_type` is not `container`, your token must also include the `repo` scope.
     /// - If `package_type` is `container`, you must also have admin permissions to the container that you want to restore.
     /// 
@@ -1900,7 +1900,7 @@ impl<'api> Packages<'api> {
     ///   - The package was deleted within the last 30 days.
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scope. If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scopes. If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for restore_package_version_for_authenticated_user](https://docs.github.com/rest/reference/packages#restore-a-package-version-for-the-authenticated-user)
     ///
@@ -1947,7 +1947,7 @@ impl<'api> Packages<'api> {
     ///   - The package was deleted within the last 30 days.
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scope. If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scopes. If `package_type` is not `container`, your token must also include the `repo` scope.
     /// 
     /// [GitHub API docs for restore_package_version_for_authenticated_user](https://docs.github.com/rest/reference/packages#restore-a-package-version-for-the-authenticated-user)
     ///
@@ -1995,7 +1995,7 @@ impl<'api> Packages<'api> {
     ///   - The package was deleted within the last 30 days.
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
-    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:write` scope. In addition:
+    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:write` scopes. In addition:
     /// - If `package_type` is not `container`, your token must also include the `repo` scope.
     /// - If `package_type` is `container`, you must also have admin permissions to the container that you want to restore.
     /// 
@@ -2044,7 +2044,7 @@ impl<'api> Packages<'api> {
     ///   - The package was deleted within the last 30 days.
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
-    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:write` scope. In addition:
+    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:write` scopes. In addition:
     /// - If `package_type` is not `container`, your token must also include the `repo` scope.
     /// - If `package_type` is `container`, you must also have admin permissions to the container that you want to restore.
     /// 

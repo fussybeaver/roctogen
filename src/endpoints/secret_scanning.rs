@@ -102,7 +102,7 @@ pub enum SecretScanningUpdateAlertError {
 pub struct SecretScanningListAlertsForRepoParams<'req> {
     /// Set to `open` or `resolved` to only list secret scanning alerts in a specific state.
     state: Option<&'req str>, 
-    /// A comma separated list of secret types to return. By default all secret types are returned.
+    /// A comma separated list of secret types to return. By default all secret types are returned. See \"[About secret scanning for private repositories](https://docs.github.com/code-security/secret-security/about-secret-scanning#about-secret-scanning-for-private-repositories)\" for a complete list of secret types (API slug).
     secret_type: Option<&'req str>, 
     /// Page number of the results to fetch.
     page: Option<u16>, 
@@ -125,7 +125,7 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
         }
     }
 
-    /// A comma separated list of secret types to return. By default all secret types are returned.
+    /// A comma separated list of secret types to return. By default all secret types are returned. See \"[About secret scanning for private repositories](https://docs.github.com/code-security/secret-security/about-secret-scanning#about-secret-scanning-for-private-repositories)\" for a complete list of secret types (API slug).
     pub fn secret_type(self, secret_type: &'req str) -> Self {
         Self { 
             state: self.state, 

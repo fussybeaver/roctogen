@@ -19,7 +19,7 @@
 //!
 //! ```nocompile
 //! [dependencies]
-//! roctogen = "0.9"
+//! roctogen = "0.10"
 //! ```
 //!
 //! # API

@@ -1395,6 +1395,9 @@ pub struct AllOffullRepositoryTemplateRepository {
     /// Whether to allow squash merges for pull requests.
     #[serde(skip_serializing_if="Option::is_none")]
     pub allow_squash_merge: Option<bool>,
+    /// Whether to allow Auto-merge to be used on pull requests.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub allow_auto_merge: Option<bool>,
     /// Whether to delete head branches when pull requests are merged
     #[serde(skip_serializing_if="Option::is_none")]
     pub delete_branch_on_merge: Option<bool>,
@@ -2657,53 +2660,6 @@ pub struct AllOfmilestoneCreator {
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
-pub struct AllOfminimalRepositoryOwner {     
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub name: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub email: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub login: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub id: Option<i64>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub node_id: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub avatar_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub gravatar_id: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub html_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub followers_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub following_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub gists_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub starred_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub subscriptions_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub organizations_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub repos_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub events_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub received_events_url: Option<String>,
-    #[serde(rename = "type")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub _type: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub site_admin: Option<bool>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub starred_at: Option<String>,
-}
-
-#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfminimalRepositoryTemplateRepository {     
     /// Unique identifier of the repository
     #[serde(skip_serializing_if="Option::is_none")]
@@ -2879,6 +2835,9 @@ pub struct AllOfminimalRepositoryTemplateRepository {
     /// Whether to allow squash merges for pull requests.
     #[serde(skip_serializing_if="Option::is_none")]
     pub allow_squash_merge: Option<bool>,
+    /// Whether to allow Auto-merge to be used on pull requests.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub allow_auto_merge: Option<bool>,
     /// Whether to delete head branches when pull requests are merged
     #[serde(skip_serializing_if="Option::is_none")]
     pub delete_branch_on_merge: Option<bool>,
@@ -4089,53 +4048,6 @@ pub struct AllOfrepositoryOrganization {
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
-pub struct AllOfrepositoryOwner {     
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub name: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub email: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub login: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub id: Option<i64>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub node_id: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub avatar_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub gravatar_id: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub html_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub followers_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub following_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub gists_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub starred_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub subscriptions_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub organizations_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub repos_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub events_url: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub received_events_url: Option<String>,
-    #[serde(rename = "type")]
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub _type: Option<String>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub site_admin: Option<bool>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub starred_at: Option<String>,
-}
-
-#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AllOfreviewCommentUser {     
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
@@ -4632,6 +4544,9 @@ pub struct AllOfteamRepositoryTemplateRepository {
     /// Whether to allow squash merges for pull requests.
     #[serde(skip_serializing_if="Option::is_none")]
     pub allow_squash_merge: Option<bool>,
+    /// Whether to allow Auto-merge to be used on pull requests.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub allow_auto_merge: Option<bool>,
     /// Whether to delete head branches when pull requests are merged
     #[serde(skip_serializing_if="Option::is_none")]
     pub delete_branch_on_merge: Option<bool>,
@@ -6717,6 +6632,9 @@ pub struct PostReposCreateForAuthenticatedUser {
     /// Whether to allow rebase merges for pull requests.
     #[serde(skip_serializing_if="Option::is_none")]
     pub allow_rebase_merge: Option<bool>,
+    /// Whether to allow Auto-merge to be used on pull requests.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub allow_auto_merge: Option<bool>,
     /// Whether to delete head branches when pull requests are merged
     #[serde(skip_serializing_if="Option::is_none")]
     pub delete_branch_on_merge: Option<bool>,
@@ -7063,6 +6981,9 @@ pub struct PostReposCreateInOrg {
     /// Either `true` to allow rebase-merging pull requests, or `false` to prevent rebase-merging.
     #[serde(skip_serializing_if="Option::is_none")]
     pub allow_rebase_merge: Option<bool>,
+    /// Either `true` to allow auto-merge on pull requests, or `false` to disallow auto-merge.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub allow_auto_merge: Option<bool>,
     /// Either `true` to allow automatically deleting head branches when pull requests are merged, or `false` to prevent automatic deletion.
     #[serde(skip_serializing_if="Option::is_none")]
     pub delete_branch_on_merge: Option<bool>,
@@ -7341,6 +7262,9 @@ pub struct PatchReposUpdate {
     /// Either `true` to allow rebase-merging pull requests, or `false` to prevent rebase-merging.
     #[serde(skip_serializing_if="Option::is_none")]
     pub allow_rebase_merge: Option<bool>,
+    /// Either `true` to allow auto-merge on pull requests, or `false` to disallow auto-merge.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub allow_auto_merge: Option<bool>,
     /// Either `true` to allow automatically deleting head branches when pull requests are merged, or `false` to prevent automatic deletion.
     #[serde(skip_serializing_if="Option::is_none")]
     pub delete_branch_on_merge: Option<bool>,
@@ -10425,6 +10349,8 @@ pub struct FullRepository {
     #[serde(skip_serializing_if="Option::is_none")]
     pub allow_squash_merge: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub allow_auto_merge: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub delete_branch_on_merge: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub allow_merge_commit: Option<bool>,
@@ -13093,7 +13019,7 @@ pub struct MinimalRepository {
     #[serde(skip_serializing_if="Option::is_none")]
     pub full_name: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
-    pub owner: Option<AllOfminimalRepositoryOwner>,
+    pub owner: Option<SimpleUser>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub private: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -15879,6 +15805,8 @@ pub struct RepoSearchResultItem {
     #[serde(skip_serializing_if="Option::is_none")]
     pub allow_rebase_merge: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub allow_auto_merge: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub delete_branch_on_merge: Option<bool>,
 }
 
@@ -15904,7 +15832,7 @@ pub struct Repository {
     #[serde(skip_serializing_if="Option::is_none")]
     pub permissions: Option<RepositoryPermissions>,
     #[serde(skip_serializing_if="Option::is_none")]
-    pub owner: Option<AllOfrepositoryOwner>,
+    pub owner: Option<SimpleUser>,
     /// Whether the repository is private or public.
     #[serde(skip_serializing_if="Option::is_none")]
     pub private: Option<bool>,
@@ -16059,6 +15987,9 @@ pub struct Repository {
     /// Whether to allow squash merges for pull requests.
     #[serde(skip_serializing_if="Option::is_none")]
     pub allow_squash_merge: Option<bool>,
+    /// Whether to allow Auto-merge to be used on pull requests.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub allow_auto_merge: Option<bool>,
     /// Whether to delete head branches when pull requests are merged
     #[serde(skip_serializing_if="Option::is_none")]
     pub delete_branch_on_merge: Option<bool>,
@@ -16304,6 +16235,8 @@ pub struct RepositoryTemplateRepository {
     pub temp_clone_token: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub allow_squash_merge: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub allow_auto_merge: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub delete_branch_on_merge: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -18174,6 +18107,9 @@ pub struct TeamRepository {
     /// Whether to allow squash merges for pull requests.
     #[serde(skip_serializing_if="Option::is_none")]
     pub allow_squash_merge: Option<bool>,
+    /// Whether to allow Auto-merge to be used on pull requests.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub allow_auto_merge: Option<bool>,
     /// Whether to delete head branches when pull requests are merged
     #[serde(skip_serializing_if="Option::is_none")]
     pub delete_branch_on_merge: Option<bool>,
