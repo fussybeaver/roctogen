@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.11.0 (24/10/2021)
+- [**maintenance**][**rust**] 🚧 OpenAPI types changed [#54](https://github.com/fussybeaver/roctogen/pull/54)
+- [**closed**] Generate types in update workflow [#53](https://github.com/fussybeaver/roctogen/pull/53)
+- [**closed**] Add an experimental update workflow [#51](https://github.com/fussybeaver/roctogen/pull/51)
+
+---
+
 ## v0.10.0 (15/08/2021)
 - [**closed**] Update sync with upstream [#46](https://github.com/fussybeaver/roctogen/pull/46)
 
