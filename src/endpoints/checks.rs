@@ -169,6 +169,29 @@ pub enum ChecksListSuitesForRefError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Rerequest a check run](Checks::rerequest_run_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ChecksRerequestRunError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Forbidden if the check run is not rerequestable or doesn&#x27;t belong to the authenticated GitHub App")]
+    Status403(BasicError),
+    #[error("Validation error if the check run is not rerequestable")]
+    Status422(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Rerequest a check suite](Checks::rerequest_suite_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ChecksRerequestSuiteError {
@@ -1202,6 +1225,93 @@ impl<'api> Checks<'api> {
         } else {
             match github_response.status_code() {
                 code => Err(ChecksListSuitesForRefError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Rerequest a check run
+    ///
+    /// Triggers GitHub to rerequest an existing check run, without pushing new code to a repository. This endpoint will trigger the [`check_run` webhook](https://docs.github.com/webhooks/event-payloads/#check_run) event with the action `rerequested`. When a check run is `rerequested`, its `status` is reset to `queued` and the `conclusion` is cleared.
+    /// 
+    /// To rerequest a check run, your GitHub App must have the `checks:read` permission on a private repository or pull access to a public repository.
+    /// 
+    /// [GitHub API docs for rerequest_run](https://docs.github.com/rest/reference/checks#rerequest-a-check-run)
+    ///
+    /// ---
+    pub async fn rerequest_run_async(&self, owner: &str, repo: &str, check_run_id: i32) -> Result<HashMap<String, Value>, ChecksRerequestRunError> {
+
+        let request_uri = format!("{}/repos/{}/{}/check-runs/{}/rerequest", super::GITHUB_BASE_API_URL, owner, repo, check_run_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(ChecksRerequestRunError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ChecksRerequestRunError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ChecksRerequestRunError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ChecksRerequestRunError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Rerequest a check run
+    ///
+    /// Triggers GitHub to rerequest an existing check run, without pushing new code to a repository. This endpoint will trigger the [`check_run` webhook](https://docs.github.com/webhooks/event-payloads/#check_run) event with the action `rerequested`. When a check run is `rerequested`, its `status` is reset to `queued` and the `conclusion` is cleared.
+    /// 
+    /// To rerequest a check run, your GitHub App must have the `checks:read` permission on a private repository or pull access to a public repository.
+    /// 
+    /// [GitHub API docs for rerequest_run](https://docs.github.com/rest/reference/checks#rerequest-a-check-run)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn rerequest_run(&self, owner: &str, repo: &str, check_run_id: i32) -> Result<HashMap<String, Value>, ChecksRerequestRunError> {
+
+        let request_uri = format!("{}/repos/{}/{}/check-runs/{}/rerequest", super::GITHUB_BASE_API_URL, owner, repo, check_run_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(ChecksRerequestRunError::Status403(crate::adapters::to_json(github_response)?)),
+                422 => Err(ChecksRerequestRunError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(ChecksRerequestRunError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(ChecksRerequestRunError::Generic { code }),
             }
         }
     }

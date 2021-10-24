@@ -71,8 +71,6 @@ pub enum SearchCommitsError {
 
     #[error("Not modified")]
     Status304,
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -166,7 +164,7 @@ pub enum SearchTopicsError {
     #[error("Not modified")]
     Status304,
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostProjectsCreateForAuthenticatedUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -918,10 +916,7 @@ impl<'api> Search<'api> {
     /// 
     /// [GitHub API docs for commits](https://docs.github.com/rest/reference/search#search-commits)
     ///
-    /// The `commits_async` endpoint is enabled with the `cloak` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "cloak")]
     pub async fn commits_async(&self, query_params: impl Into<SearchCommitsParams<'api>>) -> Result<GetSearchCommitsResponse200, SearchCommitsError> {
 
         let mut request_uri = format!("{}/search/commits", super::GITHUB_BASE_API_URL);
@@ -933,7 +928,7 @@ impl<'api> Search<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.cloak-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -949,7 +944,6 @@ impl<'api> Search<'api> {
         } else {
             match github_response.status_code() {
                 304 => Err(SearchCommitsError::Status304),
-                415 => Err(SearchCommitsError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(SearchCommitsError::Generic { code }),
             }
         }
@@ -970,11 +964,8 @@ impl<'api> Search<'api> {
     /// 
     /// [GitHub API docs for commits](https://docs.github.com/rest/reference/search#search-commits)
     ///
-    /// The `commits` endpoint is enabled with the `cloak` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "cloak")]
     pub fn commits(&self, query_params: impl Into<SearchCommitsParams<'api>>) -> Result<GetSearchCommitsResponse200, SearchCommitsError> {
 
         let mut request_uri = format!("{}/search/commits", super::GITHUB_BASE_API_URL);
@@ -987,7 +978,7 @@ impl<'api> Search<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.cloak-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1003,7 +994,6 @@ impl<'api> Search<'api> {
         } else {
             match github_response.status_code() {
                 304 => Err(SearchCommitsError::Status304),
-                415 => Err(SearchCommitsError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(SearchCommitsError::Generic { code }),
             }
         }

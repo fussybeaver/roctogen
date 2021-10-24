@@ -47,7 +47,7 @@ pub enum ReactionsCreateForCommitCommentError {
     #[error("Reaction created")]
     Status201(Reaction),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostProjectsCreateForAuthenticatedUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
@@ -69,8 +69,6 @@ pub enum ReactionsCreateForIssueError {
 
     #[error("Response")]
     Status201(Reaction),
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
@@ -92,8 +90,6 @@ pub enum ReactionsCreateForIssueCommentError {
 
     #[error("Reaction created")]
     Status201(Reaction),
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
@@ -115,8 +111,6 @@ pub enum ReactionsCreateForPullRequestReviewCommentError {
 
     #[error("Reaction created")]
     Status201(Reaction),
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
@@ -138,8 +132,6 @@ pub enum ReactionsCreateForReleaseError {
 
     #[error("Reaction created")]
     Status201(Reaction),
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
@@ -341,8 +333,6 @@ pub enum ReactionsDeleteLegacyError {
     Status401(BasicError),
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -362,8 +352,6 @@ pub enum ReactionsListForCommitCommentError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -385,8 +373,6 @@ pub enum ReactionsListForIssueError {
     Status404(BasicError),
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -406,8 +392,6 @@ pub enum ReactionsListForIssueCommentError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -427,8 +411,6 @@ pub enum ReactionsListForPullRequestReviewCommentError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -936,10 +918,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_commit_comment](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-commit-comment)
     ///
-    /// The `create_for_commit_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn create_for_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i32, body: PostReactionsCreateForCommitComment) -> Result<Reaction, ReactionsCreateForCommitCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
@@ -949,7 +928,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForCommitComment::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -980,11 +959,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_commit_comment](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-commit-comment)
     ///
-    /// The `create_for_commit_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn create_for_commit_comment(&self, owner: &str, repo: &str, comment_id: i32, body: PostReactionsCreateForCommitComment) -> Result<Reaction, ReactionsCreateForCommitCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
@@ -994,7 +970,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForCommitComment::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1025,10 +1001,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_issue](https://docs.github.com/rest/reference/reactions#create-reaction-for-an-issue)
     ///
-    /// The `create_for_issue_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn create_for_issue_async(&self, owner: &str, repo: &str, issue_number: i32, body: PostReactionsCreateForIssue) -> Result<Reaction, ReactionsCreateForIssueError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
@@ -1038,7 +1011,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForIssue::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1054,7 +1027,6 @@ impl<'api> Reactions<'api> {
         } else {
             match github_response.status_code() {
                 201 => Err(ReactionsCreateForIssueError::Status201(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(ReactionsCreateForIssueError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(ReactionsCreateForIssueError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReactionsCreateForIssueError::Generic { code }),
             }
@@ -1069,11 +1041,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_issue](https://docs.github.com/rest/reference/reactions#create-reaction-for-an-issue)
     ///
-    /// The `create_for_issue` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn create_for_issue(&self, owner: &str, repo: &str, issue_number: i32, body: PostReactionsCreateForIssue) -> Result<Reaction, ReactionsCreateForIssueError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
@@ -1083,7 +1052,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForIssue::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1099,7 +1068,6 @@ impl<'api> Reactions<'api> {
         } else {
             match github_response.status_code() {
                 201 => Err(ReactionsCreateForIssueError::Status201(crate::adapters::to_json(github_response)?)),
-                415 => Err(ReactionsCreateForIssueError::Status415(crate::adapters::to_json(github_response)?)),
                 422 => Err(ReactionsCreateForIssueError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReactionsCreateForIssueError::Generic { code }),
             }
@@ -1114,10 +1082,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_issue_comment](https://docs.github.com/rest/reference/reactions#create-reaction-for-an-issue-comment)
     ///
-    /// The `create_for_issue_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn create_for_issue_comment_async(&self, owner: &str, repo: &str, comment_id: i32, body: PostReactionsCreateForIssueComment) -> Result<Reaction, ReactionsCreateForIssueCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
@@ -1127,7 +1092,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForIssueComment::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1143,7 +1108,6 @@ impl<'api> Reactions<'api> {
         } else {
             match github_response.status_code() {
                 201 => Err(ReactionsCreateForIssueCommentError::Status201(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(ReactionsCreateForIssueCommentError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(ReactionsCreateForIssueCommentError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReactionsCreateForIssueCommentError::Generic { code }),
             }
@@ -1158,11 +1122,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_issue_comment](https://docs.github.com/rest/reference/reactions#create-reaction-for-an-issue-comment)
     ///
-    /// The `create_for_issue_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn create_for_issue_comment(&self, owner: &str, repo: &str, comment_id: i32, body: PostReactionsCreateForIssueComment) -> Result<Reaction, ReactionsCreateForIssueCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
@@ -1172,7 +1133,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForIssueComment::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1188,7 +1149,6 @@ impl<'api> Reactions<'api> {
         } else {
             match github_response.status_code() {
                 201 => Err(ReactionsCreateForIssueCommentError::Status201(crate::adapters::to_json(github_response)?)),
-                415 => Err(ReactionsCreateForIssueCommentError::Status415(crate::adapters::to_json(github_response)?)),
                 422 => Err(ReactionsCreateForIssueCommentError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReactionsCreateForIssueCommentError::Generic { code }),
             }
@@ -1203,10 +1163,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_pull_request_review_comment](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-pull-request-review-comment)
     ///
-    /// The `create_for_pull_request_review_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn create_for_pull_request_review_comment_async(&self, owner: &str, repo: &str, comment_id: i32, body: PostReactionsCreateForPullRequestReviewComment) -> Result<Reaction, ReactionsCreateForPullRequestReviewCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
@@ -1216,7 +1173,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForPullRequestReviewComment::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1232,7 +1189,6 @@ impl<'api> Reactions<'api> {
         } else {
             match github_response.status_code() {
                 201 => Err(ReactionsCreateForPullRequestReviewCommentError::Status201(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(ReactionsCreateForPullRequestReviewCommentError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(ReactionsCreateForPullRequestReviewCommentError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReactionsCreateForPullRequestReviewCommentError::Generic { code }),
             }
@@ -1247,11 +1203,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_pull_request_review_comment](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-pull-request-review-comment)
     ///
-    /// The `create_for_pull_request_review_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn create_for_pull_request_review_comment(&self, owner: &str, repo: &str, comment_id: i32, body: PostReactionsCreateForPullRequestReviewComment) -> Result<Reaction, ReactionsCreateForPullRequestReviewCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
@@ -1261,7 +1214,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForPullRequestReviewComment::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1277,7 +1230,6 @@ impl<'api> Reactions<'api> {
         } else {
             match github_response.status_code() {
                 201 => Err(ReactionsCreateForPullRequestReviewCommentError::Status201(crate::adapters::to_json(github_response)?)),
-                415 => Err(ReactionsCreateForPullRequestReviewCommentError::Status415(crate::adapters::to_json(github_response)?)),
                 422 => Err(ReactionsCreateForPullRequestReviewCommentError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReactionsCreateForPullRequestReviewCommentError::Generic { code }),
             }
@@ -1292,10 +1244,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_release](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-release)
     ///
-    /// The `create_for_release_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn create_for_release_async(&self, owner: &str, repo: &str, release_id: i32, body: PostReactionsCreateForRelease) -> Result<Reaction, ReactionsCreateForReleaseError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, release_id);
@@ -1305,7 +1254,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForRelease::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1321,7 +1270,6 @@ impl<'api> Reactions<'api> {
         } else {
             match github_response.status_code() {
                 201 => Err(ReactionsCreateForReleaseError::Status201(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(ReactionsCreateForReleaseError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(ReactionsCreateForReleaseError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReactionsCreateForReleaseError::Generic { code }),
             }
@@ -1336,11 +1284,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_release](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-release)
     ///
-    /// The `create_for_release` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn create_for_release(&self, owner: &str, repo: &str, release_id: i32, body: PostReactionsCreateForRelease) -> Result<Reaction, ReactionsCreateForReleaseError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, release_id);
@@ -1350,7 +1295,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForRelease::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1366,7 +1311,6 @@ impl<'api> Reactions<'api> {
         } else {
             match github_response.status_code() {
                 201 => Err(ReactionsCreateForReleaseError::Status201(crate::adapters::to_json(github_response)?)),
-                415 => Err(ReactionsCreateForReleaseError::Status415(crate::adapters::to_json(github_response)?)),
                 422 => Err(ReactionsCreateForReleaseError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReactionsCreateForReleaseError::Generic { code }),
             }
@@ -1383,10 +1327,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_team_discussion_comment_in_org](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-team-discussion-comment)
     ///
-    /// The `create_for_team_discussion_comment_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn create_for_team_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, body: PostReactionsCreateForTeamDiscussionCommentInOrg) -> Result<Reaction, ReactionsCreateForTeamDiscussionCommentInOrgError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, comment_number);
@@ -1396,7 +1337,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForTeamDiscussionCommentInOrg::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1427,11 +1368,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_team_discussion_comment_in_org](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-team-discussion-comment)
     ///
-    /// The `create_for_team_discussion_comment_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn create_for_team_discussion_comment_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, body: PostReactionsCreateForTeamDiscussionCommentInOrg) -> Result<Reaction, ReactionsCreateForTeamDiscussionCommentInOrgError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, comment_number);
@@ -1441,7 +1379,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForTeamDiscussionCommentInOrg::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1472,10 +1410,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_team_discussion_comment_legacy](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion-comment-legacy)
     ///
-    /// The `create_for_team_discussion_comment_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn create_for_team_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, comment_number: i32, body: PostReactionsCreateForTeamDiscussionCommentLegacy) -> Result<Reaction, ReactionsCreateForTeamDiscussionCommentLegacyError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, team_id, discussion_number, comment_number);
@@ -1485,7 +1420,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForTeamDiscussionCommentLegacy::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1515,11 +1450,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_team_discussion_comment_legacy](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion-comment-legacy)
     ///
-    /// The `create_for_team_discussion_comment_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn create_for_team_discussion_comment_legacy(&self, team_id: i32, discussion_number: i32, comment_number: i32, body: PostReactionsCreateForTeamDiscussionCommentLegacy) -> Result<Reaction, ReactionsCreateForTeamDiscussionCommentLegacyError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, team_id, discussion_number, comment_number);
@@ -1529,7 +1461,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForTeamDiscussionCommentLegacy::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1559,10 +1491,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_team_discussion_in_org](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-team-discussion)
     ///
-    /// The `create_for_team_discussion_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn create_for_team_discussion_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, body: PostReactionsCreateForTeamDiscussionInOrg) -> Result<Reaction, ReactionsCreateForTeamDiscussionInOrgError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/reactions", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
@@ -1572,7 +1501,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForTeamDiscussionInOrg::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1603,11 +1532,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_team_discussion_in_org](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-team-discussion)
     ///
-    /// The `create_for_team_discussion_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn create_for_team_discussion_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, body: PostReactionsCreateForTeamDiscussionInOrg) -> Result<Reaction, ReactionsCreateForTeamDiscussionInOrgError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/reactions", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
@@ -1617,7 +1543,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForTeamDiscussionInOrg::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1648,10 +1574,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_team_discussion_legacy](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion-legacy)
     ///
-    /// The `create_for_team_discussion_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn create_for_team_discussion_legacy_async(&self, team_id: i32, discussion_number: i32, body: PostReactionsCreateForTeamDiscussionLegacy) -> Result<Reaction, ReactionsCreateForTeamDiscussionLegacyError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}/reactions", super::GITHUB_BASE_API_URL, team_id, discussion_number);
@@ -1661,7 +1584,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForTeamDiscussionLegacy::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1691,11 +1614,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for create_for_team_discussion_legacy](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion-legacy)
     ///
-    /// The `create_for_team_discussion_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn create_for_team_discussion_legacy(&self, team_id: i32, discussion_number: i32, body: PostReactionsCreateForTeamDiscussionLegacy) -> Result<Reaction, ReactionsCreateForTeamDiscussionLegacyError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}/reactions", super::GITHUB_BASE_API_URL, team_id, discussion_number);
@@ -1705,7 +1625,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: Some(PostReactionsCreateForTeamDiscussionLegacy::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1735,10 +1655,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_commit_comment](https://docs.github.com/rest/reference/reactions#delete-a-commit-comment-reaction)
     ///
-    /// The `delete_for_commit_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn delete_for_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForCommitCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/comments/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id, reaction_id);
@@ -1748,7 +1665,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1778,11 +1695,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_commit_comment](https://docs.github.com/rest/reference/reactions#delete-a-commit-comment-reaction)
     ///
-    /// The `delete_for_commit_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn delete_for_commit_comment(&self, owner: &str, repo: &str, comment_id: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForCommitCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/comments/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id, reaction_id);
@@ -1792,7 +1706,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1822,10 +1736,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_issue](https://docs.github.com/rest/reference/reactions#delete-an-issue-reaction)
     ///
-    /// The `delete_for_issue_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn delete_for_issue_async(&self, owner: &str, repo: &str, issue_number: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForIssueError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, issue_number, reaction_id);
@@ -1835,7 +1746,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1865,11 +1776,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_issue](https://docs.github.com/rest/reference/reactions#delete-an-issue-reaction)
     ///
-    /// The `delete_for_issue` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn delete_for_issue(&self, owner: &str, repo: &str, issue_number: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForIssueError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, issue_number, reaction_id);
@@ -1879,7 +1787,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1909,10 +1817,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_issue_comment](https://docs.github.com/rest/reference/reactions#delete-an-issue-comment-reaction)
     ///
-    /// The `delete_for_issue_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn delete_for_issue_comment_async(&self, owner: &str, repo: &str, comment_id: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForIssueCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id, reaction_id);
@@ -1922,7 +1827,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1952,11 +1857,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_issue_comment](https://docs.github.com/rest/reference/reactions#delete-an-issue-comment-reaction)
     ///
-    /// The `delete_for_issue_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn delete_for_issue_comment(&self, owner: &str, repo: &str, comment_id: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForIssueCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id, reaction_id);
@@ -1966,7 +1868,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1996,10 +1898,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_pull_request_comment](https://docs.github.com/rest/reference/reactions#delete-a-pull-request-comment-reaction)
     ///
-    /// The `delete_for_pull_request_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn delete_for_pull_request_comment_async(&self, owner: &str, repo: &str, comment_id: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForPullRequestCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id, reaction_id);
@@ -2009,7 +1908,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2039,11 +1938,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_pull_request_comment](https://docs.github.com/rest/reference/reactions#delete-a-pull-request-comment-reaction)
     ///
-    /// The `delete_for_pull_request_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn delete_for_pull_request_comment(&self, owner: &str, repo: &str, comment_id: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForPullRequestCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id, reaction_id);
@@ -2053,7 +1949,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2083,10 +1979,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_team_discussion](https://docs.github.com/rest/reference/reactions#delete-team-discussion-reaction)
     ///
-    /// The `delete_for_team_discussion_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn delete_for_team_discussion_async(&self, org: &str, team_slug: &str, discussion_number: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForTeamDiscussionError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/reactions/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, reaction_id);
@@ -2096,7 +1989,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2126,11 +2019,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_team_discussion](https://docs.github.com/rest/reference/reactions#delete-team-discussion-reaction)
     ///
-    /// The `delete_for_team_discussion` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn delete_for_team_discussion(&self, org: &str, team_slug: &str, discussion_number: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForTeamDiscussionError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/reactions/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, reaction_id);
@@ -2140,7 +2030,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2170,10 +2060,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_team_discussion_comment](https://docs.github.com/rest/reference/reactions#delete-team-discussion-comment-reaction)
     ///
-    /// The `delete_for_team_discussion_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn delete_for_team_discussion_comment_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForTeamDiscussionCommentError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments/{}/reactions/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, comment_number, reaction_id);
@@ -2183,7 +2070,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2213,11 +2100,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_for_team_discussion_comment](https://docs.github.com/rest/reference/reactions#delete-team-discussion-comment-reaction)
     ///
-    /// The `delete_for_team_discussion_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn delete_for_team_discussion_comment(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForTeamDiscussionCommentError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments/{}/reactions/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, comment_number, reaction_id);
@@ -2227,7 +2111,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2257,10 +2141,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_legacy](https://docs.github.com/rest/reference/reactions/#delete-a-reaction-legacy)
     ///
-    /// The `delete_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn delete_legacy_async(&self, reaction_id: i32) -> Result<(), ReactionsDeleteLegacyError> {
 
         let request_uri = format!("{}/reactions/{}", super::GITHUB_BASE_API_URL, reaction_id);
@@ -2270,7 +2151,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2289,7 +2170,6 @@ impl<'api> Reactions<'api> {
                 403 => Err(ReactionsDeleteLegacyError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 401 => Err(ReactionsDeleteLegacyError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 410 => Err(ReactionsDeleteLegacyError::Status410(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(ReactionsDeleteLegacyError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReactionsDeleteLegacyError::Generic { code }),
             }
         }
@@ -2305,11 +2185,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for delete_legacy](https://docs.github.com/rest/reference/reactions/#delete-a-reaction-legacy)
     ///
-    /// The `delete_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn delete_legacy(&self, reaction_id: i32) -> Result<(), ReactionsDeleteLegacyError> {
 
         let request_uri = format!("{}/reactions/{}", super::GITHUB_BASE_API_URL, reaction_id);
@@ -2319,7 +2196,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2338,7 +2215,6 @@ impl<'api> Reactions<'api> {
                 403 => Err(ReactionsDeleteLegacyError::Status403(crate::adapters::to_json(github_response)?)),
                 401 => Err(ReactionsDeleteLegacyError::Status401(crate::adapters::to_json(github_response)?)),
                 410 => Err(ReactionsDeleteLegacyError::Status410(crate::adapters::to_json(github_response)?)),
-                415 => Err(ReactionsDeleteLegacyError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(ReactionsDeleteLegacyError::Generic { code }),
             }
         }
@@ -2352,10 +2228,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_commit_comment](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-commit-comment)
     ///
-    /// The `list_for_commit_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn list_for_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i32, query_params: Option<impl Into<ReactionsListForCommitCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForCommitCommentError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
@@ -2369,7 +2242,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2385,7 +2258,6 @@ impl<'api> Reactions<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(ReactionsListForCommitCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(ReactionsListForCommitCommentError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReactionsListForCommitCommentError::Generic { code }),
             }
         }
@@ -2399,11 +2271,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_commit_comment](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-commit-comment)
     ///
-    /// The `list_for_commit_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn list_for_commit_comment(&self, owner: &str, repo: &str, comment_id: i32, query_params: Option<impl Into<ReactionsListForCommitCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForCommitCommentError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
@@ -2418,7 +2287,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2434,7 +2303,6 @@ impl<'api> Reactions<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(ReactionsListForCommitCommentError::Status404(crate::adapters::to_json(github_response)?)),
-                415 => Err(ReactionsListForCommitCommentError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(ReactionsListForCommitCommentError::Generic { code }),
             }
         }
@@ -2448,10 +2316,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_issue](https://docs.github.com/rest/reference/reactions#list-reactions-for-an-issue)
     ///
-    /// The `list_for_issue_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn list_for_issue_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<ReactionsListForIssueParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForIssueError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
@@ -2465,7 +2330,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2482,7 +2347,6 @@ impl<'api> Reactions<'api> {
             match github_response.status_code() {
                 404 => Err(ReactionsListForIssueError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 410 => Err(ReactionsListForIssueError::Status410(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(ReactionsListForIssueError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReactionsListForIssueError::Generic { code }),
             }
         }
@@ -2496,11 +2360,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_issue](https://docs.github.com/rest/reference/reactions#list-reactions-for-an-issue)
     ///
-    /// The `list_for_issue` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn list_for_issue(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<ReactionsListForIssueParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForIssueError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
@@ -2515,7 +2376,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2532,7 +2393,6 @@ impl<'api> Reactions<'api> {
             match github_response.status_code() {
                 404 => Err(ReactionsListForIssueError::Status404(crate::adapters::to_json(github_response)?)),
                 410 => Err(ReactionsListForIssueError::Status410(crate::adapters::to_json(github_response)?)),
-                415 => Err(ReactionsListForIssueError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(ReactionsListForIssueError::Generic { code }),
             }
         }
@@ -2546,10 +2406,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_issue_comment](https://docs.github.com/rest/reference/reactions#list-reactions-for-an-issue-comment)
     ///
-    /// The `list_for_issue_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn list_for_issue_comment_async(&self, owner: &str, repo: &str, comment_id: i32, query_params: Option<impl Into<ReactionsListForIssueCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForIssueCommentError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
@@ -2563,7 +2420,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2579,7 +2436,6 @@ impl<'api> Reactions<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(ReactionsListForIssueCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(ReactionsListForIssueCommentError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReactionsListForIssueCommentError::Generic { code }),
             }
         }
@@ -2593,11 +2449,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_issue_comment](https://docs.github.com/rest/reference/reactions#list-reactions-for-an-issue-comment)
     ///
-    /// The `list_for_issue_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn list_for_issue_comment(&self, owner: &str, repo: &str, comment_id: i32, query_params: Option<impl Into<ReactionsListForIssueCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForIssueCommentError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
@@ -2612,7 +2465,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2628,7 +2481,6 @@ impl<'api> Reactions<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(ReactionsListForIssueCommentError::Status404(crate::adapters::to_json(github_response)?)),
-                415 => Err(ReactionsListForIssueCommentError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(ReactionsListForIssueCommentError::Generic { code }),
             }
         }
@@ -2642,10 +2494,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_pull_request_review_comment](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-pull-request-review-comment)
     ///
-    /// The `list_for_pull_request_review_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn list_for_pull_request_review_comment_async(&self, owner: &str, repo: &str, comment_id: i32, query_params: Option<impl Into<ReactionsListForPullRequestReviewCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForPullRequestReviewCommentError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
@@ -2659,7 +2508,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2675,7 +2524,6 @@ impl<'api> Reactions<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(ReactionsListForPullRequestReviewCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(ReactionsListForPullRequestReviewCommentError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReactionsListForPullRequestReviewCommentError::Generic { code }),
             }
         }
@@ -2689,11 +2537,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_pull_request_review_comment](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-pull-request-review-comment)
     ///
-    /// The `list_for_pull_request_review_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn list_for_pull_request_review_comment(&self, owner: &str, repo: &str, comment_id: i32, query_params: Option<impl Into<ReactionsListForPullRequestReviewCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForPullRequestReviewCommentError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
@@ -2708,7 +2553,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2724,7 +2569,6 @@ impl<'api> Reactions<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(ReactionsListForPullRequestReviewCommentError::Status404(crate::adapters::to_json(github_response)?)),
-                415 => Err(ReactionsListForPullRequestReviewCommentError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(ReactionsListForPullRequestReviewCommentError::Generic { code }),
             }
         }
@@ -2740,10 +2584,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_team_discussion_comment_in_org](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-team-discussion-comment)
     ///
-    /// The `list_for_team_discussion_comment_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn list_for_team_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionCommentInOrgParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionCommentInOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, comment_number);
@@ -2757,7 +2598,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2787,11 +2628,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_team_discussion_comment_in_org](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-team-discussion-comment)
     ///
-    /// The `list_for_team_discussion_comment_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn list_for_team_discussion_comment_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionCommentInOrgParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionCommentInOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, comment_number);
@@ -2806,7 +2644,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2836,10 +2674,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_team_discussion_comment_legacy](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-team-discussion-comment-legacy)
     ///
-    /// The `list_for_team_discussion_comment_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn list_for_team_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, comment_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionCommentLegacyParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionCommentLegacyError> {
 
         let mut request_uri = format!("{}/teams/{}/discussions/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, team_id, discussion_number, comment_number);
@@ -2853,7 +2688,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2883,11 +2718,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_team_discussion_comment_legacy](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-team-discussion-comment-legacy)
     ///
-    /// The `list_for_team_discussion_comment_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn list_for_team_discussion_comment_legacy(&self, team_id: i32, discussion_number: i32, comment_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionCommentLegacyParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionCommentLegacyError> {
 
         let mut request_uri = format!("{}/teams/{}/discussions/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, team_id, discussion_number, comment_number);
@@ -2902,7 +2734,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2932,10 +2764,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_team_discussion_in_org](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-team-discussion)
     ///
-    /// The `list_for_team_discussion_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn list_for_team_discussion_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionInOrgParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionInOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/reactions", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
@@ -2949,7 +2778,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2979,11 +2808,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_team_discussion_in_org](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-team-discussion)
     ///
-    /// The `list_for_team_discussion_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn list_for_team_discussion_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionInOrgParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionInOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/reactions", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
@@ -2998,7 +2824,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3028,10 +2854,7 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_team_discussion_legacy](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-team-discussion-legacy)
     ///
-    /// The `list_for_team_discussion_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn list_for_team_discussion_legacy_async(&self, team_id: i32, discussion_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionLegacyParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionLegacyError> {
 
         let mut request_uri = format!("{}/teams/{}/discussions/{}/reactions", super::GITHUB_BASE_API_URL, team_id, discussion_number);
@@ -3045,7 +2868,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3075,11 +2898,8 @@ impl<'api> Reactions<'api> {
     /// 
     /// [GitHub API docs for list_for_team_discussion_legacy](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-team-discussion-legacy)
     ///
-    /// The `list_for_team_discussion_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn list_for_team_discussion_legacy(&self, team_id: i32, discussion_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionLegacyParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionLegacyError> {
 
         let mut request_uri = format!("{}/teams/{}/discussions/{}/reactions", super::GITHUB_BASE_API_URL, team_id, discussion_number);
@@ -3094,7 +2914,7 @@ impl<'api> Reactions<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;

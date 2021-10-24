@@ -31,9 +31,9 @@ pub fn new(auth: &Auth) -> Users {
     Users { auth }
 }
 
-/// Errors for the [Add an email address for the authenticated user](Users::add_email_for_authenticated_async()) endpoint.
+/// Errors for the [Add an email address for the authenticated user](Users::add_email_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum UsersAddEmailForAuthenticatedError {
+pub enum UsersAddEmailForAuthenticatedUserError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -154,9 +154,9 @@ pub enum UsersCheckPersonIsFollowedByAuthenticatedError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Create a GPG key for the authenticated user](Users::create_gpg_key_for_authenticated_async()) endpoint.
+/// Errors for the [Create a GPG key for the authenticated user](Users::create_gpg_key_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum UsersCreateGpgKeyForAuthenticatedError {
+pub enum UsersCreateGpgKeyForAuthenticatedUserError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -181,9 +181,9 @@ pub enum UsersCreateGpgKeyForAuthenticatedError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Create a public SSH key for the authenticated user](Users::create_public_ssh_key_for_authenticated_async()) endpoint.
+/// Errors for the [Create a public SSH key for the authenticated user](Users::create_public_ssh_key_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum UsersCreatePublicSshKeyForAuthenticatedError {
+pub enum UsersCreatePublicSshKeyForAuthenticatedUserError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -208,9 +208,9 @@ pub enum UsersCreatePublicSshKeyForAuthenticatedError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Delete an email address for the authenticated user](Users::delete_email_for_authenticated_async()) endpoint.
+/// Errors for the [Delete an email address for the authenticated user](Users::delete_email_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum UsersDeleteEmailForAuthenticatedError {
+pub enum UsersDeleteEmailForAuthenticatedUserError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -235,9 +235,9 @@ pub enum UsersDeleteEmailForAuthenticatedError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Delete a GPG key for the authenticated user](Users::delete_gpg_key_for_authenticated_async()) endpoint.
+/// Errors for the [Delete a GPG key for the authenticated user](Users::delete_gpg_key_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum UsersDeleteGpgKeyForAuthenticatedError {
+pub enum UsersDeleteGpgKeyForAuthenticatedUserError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -262,9 +262,9 @@ pub enum UsersDeleteGpgKeyForAuthenticatedError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Delete a public SSH key for the authenticated user](Users::delete_public_ssh_key_for_authenticated_async()) endpoint.
+/// Errors for the [Delete a public SSH key for the authenticated user](Users::delete_public_ssh_key_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum UsersDeletePublicSshKeyForAuthenticatedError {
+pub enum UsersDeletePublicSshKeyForAuthenticatedUserError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -348,8 +348,6 @@ pub enum UsersGetByUsernameError {
 
     // -- endpoint errors
 
-    #[error("Accepted")]
-    Status202(HashMap<String, Value>),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
@@ -377,9 +375,9 @@ pub enum UsersGetContextForUserError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Get a GPG key for the authenticated user](Users::get_gpg_key_for_authenticated_async()) endpoint.
+/// Errors for the [Get a GPG key for the authenticated user](Users::get_gpg_key_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum UsersGetGpgKeyForAuthenticatedError {
+pub enum UsersGetGpgKeyForAuthenticatedUserError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -402,9 +400,9 @@ pub enum UsersGetGpgKeyForAuthenticatedError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Get a public SSH key for the authenticated user](Users::get_public_ssh_key_for_authenticated_async()) endpoint.
+/// Errors for the [Get a public SSH key for the authenticated user](Users::get_public_ssh_key_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum UsersGetPublicSshKeyForAuthenticatedError {
+pub enum UsersGetPublicSshKeyForAuthenticatedUserError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -446,9 +444,9 @@ pub enum UsersListError {
     Generic { code: u16 },
 }
 
-/// Errors for the [List users blocked by the authenticated user](Users::list_blocked_by_authenticated_async()) endpoint.
+/// Errors for the [List users blocked by the authenticated user](Users::list_blocked_by_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum UsersListBlockedByAuthenticatedError {
+pub enum UsersListBlockedByAuthenticatedUserError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -468,14 +466,14 @@ pub enum UsersListBlockedByAuthenticatedError {
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostProjectsCreateForAuthenticatedUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
-/// Errors for the [List email addresses for the authenticated user](Users::list_emails_for_authenticated_async()) endpoint.
+/// Errors for the [List email addresses for the authenticated user](Users::list_emails_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum UsersListEmailsForAuthenticatedError {
+pub enum UsersListEmailsForAuthenticatedUserError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -498,9 +496,9 @@ pub enum UsersListEmailsForAuthenticatedError {
     Generic { code: u16 },
 }
 
-/// Errors for the [List the people the authenticated user follows](Users::list_followed_by_authenticated_async()) endpoint.
+/// Errors for the [List the people the authenticated user follows](Users::list_followed_by_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum UsersListFollowedByAuthenticatedError {
+pub enum UsersListFollowedByAuthenticatedUserError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -578,9 +576,9 @@ pub enum UsersListFollowingForUserError {
     Generic { code: u16 },
 }
 
-/// Errors for the [List GPG keys for the authenticated user](Users::list_gpg_keys_for_authenticated_async()) endpoint.
+/// Errors for the [List GPG keys for the authenticated user](Users::list_gpg_keys_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum UsersListGpgKeysForAuthenticatedError {
+pub enum UsersListGpgKeysForAuthenticatedUserError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -620,9 +618,9 @@ pub enum UsersListGpgKeysForUserError {
     Generic { code: u16 },
 }
 
-/// Errors for the [List public email addresses for the authenticated user](Users::list_public_emails_for_authenticated_async()) endpoint.
+/// Errors for the [List public email addresses for the authenticated user](Users::list_public_emails_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum UsersListPublicEmailsForAuthenticatedError {
+pub enum UsersListPublicEmailsForAuthenticatedUserError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -662,9 +660,9 @@ pub enum UsersListPublicKeysForUserError {
     Generic { code: u16 },
 }
 
-/// Errors for the [List public SSH keys for the authenticated user](Users::list_public_ssh_keys_for_authenticated_async()) endpoint.
+/// Errors for the [List public SSH keys for the authenticated user](Users::list_public_ssh_keys_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum UsersListPublicSshKeysForAuthenticatedError {
+pub enum UsersListPublicSshKeysForAuthenticatedUserError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -687,9 +685,9 @@ pub enum UsersListPublicSshKeysForAuthenticatedError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Set primary email visibility for the authenticated user](Users::set_primary_email_visibility_for_authenticated_async()) endpoint.
+/// Errors for the [Set primary email visibility for the authenticated user](Users::set_primary_email_visibility_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum UsersSetPrimaryEmailVisibilityForAuthenticatedError {
+pub enum UsersSetPrimaryEmailVisibilityForAuthenticatedUserError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -854,16 +852,16 @@ impl UsersListParams {
     }
 }
 
-/// Query parameters for the [List email addresses for the authenticated user](Users::list_emails_for_authenticated_async()) endpoint.
+/// Query parameters for the [List email addresses for the authenticated user](Users::list_emails_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct UsersListEmailsForAuthenticatedParams {
+pub struct UsersListEmailsForAuthenticatedUserParams {
     /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
 }
 
-impl UsersListEmailsForAuthenticatedParams {
+impl UsersListEmailsForAuthenticatedUserParams {
     pub fn new() -> Self {
         Self::default()
     }
@@ -885,7 +883,7 @@ impl UsersListEmailsForAuthenticatedParams {
     }
 }
 
-impl<'enc> From<&'enc PerPage> for UsersListEmailsForAuthenticatedParams {
+impl<'enc> From<&'enc PerPage> for UsersListEmailsForAuthenticatedUserParams {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -894,16 +892,16 @@ impl<'enc> From<&'enc PerPage> for UsersListEmailsForAuthenticatedParams {
         }
     }
 }
-/// Query parameters for the [List the people the authenticated user follows](Users::list_followed_by_authenticated_async()) endpoint.
+/// Query parameters for the [List the people the authenticated user follows](Users::list_followed_by_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct UsersListFollowedByAuthenticatedParams {
+pub struct UsersListFollowedByAuthenticatedUserParams {
     /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
 }
 
-impl UsersListFollowedByAuthenticatedParams {
+impl UsersListFollowedByAuthenticatedUserParams {
     pub fn new() -> Self {
         Self::default()
     }
@@ -925,7 +923,7 @@ impl UsersListFollowedByAuthenticatedParams {
     }
 }
 
-impl<'enc> From<&'enc PerPage> for UsersListFollowedByAuthenticatedParams {
+impl<'enc> From<&'enc PerPage> for UsersListFollowedByAuthenticatedUserParams {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -1054,16 +1052,16 @@ impl<'enc> From<&'enc PerPage> for UsersListFollowingForUserParams {
         }
     }
 }
-/// Query parameters for the [List GPG keys for the authenticated user](Users::list_gpg_keys_for_authenticated_async()) endpoint.
+/// Query parameters for the [List GPG keys for the authenticated user](Users::list_gpg_keys_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct UsersListGpgKeysForAuthenticatedParams {
+pub struct UsersListGpgKeysForAuthenticatedUserParams {
     /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
 }
 
-impl UsersListGpgKeysForAuthenticatedParams {
+impl UsersListGpgKeysForAuthenticatedUserParams {
     pub fn new() -> Self {
         Self::default()
     }
@@ -1085,7 +1083,7 @@ impl UsersListGpgKeysForAuthenticatedParams {
     }
 }
 
-impl<'enc> From<&'enc PerPage> for UsersListGpgKeysForAuthenticatedParams {
+impl<'enc> From<&'enc PerPage> for UsersListGpgKeysForAuthenticatedUserParams {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -1134,16 +1132,16 @@ impl<'enc> From<&'enc PerPage> for UsersListGpgKeysForUserParams {
         }
     }
 }
-/// Query parameters for the [List public email addresses for the authenticated user](Users::list_public_emails_for_authenticated_async()) endpoint.
+/// Query parameters for the [List public email addresses for the authenticated user](Users::list_public_emails_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct UsersListPublicEmailsForAuthenticatedParams {
+pub struct UsersListPublicEmailsForAuthenticatedUserParams {
     /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
 }
 
-impl UsersListPublicEmailsForAuthenticatedParams {
+impl UsersListPublicEmailsForAuthenticatedUserParams {
     pub fn new() -> Self {
         Self::default()
     }
@@ -1165,7 +1163,7 @@ impl UsersListPublicEmailsForAuthenticatedParams {
     }
 }
 
-impl<'enc> From<&'enc PerPage> for UsersListPublicEmailsForAuthenticatedParams {
+impl<'enc> From<&'enc PerPage> for UsersListPublicEmailsForAuthenticatedUserParams {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -1214,16 +1212,16 @@ impl<'enc> From<&'enc PerPage> for UsersListPublicKeysForUserParams {
         }
     }
 }
-/// Query parameters for the [List public SSH keys for the authenticated user](Users::list_public_ssh_keys_for_authenticated_async()) endpoint.
+/// Query parameters for the [List public SSH keys for the authenticated user](Users::list_public_ssh_keys_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct UsersListPublicSshKeysForAuthenticatedParams {
+pub struct UsersListPublicSshKeysForAuthenticatedUserParams {
     /// Results per page (max 100)
     per_page: Option<u16>, 
     /// Page number of the results to fetch.
     page: Option<u16>
 }
 
-impl UsersListPublicSshKeysForAuthenticatedParams {
+impl UsersListPublicSshKeysForAuthenticatedUserParams {
     pub fn new() -> Self {
         Self::default()
     }
@@ -1245,7 +1243,7 @@ impl UsersListPublicSshKeysForAuthenticatedParams {
     }
 }
 
-impl<'enc> From<&'enc PerPage> for UsersListPublicSshKeysForAuthenticatedParams {
+impl<'enc> From<&'enc PerPage> for UsersListPublicSshKeysForAuthenticatedUserParams {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -1262,17 +1260,17 @@ impl<'api> Users<'api> {
     ///
     /// This endpoint is accessible with the `user` scope.
     /// 
-    /// [GitHub API docs for add_email_for_authenticated](https://docs.github.com/rest/reference/users#add-an-email-address-for-the-authenticated-user)
+    /// [GitHub API docs for add_email_for_authenticated_user](https://docs.github.com/rest/reference/users#add-an-email-address-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn add_email_for_authenticated_async(&self, body: PostUsersAddEmailForAuthenticated) -> Result<Vec<Email>, UsersAddEmailForAuthenticatedError> {
+    pub async fn add_email_for_authenticated_user_async(&self, body: PostUsersAddEmailForAuthenticatedUser) -> Result<Vec<Email>, UsersAddEmailForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/emails", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostUsersAddEmailForAuthenticated::from_json(body)?),
+            body: Some(PostUsersAddEmailForAuthenticatedUser::from_json(body)?),
             method: "POST",
             headers: vec![]
         };
@@ -1289,12 +1287,12 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(UsersAddEmailForAuthenticatedError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(UsersAddEmailForAuthenticatedError::Status304),
-                404 => Err(UsersAddEmailForAuthenticatedError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(UsersAddEmailForAuthenticatedError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(UsersAddEmailForAuthenticatedError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(UsersAddEmailForAuthenticatedError::Generic { code }),
+                422 => Err(UsersAddEmailForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                304 => Err(UsersAddEmailForAuthenticatedUserError::Status304),
+                404 => Err(UsersAddEmailForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(UsersAddEmailForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(UsersAddEmailForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersAddEmailForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -1305,18 +1303,18 @@ impl<'api> Users<'api> {
     ///
     /// This endpoint is accessible with the `user` scope.
     /// 
-    /// [GitHub API docs for add_email_for_authenticated](https://docs.github.com/rest/reference/users#add-an-email-address-for-the-authenticated-user)
+    /// [GitHub API docs for add_email_for_authenticated_user](https://docs.github.com/rest/reference/users#add-an-email-address-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_email_for_authenticated(&self, body: PostUsersAddEmailForAuthenticated) -> Result<Vec<Email>, UsersAddEmailForAuthenticatedError> {
+    pub fn add_email_for_authenticated_user(&self, body: PostUsersAddEmailForAuthenticatedUser) -> Result<Vec<Email>, UsersAddEmailForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/emails", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostUsersAddEmailForAuthenticated::from_json(body)?),
+            body: Some(PostUsersAddEmailForAuthenticatedUser::from_json(body)?),
             method: "POST",
             headers: vec![]
         };
@@ -1333,12 +1331,12 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(UsersAddEmailForAuthenticatedError::Status422(crate::adapters::to_json(github_response)?)),
-                304 => Err(UsersAddEmailForAuthenticatedError::Status304),
-                404 => Err(UsersAddEmailForAuthenticatedError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(UsersAddEmailForAuthenticatedError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(UsersAddEmailForAuthenticatedError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(UsersAddEmailForAuthenticatedError::Generic { code }),
+                422 => Err(UsersAddEmailForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
+                304 => Err(UsersAddEmailForAuthenticatedUserError::Status304),
+                404 => Err(UsersAddEmailForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(UsersAddEmailForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(UsersAddEmailForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersAddEmailForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -1669,17 +1667,17 @@ impl<'api> Users<'api> {
     ///
     /// Adds a GPG key to the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth, or OAuth with at least `write:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
-    /// [GitHub API docs for create_gpg_key_for_authenticated](https://docs.github.com/rest/reference/users#create-a-gpg-key-for-the-authenticated-user)
+    /// [GitHub API docs for create_gpg_key_for_authenticated_user](https://docs.github.com/rest/reference/users#create-a-gpg-key-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn create_gpg_key_for_authenticated_async(&self, body: PostUsersCreateGpgKeyForAuthenticated) -> Result<GpgKey, UsersCreateGpgKeyForAuthenticatedError> {
+    pub async fn create_gpg_key_for_authenticated_user_async(&self, body: PostUsersCreateGpgKeyForAuthenticatedUser) -> Result<GpgKey, UsersCreateGpgKeyForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/gpg_keys", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostUsersCreateGpgKeyForAuthenticated::from_json(body)?),
+            body: Some(PostUsersCreateGpgKeyForAuthenticatedUser::from_json(body)?),
             method: "POST",
             headers: vec![]
         };
@@ -1696,12 +1694,12 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(UsersCreateGpgKeyForAuthenticatedError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(UsersCreateGpgKeyForAuthenticatedError::Status304),
-                404 => Err(UsersCreateGpgKeyForAuthenticatedError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(UsersCreateGpgKeyForAuthenticatedError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(UsersCreateGpgKeyForAuthenticatedError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(UsersCreateGpgKeyForAuthenticatedError::Generic { code }),
+                422 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                304 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status304),
+                404 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersCreateGpgKeyForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -1712,18 +1710,18 @@ impl<'api> Users<'api> {
     ///
     /// Adds a GPG key to the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth, or OAuth with at least `write:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
-    /// [GitHub API docs for create_gpg_key_for_authenticated](https://docs.github.com/rest/reference/users#create-a-gpg-key-for-the-authenticated-user)
+    /// [GitHub API docs for create_gpg_key_for_authenticated_user](https://docs.github.com/rest/reference/users#create-a-gpg-key-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_gpg_key_for_authenticated(&self, body: PostUsersCreateGpgKeyForAuthenticated) -> Result<GpgKey, UsersCreateGpgKeyForAuthenticatedError> {
+    pub fn create_gpg_key_for_authenticated_user(&self, body: PostUsersCreateGpgKeyForAuthenticatedUser) -> Result<GpgKey, UsersCreateGpgKeyForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/gpg_keys", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostUsersCreateGpgKeyForAuthenticated::from_json(body)?),
+            body: Some(PostUsersCreateGpgKeyForAuthenticatedUser::from_json(body)?),
             method: "POST",
             headers: vec![]
         };
@@ -1740,12 +1738,12 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(UsersCreateGpgKeyForAuthenticatedError::Status422(crate::adapters::to_json(github_response)?)),
-                304 => Err(UsersCreateGpgKeyForAuthenticatedError::Status304),
-                404 => Err(UsersCreateGpgKeyForAuthenticatedError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(UsersCreateGpgKeyForAuthenticatedError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(UsersCreateGpgKeyForAuthenticatedError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(UsersCreateGpgKeyForAuthenticatedError::Generic { code }),
+                422 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
+                304 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status304),
+                404 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersCreateGpgKeyForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -1756,17 +1754,17 @@ impl<'api> Users<'api> {
     ///
     /// Adds a public SSH key to the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth, or OAuth with at least `write:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
-    /// [GitHub API docs for create_public_ssh_key_for_authenticated](https://docs.github.com/rest/reference/users#create-a-public-ssh-key-for-the-authenticated-user)
+    /// [GitHub API docs for create_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/reference/users#create-a-public-ssh-key-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn create_public_ssh_key_for_authenticated_async(&self, body: PostUsersCreatePublicSshKeyForAuthenticated) -> Result<Key, UsersCreatePublicSshKeyForAuthenticatedError> {
+    pub async fn create_public_ssh_key_for_authenticated_user_async(&self, body: PostUsersCreatePublicSshKeyForAuthenticatedUser) -> Result<Key, UsersCreatePublicSshKeyForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/keys", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostUsersCreatePublicSshKeyForAuthenticated::from_json(body)?),
+            body: Some(PostUsersCreatePublicSshKeyForAuthenticatedUser::from_json(body)?),
             method: "POST",
             headers: vec![]
         };
@@ -1783,12 +1781,12 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                422 => Err(UsersCreatePublicSshKeyForAuthenticatedError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(UsersCreatePublicSshKeyForAuthenticatedError::Status304),
-                404 => Err(UsersCreatePublicSshKeyForAuthenticatedError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(UsersCreatePublicSshKeyForAuthenticatedError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(UsersCreatePublicSshKeyForAuthenticatedError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(UsersCreatePublicSshKeyForAuthenticatedError::Generic { code }),
+                422 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                304 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status304),
+                404 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -1799,18 +1797,18 @@ impl<'api> Users<'api> {
     ///
     /// Adds a public SSH key to the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth, or OAuth with at least `write:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
-    /// [GitHub API docs for create_public_ssh_key_for_authenticated](https://docs.github.com/rest/reference/users#create-a-public-ssh-key-for-the-authenticated-user)
+    /// [GitHub API docs for create_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/reference/users#create-a-public-ssh-key-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_public_ssh_key_for_authenticated(&self, body: PostUsersCreatePublicSshKeyForAuthenticated) -> Result<Key, UsersCreatePublicSshKeyForAuthenticatedError> {
+    pub fn create_public_ssh_key_for_authenticated_user(&self, body: PostUsersCreatePublicSshKeyForAuthenticatedUser) -> Result<Key, UsersCreatePublicSshKeyForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/keys", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostUsersCreatePublicSshKeyForAuthenticated::from_json(body)?),
+            body: Some(PostUsersCreatePublicSshKeyForAuthenticatedUser::from_json(body)?),
             method: "POST",
             headers: vec![]
         };
@@ -1827,12 +1825,12 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                422 => Err(UsersCreatePublicSshKeyForAuthenticatedError::Status422(crate::adapters::to_json(github_response)?)),
-                304 => Err(UsersCreatePublicSshKeyForAuthenticatedError::Status304),
-                404 => Err(UsersCreatePublicSshKeyForAuthenticatedError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(UsersCreatePublicSshKeyForAuthenticatedError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(UsersCreatePublicSshKeyForAuthenticatedError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(UsersCreatePublicSshKeyForAuthenticatedError::Generic { code }),
+                422 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
+                304 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status304),
+                404 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -1843,17 +1841,17 @@ impl<'api> Users<'api> {
     ///
     /// This endpoint is accessible with the `user` scope.
     /// 
-    /// [GitHub API docs for delete_email_for_authenticated](https://docs.github.com/rest/reference/users#delete-an-email-address-for-the-authenticated-user)
+    /// [GitHub API docs for delete_email_for_authenticated_user](https://docs.github.com/rest/reference/users#delete-an-email-address-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn delete_email_for_authenticated_async(&self, body: DeleteUsersDeleteEmailForAuthenticated) -> Result<(), UsersDeleteEmailForAuthenticatedError> {
+    pub async fn delete_email_for_authenticated_user_async(&self, body: DeleteUsersDeleteEmailForAuthenticatedUser) -> Result<(), UsersDeleteEmailForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/emails", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteUsersDeleteEmailForAuthenticated::from_json(body)?),
+            body: Some(DeleteUsersDeleteEmailForAuthenticatedUser::from_json(body)?),
             method: "DELETE",
             headers: vec![]
         };
@@ -1870,12 +1868,12 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersDeleteEmailForAuthenticatedError::Status304),
-                404 => Err(UsersDeleteEmailForAuthenticatedError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(UsersDeleteEmailForAuthenticatedError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(UsersDeleteEmailForAuthenticatedError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(UsersDeleteEmailForAuthenticatedError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(UsersDeleteEmailForAuthenticatedError::Generic { code }),
+                304 => Err(UsersDeleteEmailForAuthenticatedUserError::Status304),
+                404 => Err(UsersDeleteEmailForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(UsersDeleteEmailForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(UsersDeleteEmailForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(UsersDeleteEmailForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersDeleteEmailForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -1886,18 +1884,18 @@ impl<'api> Users<'api> {
     ///
     /// This endpoint is accessible with the `user` scope.
     /// 
-    /// [GitHub API docs for delete_email_for_authenticated](https://docs.github.com/rest/reference/users#delete-an-email-address-for-the-authenticated-user)
+    /// [GitHub API docs for delete_email_for_authenticated_user](https://docs.github.com/rest/reference/users#delete-an-email-address-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_email_for_authenticated(&self, body: DeleteUsersDeleteEmailForAuthenticated) -> Result<(), UsersDeleteEmailForAuthenticatedError> {
+    pub fn delete_email_for_authenticated_user(&self, body: DeleteUsersDeleteEmailForAuthenticatedUser) -> Result<(), UsersDeleteEmailForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/emails", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteUsersDeleteEmailForAuthenticated::from_json(body)?),
+            body: Some(DeleteUsersDeleteEmailForAuthenticatedUser::from_json(body)?),
             method: "DELETE",
             headers: vec![]
         };
@@ -1914,12 +1912,12 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersDeleteEmailForAuthenticatedError::Status304),
-                404 => Err(UsersDeleteEmailForAuthenticatedError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(UsersDeleteEmailForAuthenticatedError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(UsersDeleteEmailForAuthenticatedError::Status401(crate::adapters::to_json(github_response)?)),
-                422 => Err(UsersDeleteEmailForAuthenticatedError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(UsersDeleteEmailForAuthenticatedError::Generic { code }),
+                304 => Err(UsersDeleteEmailForAuthenticatedUserError::Status304),
+                404 => Err(UsersDeleteEmailForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(UsersDeleteEmailForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(UsersDeleteEmailForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                422 => Err(UsersDeleteEmailForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersDeleteEmailForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -1930,10 +1928,10 @@ impl<'api> Users<'api> {
     ///
     /// Removes a GPG key from the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth or via OAuth with at least `admin:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
-    /// [GitHub API docs for delete_gpg_key_for_authenticated](https://docs.github.com/rest/reference/users#delete-a-gpg-key-for-the-authenticated-user)
+    /// [GitHub API docs for delete_gpg_key_for_authenticated_user](https://docs.github.com/rest/reference/users#delete-a-gpg-key-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn delete_gpg_key_for_authenticated_async(&self, gpg_key_id: i32) -> Result<(), UsersDeleteGpgKeyForAuthenticatedError> {
+    pub async fn delete_gpg_key_for_authenticated_user_async(&self, gpg_key_id: i32) -> Result<(), UsersDeleteGpgKeyForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/gpg_keys/{}", super::GITHUB_BASE_API_URL, gpg_key_id);
 
@@ -1957,12 +1955,12 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersDeleteGpgKeyForAuthenticatedError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(UsersDeleteGpgKeyForAuthenticatedError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(UsersDeleteGpgKeyForAuthenticatedError::Status304),
-                403 => Err(UsersDeleteGpgKeyForAuthenticatedError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(UsersDeleteGpgKeyForAuthenticatedError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(UsersDeleteGpgKeyForAuthenticatedError::Generic { code }),
+                404 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                304 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status304),
+                403 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -1973,11 +1971,11 @@ impl<'api> Users<'api> {
     ///
     /// Removes a GPG key from the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth or via OAuth with at least `admin:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
-    /// [GitHub API docs for delete_gpg_key_for_authenticated](https://docs.github.com/rest/reference/users#delete-a-gpg-key-for-the-authenticated-user)
+    /// [GitHub API docs for delete_gpg_key_for_authenticated_user](https://docs.github.com/rest/reference/users#delete-a-gpg-key-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_gpg_key_for_authenticated(&self, gpg_key_id: i32) -> Result<(), UsersDeleteGpgKeyForAuthenticatedError> {
+    pub fn delete_gpg_key_for_authenticated_user(&self, gpg_key_id: i32) -> Result<(), UsersDeleteGpgKeyForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/gpg_keys/{}", super::GITHUB_BASE_API_URL, gpg_key_id);
 
@@ -2001,12 +1999,12 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersDeleteGpgKeyForAuthenticatedError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(UsersDeleteGpgKeyForAuthenticatedError::Status422(crate::adapters::to_json(github_response)?)),
-                304 => Err(UsersDeleteGpgKeyForAuthenticatedError::Status304),
-                403 => Err(UsersDeleteGpgKeyForAuthenticatedError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(UsersDeleteGpgKeyForAuthenticatedError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(UsersDeleteGpgKeyForAuthenticatedError::Generic { code }),
+                404 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
+                304 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status304),
+                403 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -2017,10 +2015,10 @@ impl<'api> Users<'api> {
     ///
     /// Removes a public SSH key from the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth or via OAuth with at least `admin:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
-    /// [GitHub API docs for delete_public_ssh_key_for_authenticated](https://docs.github.com/rest/reference/users#delete-a-public-ssh-key-for-the-authenticated-user)
+    /// [GitHub API docs for delete_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/reference/users#delete-a-public-ssh-key-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn delete_public_ssh_key_for_authenticated_async(&self, key_id: i32) -> Result<(), UsersDeletePublicSshKeyForAuthenticatedError> {
+    pub async fn delete_public_ssh_key_for_authenticated_user_async(&self, key_id: i32) -> Result<(), UsersDeletePublicSshKeyForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/keys/{}", super::GITHUB_BASE_API_URL, key_id);
 
@@ -2044,11 +2042,11 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersDeletePublicSshKeyForAuthenticatedError::Status304),
-                404 => Err(UsersDeletePublicSshKeyForAuthenticatedError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(UsersDeletePublicSshKeyForAuthenticatedError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(UsersDeletePublicSshKeyForAuthenticatedError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(UsersDeletePublicSshKeyForAuthenticatedError::Generic { code }),
+                304 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status304),
+                404 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -2059,11 +2057,11 @@ impl<'api> Users<'api> {
     ///
     /// Removes a public SSH key from the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth or via OAuth with at least `admin:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
-    /// [GitHub API docs for delete_public_ssh_key_for_authenticated](https://docs.github.com/rest/reference/users#delete-a-public-ssh-key-for-the-authenticated-user)
+    /// [GitHub API docs for delete_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/reference/users#delete-a-public-ssh-key-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_public_ssh_key_for_authenticated(&self, key_id: i32) -> Result<(), UsersDeletePublicSshKeyForAuthenticatedError> {
+    pub fn delete_public_ssh_key_for_authenticated_user(&self, key_id: i32) -> Result<(), UsersDeletePublicSshKeyForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/keys/{}", super::GITHUB_BASE_API_URL, key_id);
 
@@ -2087,11 +2085,11 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersDeletePublicSshKeyForAuthenticatedError::Status304),
-                404 => Err(UsersDeletePublicSshKeyForAuthenticatedError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(UsersDeletePublicSshKeyForAuthenticatedError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(UsersDeletePublicSshKeyForAuthenticatedError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(UsersDeletePublicSshKeyForAuthenticatedError::Generic { code }),
+                304 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status304),
+                404 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -2311,7 +2309,6 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                202 => Err(UsersGetByUsernameError::Status202(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(UsersGetByUsernameError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(UsersGetByUsernameError::Generic { code }),
             }
@@ -2358,7 +2355,6 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                202 => Err(UsersGetByUsernameError::Status202(crate::adapters::to_json(github_response)?)),
                 404 => Err(UsersGetByUsernameError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(UsersGetByUsernameError::Generic { code }),
             }
@@ -2475,10 +2471,10 @@ impl<'api> Users<'api> {
     ///
     /// View extended details for a single GPG key. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
-    /// [GitHub API docs for get_gpg_key_for_authenticated](https://docs.github.com/rest/reference/users#get-a-gpg-key-for-the-authenticated-user)
+    /// [GitHub API docs for get_gpg_key_for_authenticated_user](https://docs.github.com/rest/reference/users#get-a-gpg-key-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn get_gpg_key_for_authenticated_async(&self, gpg_key_id: i32) -> Result<GpgKey, UsersGetGpgKeyForAuthenticatedError> {
+    pub async fn get_gpg_key_for_authenticated_user_async(&self, gpg_key_id: i32) -> Result<GpgKey, UsersGetGpgKeyForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/gpg_keys/{}", super::GITHUB_BASE_API_URL, gpg_key_id);
 
@@ -2502,11 +2498,11 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersGetGpgKeyForAuthenticatedError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(UsersGetGpgKeyForAuthenticatedError::Status304),
-                403 => Err(UsersGetGpgKeyForAuthenticatedError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(UsersGetGpgKeyForAuthenticatedError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(UsersGetGpgKeyForAuthenticatedError::Generic { code }),
+                404 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                304 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status304),
+                403 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersGetGpgKeyForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -2517,11 +2513,11 @@ impl<'api> Users<'api> {
     ///
     /// View extended details for a single GPG key. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
-    /// [GitHub API docs for get_gpg_key_for_authenticated](https://docs.github.com/rest/reference/users#get-a-gpg-key-for-the-authenticated-user)
+    /// [GitHub API docs for get_gpg_key_for_authenticated_user](https://docs.github.com/rest/reference/users#get-a-gpg-key-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_gpg_key_for_authenticated(&self, gpg_key_id: i32) -> Result<GpgKey, UsersGetGpgKeyForAuthenticatedError> {
+    pub fn get_gpg_key_for_authenticated_user(&self, gpg_key_id: i32) -> Result<GpgKey, UsersGetGpgKeyForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/gpg_keys/{}", super::GITHUB_BASE_API_URL, gpg_key_id);
 
@@ -2545,11 +2541,11 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersGetGpgKeyForAuthenticatedError::Status404(crate::adapters::to_json(github_response)?)),
-                304 => Err(UsersGetGpgKeyForAuthenticatedError::Status304),
-                403 => Err(UsersGetGpgKeyForAuthenticatedError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(UsersGetGpgKeyForAuthenticatedError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(UsersGetGpgKeyForAuthenticatedError::Generic { code }),
+                404 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                304 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status304),
+                403 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersGetGpgKeyForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -2560,10 +2556,10 @@ impl<'api> Users<'api> {
     ///
     /// View extended details for a single public SSH key. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
-    /// [GitHub API docs for get_public_ssh_key_for_authenticated](https://docs.github.com/rest/reference/users#get-a-public-ssh-key-for-the-authenticated-user)
+    /// [GitHub API docs for get_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/reference/users#get-a-public-ssh-key-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn get_public_ssh_key_for_authenticated_async(&self, key_id: i32) -> Result<Key, UsersGetPublicSshKeyForAuthenticatedError> {
+    pub async fn get_public_ssh_key_for_authenticated_user_async(&self, key_id: i32) -> Result<Key, UsersGetPublicSshKeyForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/keys/{}", super::GITHUB_BASE_API_URL, key_id);
 
@@ -2587,11 +2583,11 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersGetPublicSshKeyForAuthenticatedError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(UsersGetPublicSshKeyForAuthenticatedError::Status304),
-                403 => Err(UsersGetPublicSshKeyForAuthenticatedError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(UsersGetPublicSshKeyForAuthenticatedError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(UsersGetPublicSshKeyForAuthenticatedError::Generic { code }),
+                404 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                304 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status304),
+                403 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -2602,11 +2598,11 @@ impl<'api> Users<'api> {
     ///
     /// View extended details for a single public SSH key. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
-    /// [GitHub API docs for get_public_ssh_key_for_authenticated](https://docs.github.com/rest/reference/users#get-a-public-ssh-key-for-the-authenticated-user)
+    /// [GitHub API docs for get_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/reference/users#get-a-public-ssh-key-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_public_ssh_key_for_authenticated(&self, key_id: i32) -> Result<Key, UsersGetPublicSshKeyForAuthenticatedError> {
+    pub fn get_public_ssh_key_for_authenticated_user(&self, key_id: i32) -> Result<Key, UsersGetPublicSshKeyForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/keys/{}", super::GITHUB_BASE_API_URL, key_id);
 
@@ -2630,11 +2626,11 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersGetPublicSshKeyForAuthenticatedError::Status404(crate::adapters::to_json(github_response)?)),
-                304 => Err(UsersGetPublicSshKeyForAuthenticatedError::Status304),
-                403 => Err(UsersGetPublicSshKeyForAuthenticatedError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(UsersGetPublicSshKeyForAuthenticatedError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(UsersGetPublicSshKeyForAuthenticatedError::Generic { code }),
+                404 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                304 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status304),
+                403 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -2737,10 +2733,10 @@ impl<'api> Users<'api> {
     ///
     /// List the users you've blocked on your personal account.
     /// 
-    /// [GitHub API docs for list_blocked_by_authenticated](https://docs.github.com/rest/reference/users#list-users-blocked-by-the-authenticated-user)
+    /// [GitHub API docs for list_blocked_by_authenticated_user](https://docs.github.com/rest/reference/users#list-users-blocked-by-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_blocked_by_authenticated_async(&self) -> Result<Vec<SimpleUser>, UsersListBlockedByAuthenticatedError> {
+    pub async fn list_blocked_by_authenticated_user_async(&self) -> Result<Vec<SimpleUser>, UsersListBlockedByAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/blocks", super::GITHUB_BASE_API_URL);
 
@@ -2764,12 +2760,12 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListBlockedByAuthenticatedError::Status304),
-                404 => Err(UsersListBlockedByAuthenticatedError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(UsersListBlockedByAuthenticatedError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(UsersListBlockedByAuthenticatedError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(UsersListBlockedByAuthenticatedError::Status415(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(UsersListBlockedByAuthenticatedError::Generic { code }),
+                304 => Err(UsersListBlockedByAuthenticatedUserError::Status304),
+                404 => Err(UsersListBlockedByAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(UsersListBlockedByAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(UsersListBlockedByAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                415 => Err(UsersListBlockedByAuthenticatedUserError::Status415(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersListBlockedByAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -2780,11 +2776,11 @@ impl<'api> Users<'api> {
     ///
     /// List the users you've blocked on your personal account.
     /// 
-    /// [GitHub API docs for list_blocked_by_authenticated](https://docs.github.com/rest/reference/users#list-users-blocked-by-the-authenticated-user)
+    /// [GitHub API docs for list_blocked_by_authenticated_user](https://docs.github.com/rest/reference/users#list-users-blocked-by-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_blocked_by_authenticated(&self) -> Result<Vec<SimpleUser>, UsersListBlockedByAuthenticatedError> {
+    pub fn list_blocked_by_authenticated_user(&self) -> Result<Vec<SimpleUser>, UsersListBlockedByAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/blocks", super::GITHUB_BASE_API_URL);
 
@@ -2808,12 +2804,12 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListBlockedByAuthenticatedError::Status304),
-                404 => Err(UsersListBlockedByAuthenticatedError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(UsersListBlockedByAuthenticatedError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(UsersListBlockedByAuthenticatedError::Status401(crate::adapters::to_json(github_response)?)),
-                415 => Err(UsersListBlockedByAuthenticatedError::Status415(crate::adapters::to_json(github_response)?)),
-                code => Err(UsersListBlockedByAuthenticatedError::Generic { code }),
+                304 => Err(UsersListBlockedByAuthenticatedUserError::Status304),
+                404 => Err(UsersListBlockedByAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(UsersListBlockedByAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(UsersListBlockedByAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                415 => Err(UsersListBlockedByAuthenticatedUserError::Status415(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersListBlockedByAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -2824,10 +2820,10 @@ impl<'api> Users<'api> {
     ///
     /// Lists all of your email addresses, and specifies which one is visible to the public. This endpoint is accessible with the `user:email` scope.
     /// 
-    /// [GitHub API docs for list_emails_for_authenticated](https://docs.github.com/rest/reference/users#list-email-addresses-for-the-authenticated-user)
+    /// [GitHub API docs for list_emails_for_authenticated_user](https://docs.github.com/rest/reference/users#list-email-addresses-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_emails_for_authenticated_async(&self, query_params: Option<impl Into<UsersListEmailsForAuthenticatedParams>>) -> Result<Vec<Email>, UsersListEmailsForAuthenticatedError> {
+    pub async fn list_emails_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListEmailsForAuthenticatedUserParams>>) -> Result<Vec<Email>, UsersListEmailsForAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/user/emails", super::GITHUB_BASE_API_URL);
 
@@ -2855,11 +2851,11 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListEmailsForAuthenticatedError::Status304),
-                404 => Err(UsersListEmailsForAuthenticatedError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(UsersListEmailsForAuthenticatedError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(UsersListEmailsForAuthenticatedError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(UsersListEmailsForAuthenticatedError::Generic { code }),
+                304 => Err(UsersListEmailsForAuthenticatedUserError::Status304),
+                404 => Err(UsersListEmailsForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(UsersListEmailsForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(UsersListEmailsForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersListEmailsForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -2870,17 +2866,17 @@ impl<'api> Users<'api> {
     ///
     /// Lists all of your email addresses, and specifies which one is visible to the public. This endpoint is accessible with the `user:email` scope.
     /// 
-    /// [GitHub API docs for list_emails_for_authenticated](https://docs.github.com/rest/reference/users#list-email-addresses-for-the-authenticated-user)
+    /// [GitHub API docs for list_emails_for_authenticated_user](https://docs.github.com/rest/reference/users#list-email-addresses-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_emails_for_authenticated(&self, query_params: Option<impl Into<UsersListEmailsForAuthenticatedParams>>) -> Result<Vec<Email>, UsersListEmailsForAuthenticatedError> {
+    pub fn list_emails_for_authenticated_user(&self, query_params: Option<impl Into<UsersListEmailsForAuthenticatedUserParams>>) -> Result<Vec<Email>, UsersListEmailsForAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/user/emails", super::GITHUB_BASE_API_URL);
 
         if let Some(params) = query_params {
             request_uri.push_str("?");
-            let qp: UsersListEmailsForAuthenticatedParams = params.into();
+            let qp: UsersListEmailsForAuthenticatedUserParams = params.into();
             request_uri.push_str(&serde_urlencoded::to_string(qp)?);
         }
 
@@ -2903,11 +2899,11 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListEmailsForAuthenticatedError::Status304),
-                404 => Err(UsersListEmailsForAuthenticatedError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(UsersListEmailsForAuthenticatedError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(UsersListEmailsForAuthenticatedError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(UsersListEmailsForAuthenticatedError::Generic { code }),
+                304 => Err(UsersListEmailsForAuthenticatedUserError::Status304),
+                404 => Err(UsersListEmailsForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(UsersListEmailsForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(UsersListEmailsForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersListEmailsForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -2918,10 +2914,10 @@ impl<'api> Users<'api> {
     ///
     /// Lists the people who the authenticated user follows.
     /// 
-    /// [GitHub API docs for list_followed_by_authenticated](https://docs.github.com/rest/reference/users#list-the-people-the-authenticated-user-follows)
+    /// [GitHub API docs for list_followed_by_authenticated_user](https://docs.github.com/rest/reference/users#list-the-people-the-authenticated-user-follows)
     ///
     /// ---
-    pub async fn list_followed_by_authenticated_async(&self, query_params: Option<impl Into<UsersListFollowedByAuthenticatedParams>>) -> Result<Vec<SimpleUser>, UsersListFollowedByAuthenticatedError> {
+    pub async fn list_followed_by_authenticated_user_async(&self, query_params: Option<impl Into<UsersListFollowedByAuthenticatedUserParams>>) -> Result<Vec<SimpleUser>, UsersListFollowedByAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/user/following", super::GITHUB_BASE_API_URL);
 
@@ -2949,10 +2945,10 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListFollowedByAuthenticatedError::Status304),
-                403 => Err(UsersListFollowedByAuthenticatedError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(UsersListFollowedByAuthenticatedError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(UsersListFollowedByAuthenticatedError::Generic { code }),
+                304 => Err(UsersListFollowedByAuthenticatedUserError::Status304),
+                403 => Err(UsersListFollowedByAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(UsersListFollowedByAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersListFollowedByAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -2963,17 +2959,17 @@ impl<'api> Users<'api> {
     ///
     /// Lists the people who the authenticated user follows.
     /// 
-    /// [GitHub API docs for list_followed_by_authenticated](https://docs.github.com/rest/reference/users#list-the-people-the-authenticated-user-follows)
+    /// [GitHub API docs for list_followed_by_authenticated_user](https://docs.github.com/rest/reference/users#list-the-people-the-authenticated-user-follows)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_followed_by_authenticated(&self, query_params: Option<impl Into<UsersListFollowedByAuthenticatedParams>>) -> Result<Vec<SimpleUser>, UsersListFollowedByAuthenticatedError> {
+    pub fn list_followed_by_authenticated_user(&self, query_params: Option<impl Into<UsersListFollowedByAuthenticatedUserParams>>) -> Result<Vec<SimpleUser>, UsersListFollowedByAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/user/following", super::GITHUB_BASE_API_URL);
 
         if let Some(params) = query_params {
             request_uri.push_str("?");
-            let qp: UsersListFollowedByAuthenticatedParams = params.into();
+            let qp: UsersListFollowedByAuthenticatedUserParams = params.into();
             request_uri.push_str(&serde_urlencoded::to_string(qp)?);
         }
 
@@ -2996,10 +2992,10 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListFollowedByAuthenticatedError::Status304),
-                403 => Err(UsersListFollowedByAuthenticatedError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(UsersListFollowedByAuthenticatedError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(UsersListFollowedByAuthenticatedError::Generic { code }),
+                304 => Err(UsersListFollowedByAuthenticatedUserError::Status304),
+                403 => Err(UsersListFollowedByAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(UsersListFollowedByAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersListFollowedByAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -3274,10 +3270,10 @@ impl<'api> Users<'api> {
     ///
     /// Lists the current user's GPG keys. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
-    /// [GitHub API docs for list_gpg_keys_for_authenticated](https://docs.github.com/rest/reference/users#list-gpg-keys-for-the-authenticated-user)
+    /// [GitHub API docs for list_gpg_keys_for_authenticated_user](https://docs.github.com/rest/reference/users#list-gpg-keys-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_gpg_keys_for_authenticated_async(&self, query_params: Option<impl Into<UsersListGpgKeysForAuthenticatedParams>>) -> Result<Vec<GpgKey>, UsersListGpgKeysForAuthenticatedError> {
+    pub async fn list_gpg_keys_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListGpgKeysForAuthenticatedUserParams>>) -> Result<Vec<GpgKey>, UsersListGpgKeysForAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/user/gpg_keys", super::GITHUB_BASE_API_URL);
 
@@ -3305,11 +3301,11 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListGpgKeysForAuthenticatedError::Status304),
-                404 => Err(UsersListGpgKeysForAuthenticatedError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(UsersListGpgKeysForAuthenticatedError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(UsersListGpgKeysForAuthenticatedError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(UsersListGpgKeysForAuthenticatedError::Generic { code }),
+                304 => Err(UsersListGpgKeysForAuthenticatedUserError::Status304),
+                404 => Err(UsersListGpgKeysForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(UsersListGpgKeysForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(UsersListGpgKeysForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersListGpgKeysForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -3320,17 +3316,17 @@ impl<'api> Users<'api> {
     ///
     /// Lists the current user's GPG keys. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
-    /// [GitHub API docs for list_gpg_keys_for_authenticated](https://docs.github.com/rest/reference/users#list-gpg-keys-for-the-authenticated-user)
+    /// [GitHub API docs for list_gpg_keys_for_authenticated_user](https://docs.github.com/rest/reference/users#list-gpg-keys-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_gpg_keys_for_authenticated(&self, query_params: Option<impl Into<UsersListGpgKeysForAuthenticatedParams>>) -> Result<Vec<GpgKey>, UsersListGpgKeysForAuthenticatedError> {
+    pub fn list_gpg_keys_for_authenticated_user(&self, query_params: Option<impl Into<UsersListGpgKeysForAuthenticatedUserParams>>) -> Result<Vec<GpgKey>, UsersListGpgKeysForAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/user/gpg_keys", super::GITHUB_BASE_API_URL);
 
         if let Some(params) = query_params {
             request_uri.push_str("?");
-            let qp: UsersListGpgKeysForAuthenticatedParams = params.into();
+            let qp: UsersListGpgKeysForAuthenticatedUserParams = params.into();
             request_uri.push_str(&serde_urlencoded::to_string(qp)?);
         }
 
@@ -3353,11 +3349,11 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListGpgKeysForAuthenticatedError::Status304),
-                404 => Err(UsersListGpgKeysForAuthenticatedError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(UsersListGpgKeysForAuthenticatedError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(UsersListGpgKeysForAuthenticatedError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(UsersListGpgKeysForAuthenticatedError::Generic { code }),
+                304 => Err(UsersListGpgKeysForAuthenticatedUserError::Status304),
+                404 => Err(UsersListGpgKeysForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(UsersListGpgKeysForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(UsersListGpgKeysForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersListGpgKeysForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -3454,10 +3450,10 @@ impl<'api> Users<'api> {
     ///
     /// Lists your publicly visible email address, which you can set with the [Set primary email visibility for the authenticated user](https://docs.github.com/rest/reference/users#set-primary-email-visibility-for-the-authenticated-user) endpoint. This endpoint is accessible with the `user:email` scope.
     /// 
-    /// [GitHub API docs for list_public_emails_for_authenticated](https://docs.github.com/rest/reference/users#list-public-email-addresses-for-the-authenticated-user)
+    /// [GitHub API docs for list_public_emails_for_authenticated_user](https://docs.github.com/rest/reference/users#list-public-email-addresses-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_public_emails_for_authenticated_async(&self, query_params: Option<impl Into<UsersListPublicEmailsForAuthenticatedParams>>) -> Result<Vec<Email>, UsersListPublicEmailsForAuthenticatedError> {
+    pub async fn list_public_emails_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListPublicEmailsForAuthenticatedUserParams>>) -> Result<Vec<Email>, UsersListPublicEmailsForAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/user/public_emails", super::GITHUB_BASE_API_URL);
 
@@ -3485,11 +3481,11 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListPublicEmailsForAuthenticatedError::Status304),
-                404 => Err(UsersListPublicEmailsForAuthenticatedError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(UsersListPublicEmailsForAuthenticatedError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(UsersListPublicEmailsForAuthenticatedError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(UsersListPublicEmailsForAuthenticatedError::Generic { code }),
+                304 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status304),
+                404 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersListPublicEmailsForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -3500,17 +3496,17 @@ impl<'api> Users<'api> {
     ///
     /// Lists your publicly visible email address, which you can set with the [Set primary email visibility for the authenticated user](https://docs.github.com/rest/reference/users#set-primary-email-visibility-for-the-authenticated-user) endpoint. This endpoint is accessible with the `user:email` scope.
     /// 
-    /// [GitHub API docs for list_public_emails_for_authenticated](https://docs.github.com/rest/reference/users#list-public-email-addresses-for-the-authenticated-user)
+    /// [GitHub API docs for list_public_emails_for_authenticated_user](https://docs.github.com/rest/reference/users#list-public-email-addresses-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_public_emails_for_authenticated(&self, query_params: Option<impl Into<UsersListPublicEmailsForAuthenticatedParams>>) -> Result<Vec<Email>, UsersListPublicEmailsForAuthenticatedError> {
+    pub fn list_public_emails_for_authenticated_user(&self, query_params: Option<impl Into<UsersListPublicEmailsForAuthenticatedUserParams>>) -> Result<Vec<Email>, UsersListPublicEmailsForAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/user/public_emails", super::GITHUB_BASE_API_URL);
 
         if let Some(params) = query_params {
             request_uri.push_str("?");
-            let qp: UsersListPublicEmailsForAuthenticatedParams = params.into();
+            let qp: UsersListPublicEmailsForAuthenticatedUserParams = params.into();
             request_uri.push_str(&serde_urlencoded::to_string(qp)?);
         }
 
@@ -3533,11 +3529,11 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListPublicEmailsForAuthenticatedError::Status304),
-                404 => Err(UsersListPublicEmailsForAuthenticatedError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(UsersListPublicEmailsForAuthenticatedError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(UsersListPublicEmailsForAuthenticatedError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(UsersListPublicEmailsForAuthenticatedError::Generic { code }),
+                304 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status304),
+                404 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersListPublicEmailsForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -3634,10 +3630,10 @@ impl<'api> Users<'api> {
     ///
     /// Lists the public SSH keys for the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
-    /// [GitHub API docs for list_public_ssh_keys_for_authenticated](https://docs.github.com/rest/reference/users#list-public-ssh-keys-for-the-authenticated-user)
+    /// [GitHub API docs for list_public_ssh_keys_for_authenticated_user](https://docs.github.com/rest/reference/users#list-public-ssh-keys-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_public_ssh_keys_for_authenticated_async(&self, query_params: Option<impl Into<UsersListPublicSshKeysForAuthenticatedParams>>) -> Result<Vec<Key>, UsersListPublicSshKeysForAuthenticatedError> {
+    pub async fn list_public_ssh_keys_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListPublicSshKeysForAuthenticatedUserParams>>) -> Result<Vec<Key>, UsersListPublicSshKeysForAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/user/keys", super::GITHUB_BASE_API_URL);
 
@@ -3665,11 +3661,11 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListPublicSshKeysForAuthenticatedError::Status304),
-                404 => Err(UsersListPublicSshKeysForAuthenticatedError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(UsersListPublicSshKeysForAuthenticatedError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(UsersListPublicSshKeysForAuthenticatedError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(UsersListPublicSshKeysForAuthenticatedError::Generic { code }),
+                304 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status304),
+                404 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersListPublicSshKeysForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -3680,17 +3676,17 @@ impl<'api> Users<'api> {
     ///
     /// Lists the public SSH keys for the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
     /// 
-    /// [GitHub API docs for list_public_ssh_keys_for_authenticated](https://docs.github.com/rest/reference/users#list-public-ssh-keys-for-the-authenticated-user)
+    /// [GitHub API docs for list_public_ssh_keys_for_authenticated_user](https://docs.github.com/rest/reference/users#list-public-ssh-keys-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_public_ssh_keys_for_authenticated(&self, query_params: Option<impl Into<UsersListPublicSshKeysForAuthenticatedParams>>) -> Result<Vec<Key>, UsersListPublicSshKeysForAuthenticatedError> {
+    pub fn list_public_ssh_keys_for_authenticated_user(&self, query_params: Option<impl Into<UsersListPublicSshKeysForAuthenticatedUserParams>>) -> Result<Vec<Key>, UsersListPublicSshKeysForAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/user/keys", super::GITHUB_BASE_API_URL);
 
         if let Some(params) = query_params {
             request_uri.push_str("?");
-            let qp: UsersListPublicSshKeysForAuthenticatedParams = params.into();
+            let qp: UsersListPublicSshKeysForAuthenticatedUserParams = params.into();
             request_uri.push_str(&serde_urlencoded::to_string(qp)?);
         }
 
@@ -3713,11 +3709,11 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListPublicSshKeysForAuthenticatedError::Status304),
-                404 => Err(UsersListPublicSshKeysForAuthenticatedError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(UsersListPublicSshKeysForAuthenticatedError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(UsersListPublicSshKeysForAuthenticatedError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(UsersListPublicSshKeysForAuthenticatedError::Generic { code }),
+                304 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status304),
+                404 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersListPublicSshKeysForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -3728,17 +3724,17 @@ impl<'api> Users<'api> {
     ///
     /// Sets the visibility for your primary email addresses.
     /// 
-    /// [GitHub API docs for set_primary_email_visibility_for_authenticated](https://docs.github.com/rest/reference/users#set-primary-email-visibility-for-the-authenticated-user)
+    /// [GitHub API docs for set_primary_email_visibility_for_authenticated_user](https://docs.github.com/rest/reference/users#set-primary-email-visibility-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn set_primary_email_visibility_for_authenticated_async(&self, body: PatchUsersSetPrimaryEmailVisibilityForAuthenticated) -> Result<Vec<Email>, UsersSetPrimaryEmailVisibilityForAuthenticatedError> {
+    pub async fn set_primary_email_visibility_for_authenticated_user_async(&self, body: PatchUsersSetPrimaryEmailVisibilityForAuthenticatedUser) -> Result<Vec<Email>, UsersSetPrimaryEmailVisibilityForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/email/visibility", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchUsersSetPrimaryEmailVisibilityForAuthenticated::from_json(body)?),
+            body: Some(PatchUsersSetPrimaryEmailVisibilityForAuthenticatedUser::from_json(body)?),
             method: "PATCH",
             headers: vec![]
         };
@@ -3755,12 +3751,12 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedError::Status304),
-                404 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedError::Generic { code }),
+                304 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status304),
+                404 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -3771,18 +3767,18 @@ impl<'api> Users<'api> {
     ///
     /// Sets the visibility for your primary email addresses.
     /// 
-    /// [GitHub API docs for set_primary_email_visibility_for_authenticated](https://docs.github.com/rest/reference/users#set-primary-email-visibility-for-the-authenticated-user)
+    /// [GitHub API docs for set_primary_email_visibility_for_authenticated_user](https://docs.github.com/rest/reference/users#set-primary-email-visibility-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_primary_email_visibility_for_authenticated(&self, body: PatchUsersSetPrimaryEmailVisibilityForAuthenticated) -> Result<Vec<Email>, UsersSetPrimaryEmailVisibilityForAuthenticatedError> {
+    pub fn set_primary_email_visibility_for_authenticated_user(&self, body: PatchUsersSetPrimaryEmailVisibilityForAuthenticatedUser) -> Result<Vec<Email>, UsersSetPrimaryEmailVisibilityForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/email/visibility", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchUsersSetPrimaryEmailVisibilityForAuthenticated::from_json(body)?),
+            body: Some(PatchUsersSetPrimaryEmailVisibilityForAuthenticatedUser::from_json(body)?),
             method: "PATCH",
             headers: vec![]
         };
@@ -3799,12 +3795,12 @@ impl<'api> Users<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedError::Status304),
-                404 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedError::Status401(crate::adapters::to_json(github_response)?)),
-                422 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedError::Generic { code }),
+                304 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status304),
+                404 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                422 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Generic { code }),
             }
         }
     }

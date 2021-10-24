@@ -1168,7 +1168,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Adds an organization to the list of selected organizations that can access a self-hosted runner group. The runner group must have `visibility` set to `selected`. For more information, see "[Create a self-hosted runner group for an enterprise](#create-a-self-hosted-runner-group-for-an-enterprise)."
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for add_org_access_to_self_hosted_runner_group_in_enterprise](https://docs.github.com/rest/reference/enterprise-admin#add-organization-access-to-a-self-hosted-runner-group-in-an-enterprise)
     ///
@@ -1208,7 +1208,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Adds an organization to the list of selected organizations that can access a self-hosted runner group. The runner group must have `visibility` set to `selected`. For more information, see "[Create a self-hosted runner group for an enterprise](#create-a-self-hosted-runner-group-for-an-enterprise)."
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for add_org_access_to_self_hosted_runner_group_in_enterprise](https://docs.github.com/rest/reference/enterprise-admin#add-organization-access-to-a-self-hosted-runner-group-in-an-enterprise)
     ///
@@ -1249,7 +1249,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Adds a self-hosted runner to a runner group configured in an enterprise.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise`
+    /// You must authenticate using an access token with the `manage_runners:enterprise`
     /// scope to use this endpoint.
     /// 
     /// [GitHub API docs for add_self_hosted_runner_to_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#add-a-self-hosted-runner-to-a-group-for-an-enterprise)
@@ -1290,7 +1290,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Adds a self-hosted runner to a runner group configured in an enterprise.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise`
+    /// You must authenticate using an access token with the `manage_runners:enterprise`
     /// scope to use this endpoint.
     /// 
     /// [GitHub API docs for add_self_hosted_runner_to_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#add-a-self-hosted-runner-to-a-group-for-an-enterprise)
@@ -1332,7 +1332,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Returns a token that you can pass to the `config` script. The token expires after one hour.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// #### Example using registration token
     /// 
@@ -1380,7 +1380,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Returns a token that you can pass to the `config` script. The token expires after one hour.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// #### Example using registration token
     /// 
@@ -1429,7 +1429,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Returns a token that you can pass to the `config` script to remove a self-hosted runner from an enterprise. The token expires after one hour.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// #### Example using remove token
     /// 
@@ -1478,7 +1478,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Returns a token that you can pass to the `config` script to remove a self-hosted runner from an enterprise. The token expires after one hour.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// #### Example using remove token
     /// 
@@ -1528,7 +1528,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Creates a new self-hosted runner group for an enterprise.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for create_self_hosted_runner_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#create-self-hosted-runner-group-for-an-enterprise)
     ///
@@ -1568,7 +1568,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Creates a new self-hosted runner group for an enterprise.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for create_self_hosted_runner_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#create-self-hosted-runner-group-for-an-enterprise)
     ///
@@ -1686,7 +1686,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Forces the removal of a self-hosted runner from an enterprise. You can use this endpoint to completely remove the runner when the machine you were using no longer exists.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for delete_self_hosted_runner_from_enterprise](https://docs.github.com/rest/reference/enterprise-admin#delete-self-hosted-runner-from-an-enterprise)
     ///
@@ -1726,7 +1726,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Forces the removal of a self-hosted runner from an enterprise. You can use this endpoint to completely remove the runner when the machine you were using no longer exists.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for delete_self_hosted_runner_from_enterprise](https://docs.github.com/rest/reference/enterprise-admin#delete-self-hosted-runner-from-an-enterprise)
     ///
@@ -1767,7 +1767,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Deletes a self-hosted runner group for an enterprise.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for delete_self_hosted_runner_group_from_enterprise](https://docs.github.com/rest/reference/enterprise-admin#delete-a-self-hosted-runner-group-from-an-enterprise)
     ///
@@ -1807,7 +1807,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Deletes a self-hosted runner group for an enterprise.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for delete_self_hosted_runner_group_from_enterprise](https://docs.github.com/rest/reference/enterprise-admin#delete-a-self-hosted-runner-group-from-an-enterprise)
     ///
@@ -2498,7 +2498,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Gets a specific self-hosted runner configured in an enterprise.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for get_self_hosted_runner_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#get-a-self-hosted-runner-for-an-enterprise)
     ///
@@ -2538,7 +2538,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Gets a specific self-hosted runner configured in an enterprise.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for get_self_hosted_runner_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#get-a-self-hosted-runner-for-an-enterprise)
     ///
@@ -2579,7 +2579,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Gets a specific self-hosted runner group for an enterprise.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for get_self_hosted_runner_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#get-a-self-hosted-runner-group-for-an-enterprise)
     ///
@@ -2619,7 +2619,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Gets a specific self-hosted runner group for an enterprise.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for get_self_hosted_runner_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#get-a-self-hosted-runner-group-for-an-enterprise)
     ///
@@ -2660,7 +2660,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Lists the organizations with access to a self-hosted runner group.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_org_access_to_self_hosted_runner_group_in_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-organization-access-to-a-self-hosted-runner-group-in-a-enterprise)
     ///
@@ -2704,7 +2704,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Lists the organizations with access to a self-hosted runner group.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_org_access_to_self_hosted_runner_group_in_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-organization-access-to-a-self-hosted-runner-group-in-a-enterprise)
     ///
@@ -2956,7 +2956,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Lists binaries for the runner application that you can download and run.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_runner_applications_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-runner-applications-for-an-enterprise)
     ///
@@ -2996,7 +2996,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Lists binaries for the runner application that you can download and run.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_runner_applications_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-runner-applications-for-an-enterprise)
     ///
@@ -3127,7 +3127,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Lists all self-hosted runner groups for an enterprise.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_self_hosted_runner_groups_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-self-hosted-runner-groups-for-an-enterprise)
     ///
@@ -3171,7 +3171,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Lists all self-hosted runner groups for an enterprise.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_self_hosted_runner_groups_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-self-hosted-runner-groups-for-an-enterprise)
     ///
@@ -3217,7 +3217,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Lists all self-hosted runners configured for an enterprise.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_self_hosted_runners_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-self-hosted-runners-for-an-enterprise)
     ///
@@ -3261,7 +3261,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Lists all self-hosted runners configured for an enterprise.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_self_hosted_runners_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-self-hosted-runners-for-an-enterprise)
     ///
@@ -3307,7 +3307,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Lists the self-hosted runners that are in a specific enterprise group.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_self_hosted_runners_in_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-self-hosted-runners-in-a-group-for-an-enterprise)
     ///
@@ -3351,7 +3351,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Lists the self-hosted runners that are in a specific enterprise group.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for list_self_hosted_runners_in_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-self-hosted-runners-in-a-group-for-an-enterprise)
     ///
@@ -3563,7 +3563,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Removes an organization from the list of selected organizations that can access a self-hosted runner group. The runner group must have `visibility` set to `selected`. For more information, see "[Create a self-hosted runner group for an enterprise](#create-a-self-hosted-runner-group-for-an-enterprise)."
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for remove_org_access_to_self_hosted_runner_group_in_enterprise](https://docs.github.com/rest/reference/enterprise-admin#remove-organization-access-to-a-self-hosted-runner-group-in-an-enterprise)
     ///
@@ -3603,7 +3603,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Removes an organization from the list of selected organizations that can access a self-hosted runner group. The runner group must have `visibility` set to `selected`. For more information, see "[Create a self-hosted runner group for an enterprise](#create-a-self-hosted-runner-group-for-an-enterprise)."
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for remove_org_access_to_self_hosted_runner_group_in_enterprise](https://docs.github.com/rest/reference/enterprise-admin#remove-organization-access-to-a-self-hosted-runner-group-in-an-enterprise)
     ///
@@ -3644,7 +3644,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Removes a self-hosted runner from a group configured in an enterprise. The runner is then returned to the default group.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for remove_self_hosted_runner_from_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#remove-a-self-hosted-runner-from-a-group-for-an-enterprise)
     ///
@@ -3684,7 +3684,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Removes a self-hosted runner from a group configured in an enterprise. The runner is then returned to the default group.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for remove_self_hosted_runner_from_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#remove-a-self-hosted-runner-from-a-group-for-an-enterprise)
     ///
@@ -4057,7 +4057,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Replaces the list of organizations that have access to a self-hosted runner configured in an enterprise.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for set_org_access_to_self_hosted_runner_group_in_enterprise](https://docs.github.com/rest/reference/enterprise-admin#set-organization-access-to-a-self-hosted-runner-group-in-an-enterprise)
     ///
@@ -4097,7 +4097,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Replaces the list of organizations that have access to a self-hosted runner configured in an enterprise.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for set_org_access_to_self_hosted_runner_group_in_enterprise](https://docs.github.com/rest/reference/enterprise-admin#set-organization-access-to-a-self-hosted-runner-group-in-an-enterprise)
     ///
@@ -4219,7 +4219,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Replaces the list of self-hosted runners that are part of an enterprise runner group.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for set_self_hosted_runners_in_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#set-self-hosted-runners-in-a-group-for-an-enterprise)
     ///
@@ -4259,7 +4259,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Replaces the list of self-hosted runners that are part of an enterprise runner group.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for set_self_hosted_runners_in_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#set-self-hosted-runners-in-a-group-for-an-enterprise)
     ///
@@ -4492,7 +4492,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Updates the `name` and `visibility` of a self-hosted runner group in an enterprise.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for update_self_hosted_runner_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#update-a-self-hosted-runner-group-for-an-enterprise)
     ///
@@ -4532,7 +4532,7 @@ impl<'api> EnterpriseAdmin<'api> {
     ///
     /// Updates the `name` and `visibility` of a self-hosted runner group in an enterprise.
     /// 
-    /// You must authenticate using an access token with the `admin:enterprise` scope to use this endpoint.
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
     /// 
     /// [GitHub API docs for update_self_hosted_runner_group_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#update-a-self-hosted-runner-group-for-an-enterprise)
     ///
