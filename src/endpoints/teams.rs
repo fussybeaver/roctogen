@@ -134,8 +134,6 @@ pub enum TeamsAddOrUpdateProjectPermissionsLegacyError {
     Status403(PutTeamsAddOrUpdateProjectPermissionsLegacyResponse403),
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
@@ -214,8 +212,6 @@ pub enum TeamsCheckPermissionsForProjectLegacyError {
 
     #[error("Not Found if project is not managed by this team")]
     Status404,
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -495,6 +491,23 @@ pub enum TeamsDeleteLegacyError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Get an external group](Teams::external_idp_group_info_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum TeamsExternalIdpGroupInfoForOrgError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Get a team by name](Teams::get_by_name_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsGetByNameError {
@@ -658,6 +671,23 @@ pub enum TeamsGetMembershipForUserLegacyError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Update the connection between an external group and a team](Teams::link_external_idp_group_to_team_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum TeamsLinkExternalIdpGroupToTeamForOrgError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [List teams](Teams::list_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsListError {
@@ -771,6 +801,23 @@ pub enum TeamsListDiscussionsInOrgError {
 /// Errors for the [List discussions (Legacy)](Teams::list_discussions_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsListDiscussionsLegacyError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List external groups in an organization](Teams::list_external_idp_groups_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum TeamsListExternalIdpGroupsForOrgError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -965,8 +1012,6 @@ pub enum TeamsListProjectsLegacyError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1097,7 +1142,7 @@ pub enum TeamsRemoveProjectLegacyError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostProjectsCreateForAuthenticatedUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
@@ -1124,6 +1169,23 @@ pub enum TeamsRemoveRepoInOrgError {
 /// Errors for the [Remove a repository from a team (Legacy)](Teams::remove_repo_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsRemoveRepoLegacyError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Remove the connection between an external group and a team](Teams::unlink_external_idp_group_from_team_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum TeamsUnlinkExternalIdpGroupFromTeamForOrgError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -1588,6 +1650,59 @@ impl<'req> TeamsListDiscussionsLegacyParams<'req> {
 }
 
 impl<'enc> From<&'enc PerPage> for TeamsListDiscussionsLegacyParams<'enc> {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [List external groups in an organization](Teams::list_external_idp_groups_for_org_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct TeamsListExternalIdpGroupsForOrgParams<'req> {
+    /// Results per page (max 100)
+    per_page: Option<u16>, 
+    /// Page token
+    page: Option<u16>, 
+    /// Limits the list to groups containing the text in the group name
+    display_name: Option<&'req str>
+}
+
+impl<'req> TeamsListExternalIdpGroupsForOrgParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Results per page (max 100)
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self { 
+            per_page: Some(per_page),
+            page: self.page, 
+            display_name: self.display_name, 
+        }
+    }
+
+    /// Page token
+    pub fn page(self, page: u16) -> Self {
+        Self { 
+            per_page: self.per_page, 
+            page: Some(page),
+            display_name: self.display_name, 
+        }
+    }
+
+    /// Limits the list to groups containing the text in the group name
+    pub fn display_name(self, display_name: &'req str) -> Self {
+        Self { 
+            per_page: self.per_page, 
+            page: self.page, 
+            display_name: Some(display_name),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for TeamsListExternalIdpGroupsForOrgParams<'enc> {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -2341,10 +2456,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for add_or_update_project_permissions_in_org](https://docs.github.com/rest/reference/teams#add-or-update-team-project-permissions)
     ///
-    /// The `add_or_update_project_permissions_in_org_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn add_or_update_project_permissions_in_org_async(&self, org: &str, team_slug: &str, project_id: i32, body: PutTeamsAddOrUpdateProjectPermissionsInOrg) -> Result<(), TeamsAddOrUpdateProjectPermissionsInOrgError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/projects/{}", super::GITHUB_BASE_API_URL, org, team_slug, project_id);
@@ -2354,7 +2466,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: Some(PutTeamsAddOrUpdateProjectPermissionsInOrg::from_json(body)?),
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2385,11 +2497,8 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for add_or_update_project_permissions_in_org](https://docs.github.com/rest/reference/teams#add-or-update-team-project-permissions)
     ///
-    /// The `add_or_update_project_permissions_in_org` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn add_or_update_project_permissions_in_org(&self, org: &str, team_slug: &str, project_id: i32, body: PutTeamsAddOrUpdateProjectPermissionsInOrg) -> Result<(), TeamsAddOrUpdateProjectPermissionsInOrgError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/projects/{}", super::GITHUB_BASE_API_URL, org, team_slug, project_id);
@@ -2399,7 +2508,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: Some(PutTeamsAddOrUpdateProjectPermissionsInOrg::from_json(body)?),
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2430,10 +2539,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for add_or_update_project_permissions_legacy](https://docs.github.com/rest/reference/teams/#add-or-update-team-project-permissions-legacy)
     ///
-    /// The `add_or_update_project_permissions_legacy_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn add_or_update_project_permissions_legacy_async(&self, team_id: i32, project_id: i32, body: PutTeamsAddOrUpdateProjectPermissionsLegacy) -> Result<(), TeamsAddOrUpdateProjectPermissionsLegacyError> {
 
         let request_uri = format!("{}/teams/{}/projects/{}", super::GITHUB_BASE_API_URL, team_id, project_id);
@@ -2443,7 +2549,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: Some(PutTeamsAddOrUpdateProjectPermissionsLegacy::from_json(body)?),
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2460,7 +2566,6 @@ impl<'api> Teams<'api> {
             match github_response.status_code() {
                 403 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Generic { code }),
             }
@@ -2477,11 +2582,8 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for add_or_update_project_permissions_legacy](https://docs.github.com/rest/reference/teams/#add-or-update-team-project-permissions-legacy)
     ///
-    /// The `add_or_update_project_permissions_legacy` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn add_or_update_project_permissions_legacy(&self, team_id: i32, project_id: i32, body: PutTeamsAddOrUpdateProjectPermissionsLegacy) -> Result<(), TeamsAddOrUpdateProjectPermissionsLegacyError> {
 
         let request_uri = format!("{}/teams/{}/projects/{}", super::GITHUB_BASE_API_URL, team_id, project_id);
@@ -2491,7 +2593,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: Some(PutTeamsAddOrUpdateProjectPermissionsLegacy::from_json(body)?),
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2508,7 +2610,6 @@ impl<'api> Teams<'api> {
             match github_response.status_code() {
                 403 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status403(crate::adapters::to_json(github_response)?)),
                 404 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status404(crate::adapters::to_json(github_response)?)),
-                415 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status415(crate::adapters::to_json(github_response)?)),
                 422 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Generic { code }),
             }
@@ -2699,10 +2800,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for check_permissions_for_project_in_org](https://docs.github.com/rest/reference/teams#check-team-permissions-for-a-project)
     ///
-    /// The `check_permissions_for_project_in_org_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn check_permissions_for_project_in_org_async(&self, org: &str, team_slug: &str, project_id: i32) -> Result<TeamProject, TeamsCheckPermissionsForProjectInOrgError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/projects/{}", super::GITHUB_BASE_API_URL, org, team_slug, project_id);
@@ -2712,7 +2810,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2743,11 +2841,8 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for check_permissions_for_project_in_org](https://docs.github.com/rest/reference/teams#check-team-permissions-for-a-project)
     ///
-    /// The `check_permissions_for_project_in_org` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn check_permissions_for_project_in_org(&self, org: &str, team_slug: &str, project_id: i32) -> Result<TeamProject, TeamsCheckPermissionsForProjectInOrgError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/projects/{}", super::GITHUB_BASE_API_URL, org, team_slug, project_id);
@@ -2757,7 +2852,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2788,10 +2883,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for check_permissions_for_project_legacy](https://docs.github.com/rest/reference/teams/#check-team-permissions-for-a-project-legacy)
     ///
-    /// The `check_permissions_for_project_legacy_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn check_permissions_for_project_legacy_async(&self, team_id: i32, project_id: i32) -> Result<TeamProject, TeamsCheckPermissionsForProjectLegacyError> {
 
         let request_uri = format!("{}/teams/{}/projects/{}", super::GITHUB_BASE_API_URL, team_id, project_id);
@@ -2801,7 +2893,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2817,7 +2909,6 @@ impl<'api> Teams<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsCheckPermissionsForProjectLegacyError::Status404),
-                415 => Err(TeamsCheckPermissionsForProjectLegacyError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(TeamsCheckPermissionsForProjectLegacyError::Generic { code }),
             }
         }
@@ -2833,11 +2924,8 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for check_permissions_for_project_legacy](https://docs.github.com/rest/reference/teams/#check-team-permissions-for-a-project-legacy)
     ///
-    /// The `check_permissions_for_project_legacy` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn check_permissions_for_project_legacy(&self, team_id: i32, project_id: i32) -> Result<TeamProject, TeamsCheckPermissionsForProjectLegacyError> {
 
         let request_uri = format!("{}/teams/{}/projects/{}", super::GITHUB_BASE_API_URL, team_id, project_id);
@@ -2847,7 +2935,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2863,7 +2951,6 @@ impl<'api> Teams<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsCheckPermissionsForProjectLegacyError::Status404),
-                415 => Err(TeamsCheckPermissionsForProjectLegacyError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(TeamsCheckPermissionsForProjectLegacyError::Generic { code }),
             }
         }
@@ -3148,10 +3235,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for create_discussion_comment_in_org](https://docs.github.com/rest/reference/teams#create-a-discussion-comment)
     ///
-    /// The `create_discussion_comment_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn create_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, body: PostTeamsCreateDiscussionCommentInOrg) -> Result<TeamDiscussionComment, TeamsCreateDiscussionCommentInOrgError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
@@ -3161,7 +3245,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: Some(PostTeamsCreateDiscussionCommentInOrg::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3193,11 +3277,8 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for create_discussion_comment_in_org](https://docs.github.com/rest/reference/teams#create-a-discussion-comment)
     ///
-    /// The `create_discussion_comment_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn create_discussion_comment_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, body: PostTeamsCreateDiscussionCommentInOrg) -> Result<TeamDiscussionComment, TeamsCreateDiscussionCommentInOrgError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
@@ -3207,7 +3288,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: Some(PostTeamsCreateDiscussionCommentInOrg::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3239,10 +3320,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for create_discussion_comment_legacy](https://docs.github.com/rest/reference/teams#create-a-discussion-comment-legacy)
     ///
-    /// The `create_discussion_comment_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn create_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, body: PostTeamsCreateDiscussionCommentLegacy) -> Result<TeamDiscussionComment, TeamsCreateDiscussionCommentLegacyError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}/comments", super::GITHUB_BASE_API_URL, team_id, discussion_number);
@@ -3252,7 +3330,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: Some(PostTeamsCreateDiscussionCommentLegacy::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3284,11 +3362,8 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for create_discussion_comment_legacy](https://docs.github.com/rest/reference/teams#create-a-discussion-comment-legacy)
     ///
-    /// The `create_discussion_comment_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn create_discussion_comment_legacy(&self, team_id: i32, discussion_number: i32, body: PostTeamsCreateDiscussionCommentLegacy) -> Result<TeamDiscussionComment, TeamsCreateDiscussionCommentLegacyError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}/comments", super::GITHUB_BASE_API_URL, team_id, discussion_number);
@@ -3298,7 +3373,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: Some(PostTeamsCreateDiscussionCommentLegacy::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3330,10 +3405,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for create_discussion_in_org](https://docs.github.com/rest/reference/teams#create-a-discussion)
     ///
-    /// The `create_discussion_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn create_discussion_in_org_async(&self, org: &str, team_slug: &str, body: PostTeamsCreateDiscussionInOrg) -> Result<TeamDiscussion, TeamsCreateDiscussionInOrgError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions", super::GITHUB_BASE_API_URL, org, team_slug);
@@ -3343,7 +3415,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: Some(PostTeamsCreateDiscussionInOrg::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3375,11 +3447,8 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for create_discussion_in_org](https://docs.github.com/rest/reference/teams#create-a-discussion)
     ///
-    /// The `create_discussion_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn create_discussion_in_org(&self, org: &str, team_slug: &str, body: PostTeamsCreateDiscussionInOrg) -> Result<TeamDiscussion, TeamsCreateDiscussionInOrgError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions", super::GITHUB_BASE_API_URL, org, team_slug);
@@ -3389,7 +3458,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: Some(PostTeamsCreateDiscussionInOrg::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3421,10 +3490,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for create_discussion_legacy](https://docs.github.com/rest/reference/teams#create-a-discussion-legacy)
     ///
-    /// The `create_discussion_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn create_discussion_legacy_async(&self, team_id: i32, body: PostTeamsCreateDiscussionLegacy) -> Result<TeamDiscussion, TeamsCreateDiscussionLegacyError> {
 
         let request_uri = format!("{}/teams/{}/discussions", super::GITHUB_BASE_API_URL, team_id);
@@ -3434,7 +3500,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: Some(PostTeamsCreateDiscussionLegacy::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3466,11 +3532,8 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for create_discussion_legacy](https://docs.github.com/rest/reference/teams#create-a-discussion-legacy)
     ///
-    /// The `create_discussion_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn create_discussion_legacy(&self, team_id: i32, body: PostTeamsCreateDiscussionLegacy) -> Result<TeamDiscussion, TeamsCreateDiscussionLegacyError> {
 
         let request_uri = format!("{}/teams/{}/discussions", super::GITHUB_BASE_API_URL, team_id);
@@ -3480,7 +3543,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: Some(PostTeamsCreateDiscussionLegacy::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -4174,6 +4237,87 @@ impl<'api> Teams<'api> {
 
     /// ---
     ///
+    /// # Get an external group
+    ///
+    /// Displays information about the specific group's usage.  Provides a list of the group's external members as well as a list of teams that this group is connected to.
+    /// 
+    /// You can manage team membership with your identity provider using Enterprise Managed Users for GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)" in the GitHub Help documentation.
+    /// 
+    /// [GitHub API docs for external_idp_group_info_for_org](https://docs.github.com/rest/reference/teams#external-idp-group-info-for-an-organization)
+    ///
+    /// ---
+    pub async fn external_idp_group_info_for_org_async(&self, org: &str, group_id: i32) -> Result<ExternalGroup, TeamsExternalIdpGroupInfoForOrgError> {
+
+        let request_uri = format!("{}/orgs/{}/external-group/{}", super::GITHUB_BASE_API_URL, org, group_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(TeamsExternalIdpGroupInfoForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get an external group
+    ///
+    /// Displays information about the specific group's usage.  Provides a list of the group's external members as well as a list of teams that this group is connected to.
+    /// 
+    /// You can manage team membership with your identity provider using Enterprise Managed Users for GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)" in the GitHub Help documentation.
+    /// 
+    /// [GitHub API docs for external_idp_group_info_for_org](https://docs.github.com/rest/reference/teams#external-idp-group-info-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn external_idp_group_info_for_org(&self, org: &str, group_id: i32) -> Result<ExternalGroup, TeamsExternalIdpGroupInfoForOrgError> {
+
+        let request_uri = format!("{}/orgs/{}/external-group/{}", super::GITHUB_BASE_API_URL, org, group_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(TeamsExternalIdpGroupInfoForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Get a team by name
     ///
     /// Gets a team using the team's `slug`. GitHub generates the `slug` from the team `name`.
@@ -4265,10 +4409,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for get_discussion_comment_in_org](https://docs.github.com/rest/reference/teams#get-a-discussion-comment)
     ///
-    /// The `get_discussion_comment_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn get_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32) -> Result<TeamDiscussionComment, TeamsGetDiscussionCommentInOrgError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, comment_number);
@@ -4278,7 +4419,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -4308,11 +4449,8 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for get_discussion_comment_in_org](https://docs.github.com/rest/reference/teams#get-a-discussion-comment)
     ///
-    /// The `get_discussion_comment_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn get_discussion_comment_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32) -> Result<TeamDiscussionComment, TeamsGetDiscussionCommentInOrgError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, comment_number);
@@ -4322,7 +4460,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -4352,10 +4490,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for get_discussion_comment_legacy](https://docs.github.com/rest/reference/teams#get-a-discussion-comment-legacy)
     ///
-    /// The `get_discussion_comment_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn get_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, comment_number: i32) -> Result<TeamDiscussionComment, TeamsGetDiscussionCommentLegacyError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}/comments/{}", super::GITHUB_BASE_API_URL, team_id, discussion_number, comment_number);
@@ -4365,7 +4500,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -4395,11 +4530,8 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for get_discussion_comment_legacy](https://docs.github.com/rest/reference/teams#get-a-discussion-comment-legacy)
     ///
-    /// The `get_discussion_comment_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn get_discussion_comment_legacy(&self, team_id: i32, discussion_number: i32, comment_number: i32) -> Result<TeamDiscussionComment, TeamsGetDiscussionCommentLegacyError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}/comments/{}", super::GITHUB_BASE_API_URL, team_id, discussion_number, comment_number);
@@ -4409,7 +4541,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -4439,10 +4571,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for get_discussion_in_org](https://docs.github.com/rest/reference/teams#get-a-discussion)
     ///
-    /// The `get_discussion_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn get_discussion_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32) -> Result<TeamDiscussion, TeamsGetDiscussionInOrgError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
@@ -4452,7 +4581,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -4482,11 +4611,8 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for get_discussion_in_org](https://docs.github.com/rest/reference/teams#get-a-discussion)
     ///
-    /// The `get_discussion_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn get_discussion_in_org(&self, org: &str, team_slug: &str, discussion_number: i32) -> Result<TeamDiscussion, TeamsGetDiscussionInOrgError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
@@ -4496,7 +4622,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -4526,10 +4652,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for get_discussion_legacy](https://docs.github.com/rest/reference/teams#get-a-discussion-legacy)
     ///
-    /// The `get_discussion_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn get_discussion_legacy_async(&self, team_id: i32, discussion_number: i32) -> Result<TeamDiscussion, TeamsGetDiscussionLegacyError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}", super::GITHUB_BASE_API_URL, team_id, discussion_number);
@@ -4539,7 +4662,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -4569,11 +4692,8 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for get_discussion_legacy](https://docs.github.com/rest/reference/teams#get-a-discussion-legacy)
     ///
-    /// The `get_discussion_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn get_discussion_legacy(&self, team_id: i32, discussion_number: i32) -> Result<TeamDiscussion, TeamsGetDiscussionLegacyError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}", super::GITHUB_BASE_API_URL, team_id, discussion_number);
@@ -4583,7 +4703,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -4965,6 +5085,87 @@ impl<'api> Teams<'api> {
 
     /// ---
     ///
+    /// # Update the connection between an external group and a team
+    ///
+    /// Creates a connection between a team and an external group.  Only one external group can be linked to a team.
+    /// 
+    /// You can manage team membership with your identity provider using Enterprise Managed Users for GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)" in the GitHub Help documentation.
+    /// 
+    /// [GitHub API docs for link_external_idp_group_to_team_for_org](https://docs.github.com/rest/reference/teams#link-external-idp-group-team-connection)
+    ///
+    /// ---
+    pub async fn link_external_idp_group_to_team_for_org_async(&self, org: &str, team_slug: &str, body: PatchTeamsLinkExternalIdpGroupToTeamForOrg) -> Result<ExternalGroup, TeamsLinkExternalIdpGroupToTeamForOrgError> {
+
+        let request_uri = format!("{}/orgs/{}/teams/{}/external-groups", super::GITHUB_BASE_API_URL, org, team_slug);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PatchTeamsLinkExternalIdpGroupToTeamForOrg::from_json(body)?),
+            method: "PATCH",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(TeamsLinkExternalIdpGroupToTeamForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Update the connection between an external group and a team
+    ///
+    /// Creates a connection between a team and an external group.  Only one external group can be linked to a team.
+    /// 
+    /// You can manage team membership with your identity provider using Enterprise Managed Users for GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)" in the GitHub Help documentation.
+    /// 
+    /// [GitHub API docs for link_external_idp_group_to_team_for_org](https://docs.github.com/rest/reference/teams#link-external-idp-group-team-connection)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn link_external_idp_group_to_team_for_org(&self, org: &str, team_slug: &str, body: PatchTeamsLinkExternalIdpGroupToTeamForOrg) -> Result<ExternalGroup, TeamsLinkExternalIdpGroupToTeamForOrgError> {
+
+        let request_uri = format!("{}/orgs/{}/teams/{}/external-groups", super::GITHUB_BASE_API_URL, org, team_slug);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PatchTeamsLinkExternalIdpGroupToTeamForOrg::from_json(body)?),
+            method: "PATCH",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(TeamsLinkExternalIdpGroupToTeamForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List teams
     ///
     /// Lists all teams in an organization that are visible to the authenticated user.
@@ -5243,10 +5444,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_discussion_comments_in_org](https://docs.github.com/rest/reference/teams#list-discussion-comments)
     ///
-    /// The `list_discussion_comments_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn list_discussion_comments_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, query_params: Option<impl Into<TeamsListDiscussionCommentsInOrgParams<'api>>>) -> Result<Vec<TeamDiscussionComment>, TeamsListDiscussionCommentsInOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
@@ -5260,7 +5458,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -5290,11 +5488,8 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_discussion_comments_in_org](https://docs.github.com/rest/reference/teams#list-discussion-comments)
     ///
-    /// The `list_discussion_comments_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn list_discussion_comments_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, query_params: Option<impl Into<TeamsListDiscussionCommentsInOrgParams<'api>>>) -> Result<Vec<TeamDiscussionComment>, TeamsListDiscussionCommentsInOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
@@ -5309,7 +5504,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -5339,10 +5534,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_discussion_comments_legacy](https://docs.github.com/rest/reference/teams#list-discussion-comments-legacy)
     ///
-    /// The `list_discussion_comments_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn list_discussion_comments_legacy_async(&self, team_id: i32, discussion_number: i32, query_params: Option<impl Into<TeamsListDiscussionCommentsLegacyParams<'api>>>) -> Result<Vec<TeamDiscussionComment>, TeamsListDiscussionCommentsLegacyError> {
 
         let mut request_uri = format!("{}/teams/{}/discussions/{}/comments", super::GITHUB_BASE_API_URL, team_id, discussion_number);
@@ -5356,7 +5548,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -5386,11 +5578,8 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_discussion_comments_legacy](https://docs.github.com/rest/reference/teams#list-discussion-comments-legacy)
     ///
-    /// The `list_discussion_comments_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn list_discussion_comments_legacy(&self, team_id: i32, discussion_number: i32, query_params: Option<impl Into<TeamsListDiscussionCommentsLegacyParams<'api>>>) -> Result<Vec<TeamDiscussionComment>, TeamsListDiscussionCommentsLegacyError> {
 
         let mut request_uri = format!("{}/teams/{}/discussions/{}/comments", super::GITHUB_BASE_API_URL, team_id, discussion_number);
@@ -5405,7 +5594,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -5435,10 +5624,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_discussions_in_org](https://docs.github.com/rest/reference/teams#list-discussions)
     ///
-    /// The `list_discussions_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn list_discussions_in_org_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListDiscussionsInOrgParams<'api>>>) -> Result<Vec<TeamDiscussion>, TeamsListDiscussionsInOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/discussions", super::GITHUB_BASE_API_URL, org, team_slug);
@@ -5452,7 +5638,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -5482,11 +5668,8 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_discussions_in_org](https://docs.github.com/rest/reference/teams#list-discussions)
     ///
-    /// The `list_discussions_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn list_discussions_in_org(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListDiscussionsInOrgParams<'api>>>) -> Result<Vec<TeamDiscussion>, TeamsListDiscussionsInOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/discussions", super::GITHUB_BASE_API_URL, org, team_slug);
@@ -5501,7 +5684,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -5531,10 +5714,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_discussions_legacy](https://docs.github.com/rest/reference/teams#list-discussions-legacy)
     ///
-    /// The `list_discussions_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn list_discussions_legacy_async(&self, team_id: i32, query_params: Option<impl Into<TeamsListDiscussionsLegacyParams<'api>>>) -> Result<Vec<TeamDiscussion>, TeamsListDiscussionsLegacyError> {
 
         let mut request_uri = format!("{}/teams/{}/discussions", super::GITHUB_BASE_API_URL, team_id);
@@ -5548,7 +5728,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -5578,11 +5758,8 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_discussions_legacy](https://docs.github.com/rest/reference/teams#list-discussions-legacy)
     ///
-    /// The `list_discussions_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn list_discussions_legacy(&self, team_id: i32, query_params: Option<impl Into<TeamsListDiscussionsLegacyParams<'api>>>) -> Result<Vec<TeamDiscussion>, TeamsListDiscussionsLegacyError> {
 
         let mut request_uri = format!("{}/teams/{}/discussions", super::GITHUB_BASE_API_URL, team_id);
@@ -5597,7 +5774,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -5613,6 +5790,96 @@ impl<'api> Teams<'api> {
         } else {
             match github_response.status_code() {
                 code => Err(TeamsListDiscussionsLegacyError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List external groups in an organization
+    ///
+    /// Lists external groups available in an organization. You can query the groups using the `display_name` parameter, only groups with a `group_name` containing the text provided in the `display_name` parameter will be returned.  You can also limit your page results using the `per_page` parameter. GitHub generates a url-encoded `page` token using a cursor value for where the next page begins. For more information on cursor pagination, see "[Offset and Cursor Pagination explained](https://dev.to/jackmarchant/offset-and-cursor-pagination-explained-b89)."
+    /// 
+    /// You can manage team membership with your identity provider using Enterprise Managed Users for GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)" in the GitHub Help documentation.
+    /// 
+    /// [GitHub API docs for list_external_idp_groups_for_org](https://docs.github.com/rest/reference/teams#list-external-idp-groups-for-an-organization)
+    ///
+    /// ---
+    pub async fn list_external_idp_groups_for_org_async(&self, org: &str, query_params: Option<impl Into<TeamsListExternalIdpGroupsForOrgParams<'api>>>) -> Result<ExternalGroups, TeamsListExternalIdpGroupsForOrgError> {
+
+        let mut request_uri = format!("{}/orgs/{}/external-groups", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(TeamsListExternalIdpGroupsForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List external groups in an organization
+    ///
+    /// Lists external groups available in an organization. You can query the groups using the `display_name` parameter, only groups with a `group_name` containing the text provided in the `display_name` parameter will be returned.  You can also limit your page results using the `per_page` parameter. GitHub generates a url-encoded `page` token using a cursor value for where the next page begins. For more information on cursor pagination, see "[Offset and Cursor Pagination explained](https://dev.to/jackmarchant/offset-and-cursor-pagination-explained-b89)."
+    /// 
+    /// You can manage team membership with your identity provider using Enterprise Managed Users for GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)" in the GitHub Help documentation.
+    /// 
+    /// [GitHub API docs for list_external_idp_groups_for_org](https://docs.github.com/rest/reference/teams#list-external-idp-groups-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_external_idp_groups_for_org(&self, org: &str, query_params: Option<impl Into<TeamsListExternalIdpGroupsForOrgParams<'api>>>) -> Result<ExternalGroups, TeamsListExternalIdpGroupsForOrgError> {
+
+        let mut request_uri = format!("{}/orgs/{}/external-groups", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: TeamsListExternalIdpGroupsForOrgParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(TeamsListExternalIdpGroupsForOrgError::Generic { code }),
             }
         }
     }
@@ -5806,8 +6073,6 @@ impl<'api> Teams<'api> {
     /// 
     /// List IdP groups available in an organization. You can limit your page results using the `per_page` parameter. GitHub generates a url-encoded `page` token using a cursor value for where the next page begins. For more information on cursor pagination, see "[Offset and Cursor Pagination explained](https://dev.to/jackmarchant/offset-and-cursor-pagination-explained-b89)."
     /// 
-    /// The `per_page` parameter provides pagination for a list of IdP groups the authenticated user can access in an organization. For example, if the user `octocat` wants to see two groups per page in `octo-org` via cURL, it would look like this:
-    /// 
     /// [GitHub API docs for list_idp_groups_for_org](https://docs.github.com/rest/reference/teams#list-idp-groups-for-an-organization)
     ///
     /// ---
@@ -5851,8 +6116,6 @@ impl<'api> Teams<'api> {
     /// Team synchronization is available for organizations using GitHub Enterprise Cloud. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// List IdP groups available in an organization. You can limit your page results using the `per_page` parameter. GitHub generates a url-encoded `page` token using a cursor value for where the next page begins. For more information on cursor pagination, see "[Offset and Cursor Pagination explained](https://dev.to/jackmarchant/offset-and-cursor-pagination-explained-b89)."
-    /// 
-    /// The `per_page` parameter provides pagination for a list of IdP groups the authenticated user can access in an organization. For example, if the user `octocat` wants to see two groups per page in `octo-org` via cURL, it would look like this:
     /// 
     /// [GitHub API docs for list_idp_groups_for_org](https://docs.github.com/rest/reference/teams#list-idp-groups-for-an-organization)
     ///
@@ -6349,10 +6612,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_projects_in_org](https://docs.github.com/rest/reference/teams#list-team-projects)
     ///
-    /// The `list_projects_in_org_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn list_projects_in_org_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListProjectsInOrgParams>>) -> Result<Vec<TeamProject>, TeamsListProjectsInOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/projects", super::GITHUB_BASE_API_URL, org, team_slug);
@@ -6366,7 +6626,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6396,11 +6656,8 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_projects_in_org](https://docs.github.com/rest/reference/teams#list-team-projects)
     ///
-    /// The `list_projects_in_org` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn list_projects_in_org(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListProjectsInOrgParams>>) -> Result<Vec<TeamProject>, TeamsListProjectsInOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/projects", super::GITHUB_BASE_API_URL, org, team_slug);
@@ -6415,7 +6672,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6445,10 +6702,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_projects_legacy](https://docs.github.com/rest/reference/teams/#list-team-projects-legacy)
     ///
-    /// The `list_projects_legacy_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn list_projects_legacy_async(&self, team_id: i32, query_params: Option<impl Into<TeamsListProjectsLegacyParams>>) -> Result<Vec<TeamProject>, TeamsListProjectsLegacyError> {
 
         let mut request_uri = format!("{}/teams/{}/projects", super::GITHUB_BASE_API_URL, team_id);
@@ -6462,7 +6716,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6478,7 +6732,6 @@ impl<'api> Teams<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsListProjectsLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(TeamsListProjectsLegacyError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(TeamsListProjectsLegacyError::Generic { code }),
             }
         }
@@ -6494,11 +6747,8 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for list_projects_legacy](https://docs.github.com/rest/reference/teams/#list-team-projects-legacy)
     ///
-    /// The `list_projects_legacy` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn list_projects_legacy(&self, team_id: i32, query_params: Option<impl Into<TeamsListProjectsLegacyParams>>) -> Result<Vec<TeamProject>, TeamsListProjectsLegacyError> {
 
         let mut request_uri = format!("{}/teams/{}/projects", super::GITHUB_BASE_API_URL, team_id);
@@ -6513,7 +6763,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6529,7 +6779,6 @@ impl<'api> Teams<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsListProjectsLegacyError::Status404(crate::adapters::to_json(github_response)?)),
-                415 => Err(TeamsListProjectsLegacyError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(TeamsListProjectsLegacyError::Generic { code }),
             }
         }
@@ -7322,6 +7571,87 @@ impl<'api> Teams<'api> {
 
     /// ---
     ///
+    /// # Remove the connection between an external group and a team
+    ///
+    /// Deletes a connection between a team and an external group.
+    /// 
+    /// You can manage team membership with your IdP using Enterprise Managed Users for GitHub Enterprise Cloud. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
+    /// 
+    /// [GitHub API docs for unlink_external_idp_group_from_team_for_org](https://docs.github.com/rest/reference/teams#unlink-external-idp-group-team-connection)
+    ///
+    /// ---
+    pub async fn unlink_external_idp_group_from_team_for_org_async(&self, org: &str, team_slug: &str) -> Result<(), TeamsUnlinkExternalIdpGroupFromTeamForOrgError> {
+
+        let request_uri = format!("{}/orgs/{}/teams/{}/external-groups", super::GITHUB_BASE_API_URL, org, team_slug);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(TeamsUnlinkExternalIdpGroupFromTeamForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove the connection between an external group and a team
+    ///
+    /// Deletes a connection between a team and an external group.
+    /// 
+    /// You can manage team membership with your IdP using Enterprise Managed Users for GitHub Enterprise Cloud. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
+    /// 
+    /// [GitHub API docs for unlink_external_idp_group_from_team_for_org](https://docs.github.com/rest/reference/teams#unlink-external-idp-group-team-connection)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn unlink_external_idp_group_from_team_for_org(&self, org: &str, team_slug: &str) -> Result<(), TeamsUnlinkExternalIdpGroupFromTeamForOrgError> {
+
+        let request_uri = format!("{}/orgs/{}/teams/{}/external-groups", super::GITHUB_BASE_API_URL, org, team_slug);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(TeamsUnlinkExternalIdpGroupFromTeamForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Update a discussion comment
     ///
     /// Edits the body text of a discussion comment. OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
@@ -7330,10 +7660,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for update_discussion_comment_in_org](https://docs.github.com/rest/reference/teams#update-a-discussion-comment)
     ///
-    /// The `update_discussion_comment_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn update_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, body: PatchTeamsUpdateDiscussionCommentInOrg) -> Result<TeamDiscussionComment, TeamsUpdateDiscussionCommentInOrgError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, comment_number);
@@ -7343,7 +7670,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: Some(PatchTeamsUpdateDiscussionCommentInOrg::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -7373,11 +7700,8 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for update_discussion_comment_in_org](https://docs.github.com/rest/reference/teams#update-a-discussion-comment)
     ///
-    /// The `update_discussion_comment_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn update_discussion_comment_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, body: PatchTeamsUpdateDiscussionCommentInOrg) -> Result<TeamDiscussionComment, TeamsUpdateDiscussionCommentInOrgError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, comment_number);
@@ -7387,7 +7711,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: Some(PatchTeamsUpdateDiscussionCommentInOrg::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -7417,10 +7741,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for update_discussion_comment_legacy](https://docs.github.com/rest/reference/teams#update-a-discussion-comment-legacy)
     ///
-    /// The `update_discussion_comment_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn update_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, comment_number: i32, body: PatchTeamsUpdateDiscussionCommentLegacy) -> Result<TeamDiscussionComment, TeamsUpdateDiscussionCommentLegacyError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}/comments/{}", super::GITHUB_BASE_API_URL, team_id, discussion_number, comment_number);
@@ -7430,7 +7751,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: Some(PatchTeamsUpdateDiscussionCommentLegacy::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -7460,11 +7781,8 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for update_discussion_comment_legacy](https://docs.github.com/rest/reference/teams#update-a-discussion-comment-legacy)
     ///
-    /// The `update_discussion_comment_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn update_discussion_comment_legacy(&self, team_id: i32, discussion_number: i32, comment_number: i32, body: PatchTeamsUpdateDiscussionCommentLegacy) -> Result<TeamDiscussionComment, TeamsUpdateDiscussionCommentLegacyError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}/comments/{}", super::GITHUB_BASE_API_URL, team_id, discussion_number, comment_number);
@@ -7474,7 +7792,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: Some(PatchTeamsUpdateDiscussionCommentLegacy::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -7504,10 +7822,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for update_discussion_in_org](https://docs.github.com/rest/reference/teams#update-a-discussion)
     ///
-    /// The `update_discussion_in_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn update_discussion_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, body: PatchTeamsUpdateDiscussionInOrg) -> Result<TeamDiscussion, TeamsUpdateDiscussionInOrgError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
@@ -7517,7 +7832,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: Some(PatchTeamsUpdateDiscussionInOrg::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -7547,11 +7862,8 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for update_discussion_in_org](https://docs.github.com/rest/reference/teams#update-a-discussion)
     ///
-    /// The `update_discussion_in_org` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn update_discussion_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, body: PatchTeamsUpdateDiscussionInOrg) -> Result<TeamDiscussion, TeamsUpdateDiscussionInOrgError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
@@ -7561,7 +7873,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: Some(PatchTeamsUpdateDiscussionInOrg::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -7591,10 +7903,7 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for update_discussion_legacy](https://docs.github.com/rest/reference/teams#update-a-discussion-legacy)
     ///
-    /// The `update_discussion_legacy_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn update_discussion_legacy_async(&self, team_id: i32, discussion_number: i32, body: PatchTeamsUpdateDiscussionLegacy) -> Result<TeamDiscussion, TeamsUpdateDiscussionLegacyError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}", super::GITHUB_BASE_API_URL, team_id, discussion_number);
@@ -7604,7 +7913,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: Some(PatchTeamsUpdateDiscussionLegacy::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -7634,11 +7943,8 @@ impl<'api> Teams<'api> {
     /// 
     /// [GitHub API docs for update_discussion_legacy](https://docs.github.com/rest/reference/teams#update-a-discussion-legacy)
     ///
-    /// The `update_discussion_legacy` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn update_discussion_legacy(&self, team_id: i32, discussion_number: i32, body: PatchTeamsUpdateDiscussionLegacy) -> Result<TeamDiscussion, TeamsUpdateDiscussionLegacyError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}", super::GITHUB_BASE_API_URL, team_id, discussion_number);
@@ -7648,7 +7954,7 @@ impl<'api> Teams<'api> {
             uri: request_uri,
             body: Some(PatchTeamsUpdateDiscussionLegacy::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;

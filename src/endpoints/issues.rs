@@ -479,8 +479,6 @@ pub enum IssuesListEventsForTimelineError {
     Status404(BasicError),
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -2128,7 +2126,7 @@ impl<'api> Issues<'api> {
     /// [GitHub API docs for add_assignees](https://docs.github.com/rest/reference/issues#add-assignees-to-an-issue)
     ///
     /// ---
-    pub async fn add_assignees_async(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesAddAssignees) -> Result<IssueSimple, IssuesAddAssigneesError> {
+    pub async fn add_assignees_async(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesAddAssignees) -> Result<Issue, IssuesAddAssigneesError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/assignees", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
@@ -2167,7 +2165,7 @@ impl<'api> Issues<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_assignees(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesAddAssignees) -> Result<IssueSimple, IssuesAddAssigneesError> {
+    pub fn add_assignees(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesAddAssignees) -> Result<Issue, IssuesAddAssigneesError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/assignees", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
@@ -2929,10 +2927,7 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for get](https://docs.github.com/rest/reference/issues#get-an-issue)
     ///
-    /// The `get_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn get_async(&self, owner: &str, repo: &str, issue_number: i32) -> Result<Issue, IssuesGetError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
@@ -2942,7 +2937,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2984,11 +2979,8 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for get](https://docs.github.com/rest/reference/issues#get-an-issue)
     ///
-    /// The `get` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn get(&self, owner: &str, repo: &str, issue_number: i32) -> Result<Issue, IssuesGetError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
@@ -2998,7 +2990,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3028,10 +3020,7 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for get_comment](https://docs.github.com/rest/reference/issues#get-an-issue-comment)
     ///
-    /// The `get_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn get_comment_async(&self, owner: &str, repo: &str, comment_id: i32) -> Result<IssueComment, IssuesGetCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
@@ -3041,7 +3030,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3068,11 +3057,8 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for get_comment](https://docs.github.com/rest/reference/issues#get-an-issue-comment)
     ///
-    /// The `get_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn get_comment(&self, owner: &str, repo: &str, comment_id: i32) -> Result<IssueComment, IssuesGetCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
@@ -3082,7 +3068,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3109,10 +3095,7 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for get_event](https://docs.github.com/rest/reference/issues#get-an-issue-event)
     ///
-    /// The `get_event_async` endpoint is enabled with the `starfox` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "starfox")]
     pub async fn get_event_async(&self, owner: &str, repo: &str, event_id: i32) -> Result<IssueEvent, IssuesGetEventError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/events/{}", super::GITHUB_BASE_API_URL, owner, repo, event_id);
@@ -3122,7 +3105,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.starfox-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3151,11 +3134,8 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for get_event](https://docs.github.com/rest/reference/issues#get-an-issue-event)
     ///
-    /// The `get_event` endpoint is enabled with the `starfox` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "starfox")]
     pub fn get_event(&self, owner: &str, repo: &str, event_id: i32) -> Result<IssueEvent, IssuesGetEventError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/events/{}", super::GITHUB_BASE_API_URL, owner, repo, event_id);
@@ -3165,7 +3145,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.starfox-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3354,10 +3334,7 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for list](https://docs.github.com/rest/reference/issues#list-issues-assigned-to-the-authenticated-user)
     ///
-    /// The `list_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn list_async(&self, query_params: Option<impl Into<IssuesListParams<'api>>>) -> Result<Vec<Issue>, IssuesListError> {
 
         let mut request_uri = format!("{}/issues", super::GITHUB_BASE_API_URL);
@@ -3371,7 +3348,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3410,11 +3387,8 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for list](https://docs.github.com/rest/reference/issues#list-issues-assigned-to-the-authenticated-user)
     ///
-    /// The `list` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn list(&self, query_params: Option<impl Into<IssuesListParams<'api>>>) -> Result<Vec<Issue>, IssuesListError> {
 
         let mut request_uri = format!("{}/issues", super::GITHUB_BASE_API_URL);
@@ -3429,7 +3403,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3548,10 +3522,7 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for list_comments](https://docs.github.com/rest/reference/issues#list-issue-comments)
     ///
-    /// The `list_comments_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn list_comments_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListCommentsParams>>) -> Result<Vec<IssueComment>, IssuesListCommentsError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
@@ -3565,7 +3536,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3595,11 +3566,8 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for list_comments](https://docs.github.com/rest/reference/issues#list-issue-comments)
     ///
-    /// The `list_comments` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn list_comments(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListCommentsParams>>) -> Result<Vec<IssueComment>, IssuesListCommentsError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
@@ -3614,7 +3582,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3644,10 +3612,7 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for list_comments_for_repo](https://docs.github.com/rest/reference/issues#list-issue-comments-for-a-repository)
     ///
-    /// The `list_comments_for_repo_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn list_comments_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListCommentsForRepoParams<'api>>>) -> Result<Vec<IssueComment>, IssuesListCommentsForRepoError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/comments", super::GITHUB_BASE_API_URL, owner, repo);
@@ -3661,7 +3626,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3691,11 +3656,8 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for list_comments_for_repo](https://docs.github.com/rest/reference/issues#list-issue-comments-for-a-repository)
     ///
-    /// The `list_comments_for_repo` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn list_comments_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListCommentsForRepoParams<'api>>>) -> Result<Vec<IssueComment>, IssuesListCommentsForRepoError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/comments", super::GITHUB_BASE_API_URL, owner, repo);
@@ -3710,7 +3672,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3738,10 +3700,7 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for list_events](https://docs.github.com/rest/reference/issues#list-issue-events)
     ///
-    /// The `list_events_async` endpoint is enabled with the `starfox` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "starfox")]
     pub async fn list_events_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListEventsParams>>) -> Result<Vec<IssueEventForIssue>, IssuesListEventsError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/{}/events", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
@@ -3755,7 +3714,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.starfox-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3782,11 +3741,8 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for list_events](https://docs.github.com/rest/reference/issues#list-issue-events)
     ///
-    /// The `list_events` endpoint is enabled with the `starfox` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "starfox")]
     pub fn list_events(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListEventsParams>>) -> Result<Vec<IssueEventForIssue>, IssuesListEventsError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/{}/events", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
@@ -3801,7 +3757,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.starfox-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3828,10 +3784,7 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for list_events_for_repo](https://docs.github.com/rest/reference/issues#list-issue-events-for-a-repository)
     ///
-    /// The `list_events_for_repo_async` endpoint is enabled with the `starfox` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "starfox")]
     pub async fn list_events_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListEventsForRepoParams>>) -> Result<Vec<IssueEvent>, IssuesListEventsForRepoError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/events", super::GITHUB_BASE_API_URL, owner, repo);
@@ -3845,7 +3798,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.starfox-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3872,11 +3825,8 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for list_events_for_repo](https://docs.github.com/rest/reference/issues#list-issue-events-for-a-repository)
     ///
-    /// The `list_events_for_repo` endpoint is enabled with the `starfox` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "starfox")]
     pub fn list_events_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListEventsForRepoParams>>) -> Result<Vec<IssueEvent>, IssuesListEventsForRepoError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/events", super::GITHUB_BASE_API_URL, owner, repo);
@@ -3891,7 +3841,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.starfox-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3918,12 +3868,7 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for list_events_for_timeline](https://docs.github.com/rest/reference/issues#list-timeline-events-for-an-issue)
     ///
-    /// The `list_events_for_timeline_async` endpoint is enabled with the `mockingbird` cargo feature.
-    /// The `list_events_for_timeline_async` endpoint is enabled with the `starfox` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "mockingbird")]
-    #[cfg(feature = "starfox")]
     pub async fn list_events_for_timeline_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListEventsForTimelineParams>>) -> Result<Vec<TimelineIssueEvents>, IssuesListEventsForTimelineError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/{}/timeline", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
@@ -3937,7 +3882,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.mockingbird-preview+json"), ("Accept", "application/vnd.github.starfox-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3954,7 +3899,6 @@ impl<'api> Issues<'api> {
             match github_response.status_code() {
                 404 => Err(IssuesListEventsForTimelineError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 410 => Err(IssuesListEventsForTimelineError::Status410(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(IssuesListEventsForTimelineError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(IssuesListEventsForTimelineError::Generic { code }),
             }
         }
@@ -3966,13 +3910,8 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for list_events_for_timeline](https://docs.github.com/rest/reference/issues#list-timeline-events-for-an-issue)
     ///
-    /// The `list_events_for_timeline` endpoint is enabled with the `mockingbird` cargo feature.
-    /// The `list_events_for_timeline` endpoint is enabled with the `starfox` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "mockingbird")]
-    #[cfg(feature = "starfox")]
     pub fn list_events_for_timeline(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListEventsForTimelineParams>>) -> Result<Vec<TimelineIssueEvents>, IssuesListEventsForTimelineError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/{}/timeline", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
@@ -3987,7 +3926,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.mockingbird-preview+json"), ("Accept", "application/vnd.github.starfox-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -4004,7 +3943,6 @@ impl<'api> Issues<'api> {
             match github_response.status_code() {
                 404 => Err(IssuesListEventsForTimelineError::Status404(crate::adapters::to_json(github_response)?)),
                 410 => Err(IssuesListEventsForTimelineError::Status410(crate::adapters::to_json(github_response)?)),
-                415 => Err(IssuesListEventsForTimelineError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(IssuesListEventsForTimelineError::Generic { code }),
             }
         }
@@ -4023,10 +3961,7 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/issues#list-user-account-issues-assigned-to-the-authenticated-user)
     ///
-    /// The `list_for_authenticated_user_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<IssuesListForAuthenticatedUserParams<'api>>>) -> Result<Vec<Issue>, IssuesListForAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/user/issues", super::GITHUB_BASE_API_URL);
@@ -4040,7 +3975,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -4075,11 +4010,8 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/issues#list-user-account-issues-assigned-to-the-authenticated-user)
     ///
-    /// The `list_for_authenticated_user` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn list_for_authenticated_user(&self, query_params: Option<impl Into<IssuesListForAuthenticatedUserParams<'api>>>) -> Result<Vec<Issue>, IssuesListForAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/user/issues", super::GITHUB_BASE_API_URL);
@@ -4094,7 +4026,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -4129,10 +4061,7 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/issues#list-organization-issues-assigned-to-the-authenticated-user)
     ///
-    /// The `list_for_org_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn list_for_org_async(&self, org: &str, query_params: Option<impl Into<IssuesListForOrgParams<'api>>>) -> Result<Vec<Issue>, IssuesListForOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/issues", super::GITHUB_BASE_API_URL, org);
@@ -4146,7 +4075,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -4180,11 +4109,8 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/issues#list-organization-issues-assigned-to-the-authenticated-user)
     ///
-    /// The `list_for_org` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn list_for_org(&self, org: &str, query_params: Option<impl Into<IssuesListForOrgParams<'api>>>) -> Result<Vec<Issue>, IssuesListForOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/issues", super::GITHUB_BASE_API_URL, org);
@@ -4199,7 +4125,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -4233,11 +4159,8 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/reference/issues#list-repository-issues)
     ///
-    /// The `list_for_repo_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
-    pub async fn list_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListForRepoParams<'api>>>) -> Result<Vec<IssueSimple>, IssuesListForRepoError> {
+    pub async fn list_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListForRepoParams<'api>>>) -> Result<Vec<Issue>, IssuesListForRepoError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -4250,7 +4173,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -4286,12 +4209,9 @@ impl<'api> Issues<'api> {
     /// 
     /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/reference/issues#list-repository-issues)
     ///
-    /// The `list_for_repo` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
-    pub fn list_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListForRepoParams<'api>>>) -> Result<Vec<IssueSimple>, IssuesListForRepoError> {
+    pub fn list_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListForRepoParams<'api>>>) -> Result<Vec<Issue>, IssuesListForRepoError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -4305,7 +4225,7 @@ impl<'api> Issues<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -4835,7 +4755,7 @@ impl<'api> Issues<'api> {
     /// [GitHub API docs for remove_assignees](https://docs.github.com/rest/reference/issues#remove-assignees-from-an-issue)
     ///
     /// ---
-    pub async fn remove_assignees_async(&self, owner: &str, repo: &str, issue_number: i32, body: DeleteIssuesRemoveAssignees) -> Result<IssueSimple, IssuesRemoveAssigneesError> {
+    pub async fn remove_assignees_async(&self, owner: &str, repo: &str, issue_number: i32, body: DeleteIssuesRemoveAssignees) -> Result<Issue, IssuesRemoveAssigneesError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/assignees", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
@@ -4874,7 +4794,7 @@ impl<'api> Issues<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_assignees(&self, owner: &str, repo: &str, issue_number: i32, body: DeleteIssuesRemoveAssignees) -> Result<IssueSimple, IssuesRemoveAssigneesError> {
+    pub fn remove_assignees(&self, owner: &str, repo: &str, issue_number: i32, body: DeleteIssuesRemoveAssignees) -> Result<Issue, IssuesRemoveAssigneesError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/assignees", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 

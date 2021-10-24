@@ -46,8 +46,6 @@ pub enum ProjectsAddCollaboratorError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Not modified")]
@@ -132,7 +130,7 @@ pub enum ProjectsCreateForAuthenticatedUserError {
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostProjectsCreateForAuthenticatedUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
@@ -356,8 +354,6 @@ pub enum ProjectsGetPermissionForUserError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Not modified")]
@@ -408,8 +404,6 @@ pub enum ProjectsListCollaboratorsError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Not modified")]
@@ -504,8 +498,6 @@ pub enum ProjectsListForUserError {
 
     // -- endpoint errors
 
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
@@ -581,8 +573,6 @@ pub enum ProjectsRemoveCollaboratorError {
     Status304,
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Validation failed")]
@@ -988,10 +978,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for add_collaborator](https://docs.github.com/rest/reference/projects#add-project-collaborator)
     ///
-    /// The `add_collaborator_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn add_collaborator_async(&self, project_id: i32, username: &str, body: PutProjectsAddCollaborator) -> Result<(), ProjectsAddCollaboratorError> {
 
         let request_uri = format!("{}/projects/{}/collaborators/{}", super::GITHUB_BASE_API_URL, project_id, username);
@@ -1001,7 +988,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PutProjectsAddCollaborator::from_json(body)?),
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1017,7 +1004,6 @@ impl<'api> Projects<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(ProjectsAddCollaboratorError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(ProjectsAddCollaboratorError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(ProjectsAddCollaboratorError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(ProjectsAddCollaboratorError::Status304),
                 403 => Err(ProjectsAddCollaboratorError::Status403(crate::adapters::to_json_async(github_response).await?)),
@@ -1035,11 +1021,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for add_collaborator](https://docs.github.com/rest/reference/projects#add-project-collaborator)
     ///
-    /// The `add_collaborator` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn add_collaborator(&self, project_id: i32, username: &str, body: PutProjectsAddCollaborator) -> Result<(), ProjectsAddCollaboratorError> {
 
         let request_uri = format!("{}/projects/{}/collaborators/{}", super::GITHUB_BASE_API_URL, project_id, username);
@@ -1049,7 +1032,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PutProjectsAddCollaborator::from_json(body)?),
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1065,7 +1048,6 @@ impl<'api> Projects<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(ProjectsAddCollaboratorError::Status404(crate::adapters::to_json(github_response)?)),
-                415 => Err(ProjectsAddCollaboratorError::Status415(crate::adapters::to_json(github_response)?)),
                 422 => Err(ProjectsAddCollaboratorError::Status422(crate::adapters::to_json(github_response)?)),
                 304 => Err(ProjectsAddCollaboratorError::Status304),
                 403 => Err(ProjectsAddCollaboratorError::Status403(crate::adapters::to_json(github_response)?)),
@@ -1081,10 +1063,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for create_card](https://docs.github.com/rest/reference/projects#create-a-project-card)
     ///
-    /// The `create_card_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn create_card_async(&self, column_id: i32, body: PostProjectsCreateCard) -> Result<ProjectCard, ProjectsCreateCardError> {
 
         let request_uri = format!("{}/projects/columns/{}/cards", super::GITHUB_BASE_API_URL, column_id);
@@ -1094,7 +1073,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsCreateCard::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1125,11 +1104,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for create_card](https://docs.github.com/rest/reference/projects#create-a-project-card)
     ///
-    /// The `create_card` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn create_card(&self, column_id: i32, body: PostProjectsCreateCard) -> Result<ProjectCard, ProjectsCreateCardError> {
 
         let request_uri = format!("{}/projects/columns/{}/cards", super::GITHUB_BASE_API_URL, column_id);
@@ -1139,7 +1115,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsCreateCard::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1170,10 +1146,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for create_column](https://docs.github.com/rest/reference/projects#create-a-project-column)
     ///
-    /// The `create_column_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn create_column_async(&self, project_id: i32, body: PostProjectsCreateColumn) -> Result<ProjectColumn, ProjectsCreateColumnError> {
 
         let request_uri = format!("{}/projects/{}/columns", super::GITHUB_BASE_API_URL, project_id);
@@ -1183,7 +1156,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsCreateColumn::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1213,11 +1186,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for create_column](https://docs.github.com/rest/reference/projects#create-a-project-column)
     ///
-    /// The `create_column` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn create_column(&self, project_id: i32, body: PostProjectsCreateColumn) -> Result<ProjectColumn, ProjectsCreateColumnError> {
 
         let request_uri = format!("{}/projects/{}/columns", super::GITHUB_BASE_API_URL, project_id);
@@ -1227,7 +1197,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsCreateColumn::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1257,10 +1227,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/reference/projects#create-a-user-project)
     ///
-    /// The `create_for_authenticated_user_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn create_for_authenticated_user_async(&self, body: PostProjectsCreateForAuthenticatedUser) -> Result<Project, ProjectsCreateForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/projects", super::GITHUB_BASE_API_URL);
@@ -1270,7 +1237,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsCreateForAuthenticatedUser::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1301,11 +1268,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/reference/projects#create-a-user-project)
     ///
-    /// The `create_for_authenticated_user` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn create_for_authenticated_user(&self, body: PostProjectsCreateForAuthenticatedUser) -> Result<Project, ProjectsCreateForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/projects", super::GITHUB_BASE_API_URL);
@@ -1315,7 +1279,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsCreateForAuthenticatedUser::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1348,10 +1312,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for create_for_org](https://docs.github.com/rest/reference/projects#create-an-organization-project)
     ///
-    /// The `create_for_org_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn create_for_org_async(&self, org: &str, body: PostProjectsCreateForOrg) -> Result<Project, ProjectsCreateForOrgError> {
 
         let request_uri = format!("{}/orgs/{}/projects", super::GITHUB_BASE_API_URL, org);
@@ -1361,7 +1322,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsCreateForOrg::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1394,11 +1355,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for create_for_org](https://docs.github.com/rest/reference/projects#create-an-organization-project)
     ///
-    /// The `create_for_org` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn create_for_org(&self, org: &str, body: PostProjectsCreateForOrg) -> Result<Project, ProjectsCreateForOrgError> {
 
         let request_uri = format!("{}/orgs/{}/projects", super::GITHUB_BASE_API_URL, org);
@@ -1408,7 +1366,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsCreateForOrg::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1441,10 +1399,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for create_for_repo](https://docs.github.com/rest/reference/projects#create-a-repository-project)
     ///
-    /// The `create_for_repo_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn create_for_repo_async(&self, owner: &str, repo: &str, body: PostProjectsCreateForRepo) -> Result<Project, ProjectsCreateForRepoError> {
 
         let request_uri = format!("{}/repos/{}/{}/projects", super::GITHUB_BASE_API_URL, owner, repo);
@@ -1454,7 +1409,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsCreateForRepo::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1487,11 +1442,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for create_for_repo](https://docs.github.com/rest/reference/projects#create-a-repository-project)
     ///
-    /// The `create_for_repo` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn create_for_repo(&self, owner: &str, repo: &str, body: PostProjectsCreateForRepo) -> Result<Project, ProjectsCreateForRepoError> {
 
         let request_uri = format!("{}/repos/{}/{}/projects", super::GITHUB_BASE_API_URL, owner, repo);
@@ -1501,7 +1453,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsCreateForRepo::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1534,10 +1486,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for delete](https://docs.github.com/rest/reference/projects#delete-a-project)
     ///
-    /// The `delete_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn delete_async(&self, project_id: i32) -> Result<(), ProjectsDeleteError> {
 
         let request_uri = format!("{}/projects/{}", super::GITHUB_BASE_API_URL, project_id);
@@ -1547,7 +1496,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1580,11 +1529,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for delete](https://docs.github.com/rest/reference/projects#delete-a-project)
     ///
-    /// The `delete` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn delete(&self, project_id: i32) -> Result<(), ProjectsDeleteError> {
 
         let request_uri = format!("{}/projects/{}", super::GITHUB_BASE_API_URL, project_id);
@@ -1594,7 +1540,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1625,10 +1571,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for delete_card](https://docs.github.com/rest/reference/projects#delete-a-project-card)
     ///
-    /// The `delete_card_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn delete_card_async(&self, card_id: i32) -> Result<(), ProjectsDeleteCardError> {
 
         let request_uri = format!("{}/projects/columns/cards/{}", super::GITHUB_BASE_API_URL, card_id);
@@ -1638,7 +1581,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1668,11 +1611,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for delete_card](https://docs.github.com/rest/reference/projects#delete-a-project-card)
     ///
-    /// The `delete_card` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn delete_card(&self, card_id: i32) -> Result<(), ProjectsDeleteCardError> {
 
         let request_uri = format!("{}/projects/columns/cards/{}", super::GITHUB_BASE_API_URL, card_id);
@@ -1682,7 +1622,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1712,10 +1652,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for delete_column](https://docs.github.com/rest/reference/projects#delete-a-project-column)
     ///
-    /// The `delete_column_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn delete_column_async(&self, column_id: i32) -> Result<(), ProjectsDeleteColumnError> {
 
         let request_uri = format!("{}/projects/columns/{}", super::GITHUB_BASE_API_URL, column_id);
@@ -1725,7 +1662,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1754,11 +1691,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for delete_column](https://docs.github.com/rest/reference/projects#delete-a-project-column)
     ///
-    /// The `delete_column` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn delete_column(&self, column_id: i32) -> Result<(), ProjectsDeleteColumnError> {
 
         let request_uri = format!("{}/projects/columns/{}", super::GITHUB_BASE_API_URL, column_id);
@@ -1768,7 +1702,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1799,10 +1733,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for get](https://docs.github.com/rest/reference/projects#get-a-project)
     ///
-    /// The `get_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn get_async(&self, project_id: i32) -> Result<Project, ProjectsGetError> {
 
         let request_uri = format!("{}/projects/{}", super::GITHUB_BASE_API_URL, project_id);
@@ -1812,7 +1743,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1843,11 +1774,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for get](https://docs.github.com/rest/reference/projects#get-a-project)
     ///
-    /// The `get` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn get(&self, project_id: i32) -> Result<Project, ProjectsGetError> {
 
         let request_uri = format!("{}/projects/{}", super::GITHUB_BASE_API_URL, project_id);
@@ -1857,7 +1785,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1886,10 +1814,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for get_card](https://docs.github.com/rest/reference/projects#get-a-project-card)
     ///
-    /// The `get_card_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn get_card_async(&self, card_id: i32) -> Result<ProjectCard, ProjectsGetCardError> {
 
         let request_uri = format!("{}/projects/columns/cards/{}", super::GITHUB_BASE_API_URL, card_id);
@@ -1899,7 +1824,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1929,11 +1854,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for get_card](https://docs.github.com/rest/reference/projects#get-a-project-card)
     ///
-    /// The `get_card` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn get_card(&self, card_id: i32) -> Result<ProjectCard, ProjectsGetCardError> {
 
         let request_uri = format!("{}/projects/columns/cards/{}", super::GITHUB_BASE_API_URL, card_id);
@@ -1943,7 +1865,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1973,10 +1895,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for get_column](https://docs.github.com/rest/reference/projects#get-a-project-column)
     ///
-    /// The `get_column_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn get_column_async(&self, column_id: i32) -> Result<ProjectColumn, ProjectsGetColumnError> {
 
         let request_uri = format!("{}/projects/columns/{}", super::GITHUB_BASE_API_URL, column_id);
@@ -1986,7 +1905,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2016,11 +1935,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for get_column](https://docs.github.com/rest/reference/projects#get-a-project-column)
     ///
-    /// The `get_column` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn get_column(&self, column_id: i32) -> Result<ProjectColumn, ProjectsGetColumnError> {
 
         let request_uri = format!("{}/projects/columns/{}", super::GITHUB_BASE_API_URL, column_id);
@@ -2030,7 +1946,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2062,11 +1978,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for get_permission_for_user](https://docs.github.com/rest/reference/projects#get-project-permission-for-a-user)
     ///
-    /// The `get_permission_for_user_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
-    pub async fn get_permission_for_user_async(&self, project_id: i32, username: &str) -> Result<RepositoryCollaboratorPermission, ProjectsGetPermissionForUserError> {
+    pub async fn get_permission_for_user_async(&self, project_id: i32, username: &str) -> Result<ProjectCollaboratorPermission, ProjectsGetPermissionForUserError> {
 
         let request_uri = format!("{}/projects/{}/collaborators/{}/permission", super::GITHUB_BASE_API_URL, project_id, username);
 
@@ -2075,7 +1988,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2091,7 +2004,6 @@ impl<'api> Projects<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(ProjectsGetPermissionForUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(ProjectsGetPermissionForUserError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(ProjectsGetPermissionForUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(ProjectsGetPermissionForUserError::Status304),
                 403 => Err(ProjectsGetPermissionForUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
@@ -2109,12 +2021,9 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for get_permission_for_user](https://docs.github.com/rest/reference/projects#get-project-permission-for-a-user)
     ///
-    /// The `get_permission_for_user` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
-    pub fn get_permission_for_user(&self, project_id: i32, username: &str) -> Result<RepositoryCollaboratorPermission, ProjectsGetPermissionForUserError> {
+    pub fn get_permission_for_user(&self, project_id: i32, username: &str) -> Result<ProjectCollaboratorPermission, ProjectsGetPermissionForUserError> {
 
         let request_uri = format!("{}/projects/{}/collaborators/{}/permission", super::GITHUB_BASE_API_URL, project_id, username);
 
@@ -2123,7 +2032,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2139,7 +2048,6 @@ impl<'api> Projects<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(ProjectsGetPermissionForUserError::Status404(crate::adapters::to_json(github_response)?)),
-                415 => Err(ProjectsGetPermissionForUserError::Status415(crate::adapters::to_json(github_response)?)),
                 422 => Err(ProjectsGetPermissionForUserError::Status422(crate::adapters::to_json(github_response)?)),
                 304 => Err(ProjectsGetPermissionForUserError::Status304),
                 403 => Err(ProjectsGetPermissionForUserError::Status403(crate::adapters::to_json(github_response)?)),
@@ -2155,10 +2063,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_cards](https://docs.github.com/rest/reference/projects#list-project-cards)
     ///
-    /// The `list_cards_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn list_cards_async(&self, column_id: i32, query_params: Option<impl Into<ProjectsListCardsParams<'api>>>) -> Result<Vec<ProjectCard>, ProjectsListCardsError> {
 
         let mut request_uri = format!("{}/projects/columns/{}/cards", super::GITHUB_BASE_API_URL, column_id);
@@ -2172,7 +2077,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2201,11 +2106,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_cards](https://docs.github.com/rest/reference/projects#list-project-cards)
     ///
-    /// The `list_cards` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn list_cards(&self, column_id: i32, query_params: Option<impl Into<ProjectsListCardsParams<'api>>>) -> Result<Vec<ProjectCard>, ProjectsListCardsError> {
 
         let mut request_uri = format!("{}/projects/columns/{}/cards", super::GITHUB_BASE_API_URL, column_id);
@@ -2220,7 +2122,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2251,10 +2153,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_collaborators](https://docs.github.com/rest/reference/projects#list-project-collaborators)
     ///
-    /// The `list_collaborators_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn list_collaborators_async(&self, project_id: i32, query_params: Option<impl Into<ProjectsListCollaboratorsParams<'api>>>) -> Result<Vec<SimpleUser>, ProjectsListCollaboratorsError> {
 
         let mut request_uri = format!("{}/projects/{}/collaborators", super::GITHUB_BASE_API_URL, project_id);
@@ -2268,7 +2167,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2284,7 +2183,6 @@ impl<'api> Projects<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(ProjectsListCollaboratorsError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(ProjectsListCollaboratorsError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(ProjectsListCollaboratorsError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 304 => Err(ProjectsListCollaboratorsError::Status304),
                 403 => Err(ProjectsListCollaboratorsError::Status403(crate::adapters::to_json_async(github_response).await?)),
@@ -2302,11 +2200,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_collaborators](https://docs.github.com/rest/reference/projects#list-project-collaborators)
     ///
-    /// The `list_collaborators` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn list_collaborators(&self, project_id: i32, query_params: Option<impl Into<ProjectsListCollaboratorsParams<'api>>>) -> Result<Vec<SimpleUser>, ProjectsListCollaboratorsError> {
 
         let mut request_uri = format!("{}/projects/{}/collaborators", super::GITHUB_BASE_API_URL, project_id);
@@ -2321,7 +2216,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2337,7 +2232,6 @@ impl<'api> Projects<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(ProjectsListCollaboratorsError::Status404(crate::adapters::to_json(github_response)?)),
-                415 => Err(ProjectsListCollaboratorsError::Status415(crate::adapters::to_json(github_response)?)),
                 422 => Err(ProjectsListCollaboratorsError::Status422(crate::adapters::to_json(github_response)?)),
                 304 => Err(ProjectsListCollaboratorsError::Status304),
                 403 => Err(ProjectsListCollaboratorsError::Status403(crate::adapters::to_json(github_response)?)),
@@ -2353,10 +2247,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_columns](https://docs.github.com/rest/reference/projects#list-project-columns)
     ///
-    /// The `list_columns_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn list_columns_async(&self, project_id: i32, query_params: Option<impl Into<ProjectsListColumnsParams>>) -> Result<Vec<ProjectColumn>, ProjectsListColumnsError> {
 
         let mut request_uri = format!("{}/projects/{}/columns", super::GITHUB_BASE_API_URL, project_id);
@@ -2370,7 +2261,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2399,11 +2290,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_columns](https://docs.github.com/rest/reference/projects#list-project-columns)
     ///
-    /// The `list_columns` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn list_columns(&self, project_id: i32, query_params: Option<impl Into<ProjectsListColumnsParams>>) -> Result<Vec<ProjectColumn>, ProjectsListColumnsError> {
 
         let mut request_uri = format!("{}/projects/{}/columns", super::GITHUB_BASE_API_URL, project_id);
@@ -2418,7 +2306,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2449,10 +2337,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/projects#list-organization-projects)
     ///
-    /// The `list_for_org_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn list_for_org_async(&self, org: &str, query_params: Option<impl Into<ProjectsListForOrgParams<'api>>>) -> Result<Vec<Project>, ProjectsListForOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/projects", super::GITHUB_BASE_API_URL, org);
@@ -2466,7 +2351,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2495,11 +2380,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/projects#list-organization-projects)
     ///
-    /// The `list_for_org` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn list_for_org(&self, org: &str, query_params: Option<impl Into<ProjectsListForOrgParams<'api>>>) -> Result<Vec<Project>, ProjectsListForOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/projects", super::GITHUB_BASE_API_URL, org);
@@ -2514,7 +2396,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2543,10 +2425,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/reference/projects#list-repository-projects)
     ///
-    /// The `list_for_repo_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn list_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ProjectsListForRepoParams<'api>>>) -> Result<Vec<Project>, ProjectsListForRepoError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/projects", super::GITHUB_BASE_API_URL, owner, repo);
@@ -2560,7 +2439,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2593,11 +2472,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/reference/projects#list-repository-projects)
     ///
-    /// The `list_for_repo` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn list_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ProjectsListForRepoParams<'api>>>) -> Result<Vec<Project>, ProjectsListForRepoError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/projects", super::GITHUB_BASE_API_URL, owner, repo);
@@ -2612,7 +2488,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2643,10 +2519,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/projects#list-user-projects)
     ///
-    /// The `list_for_user_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn list_for_user_async(&self, username: &str, query_params: Option<impl Into<ProjectsListForUserParams<'api>>>) -> Result<Vec<Project>, ProjectsListForUserError> {
 
         let mut request_uri = format!("{}/users/{}/projects", super::GITHUB_BASE_API_URL, username);
@@ -2660,7 +2533,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2675,7 +2548,6 @@ impl<'api> Projects<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                415 => Err(ProjectsListForUserError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(ProjectsListForUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ProjectsListForUserError::Generic { code }),
             }
@@ -2688,11 +2560,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/projects#list-user-projects)
     ///
-    /// The `list_for_user` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn list_for_user(&self, username: &str, query_params: Option<impl Into<ProjectsListForUserParams<'api>>>) -> Result<Vec<Project>, ProjectsListForUserError> {
 
         let mut request_uri = format!("{}/users/{}/projects", super::GITHUB_BASE_API_URL, username);
@@ -2707,7 +2576,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2722,7 +2591,6 @@ impl<'api> Projects<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                415 => Err(ProjectsListForUserError::Status415(crate::adapters::to_json(github_response)?)),
                 422 => Err(ProjectsListForUserError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ProjectsListForUserError::Generic { code }),
             }
@@ -2735,10 +2603,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for move_card](https://docs.github.com/rest/reference/projects#move-a-project-card)
     ///
-    /// The `move_card_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn move_card_async(&self, card_id: i32, body: PostProjectsMoveCard) -> Result<HashMap<String, Value>, ProjectsMoveCardError> {
 
         let request_uri = format!("{}/projects/columns/cards/{}/moves", super::GITHUB_BASE_API_URL, card_id);
@@ -2748,7 +2613,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsMoveCard::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2779,11 +2644,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for move_card](https://docs.github.com/rest/reference/projects#move-a-project-card)
     ///
-    /// The `move_card` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn move_card(&self, card_id: i32, body: PostProjectsMoveCard) -> Result<HashMap<String, Value>, ProjectsMoveCardError> {
 
         let request_uri = format!("{}/projects/columns/cards/{}/moves", super::GITHUB_BASE_API_URL, card_id);
@@ -2793,7 +2655,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsMoveCard::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2824,10 +2686,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for move_column](https://docs.github.com/rest/reference/projects#move-a-project-column)
     ///
-    /// The `move_column_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn move_column_async(&self, column_id: i32, body: PostProjectsMoveColumn) -> Result<HashMap<String, Value>, ProjectsMoveColumnError> {
 
         let request_uri = format!("{}/projects/columns/{}/moves", super::GITHUB_BASE_API_URL, column_id);
@@ -2837,7 +2696,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsMoveColumn::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2867,11 +2726,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for move_column](https://docs.github.com/rest/reference/projects#move-a-project-column)
     ///
-    /// The `move_column` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn move_column(&self, column_id: i32, body: PostProjectsMoveColumn) -> Result<HashMap<String, Value>, ProjectsMoveColumnError> {
 
         let request_uri = format!("{}/projects/columns/{}/moves", super::GITHUB_BASE_API_URL, column_id);
@@ -2881,7 +2737,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PostProjectsMoveColumn::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2913,10 +2769,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for remove_collaborator](https://docs.github.com/rest/reference/projects#remove-project-collaborator)
     ///
-    /// The `remove_collaborator_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn remove_collaborator_async(&self, project_id: i32, username: &str) -> Result<(), ProjectsRemoveCollaboratorError> {
 
         let request_uri = format!("{}/projects/{}/collaborators/{}", super::GITHUB_BASE_API_URL, project_id, username);
@@ -2926,7 +2779,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2943,7 +2796,6 @@ impl<'api> Projects<'api> {
             match github_response.status_code() {
                 304 => Err(ProjectsRemoveCollaboratorError::Status304),
                 404 => Err(ProjectsRemoveCollaboratorError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(ProjectsRemoveCollaboratorError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 403 => Err(ProjectsRemoveCollaboratorError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(ProjectsRemoveCollaboratorError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 401 => Err(ProjectsRemoveCollaboratorError::Status401(crate::adapters::to_json_async(github_response).await?)),
@@ -2960,11 +2812,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for remove_collaborator](https://docs.github.com/rest/reference/projects#remove-project-collaborator)
     ///
-    /// The `remove_collaborator` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn remove_collaborator(&self, project_id: i32, username: &str) -> Result<(), ProjectsRemoveCollaboratorError> {
 
         let request_uri = format!("{}/projects/{}/collaborators/{}", super::GITHUB_BASE_API_URL, project_id, username);
@@ -2974,7 +2823,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2991,7 +2840,6 @@ impl<'api> Projects<'api> {
             match github_response.status_code() {
                 304 => Err(ProjectsRemoveCollaboratorError::Status304),
                 404 => Err(ProjectsRemoveCollaboratorError::Status404(crate::adapters::to_json(github_response)?)),
-                415 => Err(ProjectsRemoveCollaboratorError::Status415(crate::adapters::to_json(github_response)?)),
                 403 => Err(ProjectsRemoveCollaboratorError::Status403(crate::adapters::to_json(github_response)?)),
                 422 => Err(ProjectsRemoveCollaboratorError::Status422(crate::adapters::to_json(github_response)?)),
                 401 => Err(ProjectsRemoveCollaboratorError::Status401(crate::adapters::to_json(github_response)?)),
@@ -3008,10 +2856,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for update](https://docs.github.com/rest/reference/projects#update-a-project)
     ///
-    /// The `update_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn update_async(&self, project_id: i32, body: PatchProjectsUpdate) -> Result<Project, ProjectsUpdateError> {
 
         let request_uri = format!("{}/projects/{}", super::GITHUB_BASE_API_URL, project_id);
@@ -3021,7 +2866,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PatchProjectsUpdate::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3055,11 +2900,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for update](https://docs.github.com/rest/reference/projects#update-a-project)
     ///
-    /// The `update` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn update(&self, project_id: i32, body: PatchProjectsUpdate) -> Result<Project, ProjectsUpdateError> {
 
         let request_uri = format!("{}/projects/{}", super::GITHUB_BASE_API_URL, project_id);
@@ -3069,7 +2911,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PatchProjectsUpdate::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3101,10 +2943,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for update_card](https://docs.github.com/rest/reference/projects#update-a-project-card)
     ///
-    /// The `update_card_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn update_card_async(&self, card_id: i32, body: PatchProjectsUpdateCard) -> Result<ProjectCard, ProjectsUpdateCardError> {
 
         let request_uri = format!("{}/projects/columns/cards/{}", super::GITHUB_BASE_API_URL, card_id);
@@ -3114,7 +2953,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PatchProjectsUpdateCard::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3145,11 +2984,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for update_card](https://docs.github.com/rest/reference/projects#update-a-project-card)
     ///
-    /// The `update_card` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn update_card(&self, card_id: i32, body: PatchProjectsUpdateCard) -> Result<ProjectCard, ProjectsUpdateCardError> {
 
         let request_uri = format!("{}/projects/columns/cards/{}", super::GITHUB_BASE_API_URL, card_id);
@@ -3159,7 +2995,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PatchProjectsUpdateCard::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3190,10 +3026,7 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for update_column](https://docs.github.com/rest/reference/projects#update-a-project-column)
     ///
-    /// The `update_column_async` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "inertia")]
     pub async fn update_column_async(&self, column_id: i32, body: PatchProjectsUpdateColumn) -> Result<ProjectColumn, ProjectsUpdateColumnError> {
 
         let request_uri = format!("{}/projects/columns/{}", super::GITHUB_BASE_API_URL, column_id);
@@ -3203,7 +3036,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PatchProjectsUpdateColumn::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3232,11 +3065,8 @@ impl<'api> Projects<'api> {
     /// 
     /// [GitHub API docs for update_column](https://docs.github.com/rest/reference/projects#update-a-project-column)
     ///
-    /// The `update_column` endpoint is enabled with the `inertia` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "inertia")]
     pub fn update_column(&self, column_id: i32, body: PatchProjectsUpdateColumn) -> Result<ProjectColumn, ProjectsUpdateColumnError> {
 
         let request_uri = format!("{}/projects/columns/{}", super::GITHUB_BASE_API_URL, column_id);
@@ -3246,7 +3076,7 @@ impl<'api> Projects<'api> {
             uri: request_uri,
             body: Some(PatchProjectsUpdateColumn::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.inertia-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;

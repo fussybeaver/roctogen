@@ -860,9 +860,6 @@ impl<'api> CodeScanning<'api> {
     /// This is formatted as
     /// [SARIF version 2.1.0](https://docs.oasis-open.org/sarif/sarif/v2.1.0/cs01/sarif-v2.1.0-cs01.html).
     /// 
-    /// **Deprecation notice**:
-    /// The `tool_name` field is deprecated and will, in future, not be included in the response for this endpoint. The example response reflects this change. The tool name can now be found inside the `tool` field.
-    /// 
     /// [GitHub API docs for get_analysis](https://docs.github.com/rest/reference/code-scanning#get-a-code-scanning-analysis-for-a-repository)
     ///
     /// ---
@@ -920,9 +917,6 @@ impl<'api> CodeScanning<'api> {
     /// the response contains the analysis data that was uploaded.
     /// This is formatted as
     /// [SARIF version 2.1.0](https://docs.oasis-open.org/sarif/sarif/v2.1.0/cs01/sarif-v2.1.0-cs01.html).
-    /// 
-    /// **Deprecation notice**:
-    /// The `tool_name` field is deprecated and will, in future, not be included in the response for this endpoint. The example response reflects this change. The tool name can now be found inside the `tool` field.
     /// 
     /// [GitHub API docs for get_analysis](https://docs.github.com/rest/reference/code-scanning#get-a-code-scanning-analysis-for-a-repository)
     ///

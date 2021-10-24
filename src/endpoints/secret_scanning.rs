@@ -44,8 +44,31 @@ pub enum SecretScanningGetAlertError {
 
     // -- endpoint errors
 
+    #[error("Not modified")]
+    Status304,
     #[error("Repository is public, or secret scanning is disabled for the repository, or the resource is not found")]
     Status404,
+    #[error("Service unavailable")]
+    Status503(GetSearchUsersResponse503),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List secret scanning alerts by organization](SecretScanning::list_alerts_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum SecretScanningListAlertsForOrgError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
     #[error("Service unavailable")]
     Status503(GetSearchUsersResponse503),
     #[error("Status code: {}", code)]
@@ -97,13 +120,100 @@ pub enum SecretScanningUpdateAlertError {
 }
 
 
+/// Query parameters for the [List secret scanning alerts by organization](SecretScanning::list_alerts_for_org_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct SecretScanningListAlertsForOrgParams<'req> {
+    /// Set to `open` or `resolved` to only list secret scanning alerts in a specific state.
+    state: Option<&'req str>, 
+    /// A comma-separated list of secret types to return. By default all secret types are returned.
+    secret_type: Option<&'req str>, 
+    /// A comma-separated list of resolutions. Only secret scanning alerts with one of these resolutions are listed. Valid resolutions are `false_positive`, `wont_fix`, `revoked`, `pattern_edited`, `pattern_deleted` or `used_in_tests`.
+    resolution: Option<&'req str>, 
+    /// Page number of the results to fetch.
+    page: Option<u16>, 
+    /// Results per page (max 100)
+    per_page: Option<u16>
+}
+
+impl<'req> SecretScanningListAlertsForOrgParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Set to `open` or `resolved` to only list secret scanning alerts in a specific state.
+    pub fn state(self, state: &'req str) -> Self {
+        Self { 
+            state: Some(state),
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            page: self.page, 
+            per_page: self.per_page, 
+        }
+    }
+
+    /// A comma-separated list of secret types to return. By default all secret types are returned.
+    pub fn secret_type(self, secret_type: &'req str) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: Some(secret_type),
+            resolution: self.resolution, 
+            page: self.page, 
+            per_page: self.per_page, 
+        }
+    }
+
+    /// A comma-separated list of resolutions. Only secret scanning alerts with one of these resolutions are listed. Valid resolutions are `false_positive`, `wont_fix`, `revoked`, `pattern_edited`, `pattern_deleted` or `used_in_tests`.
+    pub fn resolution(self, resolution: &'req str) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: Some(resolution),
+            page: self.page, 
+            per_page: self.per_page, 
+        }
+    }
+
+    /// Page number of the results to fetch.
+    pub fn page(self, page: u16) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            page: Some(page),
+            per_page: self.per_page, 
+        }
+    }
+
+    /// Results per page (max 100)
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            page: self.page, 
+            per_page: Some(per_page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for SecretScanningListAlertsForOrgParams<'enc> {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [List secret scanning alerts for a repository](SecretScanning::list_alerts_for_repo_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct SecretScanningListAlertsForRepoParams<'req> {
     /// Set to `open` or `resolved` to only list secret scanning alerts in a specific state.
     state: Option<&'req str>, 
-    /// A comma separated list of secret types to return. By default all secret types are returned. See \"[About secret scanning for private repositories](https://docs.github.com/code-security/secret-security/about-secret-scanning#about-secret-scanning-for-private-repositories)\" for a complete list of secret types (API slug).
+    /// A comma-separated list of secret types to return. By default all secret types are returned. See \"[About secret scanning for private repositories](https://docs.github.com/code-security/secret-security/about-secret-scanning#about-secret-scanning-for-private-repositories)\" for a complete list of secret types (API slug).
     secret_type: Option<&'req str>, 
+    /// A comma-separated list of resolutions. Only secret scanning alerts with one of these resolutions are listed. Valid resolutions are `false_positive`, `wont_fix`, `revoked`, `pattern_edited`, `pattern_deleted` or `used_in_tests`.
+    resolution: Option<&'req str>, 
     /// Page number of the results to fetch.
     page: Option<u16>, 
     /// Results per page (max 100)
@@ -120,16 +230,29 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
         Self { 
             state: Some(state),
             secret_type: self.secret_type, 
+            resolution: self.resolution, 
             page: self.page, 
             per_page: self.per_page, 
         }
     }
 
-    /// A comma separated list of secret types to return. By default all secret types are returned. See \"[About secret scanning for private repositories](https://docs.github.com/code-security/secret-security/about-secret-scanning#about-secret-scanning-for-private-repositories)\" for a complete list of secret types (API slug).
+    /// A comma-separated list of secret types to return. By default all secret types are returned. See \"[About secret scanning for private repositories](https://docs.github.com/code-security/secret-security/about-secret-scanning#about-secret-scanning-for-private-repositories)\" for a complete list of secret types (API slug).
     pub fn secret_type(self, secret_type: &'req str) -> Self {
         Self { 
             state: self.state, 
             secret_type: Some(secret_type),
+            resolution: self.resolution, 
+            page: self.page, 
+            per_page: self.per_page, 
+        }
+    }
+
+    /// A comma-separated list of resolutions. Only secret scanning alerts with one of these resolutions are listed. Valid resolutions are `false_positive`, `wont_fix`, `revoked`, `pattern_edited`, `pattern_deleted` or `used_in_tests`.
+    pub fn resolution(self, resolution: &'req str) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: Some(resolution),
             page: self.page, 
             per_page: self.per_page, 
         }
@@ -140,6 +263,7 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
         Self { 
             state: self.state, 
             secret_type: self.secret_type, 
+            resolution: self.resolution, 
             page: Some(page),
             per_page: self.per_page, 
         }
@@ -150,6 +274,7 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
         Self { 
             state: self.state, 
             secret_type: self.secret_type, 
+            resolution: self.resolution, 
             page: self.page, 
             per_page: Some(per_page),
         }
@@ -202,6 +327,7 @@ impl<'api> SecretScanning<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                304 => Err(SecretScanningGetAlertError::Status304),
                 404 => Err(SecretScanningGetAlertError::Status404),
                 503 => Err(SecretScanningGetAlertError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(SecretScanningGetAlertError::Generic { code }),
@@ -245,9 +371,106 @@ impl<'api> SecretScanning<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                304 => Err(SecretScanningGetAlertError::Status304),
                 404 => Err(SecretScanningGetAlertError::Status404),
                 503 => Err(SecretScanningGetAlertError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(SecretScanningGetAlertError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List secret scanning alerts by organization
+    ///
+    /// Lists all secret scanning alerts for all eligible repositories in an organization, from newest to oldest.
+    /// To use this endpoint, you must be an administrator for the repository or organization, and you must use an access token with the `repo` scope or `security_events` scope.
+    /// 
+    /// GitHub Apps must have the `secret_scanning_alerts` read permission to use this endpoint.
+    /// 
+    /// [GitHub API docs for list_alerts_for_org](https://docs.github.com/rest/reference/secret-scanning#list-secret-scanning-alerts-by-organization)
+    ///
+    /// ---
+    pub async fn list_alerts_for_org_async(&self, org: &str, query_params: Option<impl Into<SecretScanningListAlertsForOrgParams<'api>>>) -> Result<Vec<OrganizationSecretScanningAlert>, SecretScanningListAlertsForOrgError> {
+
+        let mut request_uri = format!("{}/orgs/{}/secret-scanning/alerts", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(SecretScanningListAlertsForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(SecretScanningListAlertsForOrgError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(SecretScanningListAlertsForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List secret scanning alerts by organization
+    ///
+    /// Lists all secret scanning alerts for all eligible repositories in an organization, from newest to oldest.
+    /// To use this endpoint, you must be an administrator for the repository or organization, and you must use an access token with the `repo` scope or `security_events` scope.
+    /// 
+    /// GitHub Apps must have the `secret_scanning_alerts` read permission to use this endpoint.
+    /// 
+    /// [GitHub API docs for list_alerts_for_org](https://docs.github.com/rest/reference/secret-scanning#list-secret-scanning-alerts-by-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_alerts_for_org(&self, org: &str, query_params: Option<impl Into<SecretScanningListAlertsForOrgParams<'api>>>) -> Result<Vec<OrganizationSecretScanningAlert>, SecretScanningListAlertsForOrgError> {
+
+        let mut request_uri = format!("{}/orgs/{}/secret-scanning/alerts", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: SecretScanningListAlertsForOrgParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(SecretScanningListAlertsForOrgError::Status404(crate::adapters::to_json(github_response)?)),
+                503 => Err(SecretScanningListAlertsForOrgError::Status503(crate::adapters::to_json(github_response)?)),
+                code => Err(SecretScanningListAlertsForOrgError::Generic { code }),
             }
         }
     }

@@ -31,9 +31,9 @@ pub fn new(auth: &Auth) -> Apps {
     Apps { auth }
 }
 
-/// Errors for the [Add a repository to an app installation](Apps::add_repo_to_installation_async()) endpoint.
+/// Errors for the [Add a repository to an app installation](Apps::add_repo_to_installation_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum AppsAddRepoToInstallationError {
+pub enum AppsAddRepoToInstallationForAuthenticatedUserError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -48,25 +48,6 @@ pub enum AppsAddRepoToInstallationError {
     Status403(BasicError),
     #[error("Not modified")]
     Status304,
-    #[error("Resource not found")]
-    Status404(BasicError),
-    #[error("Status code: {}", code)]
-    Generic { code: u16 },
-}
-
-/// Errors for the [Check an authorization](Apps::check_authorization_async()) endpoint.
-#[derive(Debug, thiserror::Error)]
-pub enum AppsCheckAuthorizationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
@@ -114,7 +95,7 @@ pub enum AppsCreateContentAttachmentError {
     #[error("Gone")]
     Status410(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostProjectsCreateForAuthenticatedUserResponse415),
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -160,7 +141,7 @@ pub enum AppsCreateInstallationAccessTokenError {
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostProjectsCreateForAuthenticatedUserResponse415),
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Resource not found")]
@@ -263,7 +244,7 @@ pub enum AppsGetBySlugError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostProjectsCreateForAuthenticatedUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -284,7 +265,7 @@ pub enum AppsGetInstallationError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostProjectsCreateForAuthenticatedUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -526,7 +507,7 @@ pub enum AppsListInstallationsForAuthenticatedUserError {
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostProjectsCreateForAuthenticatedUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -680,9 +661,9 @@ pub enum AppsRedeliverWebhookDeliveryError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Remove a repository from an app installation](Apps::remove_repo_from_installation_async()) endpoint.
+/// Errors for the [Remove a repository from an app installation](Apps::remove_repo_from_installation_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum AppsRemoveRepoFromInstallationError {
+pub enum AppsRemoveRepoFromInstallationForAuthenticatedUserError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -703,23 +684,6 @@ pub enum AppsRemoveRepoFromInstallationError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Reset an authorization](Apps::reset_authorization_async()) endpoint.
-#[derive(Debug, thiserror::Error)]
-pub enum AppsResetAuthorizationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
-    #[error("Status code: {}", code)]
-    Generic { code: u16 },
-}
-
 /// Errors for the [Reset a token](Apps::reset_token_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsResetTokenError {
@@ -735,40 +699,6 @@ pub enum AppsResetTokenError {
 
     #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Status code: {}", code)]
-    Generic { code: u16 },
-}
-
-/// Errors for the [Revoke an authorization for an application](Apps::revoke_authorization_for_application_async()) endpoint.
-#[derive(Debug, thiserror::Error)]
-pub enum AppsRevokeAuthorizationForApplicationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
-    #[error("Status code: {}", code)]
-    Generic { code: u16 },
-}
-
-/// Errors for the [Revoke a grant for an application](Apps::revoke_grant_for_application_async()) endpoint.
-#[derive(Debug, thiserror::Error)]
-pub enum AppsRevokeGrantForApplicationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1396,10 +1326,10 @@ impl<'api> Apps<'api> {
     /// 
     /// You must use a personal access token (which you can create via the [command line](https://docs.github.com/github/authenticating-to-github/creating-a-personal-access-token) or [Basic Authentication](https://docs.github.com/rest/overview/other-authentication-methods#basic-authentication)) to access this endpoint.
     /// 
-    /// [GitHub API docs for add_repo_to_installation](https://docs.github.com/rest/reference/apps#add-a-repository-to-an-app-installation)
+    /// [GitHub API docs for add_repo_to_installation_for_authenticated_user](https://docs.github.com/rest/reference/apps#add-a-repository-to-an-app-installation)
     ///
     /// ---
-    pub async fn add_repo_to_installation_async(&self, installation_id: i32, repository_id: i32) -> Result<(), AppsAddRepoToInstallationError> {
+    pub async fn add_repo_to_installation_for_authenticated_user_async(&self, installation_id: i32, repository_id: i32) -> Result<(), AppsAddRepoToInstallationForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/installations/{}/repositories/{}", super::GITHUB_BASE_API_URL, installation_id, repository_id);
 
@@ -1423,10 +1353,10 @@ impl<'api> Apps<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsAddRepoToInstallationError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(AppsAddRepoToInstallationError::Status304),
-                404 => Err(AppsAddRepoToInstallationError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(AppsAddRepoToInstallationError::Generic { code }),
+                403 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                304 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status304),
+                404 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -1439,11 +1369,11 @@ impl<'api> Apps<'api> {
     /// 
     /// You must use a personal access token (which you can create via the [command line](https://docs.github.com/github/authenticating-to-github/creating-a-personal-access-token) or [Basic Authentication](https://docs.github.com/rest/overview/other-authentication-methods#basic-authentication)) to access this endpoint.
     /// 
-    /// [GitHub API docs for add_repo_to_installation](https://docs.github.com/rest/reference/apps#add-a-repository-to-an-app-installation)
+    /// [GitHub API docs for add_repo_to_installation_for_authenticated_user](https://docs.github.com/rest/reference/apps#add-a-repository-to-an-app-installation)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_repo_to_installation(&self, installation_id: i32, repository_id: i32) -> Result<(), AppsAddRepoToInstallationError> {
+    pub fn add_repo_to_installation_for_authenticated_user(&self, installation_id: i32, repository_id: i32) -> Result<(), AppsAddRepoToInstallationForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/installations/{}/repositories/{}", super::GITHUB_BASE_API_URL, installation_id, repository_id);
 
@@ -1467,93 +1397,10 @@ impl<'api> Apps<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsAddRepoToInstallationError::Status403(crate::adapters::to_json(github_response)?)),
-                304 => Err(AppsAddRepoToInstallationError::Status304),
-                404 => Err(AppsAddRepoToInstallationError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(AppsAddRepoToInstallationError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Check an authorization
-    ///
-    /// **Deprecation Notice:** GitHub will discontinue OAuth endpoints that contain `access_token` in the path parameter. We have introduced new endpoints that allow you to securely manage tokens for OAuth Apps by moving `access_token` to the request body. For more information, see the [blog post](https://developer.github.com/changes/2020-02-14-deprecating-oauth-app-endpoint/).
-    /// 
-    /// OAuth applications can use a special API method for checking OAuth token validity without exceeding the normal rate limits for failed login attempts. Authentication works differently with this particular endpoint. You must use [Basic Authentication](https://docs.github.com/rest/overview/other-authentication-methods#basic-authentication) when accessing this endpoint, using the OAuth application's `client_id` and `client_secret` as the username and password. Invalid tokens will return `404 NOT FOUND`.
-    /// 
-    /// [GitHub API docs for check_authorization](https://docs.github.com/rest/reference/apps#check-an-authorization)
-    ///
-    /// ---
-    pub async fn check_authorization_async(&self, client_id: &str, access_token: &str) -> Result<GetAppsCheckAuthorizationResponse200, AppsCheckAuthorizationError> {
-
-        let request_uri = format!("{}/applications/{}/tokens/{}", super::GITHUB_BASE_API_URL, client_id, access_token);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch_async(request).await?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
-        } else {
-            match github_response.status_code() {
-                404 => Err(AppsCheckAuthorizationError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(AppsCheckAuthorizationError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Check an authorization
-    ///
-    /// **Deprecation Notice:** GitHub will discontinue OAuth endpoints that contain `access_token` in the path parameter. We have introduced new endpoints that allow you to securely manage tokens for OAuth Apps by moving `access_token` to the request body. For more information, see the [blog post](https://developer.github.com/changes/2020-02-14-deprecating-oauth-app-endpoint/).
-    /// 
-    /// OAuth applications can use a special API method for checking OAuth token validity without exceeding the normal rate limits for failed login attempts. Authentication works differently with this particular endpoint. You must use [Basic Authentication](https://docs.github.com/rest/overview/other-authentication-methods#basic-authentication) when accessing this endpoint, using the OAuth application's `client_id` and `client_secret` as the username and password. Invalid tokens will return `404 NOT FOUND`.
-    /// 
-    /// [GitHub API docs for check_authorization](https://docs.github.com/rest/reference/apps#check-an-authorization)
-    ///
-    /// ---
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn check_authorization(&self, client_id: &str, access_token: &str) -> Result<GetAppsCheckAuthorizationResponse200, AppsCheckAuthorizationError> {
-
-        let request_uri = format!("{}/applications/{}/tokens/{}", super::GITHUB_BASE_API_URL, client_id, access_token);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch(request)?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
-        } else {
-            match github_response.status_code() {
-                404 => Err(AppsCheckAuthorizationError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(AppsCheckAuthorizationError::Generic { code }),
+                403 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                304 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status304),
+                404 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -4144,10 +3991,10 @@ impl<'api> Apps<'api> {
     /// 
     /// You must use a personal access token (which you can create via the [command line](https://docs.github.com/github/authenticating-to-github/creating-a-personal-access-token) or [Basic Authentication](https://docs.github.com/rest/overview/other-authentication-methods#basic-authentication)) to access this endpoint.
     /// 
-    /// [GitHub API docs for remove_repo_from_installation](https://docs.github.com/rest/reference/apps#remove-a-repository-from-an-app-installation)
+    /// [GitHub API docs for remove_repo_from_installation_for_authenticated_user](https://docs.github.com/rest/reference/apps#remove-a-repository-from-an-app-installation)
     ///
     /// ---
-    pub async fn remove_repo_from_installation_async(&self, installation_id: i32, repository_id: i32) -> Result<(), AppsRemoveRepoFromInstallationError> {
+    pub async fn remove_repo_from_installation_for_authenticated_user_async(&self, installation_id: i32, repository_id: i32) -> Result<(), AppsRemoveRepoFromInstallationForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/installations/{}/repositories/{}", super::GITHUB_BASE_API_URL, installation_id, repository_id);
 
@@ -4171,10 +4018,10 @@ impl<'api> Apps<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsRemoveRepoFromInstallationError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(AppsRemoveRepoFromInstallationError::Status304),
-                404 => Err(AppsRemoveRepoFromInstallationError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(AppsRemoveRepoFromInstallationError::Generic { code }),
+                403 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                304 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status304),
+                404 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -4187,11 +4034,11 @@ impl<'api> Apps<'api> {
     /// 
     /// You must use a personal access token (which you can create via the [command line](https://docs.github.com/github/authenticating-to-github/creating-a-personal-access-token) or [Basic Authentication](https://docs.github.com/rest/overview/other-authentication-methods#basic-authentication)) to access this endpoint.
     /// 
-    /// [GitHub API docs for remove_repo_from_installation](https://docs.github.com/rest/reference/apps#remove-a-repository-from-an-app-installation)
+    /// [GitHub API docs for remove_repo_from_installation_for_authenticated_user](https://docs.github.com/rest/reference/apps#remove-a-repository-from-an-app-installation)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_repo_from_installation(&self, installation_id: i32, repository_id: i32) -> Result<(), AppsRemoveRepoFromInstallationError> {
+    pub fn remove_repo_from_installation_for_authenticated_user(&self, installation_id: i32, repository_id: i32) -> Result<(), AppsRemoveRepoFromInstallationForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/installations/{}/repositories/{}", super::GITHUB_BASE_API_URL, installation_id, repository_id);
 
@@ -4215,91 +4062,10 @@ impl<'api> Apps<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsRemoveRepoFromInstallationError::Status403(crate::adapters::to_json(github_response)?)),
-                304 => Err(AppsRemoveRepoFromInstallationError::Status304),
-                404 => Err(AppsRemoveRepoFromInstallationError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(AppsRemoveRepoFromInstallationError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Reset an authorization
-    ///
-    /// **Deprecation Notice:** GitHub will discontinue OAuth endpoints that contain `access_token` in the path parameter. We have introduced new endpoints that allow you to securely manage tokens for OAuth Apps by moving `access_token` to the request body. For more information, see the [blog post](https://developer.github.com/changes/2020-02-14-deprecating-oauth-app-endpoint/).
-    /// 
-    /// OAuth applications can use this API method to reset a valid OAuth token without end-user involvement. Applications must save the "token" property in the response because changes take effect immediately. You must use [Basic Authentication](https://docs.github.com/rest/overview/other-authentication-methods#basic-authentication) when accessing this endpoint, using the OAuth application's `client_id` and `client_secret` as the username and password. Invalid tokens will return `404 NOT FOUND`.
-    /// 
-    /// [GitHub API docs for reset_authorization](https://docs.github.com/rest/reference/apps#reset-an-authorization)
-    ///
-    /// ---
-    pub async fn reset_authorization_async(&self, client_id: &str, access_token: &str) -> Result<Authorization, AppsResetAuthorizationError> {
-
-        let request_uri = format!("{}/applications/{}/tokens/{}", super::GITHUB_BASE_API_URL, client_id, access_token);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "POST",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch_async(request).await?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
-        } else {
-            match github_response.status_code() {
-                code => Err(AppsResetAuthorizationError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Reset an authorization
-    ///
-    /// **Deprecation Notice:** GitHub will discontinue OAuth endpoints that contain `access_token` in the path parameter. We have introduced new endpoints that allow you to securely manage tokens for OAuth Apps by moving `access_token` to the request body. For more information, see the [blog post](https://developer.github.com/changes/2020-02-14-deprecating-oauth-app-endpoint/).
-    /// 
-    /// OAuth applications can use this API method to reset a valid OAuth token without end-user involvement. Applications must save the "token" property in the response because changes take effect immediately. You must use [Basic Authentication](https://docs.github.com/rest/overview/other-authentication-methods#basic-authentication) when accessing this endpoint, using the OAuth application's `client_id` and `client_secret` as the username and password. Invalid tokens will return `404 NOT FOUND`.
-    /// 
-    /// [GitHub API docs for reset_authorization](https://docs.github.com/rest/reference/apps#reset-an-authorization)
-    ///
-    /// ---
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn reset_authorization(&self, client_id: &str, access_token: &str) -> Result<Authorization, AppsResetAuthorizationError> {
-
-        let request_uri = format!("{}/applications/{}/tokens/{}", super::GITHUB_BASE_API_URL, client_id, access_token);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "POST",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch(request)?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
-        } else {
-            match github_response.status_code() {
-                code => Err(AppsResetAuthorizationError::Generic { code }),
+                403 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                304 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status304),
+                404 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -4379,172 +4145,6 @@ impl<'api> Apps<'api> {
             match github_response.status_code() {
                 422 => Err(AppsResetTokenError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsResetTokenError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Revoke an authorization for an application
-    ///
-    /// **Deprecation Notice:** GitHub will discontinue OAuth endpoints that contain `access_token` in the path parameter. We have introduced new endpoints that allow you to securely manage tokens for OAuth Apps by moving `access_token` to the request body. For more information, see the [blog post](https://developer.github.com/changes/2020-02-14-deprecating-oauth-app-endpoint/).
-    /// 
-    /// OAuth application owners can revoke a single token for an OAuth application. You must use [Basic Authentication](https://docs.github.com/rest/overview/other-authentication-methods#basic-authentication) when accessing this endpoint, using the OAuth application's `client_id` and `client_secret` as the username and password.
-    /// 
-    /// [GitHub API docs for revoke_authorization_for_application](https://docs.github.com/rest/reference/apps#revoke-an-authorization-for-an-application)
-    ///
-    /// ---
-    pub async fn revoke_authorization_for_application_async(&self, client_id: &str, access_token: &str) -> Result<(), AppsRevokeAuthorizationForApplicationError> {
-
-        let request_uri = format!("{}/applications/{}/tokens/{}", super::GITHUB_BASE_API_URL, client_id, access_token);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "DELETE",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch_async(request).await?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
-        } else {
-            match github_response.status_code() {
-                code => Err(AppsRevokeAuthorizationForApplicationError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Revoke an authorization for an application
-    ///
-    /// **Deprecation Notice:** GitHub will discontinue OAuth endpoints that contain `access_token` in the path parameter. We have introduced new endpoints that allow you to securely manage tokens for OAuth Apps by moving `access_token` to the request body. For more information, see the [blog post](https://developer.github.com/changes/2020-02-14-deprecating-oauth-app-endpoint/).
-    /// 
-    /// OAuth application owners can revoke a single token for an OAuth application. You must use [Basic Authentication](https://docs.github.com/rest/overview/other-authentication-methods#basic-authentication) when accessing this endpoint, using the OAuth application's `client_id` and `client_secret` as the username and password.
-    /// 
-    /// [GitHub API docs for revoke_authorization_for_application](https://docs.github.com/rest/reference/apps#revoke-an-authorization-for-an-application)
-    ///
-    /// ---
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn revoke_authorization_for_application(&self, client_id: &str, access_token: &str) -> Result<(), AppsRevokeAuthorizationForApplicationError> {
-
-        let request_uri = format!("{}/applications/{}/tokens/{}", super::GITHUB_BASE_API_URL, client_id, access_token);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "DELETE",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch(request)?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
-        } else {
-            match github_response.status_code() {
-                code => Err(AppsRevokeAuthorizationForApplicationError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Revoke a grant for an application
-    ///
-    /// **Deprecation Notice:** GitHub will discontinue OAuth endpoints that contain `access_token` in the path parameter. We have introduced new endpoints that allow you to securely manage tokens for OAuth Apps by moving `access_token` to the request body. For more information, see the [blog post](https://developer.github.com/changes/2020-02-14-deprecating-oauth-app-endpoint/).
-    /// 
-    /// OAuth application owners can revoke a grant for their OAuth application and a specific user. You must use [Basic Authentication](https://docs.github.com/rest/overview/other-authentication-methods#basic-authentication) when accessing this endpoint, using the OAuth application's `client_id` and `client_secret` as the username and password. You must also provide a valid token as `:access_token` and the grant for the token's owner will be deleted.
-    /// 
-    /// Deleting an OAuth application's grant will also delete all OAuth tokens associated with the application for the user. Once deleted, the application will have no access to the user's account and will no longer be listed on [the Applications settings page under "Authorized OAuth Apps" on GitHub](https://github.com/settings/applications#authorized).
-    /// 
-    /// [GitHub API docs for revoke_grant_for_application](https://docs.github.com/rest/reference/apps#revoke-a-grant-for-an-application)
-    ///
-    /// ---
-    pub async fn revoke_grant_for_application_async(&self, client_id: &str, access_token: &str) -> Result<(), AppsRevokeGrantForApplicationError> {
-
-        let request_uri = format!("{}/applications/{}/grants/{}", super::GITHUB_BASE_API_URL, client_id, access_token);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "DELETE",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch_async(request).await?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
-        } else {
-            match github_response.status_code() {
-                code => Err(AppsRevokeGrantForApplicationError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Revoke a grant for an application
-    ///
-    /// **Deprecation Notice:** GitHub will discontinue OAuth endpoints that contain `access_token` in the path parameter. We have introduced new endpoints that allow you to securely manage tokens for OAuth Apps by moving `access_token` to the request body. For more information, see the [blog post](https://developer.github.com/changes/2020-02-14-deprecating-oauth-app-endpoint/).
-    /// 
-    /// OAuth application owners can revoke a grant for their OAuth application and a specific user. You must use [Basic Authentication](https://docs.github.com/rest/overview/other-authentication-methods#basic-authentication) when accessing this endpoint, using the OAuth application's `client_id` and `client_secret` as the username and password. You must also provide a valid token as `:access_token` and the grant for the token's owner will be deleted.
-    /// 
-    /// Deleting an OAuth application's grant will also delete all OAuth tokens associated with the application for the user. Once deleted, the application will have no access to the user's account and will no longer be listed on [the Applications settings page under "Authorized OAuth Apps" on GitHub](https://github.com/settings/applications#authorized).
-    /// 
-    /// [GitHub API docs for revoke_grant_for_application](https://docs.github.com/rest/reference/apps#revoke-a-grant-for-an-application)
-    ///
-    /// ---
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn revoke_grant_for_application(&self, client_id: &str, access_token: &str) -> Result<(), AppsRevokeGrantForApplicationError> {
-
-        let request_uri = format!("{}/applications/{}/grants/{}", super::GITHUB_BASE_API_URL, client_id, access_token);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "DELETE",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch(request)?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
-        } else {
-            match github_response.status_code() {
-                code => Err(AppsRevokeGrantForApplicationError::Generic { code }),
             }
         }
     }

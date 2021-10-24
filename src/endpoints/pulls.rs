@@ -528,8 +528,6 @@ pub enum PullsUpdateBranchError {
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1945,11 +1943,9 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for get_review_comment](https://docs.github.com/rest/reference/pulls#get-a-review-comment-for-a-pull-request)
     ///
     /// The `get_review_comment_async` endpoint is enabled with the `comfort-fade` cargo feature.
-    /// The `get_review_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
     #[cfg(feature = "comfort-fade")]
-    #[cfg(feature = "squirrel-girl")]
     pub async fn get_review_comment_async(&self, owner: &str, repo: &str, comment_id: i32) -> Result<PullRequestReviewComment, PullsGetReviewCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
@@ -1959,7 +1955,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1989,12 +1985,10 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for get_review_comment](https://docs.github.com/rest/reference/pulls#get-a-review-comment-for-a-pull-request)
     ///
     /// The `get_review_comment` endpoint is enabled with the `comfort-fade` cargo feature.
-    /// The `get_review_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "comfort-fade")]
-    #[cfg(feature = "squirrel-girl")]
     pub fn get_review_comment(&self, owner: &str, repo: &str, comment_id: i32) -> Result<PullRequestReviewComment, PullsGetReviewCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
@@ -2004,7 +1998,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2470,11 +2464,9 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for list_review_comments](https://docs.github.com/rest/reference/pulls#list-review-comments-on-a-pull-request)
     ///
     /// The `list_review_comments_async` endpoint is enabled with the `comfort-fade` cargo feature.
-    /// The `list_review_comments_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
     #[cfg(feature = "comfort-fade")]
-    #[cfg(feature = "squirrel-girl")]
     pub async fn list_review_comments_async(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListReviewCommentsParams<'api>>>) -> Result<Vec<PullRequestReviewComment>, PullsListReviewCommentsError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
@@ -2488,7 +2480,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2517,12 +2509,10 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for list_review_comments](https://docs.github.com/rest/reference/pulls#list-review-comments-on-a-pull-request)
     ///
     /// The `list_review_comments` endpoint is enabled with the `comfort-fade` cargo feature.
-    /// The `list_review_comments` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "comfort-fade")]
-    #[cfg(feature = "squirrel-girl")]
     pub fn list_review_comments(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListReviewCommentsParams<'api>>>) -> Result<Vec<PullRequestReviewComment>, PullsListReviewCommentsError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
@@ -2537,7 +2527,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2566,11 +2556,9 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for list_review_comments_for_repo](https://docs.github.com/rest/reference/pulls#list-review-comments-in-a-repository)
     ///
     /// The `list_review_comments_for_repo_async` endpoint is enabled with the `comfort-fade` cargo feature.
-    /// The `list_review_comments_for_repo_async` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
     #[cfg(feature = "comfort-fade")]
-    #[cfg(feature = "squirrel-girl")]
     pub async fn list_review_comments_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<PullsListReviewCommentsForRepoParams<'api>>>) -> Result<Vec<PullRequestReviewComment>, PullsListReviewCommentsForRepoError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/comments", super::GITHUB_BASE_API_URL, owner, repo);
@@ -2584,7 +2572,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2613,12 +2601,10 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for list_review_comments_for_repo](https://docs.github.com/rest/reference/pulls#list-review-comments-in-a-repository)
     ///
     /// The `list_review_comments_for_repo` endpoint is enabled with the `comfort-fade` cargo feature.
-    /// The `list_review_comments_for_repo` endpoint is enabled with the `squirrel-girl` cargo feature.
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "comfort-fade")]
-    #[cfg(feature = "squirrel-girl")]
     pub fn list_review_comments_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<PullsListReviewCommentsForRepoParams<'api>>>) -> Result<Vec<PullRequestReviewComment>, PullsListReviewCommentsForRepoError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/comments", super::GITHUB_BASE_API_URL, owner, repo);
@@ -2633,7 +2619,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3154,10 +3140,7 @@ impl<'api> Pulls<'api> {
     /// 
     /// [GitHub API docs for update_branch](https://docs.github.com/rest/reference/pulls#update-a-pull-request-branch)
     ///
-    /// The `update_branch_async` endpoint is enabled with the `lydian` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "lydian")]
     pub async fn update_branch_async(&self, owner: &str, repo: &str, pull_number: i32, body: PutPullsUpdateBranch) -> Result<PutPullsUpdateBranchResponse202, PullsUpdateBranchError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/update-branch", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
@@ -3167,7 +3150,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: Some(PutPullsUpdateBranch::from_json(body)?),
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.lydian-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3184,7 +3167,6 @@ impl<'api> Pulls<'api> {
             match github_response.status_code() {
                 422 => Err(PullsUpdateBranchError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 403 => Err(PullsUpdateBranchError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(PullsUpdateBranchError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(PullsUpdateBranchError::Generic { code }),
             }
         }
@@ -3198,11 +3180,8 @@ impl<'api> Pulls<'api> {
     /// 
     /// [GitHub API docs for update_branch](https://docs.github.com/rest/reference/pulls#update-a-pull-request-branch)
     ///
-    /// The `update_branch` endpoint is enabled with the `lydian` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "lydian")]
     pub fn update_branch(&self, owner: &str, repo: &str, pull_number: i32, body: PutPullsUpdateBranch) -> Result<PutPullsUpdateBranchResponse202, PullsUpdateBranchError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/update-branch", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
@@ -3212,7 +3191,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: Some(PutPullsUpdateBranch::from_json(body)?),
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.lydian-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3229,7 +3208,6 @@ impl<'api> Pulls<'api> {
             match github_response.status_code() {
                 422 => Err(PullsUpdateBranchError::Status422(crate::adapters::to_json(github_response)?)),
                 403 => Err(PullsUpdateBranchError::Status403(crate::adapters::to_json(github_response)?)),
-                415 => Err(PullsUpdateBranchError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(PullsUpdateBranchError::Generic { code }),
             }
         }

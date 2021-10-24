@@ -31,9 +31,9 @@ pub fn new(auth: &Auth) -> Repos {
     Repos { auth }
 }
 
-/// Errors for the [Accept a repository invitation](Repos::accept_invitation_async()) endpoint.
+/// Errors for the [Accept a repository invitation](Repos::accept_invitation_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum ReposAcceptInvitationError {
+pub enum ReposAcceptInvitationForAuthenticatedUserError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -508,8 +508,6 @@ pub enum ReposCreatePagesSiteError {
 
     #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Conflict")]
     Status409(BasicError),
     #[error("Status code: {}", code)]
@@ -577,9 +575,9 @@ pub enum ReposCreateWebhookError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Decline a repository invitation](Repos::decline_invitation_async()) endpoint.
+/// Errors for the [Decline a repository invitation](Repos::decline_invitation_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum ReposDeclineInvitationError {
+pub enum ReposDeclineInvitationForAuthenticatedUserError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -849,8 +847,6 @@ pub enum ReposDeletePagesSiteError {
 
     #[error("Validation failed")]
     Status422(ValidationError),
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
@@ -946,6 +942,23 @@ pub enum ReposDisableAutomatedSecurityFixesError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Disable Git LFS for a repository](Repos::disable_lfs_for_repo_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ReposDisableLfsForRepoError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Disable vulnerability alerts](Repos::disable_vulnerability_alerts_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDisableVulnerabilityAlertsError {
@@ -1018,6 +1031,25 @@ pub enum ReposEnableAutomatedSecurityFixesError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Enable Git LFS for a repository](Repos::enable_lfs_for_repo_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ReposEnableLfsForRepoError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("We will return a 403 with one of the following messages:  - Git LFS support not enabled because Git LFS is globally disabled. - Git LFS support not enabled because Git LFS is disabled for the root repository in the network. - Git LFS support not enabled because Git LFS is disabled for &lt;owner&gt;.")]
+    Status403,
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Enable vulnerability alerts](Repos::enable_vulnerability_alerts_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposEnableVulnerabilityAlertsError {
@@ -1031,6 +1063,25 @@ pub enum ReposEnableVulnerabilityAlertsError {
 
     // -- endpoint errors
 
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Generate release notes content for a release](Repos::generate_release_notes_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ReposGenerateReleaseNotesError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1144,7 +1195,7 @@ pub enum ReposGetAllTopicsError {
     // -- endpoint errors
 
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostProjectsCreateForAuthenticatedUserResponse415),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
@@ -1205,7 +1256,7 @@ pub enum ReposGetBranchError {
     #[error("Moved permanently")]
     Status301(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostProjectsCreateForAuthenticatedUserResponse415),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
@@ -1505,8 +1556,6 @@ pub enum ReposGetDeploymentStatusError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1755,7 +1804,7 @@ pub enum ReposGetReleaseAssetError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostProjectsCreateForAuthenticatedUserResponse415),
     #[error("Found")]
     Status302,
     #[error("Status code: {}", code)]
@@ -2001,8 +2050,6 @@ pub enum ReposListBranchesForHeadCommitError {
 
     // -- endpoint errors
 
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
@@ -2370,8 +2417,6 @@ pub enum ReposListPullRequestsAssociatedWithCommitError {
 
     // -- endpoint errors
 
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -2509,6 +2554,27 @@ pub enum ReposMergeError {
     Status403(BasicError),
     #[error("Validation failed")]
     Status422(ValidationError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Sync a fork branch with the upstream repository](Repos::merge_upstream_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ReposMergeUpstreamError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("The branch could not be synced because of a merge conflict")]
+    Status409,
+    #[error("The branch could not be synced for some other reason")]
+    Status422,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -2702,7 +2768,7 @@ pub enum ReposReplaceAllTopicsError {
     // -- endpoint errors
 
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostProjectsCreateForAuthenticatedUserResponse415),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed")]
@@ -2899,8 +2965,6 @@ pub enum ReposUpdateBranchProtectionError {
 
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Validation failed")]
     Status422(ValidationErrorSimple),
     #[error("Resource not found")]
@@ -3093,6 +3157,8 @@ pub enum ReposUploadReleaseAssetError {
 
     // -- endpoint errors
 
+    #[error("Response if you upload an asset with the same filename as another uploaded asset")]
+    Status422,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -4810,10 +4876,10 @@ impl<'api> Repos<'api> {
     ///
     /// # Accept a repository invitation
     /// 
-    /// [GitHub API docs for accept_invitation](https://docs.github.com/rest/reference/repos#accept-a-repository-invitation)
+    /// [GitHub API docs for accept_invitation_for_authenticated_user](https://docs.github.com/rest/reference/repos#accept-a-repository-invitation)
     ///
     /// ---
-    pub async fn accept_invitation_async(&self, invitation_id: i32) -> Result<(), ReposAcceptInvitationError> {
+    pub async fn accept_invitation_for_authenticated_user_async(&self, invitation_id: i32) -> Result<(), ReposAcceptInvitationForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/repository_invitations/{}", super::GITHUB_BASE_API_URL, invitation_id);
 
@@ -4837,11 +4903,11 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposAcceptInvitationError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                409 => Err(ReposAcceptInvitationError::Status409(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(ReposAcceptInvitationError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(ReposAcceptInvitationError::Status304),
-                code => Err(ReposAcceptInvitationError::Generic { code }),
+                403 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status409(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                304 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status304),
+                code => Err(ReposAcceptInvitationForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -4850,11 +4916,11 @@ impl<'api> Repos<'api> {
     ///
     /// # Accept a repository invitation
     /// 
-    /// [GitHub API docs for accept_invitation](https://docs.github.com/rest/reference/repos#accept-a-repository-invitation)
+    /// [GitHub API docs for accept_invitation_for_authenticated_user](https://docs.github.com/rest/reference/repos#accept-a-repository-invitation)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn accept_invitation(&self, invitation_id: i32) -> Result<(), ReposAcceptInvitationError> {
+    pub fn accept_invitation_for_authenticated_user(&self, invitation_id: i32) -> Result<(), ReposAcceptInvitationForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/repository_invitations/{}", super::GITHUB_BASE_API_URL, invitation_id);
 
@@ -4878,11 +4944,11 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposAcceptInvitationError::Status403(crate::adapters::to_json(github_response)?)),
-                409 => Err(ReposAcceptInvitationError::Status409(crate::adapters::to_json(github_response)?)),
-                404 => Err(ReposAcceptInvitationError::Status404(crate::adapters::to_json(github_response)?)),
-                304 => Err(ReposAcceptInvitationError::Status304),
-                code => Err(ReposAcceptInvitationError::Generic { code }),
+                403 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                409 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status409(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                304 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status304),
+                code => Err(ReposAcceptInvitationForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -4984,7 +5050,7 @@ impl<'api> Repos<'api> {
     ///
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. See "[Secondary rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#secondary-rate-limits)" and "[Dealing with secondary rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-secondary-rate-limits)" for details.
     /// 
-    /// For more information the permission levels, see "[Repository permission levels for an organization](https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/repository-permission-levels-for-an-organization#permission-levels-for-repositories-owned-by-an-organization)".
+    /// For more information on permission levels, see "[Repository permission levels for an organization](https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/repository-permission-levels-for-an-organization#permission-levels-for-repositories-owned-by-an-organization)".
     /// 
     /// Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
     /// 
@@ -5035,7 +5101,7 @@ impl<'api> Repos<'api> {
     ///
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. See "[Secondary rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#secondary-rate-limits)" and "[Dealing with secondary rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-secondary-rate-limits)" for details.
     /// 
-    /// For more information the permission levels, see "[Repository permission levels for an organization](https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/repository-permission-levels-for-an-organization#permission-levels-for-repositories-owned-by-an-organization)".
+    /// For more information on permission levels, see "[Repository permission levels for an organization](https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/repository-permission-levels-for-an-organization#permission-levels-for-repositories-owned-by-an-organization)".
     /// 
     /// Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
     /// 
@@ -5437,10 +5503,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for check_vulnerability_alerts](https://docs.github.com/rest/reference/repos#check-if-vulnerability-alerts-are-enabled-for-a-repository)
     ///
-    /// The `check_vulnerability_alerts_async` endpoint is enabled with the `dorian` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "dorian")]
     pub async fn check_vulnerability_alerts_async(&self, owner: &str, repo: &str) -> Result<(), ReposCheckVulnerabilityAlertsError> {
 
         let request_uri = format!("{}/repos/{}/{}/vulnerability-alerts", super::GITHUB_BASE_API_URL, owner, repo);
@@ -5450,7 +5513,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.dorian-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -5479,11 +5542,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for check_vulnerability_alerts](https://docs.github.com/rest/reference/repos#check-if-vulnerability-alerts-are-enabled-for-a-repository)
     ///
-    /// The `check_vulnerability_alerts` endpoint is enabled with the `dorian` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "dorian")]
     pub fn check_vulnerability_alerts(&self, owner: &str, repo: &str) -> Result<(), ReposCheckVulnerabilityAlertsError> {
 
         let request_uri = format!("{}/repos/{}/{}/vulnerability-alerts", super::GITHUB_BASE_API_URL, owner, repo);
@@ -5493,7 +5553,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.dorian-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -5856,10 +5916,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for create_commit_signature_protection](https://docs.github.com/rest/reference/repos#create-commit-signature-protection)
     ///
-    /// The `create_commit_signature_protection_async` endpoint is enabled with the `zzzax` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "zzzax")]
     pub async fn create_commit_signature_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchAdminEnforced, ReposCreateCommitSignatureProtectionError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_signatures", super::GITHUB_BASE_API_URL, owner, repo, branch);
@@ -5869,7 +5926,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.zzzax-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -5900,11 +5957,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for create_commit_signature_protection](https://docs.github.com/rest/reference/repos#create-commit-signature-protection)
     ///
-    /// The `create_commit_signature_protection` endpoint is enabled with the `zzzax` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "zzzax")]
     pub fn create_commit_signature_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchAdminEnforced, ReposCreateCommitSignatureProtectionError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_signatures", super::GITHUB_BASE_API_URL, owner, repo, branch);
@@ -5914,7 +5968,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.zzzax-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6147,10 +6201,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for create_deployment](https://docs.github.com/rest/reference/repos#create-a-deployment)
     ///
-    /// The `create_deployment_async` endpoint is enabled with the `ant-man` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "ant-man")]
     pub async fn create_deployment_async(&self, owner: &str, repo: &str, body: PostReposCreateDeployment) -> Result<Deployment, ReposCreateDeploymentError> {
 
         let request_uri = format!("{}/repos/{}/{}/deployments", super::GITHUB_BASE_API_URL, owner, repo);
@@ -6160,7 +6211,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreateDeployment::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.ant-man-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6235,11 +6286,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for create_deployment](https://docs.github.com/rest/reference/repos#create-a-deployment)
     ///
-    /// The `create_deployment` endpoint is enabled with the `ant-man` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "ant-man")]
     pub fn create_deployment(&self, owner: &str, repo: &str, body: PostReposCreateDeployment) -> Result<Deployment, ReposCreateDeploymentError> {
 
         let request_uri = format!("{}/repos/{}/{}/deployments", super::GITHUB_BASE_API_URL, owner, repo);
@@ -6249,7 +6297,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreateDeployment::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.ant-man-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6282,12 +6330,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for create_deployment_status](https://docs.github.com/rest/reference/repos#create-a-deployment-status)
     ///
-    /// The `create_deployment_status_async` endpoint is enabled with the `flash` cargo feature.
-    /// The `create_deployment_status_async` endpoint is enabled with the `ant-man` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "flash")]
-    #[cfg(feature = "ant-man")]
     pub async fn create_deployment_status_async(&self, owner: &str, repo: &str, deployment_id: i32, body: PostReposCreateDeploymentStatus) -> Result<DeploymentStatus, ReposCreateDeploymentStatusError> {
 
         let request_uri = format!("{}/repos/{}/{}/deployments/{}/statuses", super::GITHUB_BASE_API_URL, owner, repo, deployment_id);
@@ -6297,7 +6340,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreateDeploymentStatus::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.flash-preview+json"), ("Accept", "application/vnd.github.ant-man-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6328,13 +6371,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for create_deployment_status](https://docs.github.com/rest/reference/repos#create-a-deployment-status)
     ///
-    /// The `create_deployment_status` endpoint is enabled with the `flash` cargo feature.
-    /// The `create_deployment_status` endpoint is enabled with the `ant-man` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "flash")]
-    #[cfg(feature = "ant-man")]
     pub fn create_deployment_status(&self, owner: &str, repo: &str, deployment_id: i32, body: PostReposCreateDeploymentStatus) -> Result<DeploymentStatus, ReposCreateDeploymentStatusError> {
 
         let request_uri = format!("{}/repos/{}/{}/deployments/{}/statuses", super::GITHUB_BASE_API_URL, owner, repo, deployment_id);
@@ -6344,7 +6382,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreateDeploymentStatus::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.flash-preview+json"), ("Accept", "application/vnd.github.ant-man-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6477,12 +6515,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/reference/repos#create-a-repository-for-the-authenticated-user)
     ///
-    /// The `create_for_authenticated_user_async` endpoint is enabled with the `nebula` cargo feature.
-    /// The `create_for_authenticated_user_async` endpoint is enabled with the `baptiste` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "nebula")]
-    #[cfg(feature = "baptiste")]
     pub async fn create_for_authenticated_user_async(&self, body: PostReposCreateForAuthenticatedUser) -> Result<Repository, ReposCreateForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/repos", super::GITHUB_BASE_API_URL);
@@ -6492,7 +6525,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreateForAuthenticatedUser::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ("Accept", "application/vnd.github.baptiste-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6533,13 +6566,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/reference/repos#create-a-repository-for-the-authenticated-user)
     ///
-    /// The `create_for_authenticated_user` endpoint is enabled with the `nebula` cargo feature.
-    /// The `create_for_authenticated_user` endpoint is enabled with the `baptiste` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "nebula")]
-    #[cfg(feature = "baptiste")]
     pub fn create_for_authenticated_user(&self, body: PostReposCreateForAuthenticatedUser) -> Result<Repository, ReposCreateForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/repos", super::GITHUB_BASE_API_URL);
@@ -6549,7 +6577,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreateForAuthenticatedUser::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ("Accept", "application/vnd.github.baptiste-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6581,7 +6609,7 @@ impl<'api> Repos<'api> {
     ///
     /// Create a fork for the authenticated user.
     /// 
-    /// **Note**: Forking a Repository happens asynchronously. You may have to wait a short period of time before you can access the git objects. If this takes longer than 5 minutes, be sure to contact [GitHub Support](https://support.github.com/contact?tags=rest-api).
+    /// **Note**: Forking a Repository happens asynchronously. You may have to wait a short period of time before you can access the git objects. If this takes longer than 5 minutes, be sure to contact [GitHub Support](https://support.github.com/contact?tags=dotcom-rest-api).
     /// 
     /// [GitHub API docs for create_fork](https://docs.github.com/rest/reference/repos#create-a-fork)
     ///
@@ -6625,7 +6653,7 @@ impl<'api> Repos<'api> {
     ///
     /// Create a fork for the authenticated user.
     /// 
-    /// **Note**: Forking a Repository happens asynchronously. You may have to wait a short period of time before you can access the git objects. If this takes longer than 5 minutes, be sure to contact [GitHub Support](https://support.github.com/contact?tags=rest-api).
+    /// **Note**: Forking a Repository happens asynchronously. You may have to wait a short period of time before you can access the git objects. If this takes longer than 5 minutes, be sure to contact [GitHub Support](https://support.github.com/contact?tags=dotcom-rest-api).
     /// 
     /// [GitHub API docs for create_fork](https://docs.github.com/rest/reference/repos#create-a-fork)
     ///
@@ -6679,12 +6707,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for create_in_org](https://docs.github.com/rest/reference/repos#create-an-organization-repository)
     ///
-    /// The `create_in_org_async` endpoint is enabled with the `nebula` cargo feature.
-    /// The `create_in_org_async` endpoint is enabled with the `baptiste` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "nebula")]
-    #[cfg(feature = "baptiste")]
     pub async fn create_in_org_async(&self, org: &str, body: PostReposCreateInOrg) -> Result<Repository, ReposCreateInOrgError> {
 
         let request_uri = format!("{}/orgs/{}/repos", super::GITHUB_BASE_API_URL, org);
@@ -6694,7 +6717,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreateInOrg::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ("Accept", "application/vnd.github.baptiste-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6731,13 +6754,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for create_in_org](https://docs.github.com/rest/reference/repos#create-an-organization-repository)
     ///
-    /// The `create_in_org` endpoint is enabled with the `nebula` cargo feature.
-    /// The `create_in_org` endpoint is enabled with the `baptiste` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "nebula")]
-    #[cfg(feature = "baptiste")]
     pub fn create_in_org(&self, org: &str, body: PostReposCreateInOrg) -> Result<Repository, ReposCreateInOrgError> {
 
         let request_uri = format!("{}/orgs/{}/repos", super::GITHUB_BASE_API_URL, org);
@@ -6747,7 +6765,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreateInOrg::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ("Accept", "application/vnd.github.baptiste-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6953,10 +6971,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for create_pages_site](https://docs.github.com/rest/reference/repos#create-a-github-pages-site)
     ///
-    /// The `create_pages_site_async` endpoint is enabled with the `switcheroo` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "switcheroo")]
     pub async fn create_pages_site_async(&self, owner: &str, repo: &str, body: PostReposCreatePagesSite) -> Result<Page, ReposCreatePagesSiteError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages", super::GITHUB_BASE_API_URL, owner, repo);
@@ -6966,7 +6981,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreatePagesSite::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.switcheroo-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -6982,7 +6997,6 @@ impl<'api> Repos<'api> {
         } else {
             match github_response.status_code() {
                 422 => Err(ReposCreatePagesSiteError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(ReposCreatePagesSiteError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 409 => Err(ReposCreatePagesSiteError::Status409(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposCreatePagesSiteError::Generic { code }),
             }
@@ -6997,11 +7011,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for create_pages_site](https://docs.github.com/rest/reference/repos#create-a-github-pages-site)
     ///
-    /// The `create_pages_site` endpoint is enabled with the `switcheroo` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "switcheroo")]
     pub fn create_pages_site(&self, owner: &str, repo: &str, body: PostReposCreatePagesSite) -> Result<Page, ReposCreatePagesSiteError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages", super::GITHUB_BASE_API_URL, owner, repo);
@@ -7011,7 +7022,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreatePagesSite::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.switcheroo-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -7027,7 +7038,6 @@ impl<'api> Repos<'api> {
         } else {
             match github_response.status_code() {
                 422 => Err(ReposCreatePagesSiteError::Status422(crate::adapters::to_json(github_response)?)),
-                415 => Err(ReposCreatePagesSiteError::Status415(crate::adapters::to_json(github_response)?)),
                 409 => Err(ReposCreatePagesSiteError::Status409(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposCreatePagesSiteError::Generic { code }),
             }
@@ -7134,10 +7144,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for create_using_template](https://docs.github.com/rest/reference/repos#create-a-repository-using-a-template)
     ///
-    /// The `create_using_template_async` endpoint is enabled with the `baptiste` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "baptiste")]
     pub async fn create_using_template_async(&self, template_owner: &str, template_repo: &str, body: PostReposCreateUsingTemplate) -> Result<Repository, ReposCreateUsingTemplateError> {
 
         let request_uri = format!("{}/repos/{}/{}/generate", super::GITHUB_BASE_API_URL, template_owner, template_repo);
@@ -7147,7 +7154,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreateUsingTemplate::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.baptiste-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -7182,11 +7189,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for create_using_template](https://docs.github.com/rest/reference/repos#create-a-repository-using-a-template)
     ///
-    /// The `create_using_template` endpoint is enabled with the `baptiste` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "baptiste")]
     pub fn create_using_template(&self, template_owner: &str, template_repo: &str, body: PostReposCreateUsingTemplate) -> Result<Repository, ReposCreateUsingTemplateError> {
 
         let request_uri = format!("{}/repos/{}/{}/generate", super::GITHUB_BASE_API_URL, template_owner, template_repo);
@@ -7196,7 +7200,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PostReposCreateUsingTemplate::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.baptiste-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -7305,10 +7309,10 @@ impl<'api> Repos<'api> {
     ///
     /// # Decline a repository invitation
     /// 
-    /// [GitHub API docs for decline_invitation](https://docs.github.com/rest/reference/repos#decline-a-repository-invitation)
+    /// [GitHub API docs for decline_invitation_for_authenticated_user](https://docs.github.com/rest/reference/repos#decline-a-repository-invitation)
     ///
     /// ---
-    pub async fn decline_invitation_async(&self, invitation_id: i32) -> Result<(), ReposDeclineInvitationError> {
+    pub async fn decline_invitation_for_authenticated_user_async(&self, invitation_id: i32) -> Result<(), ReposDeclineInvitationForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/repository_invitations/{}", super::GITHUB_BASE_API_URL, invitation_id);
 
@@ -7332,11 +7336,11 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                409 => Err(ReposDeclineInvitationError::Status409(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(ReposDeclineInvitationError::Status304),
-                404 => Err(ReposDeclineInvitationError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(ReposDeclineInvitationError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ReposDeclineInvitationError::Generic { code }),
+                409 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status409(crate::adapters::to_json_async(github_response).await?)),
+                304 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status304),
+                404 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ReposDeclineInvitationForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -7345,11 +7349,11 @@ impl<'api> Repos<'api> {
     ///
     /// # Decline a repository invitation
     /// 
-    /// [GitHub API docs for decline_invitation](https://docs.github.com/rest/reference/repos#decline-a-repository-invitation)
+    /// [GitHub API docs for decline_invitation_for_authenticated_user](https://docs.github.com/rest/reference/repos#decline-a-repository-invitation)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn decline_invitation(&self, invitation_id: i32) -> Result<(), ReposDeclineInvitationError> {
+    pub fn decline_invitation_for_authenticated_user(&self, invitation_id: i32) -> Result<(), ReposDeclineInvitationForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/repository_invitations/{}", super::GITHUB_BASE_API_URL, invitation_id);
 
@@ -7373,11 +7377,11 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                409 => Err(ReposDeclineInvitationError::Status409(crate::adapters::to_json(github_response)?)),
-                304 => Err(ReposDeclineInvitationError::Status304),
-                404 => Err(ReposDeclineInvitationError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(ReposDeclineInvitationError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(ReposDeclineInvitationError::Generic { code }),
+                409 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status409(crate::adapters::to_json(github_response)?)),
+                304 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status304),
+                404 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                code => Err(ReposDeclineInvitationForAuthenticatedUserError::Generic { code }),
             }
         }
     }
@@ -7959,10 +7963,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for delete_commit_signature_protection](https://docs.github.com/rest/reference/repos#delete-commit-signature-protection)
     ///
-    /// The `delete_commit_signature_protection_async` endpoint is enabled with the `zzzax` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "zzzax")]
     pub async fn delete_commit_signature_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<(), ReposDeleteCommitSignatureProtectionError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_signatures", super::GITHUB_BASE_API_URL, owner, repo, branch);
@@ -7972,7 +7973,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.zzzax-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -8003,11 +8004,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for delete_commit_signature_protection](https://docs.github.com/rest/reference/repos#delete-commit-signature-protection)
     ///
-    /// The `delete_commit_signature_protection` endpoint is enabled with the `zzzax` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "zzzax")]
     pub fn delete_commit_signature_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<(), ReposDeleteCommitSignatureProtectionError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_signatures", super::GITHUB_BASE_API_URL, owner, repo, branch);
@@ -8017,7 +8015,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.zzzax-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -8386,10 +8384,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for delete_pages_site](https://docs.github.com/rest/reference/repos#delete-a-github-pages-site)
     ///
-    /// The `delete_pages_site_async` endpoint is enabled with the `switcheroo` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "switcheroo")]
     pub async fn delete_pages_site_async(&self, owner: &str, repo: &str) -> Result<(), ReposDeletePagesSiteError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages", super::GITHUB_BASE_API_URL, owner, repo);
@@ -8399,7 +8394,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.switcheroo-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -8415,7 +8410,6 @@ impl<'api> Repos<'api> {
         } else {
             match github_response.status_code() {
                 422 => Err(ReposDeletePagesSiteError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(ReposDeletePagesSiteError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(ReposDeletePagesSiteError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposDeletePagesSiteError::Generic { code }),
             }
@@ -8428,11 +8422,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for delete_pages_site](https://docs.github.com/rest/reference/repos#delete-a-github-pages-site)
     ///
-    /// The `delete_pages_site` endpoint is enabled with the `switcheroo` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "switcheroo")]
     pub fn delete_pages_site(&self, owner: &str, repo: &str) -> Result<(), ReposDeletePagesSiteError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages", super::GITHUB_BASE_API_URL, owner, repo);
@@ -8442,7 +8433,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.switcheroo-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -8458,7 +8449,6 @@ impl<'api> Repos<'api> {
         } else {
             match github_response.status_code() {
                 422 => Err(ReposDeletePagesSiteError::Status422(crate::adapters::to_json(github_response)?)),
-                415 => Err(ReposDeletePagesSiteError::Status415(crate::adapters::to_json(github_response)?)),
                 404 => Err(ReposDeletePagesSiteError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposDeletePagesSiteError::Generic { code }),
             }
@@ -8777,10 +8767,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for disable_automated_security_fixes](https://docs.github.com/rest/reference/repos#disable-automated-security-fixes)
     ///
-    /// The `disable_automated_security_fixes_async` endpoint is enabled with the `london` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "london")]
     pub async fn disable_automated_security_fixes_async(&self, owner: &str, repo: &str) -> Result<(), ReposDisableAutomatedSecurityFixesError> {
 
         let request_uri = format!("{}/repos/{}/{}/automated-security-fixes", super::GITHUB_BASE_API_URL, owner, repo);
@@ -8790,7 +8777,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.london-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -8818,11 +8805,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for disable_automated_security_fixes](https://docs.github.com/rest/reference/repos#disable-automated-security-fixes)
     ///
-    /// The `disable_automated_security_fixes` endpoint is enabled with the `london` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "london")]
     pub fn disable_automated_security_fixes(&self, owner: &str, repo: &str) -> Result<(), ReposDisableAutomatedSecurityFixesError> {
 
         let request_uri = format!("{}/repos/{}/{}/automated-security-fixes", super::GITHUB_BASE_API_URL, owner, repo);
@@ -8832,7 +8816,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.london-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -8854,16 +8838,90 @@ impl<'api> Repos<'api> {
 
     /// ---
     ///
+    /// # Disable Git LFS for a repository
+    ///
+    /// **Note:** The Git LFS API endpoints are currently in beta and are subject to change.
+    /// 
+    /// [GitHub API docs for disable_lfs_for_repo](https://docs.github.com/rest/reference/repos#disable-git-lfs-for-a-repository)
+    ///
+    /// ---
+    pub async fn disable_lfs_for_repo_async(&self, owner: &str, repo: &str) -> Result<(), ReposDisableLfsForRepoError> {
+
+        let request_uri = format!("{}/repos/{}/{}/lfs", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ReposDisableLfsForRepoError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Disable Git LFS for a repository
+    ///
+    /// **Note:** The Git LFS API endpoints are currently in beta and are subject to change.
+    /// 
+    /// [GitHub API docs for disable_lfs_for_repo](https://docs.github.com/rest/reference/repos#disable-git-lfs-for-a-repository)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn disable_lfs_for_repo(&self, owner: &str, repo: &str) -> Result<(), ReposDisableLfsForRepoError> {
+
+        let request_uri = format!("{}/repos/{}/{}/lfs", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ReposDisableLfsForRepoError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Disable vulnerability alerts
     ///
     /// Disables dependency alerts and the dependency graph for a repository. The authenticated user must have admin access to the repository. For more information, see "[About security alerts for vulnerable dependencies](https://help.github.com/en/articles/about-security-alerts-for-vulnerable-dependencies)".
     /// 
     /// [GitHub API docs for disable_vulnerability_alerts](https://docs.github.com/rest/reference/repos#disable-vulnerability-alerts)
     ///
-    /// The `disable_vulnerability_alerts_async` endpoint is enabled with the `dorian` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "dorian")]
     pub async fn disable_vulnerability_alerts_async(&self, owner: &str, repo: &str) -> Result<(), ReposDisableVulnerabilityAlertsError> {
 
         let request_uri = format!("{}/repos/{}/{}/vulnerability-alerts", super::GITHUB_BASE_API_URL, owner, repo);
@@ -8873,7 +8931,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.dorian-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -8901,11 +8959,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for disable_vulnerability_alerts](https://docs.github.com/rest/reference/repos#disable-vulnerability-alerts)
     ///
-    /// The `disable_vulnerability_alerts` endpoint is enabled with the `dorian` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "dorian")]
     pub fn disable_vulnerability_alerts(&self, owner: &str, repo: &str) -> Result<(), ReposDisableVulnerabilityAlertsError> {
 
         let request_uri = format!("{}/repos/{}/{}/vulnerability-alerts", super::GITHUB_BASE_API_URL, owner, repo);
@@ -8915,7 +8970,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.dorian-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -9113,10 +9168,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for enable_automated_security_fixes](https://docs.github.com/rest/reference/repos#enable-automated-security-fixes)
     ///
-    /// The `enable_automated_security_fixes_async` endpoint is enabled with the `london` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "london")]
     pub async fn enable_automated_security_fixes_async(&self, owner: &str, repo: &str) -> Result<(), ReposEnableAutomatedSecurityFixesError> {
 
         let request_uri = format!("{}/repos/{}/{}/automated-security-fixes", super::GITHUB_BASE_API_URL, owner, repo);
@@ -9126,7 +9178,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.london-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -9154,11 +9206,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for enable_automated_security_fixes](https://docs.github.com/rest/reference/repos#enable-automated-security-fixes)
     ///
-    /// The `enable_automated_security_fixes` endpoint is enabled with the `london` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "london")]
     pub fn enable_automated_security_fixes(&self, owner: &str, repo: &str) -> Result<(), ReposEnableAutomatedSecurityFixesError> {
 
         let request_uri = format!("{}/repos/{}/{}/automated-security-fixes", super::GITHUB_BASE_API_URL, owner, repo);
@@ -9168,7 +9217,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.london-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -9190,16 +9239,92 @@ impl<'api> Repos<'api> {
 
     /// ---
     ///
+    /// # Enable Git LFS for a repository
+    ///
+    /// **Note:** The Git LFS API endpoints are currently in beta and are subject to change.
+    /// 
+    /// [GitHub API docs for enable_lfs_for_repo](https://docs.github.com/rest/reference/repos#enable-git-lfs-for-a-repository)
+    ///
+    /// ---
+    pub async fn enable_lfs_for_repo_async(&self, owner: &str, repo: &str) -> Result<HashMap<String, Value>, ReposEnableLfsForRepoError> {
+
+        let request_uri = format!("{}/repos/{}/{}/lfs", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(ReposEnableLfsForRepoError::Status403),
+                code => Err(ReposEnableLfsForRepoError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Enable Git LFS for a repository
+    ///
+    /// **Note:** The Git LFS API endpoints are currently in beta and are subject to change.
+    /// 
+    /// [GitHub API docs for enable_lfs_for_repo](https://docs.github.com/rest/reference/repos#enable-git-lfs-for-a-repository)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn enable_lfs_for_repo(&self, owner: &str, repo: &str) -> Result<HashMap<String, Value>, ReposEnableLfsForRepoError> {
+
+        let request_uri = format!("{}/repos/{}/{}/lfs", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(ReposEnableLfsForRepoError::Status403),
+                code => Err(ReposEnableLfsForRepoError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Enable vulnerability alerts
     ///
     /// Enables dependency alerts and the dependency graph for a repository. The authenticated user must have admin access to the repository. For more information, see "[About security alerts for vulnerable dependencies](https://help.github.com/en/articles/about-security-alerts-for-vulnerable-dependencies)".
     /// 
     /// [GitHub API docs for enable_vulnerability_alerts](https://docs.github.com/rest/reference/repos#enable-vulnerability-alerts)
     ///
-    /// The `enable_vulnerability_alerts_async` endpoint is enabled with the `dorian` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "dorian")]
     pub async fn enable_vulnerability_alerts_async(&self, owner: &str, repo: &str) -> Result<(), ReposEnableVulnerabilityAlertsError> {
 
         let request_uri = format!("{}/repos/{}/{}/vulnerability-alerts", super::GITHUB_BASE_API_URL, owner, repo);
@@ -9209,7 +9334,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.dorian-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -9237,11 +9362,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for enable_vulnerability_alerts](https://docs.github.com/rest/reference/repos#enable-vulnerability-alerts)
     ///
-    /// The `enable_vulnerability_alerts` endpoint is enabled with the `dorian` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "dorian")]
     pub fn enable_vulnerability_alerts(&self, owner: &str, repo: &str) -> Result<(), ReposEnableVulnerabilityAlertsError> {
 
         let request_uri = format!("{}/repos/{}/{}/vulnerability-alerts", super::GITHUB_BASE_API_URL, owner, repo);
@@ -9251,7 +9373,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.dorian-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -9273,20 +9395,92 @@ impl<'api> Repos<'api> {
 
     /// ---
     ///
+    /// # Generate release notes content for a release
+    ///
+    /// Generate a name and body describing a [release](https://docs.github.com/rest/reference/repos#releases). The body content will be markdown formatted and contain information like the changes since last release and users who contributed. The generated release notes are not saved anywhere. They are intended to be generated and used when creating a new release.
+    /// 
+    /// [GitHub API docs for generate_release_notes](https://docs.github.com/rest/reference/repos#generate-release-notes)
+    ///
+    /// ---
+    pub async fn generate_release_notes_async(&self, owner: &str, repo: &str, body: PostReposGenerateReleaseNotes) -> Result<ReleaseNotesContent, ReposGenerateReleaseNotesError> {
+
+        let request_uri = format!("{}/repos/{}/{}/releases/generate-notes", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostReposGenerateReleaseNotes::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ReposGenerateReleaseNotesError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ReposGenerateReleaseNotesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Generate release notes content for a release
+    ///
+    /// Generate a name and body describing a [release](https://docs.github.com/rest/reference/repos#releases). The body content will be markdown formatted and contain information like the changes since last release and users who contributed. The generated release notes are not saved anywhere. They are intended to be generated and used when creating a new release.
+    /// 
+    /// [GitHub API docs for generate_release_notes](https://docs.github.com/rest/reference/repos#generate-release-notes)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn generate_release_notes(&self, owner: &str, repo: &str, body: PostReposGenerateReleaseNotes) -> Result<ReleaseNotesContent, ReposGenerateReleaseNotesError> {
+
+        let request_uri = format!("{}/repos/{}/{}/releases/generate-notes", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostReposGenerateReleaseNotes::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ReposGenerateReleaseNotesError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(ReposGenerateReleaseNotesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Get a repository
     ///
-    /// When you pass the `scarlet-witch-preview` media type, requests to get a repository will also return the repository's code of conduct if it can be detected from the repository's code of conduct file.
-    /// 
     /// The `parent` and `source` objects are present when the repository is a fork. `parent` is the repository this repository was forked from, `source` is the ultimate source for the network.
     /// 
     /// [GitHub API docs for get](https://docs.github.com/rest/reference/repos#get-a-repository)
     ///
-    /// The `get_async` endpoint is enabled with the `nebula` cargo feature.
-    /// The `get_async` endpoint is enabled with the `scarlet-witch` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "nebula")]
-    #[cfg(feature = "scarlet-witch")]
     pub async fn get_async(&self, owner: &str, repo: &str) -> Result<FullRepository, ReposGetError> {
 
         let request_uri = format!("{}/repos/{}/{}", super::GITHUB_BASE_API_URL, owner, repo);
@@ -9296,7 +9490,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ("Accept", "application/vnd.github.scarlet-witch-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -9323,19 +9517,12 @@ impl<'api> Repos<'api> {
     ///
     /// # Get a repository
     ///
-    /// When you pass the `scarlet-witch-preview` media type, requests to get a repository will also return the repository's code of conduct if it can be detected from the repository's code of conduct file.
-    /// 
     /// The `parent` and `source` objects are present when the repository is a fork. `parent` is the repository this repository was forked from, `source` is the ultimate source for the network.
     /// 
     /// [GitHub API docs for get](https://docs.github.com/rest/reference/repos#get-a-repository)
     ///
-    /// The `get` endpoint is enabled with the `nebula` cargo feature.
-    /// The `get` endpoint is enabled with the `scarlet-witch` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "nebula")]
-    #[cfg(feature = "scarlet-witch")]
     pub fn get(&self, owner: &str, repo: &str) -> Result<FullRepository, ReposGetError> {
 
         let request_uri = format!("{}/repos/{}/{}", super::GITHUB_BASE_API_URL, owner, repo);
@@ -9345,7 +9532,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ("Accept", "application/vnd.github.scarlet-witch-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -10037,10 +10224,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for get_branch_protection](https://docs.github.com/rest/reference/repos#get-branch-protection)
     ///
-    /// The `get_branch_protection_async` endpoint is enabled with the `luke-cage` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "luke-cage")]
     pub async fn get_branch_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<BranchProtection, ReposGetBranchProtectionError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection", super::GITHUB_BASE_API_URL, owner, repo, branch);
@@ -10050,7 +10234,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -10079,11 +10263,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for get_branch_protection](https://docs.github.com/rest/reference/repos#get-branch-protection)
     ///
-    /// The `get_branch_protection` endpoint is enabled with the `luke-cage` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "luke-cage")]
     pub fn get_branch_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<BranchProtection, ReposGetBranchProtectionError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection", super::GITHUB_BASE_API_URL, owner, repo, branch);
@@ -10093,7 +10274,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -10368,7 +10549,6 @@ impl<'api> Repos<'api> {
     ///
     /// Users with pull access in a repository can access a combined view of commit statuses for a given ref. The ref can be a SHA, a branch name, or a tag name.
     /// 
-    /// The most recent status for each context is returned, up to 100. This field [paginates](https://docs.github.com/rest/overview/resources-in-the-rest-api#pagination) if there are over 100 contexts.
     /// 
     /// Additionally, a combined `state` is returned. The `state` is one of:
     /// 
@@ -10419,7 +10599,6 @@ impl<'api> Repos<'api> {
     ///
     /// Users with pull access in a repository can access a combined view of commit statuses for a given ref. The ref can be a SHA, a branch name, or a tag name.
     /// 
-    /// The most recent status for each context is returned, up to 100. This field [paginates](https://docs.github.com/rest/overview/resources-in-the-rest-api#pagination) if there are over 100 contexts.
     /// 
     /// Additionally, a combined `state` is returned. The `state` is one of:
     /// 
@@ -10715,10 +10894,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for get_commit_comment](https://docs.github.com/rest/reference/repos#get-a-commit-comment)
     ///
-    /// The `get_commit_comment_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn get_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i32) -> Result<CommitComment, ReposGetCommitCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
@@ -10728,7 +10904,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -10755,11 +10931,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for get_commit_comment](https://docs.github.com/rest/reference/repos#get-a-commit-comment)
     ///
-    /// The `get_commit_comment` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn get_commit_comment(&self, owner: &str, repo: &str, comment_id: i32) -> Result<CommitComment, ReposGetCommitCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
@@ -10769,7 +10942,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -10802,10 +10975,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for get_commit_signature_protection](https://docs.github.com/rest/reference/repos#get-commit-signature-protection)
     ///
-    /// The `get_commit_signature_protection_async` endpoint is enabled with the `zzzax` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "zzzax")]
     pub async fn get_commit_signature_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchAdminEnforced, ReposGetCommitSignatureProtectionError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_signatures", super::GITHUB_BASE_API_URL, owner, repo, branch);
@@ -10815,7 +10985,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.zzzax-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -10848,11 +11018,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for get_commit_signature_protection](https://docs.github.com/rest/reference/repos#get-commit-signature-protection)
     ///
-    /// The `get_commit_signature_protection` endpoint is enabled with the `zzzax` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "zzzax")]
     pub fn get_commit_signature_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchAdminEnforced, ReposGetCommitSignatureProtectionError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_signatures", super::GITHUB_BASE_API_URL, owner, repo, branch);
@@ -10862,7 +11029,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.zzzax-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -11310,10 +11477,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for get_deployment](https://docs.github.com/rest/reference/repos#get-a-deployment)
     ///
-    /// The `get_deployment_async` endpoint is enabled with the `ant-man` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "ant-man")]
     pub async fn get_deployment_async(&self, owner: &str, repo: &str, deployment_id: i32) -> Result<Deployment, ReposGetDeploymentError> {
 
         let request_uri = format!("{}/repos/{}/{}/deployments/{}", super::GITHUB_BASE_API_URL, owner, repo, deployment_id);
@@ -11323,7 +11487,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.ant-man-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -11350,11 +11514,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for get_deployment](https://docs.github.com/rest/reference/repos#get-a-deployment)
     ///
-    /// The `get_deployment` endpoint is enabled with the `ant-man` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "ant-man")]
     pub fn get_deployment(&self, owner: &str, repo: &str, deployment_id: i32) -> Result<Deployment, ReposGetDeploymentError> {
 
         let request_uri = format!("{}/repos/{}/{}/deployments/{}", super::GITHUB_BASE_API_URL, owner, repo, deployment_id);
@@ -11364,7 +11525,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.ant-man-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -11393,12 +11554,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for get_deployment_status](https://docs.github.com/rest/reference/repos#get-a-deployment-status)
     ///
-    /// The `get_deployment_status_async` endpoint is enabled with the `flash` cargo feature.
-    /// The `get_deployment_status_async` endpoint is enabled with the `ant-man` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "flash")]
-    #[cfg(feature = "ant-man")]
     pub async fn get_deployment_status_async(&self, owner: &str, repo: &str, deployment_id: i32, status_id: i32) -> Result<DeploymentStatus, ReposGetDeploymentStatusError> {
 
         let request_uri = format!("{}/repos/{}/{}/deployments/{}/statuses/{}", super::GITHUB_BASE_API_URL, owner, repo, deployment_id, status_id);
@@ -11408,7 +11564,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.flash-preview+json"), ("Accept", "application/vnd.github.ant-man-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -11424,7 +11580,6 @@ impl<'api> Repos<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(ReposGetDeploymentStatusError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(ReposGetDeploymentStatusError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetDeploymentStatusError::Generic { code }),
             }
         }
@@ -11438,13 +11593,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for get_deployment_status](https://docs.github.com/rest/reference/repos#get-a-deployment-status)
     ///
-    /// The `get_deployment_status` endpoint is enabled with the `flash` cargo feature.
-    /// The `get_deployment_status` endpoint is enabled with the `ant-man` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "flash")]
-    #[cfg(feature = "ant-man")]
     pub fn get_deployment_status(&self, owner: &str, repo: &str, deployment_id: i32, status_id: i32) -> Result<DeploymentStatus, ReposGetDeploymentStatusError> {
 
         let request_uri = format!("{}/repos/{}/{}/deployments/{}/statuses/{}", super::GITHUB_BASE_API_URL, owner, repo, deployment_id, status_id);
@@ -11454,7 +11604,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.flash-preview+json"), ("Accept", "application/vnd.github.ant-man-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -11470,7 +11620,6 @@ impl<'api> Repos<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(ReposGetDeploymentStatusError::Status404(crate::adapters::to_json(github_response)?)),
-                415 => Err(ReposGetDeploymentStatusError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetDeploymentStatusError::Generic { code }),
             }
         }
@@ -12039,10 +12188,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for get_pull_request_review_protection](https://docs.github.com/rest/reference/repos#get-pull-request-review-protection)
     ///
-    /// The `get_pull_request_review_protection_async` endpoint is enabled with the `luke-cage` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "luke-cage")]
     pub async fn get_pull_request_review_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchPullRequestReview, ReposGetPullRequestReviewProtectionError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_pull_request_reviews", super::GITHUB_BASE_API_URL, owner, repo, branch);
@@ -12052,7 +12198,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -12080,11 +12226,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for get_pull_request_review_protection](https://docs.github.com/rest/reference/repos#get-pull-request-review-protection)
     ///
-    /// The `get_pull_request_review_protection` endpoint is enabled with the `luke-cage` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "luke-cage")]
     pub fn get_pull_request_review_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchPullRequestReview, ReposGetPullRequestReviewProtectionError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_pull_request_reviews", super::GITHUB_BASE_API_URL, owner, repo, branch);
@@ -12094,7 +12237,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -13550,10 +13693,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for list_branches_for_head_commit](https://docs.github.com/rest/reference/repos#list-branches-for-head-commit)
     ///
-    /// The `list_branches_for_head_commit_async` endpoint is enabled with the `groot` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "groot")]
     pub async fn list_branches_for_head_commit_async(&self, owner: &str, repo: &str, commit_sha: &str) -> Result<Vec<BranchShort>, ReposListBranchesForHeadCommitError> {
 
         let request_uri = format!("{}/repos/{}/{}/commits/{}/branches-where-head", super::GITHUB_BASE_API_URL, owner, repo, commit_sha);
@@ -13563,7 +13703,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.groot-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -13578,7 +13718,6 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                415 => Err(ReposListBranchesForHeadCommitError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(ReposListBranchesForHeadCommitError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposListBranchesForHeadCommitError::Generic { code }),
             }
@@ -13595,11 +13734,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for list_branches_for_head_commit](https://docs.github.com/rest/reference/repos#list-branches-for-head-commit)
     ///
-    /// The `list_branches_for_head_commit` endpoint is enabled with the `groot` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "groot")]
     pub fn list_branches_for_head_commit(&self, owner: &str, repo: &str, commit_sha: &str) -> Result<Vec<BranchShort>, ReposListBranchesForHeadCommitError> {
 
         let request_uri = format!("{}/repos/{}/{}/commits/{}/branches-where-head", super::GITHUB_BASE_API_URL, owner, repo, commit_sha);
@@ -13609,7 +13745,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.groot-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -13624,7 +13760,6 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                415 => Err(ReposListBranchesForHeadCommitError::Status415(crate::adapters::to_json(github_response)?)),
                 422 => Err(ReposListBranchesForHeadCommitError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposListBranchesForHeadCommitError::Generic { code }),
             }
@@ -13638,6 +13773,8 @@ impl<'api> Repos<'api> {
     /// For organization-owned repositories, the list of collaborators includes outside collaborators, organization members that are direct collaborators, organization members with access through team memberships, organization members with access through default organization permissions, and organization owners.
     /// 
     /// Team members will include the members of child teams.
+    /// 
+    /// You must have push access to the repository in order to list collaborators.
     /// 
     /// [GitHub API docs for list_collaborators](https://docs.github.com/rest/reference/repos#list-repository-collaborators)
     ///
@@ -13683,6 +13820,8 @@ impl<'api> Repos<'api> {
     /// For organization-owned repositories, the list of collaborators includes outside collaborators, organization members that are direct collaborators, organization members with access through team memberships, organization members with access through default organization permissions, and organization owners.
     /// 
     /// Team members will include the members of child teams.
+    /// 
+    /// You must have push access to the repository in order to list collaborators.
     /// 
     /// [GitHub API docs for list_collaborators](https://docs.github.com/rest/reference/repos#list-repository-collaborators)
     ///
@@ -13731,10 +13870,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for list_comments_for_commit](https://docs.github.com/rest/reference/repos#list-commit-comments)
     ///
-    /// The `list_comments_for_commit_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn list_comments_for_commit_async(&self, owner: &str, repo: &str, commit_sha: &str, query_params: Option<impl Into<ReposListCommentsForCommitParams>>) -> Result<Vec<CommitComment>, ReposListCommentsForCommitError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/commits/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, commit_sha);
@@ -13748,7 +13884,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -13776,11 +13912,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for list_comments_for_commit](https://docs.github.com/rest/reference/repos#list-commit-comments)
     ///
-    /// The `list_comments_for_commit` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn list_comments_for_commit(&self, owner: &str, repo: &str, commit_sha: &str, query_params: Option<impl Into<ReposListCommentsForCommitParams>>) -> Result<Vec<CommitComment>, ReposListCommentsForCommitError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/commits/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, commit_sha);
@@ -13795,7 +13928,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -13825,10 +13958,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for list_commit_comments_for_repo](https://docs.github.com/rest/reference/repos#list-commit-comments-for-a-repository)
     ///
-    /// The `list_commit_comments_for_repo_async` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "squirrel-girl")]
     pub async fn list_commit_comments_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListCommitCommentsForRepoParams>>) -> Result<Vec<CommitComment>, ReposListCommitCommentsForRepoError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/comments", super::GITHUB_BASE_API_URL, owner, repo);
@@ -13842,7 +13972,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -13872,11 +14002,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for list_commit_comments_for_repo](https://docs.github.com/rest/reference/repos#list-commit-comments-for-a-repository)
     ///
-    /// The `list_commit_comments_for_repo` endpoint is enabled with the `squirrel-girl` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "squirrel-girl")]
     pub fn list_commit_comments_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListCommitCommentsForRepoParams>>) -> Result<Vec<CommitComment>, ReposListCommitCommentsForRepoError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/comments", super::GITHUB_BASE_API_URL, owner, repo);
@@ -13891,7 +14018,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.squirrel-girl-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -14337,12 +14464,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for list_deployment_statuses](https://docs.github.com/rest/reference/repos#list-deployment-statuses)
     ///
-    /// The `list_deployment_statuses_async` endpoint is enabled with the `flash` cargo feature.
-    /// The `list_deployment_statuses_async` endpoint is enabled with the `ant-man` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "flash")]
-    #[cfg(feature = "ant-man")]
     pub async fn list_deployment_statuses_async(&self, owner: &str, repo: &str, deployment_id: i32, query_params: Option<impl Into<ReposListDeploymentStatusesParams>>) -> Result<Vec<DeploymentStatus>, ReposListDeploymentStatusesError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/deployments/{}/statuses", super::GITHUB_BASE_API_URL, owner, repo, deployment_id);
@@ -14356,7 +14478,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.flash-preview+json"), ("Accept", "application/vnd.github.ant-man-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -14385,13 +14507,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for list_deployment_statuses](https://docs.github.com/rest/reference/repos#list-deployment-statuses)
     ///
-    /// The `list_deployment_statuses` endpoint is enabled with the `flash` cargo feature.
-    /// The `list_deployment_statuses` endpoint is enabled with the `ant-man` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "flash")]
-    #[cfg(feature = "ant-man")]
     pub fn list_deployment_statuses(&self, owner: &str, repo: &str, deployment_id: i32, query_params: Option<impl Into<ReposListDeploymentStatusesParams>>) -> Result<Vec<DeploymentStatus>, ReposListDeploymentStatusesError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/deployments/{}/statuses", super::GITHUB_BASE_API_URL, owner, repo, deployment_id);
@@ -14406,7 +14523,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.flash-preview+json"), ("Accept", "application/vnd.github.ant-man-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -14435,10 +14552,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for list_deployments](https://docs.github.com/rest/reference/repos#list-deployments)
     ///
-    /// The `list_deployments_async` endpoint is enabled with the `ant-man` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "ant-man")]
     pub async fn list_deployments_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListDeploymentsParams<'api>>>) -> Result<Vec<Deployment>, ReposListDeploymentsError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/deployments", super::GITHUB_BASE_API_URL, owner, repo);
@@ -14452,7 +14566,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.ant-man-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -14480,11 +14594,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for list_deployments](https://docs.github.com/rest/reference/repos#list-deployments)
     ///
-    /// The `list_deployments` endpoint is enabled with the `ant-man` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "ant-man")]
     pub fn list_deployments(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListDeploymentsParams<'api>>>) -> Result<Vec<Deployment>, ReposListDeploymentsError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/deployments", super::GITHUB_BASE_API_URL, owner, repo);
@@ -14499,7 +14610,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.ant-man-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -14625,12 +14736,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/repos#list-organization-repositories)
     ///
-    /// The `list_for_org_async` endpoint is enabled with the `nebula` cargo feature.
-    /// The `list_for_org_async` endpoint is enabled with the `baptiste` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "nebula")]
-    #[cfg(feature = "baptiste")]
     pub async fn list_for_org_async(&self, org: &str, query_params: Option<impl Into<ReposListForOrgParams<'api>>>) -> Result<Vec<MinimalRepository>, ReposListForOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/repos", super::GITHUB_BASE_API_URL, org);
@@ -14644,7 +14750,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ("Accept", "application/vnd.github.baptiste-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -14672,13 +14778,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/repos#list-organization-repositories)
     ///
-    /// The `list_for_org` endpoint is enabled with the `nebula` cargo feature.
-    /// The `list_for_org` endpoint is enabled with the `baptiste` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "nebula")]
-    #[cfg(feature = "baptiste")]
     pub fn list_for_org(&self, org: &str, query_params: Option<impl Into<ReposListForOrgParams<'api>>>) -> Result<Vec<MinimalRepository>, ReposListForOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/repos", super::GITHUB_BASE_API_URL, org);
@@ -14693,7 +14794,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ("Accept", "application/vnd.github.baptiste-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -14721,10 +14822,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/repos#list-repositories-for-a-user)
     ///
-    /// The `list_for_user_async` endpoint is enabled with the `nebula` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "nebula")]
     pub async fn list_for_user_async(&self, username: &str, query_params: Option<impl Into<ReposListForUserParams<'api>>>) -> Result<Vec<MinimalRepository>, ReposListForUserError> {
 
         let mut request_uri = format!("{}/users/{}/repos", super::GITHUB_BASE_API_URL, username);
@@ -14738,7 +14836,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -14766,11 +14864,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/repos#list-repositories-for-a-user)
     ///
-    /// The `list_for_user` endpoint is enabled with the `nebula` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "nebula")]
     pub fn list_for_user(&self, username: &str, query_params: Option<impl Into<ReposListForUserParams<'api>>>) -> Result<Vec<MinimalRepository>, ReposListForUserError> {
 
         let mut request_uri = format!("{}/users/{}/repos", super::GITHUB_BASE_API_URL, username);
@@ -14785,7 +14880,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -15334,10 +15429,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for list_pull_requests_associated_with_commit](https://docs.github.com/rest/reference/repos#list-pull-requests-associated-with-a-commit)
     ///
-    /// The `list_pull_requests_associated_with_commit_async` endpoint is enabled with the `groot` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "groot")]
     pub async fn list_pull_requests_associated_with_commit_async(&self, owner: &str, repo: &str, commit_sha: &str, query_params: Option<impl Into<ReposListPullRequestsAssociatedWithCommitParams>>) -> Result<Vec<PullRequestSimple>, ReposListPullRequestsAssociatedWithCommitError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/commits/{}/pulls", super::GITHUB_BASE_API_URL, owner, repo, commit_sha);
@@ -15351,7 +15443,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.groot-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -15366,7 +15458,6 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                415 => Err(ReposListPullRequestsAssociatedWithCommitError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposListPullRequestsAssociatedWithCommitError::Generic { code }),
             }
         }
@@ -15380,11 +15471,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for list_pull_requests_associated_with_commit](https://docs.github.com/rest/reference/repos#list-pull-requests-associated-with-a-commit)
     ///
-    /// The `list_pull_requests_associated_with_commit` endpoint is enabled with the `groot` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "groot")]
     pub fn list_pull_requests_associated_with_commit(&self, owner: &str, repo: &str, commit_sha: &str, query_params: Option<impl Into<ReposListPullRequestsAssociatedWithCommitParams>>) -> Result<Vec<PullRequestSimple>, ReposListPullRequestsAssociatedWithCommitError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/commits/{}/pulls", super::GITHUB_BASE_API_URL, owner, repo, commit_sha);
@@ -15399,7 +15487,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.groot-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -15414,7 +15502,6 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                415 => Err(ReposListPullRequestsAssociatedWithCommitError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposListPullRequestsAssociatedWithCommitError::Generic { code }),
             }
         }
@@ -16011,6 +16098,91 @@ impl<'api> Repos<'api> {
                 403 => Err(ReposMergeError::Status403(crate::adapters::to_json(github_response)?)),
                 422 => Err(ReposMergeError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposMergeError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Sync a fork branch with the upstream repository
+    ///
+    /// **Note:** This endpoint is currently in beta and subject to change.
+    /// 
+    /// Sync a branch of a forked repository to keep it up-to-date with the upstream repository.
+    /// 
+    /// [GitHub API docs for merge_upstream](https://docs.github.com/rest/reference/repos#sync-a-fork-branch-with-the-upstream-repository)
+    ///
+    /// ---
+    pub async fn merge_upstream_async(&self, owner: &str, repo: &str, body: PostReposMergeUpstream) -> Result<MergedUpstream, ReposMergeUpstreamError> {
+
+        let request_uri = format!("{}/repos/{}/{}/merge-upstream", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostReposMergeUpstream::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                409 => Err(ReposMergeUpstreamError::Status409),
+                422 => Err(ReposMergeUpstreamError::Status422),
+                code => Err(ReposMergeUpstreamError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Sync a fork branch with the upstream repository
+    ///
+    /// **Note:** This endpoint is currently in beta and subject to change.
+    /// 
+    /// Sync a branch of a forked repository to keep it up-to-date with the upstream repository.
+    /// 
+    /// [GitHub API docs for merge_upstream](https://docs.github.com/rest/reference/repos#sync-a-fork-branch-with-the-upstream-repository)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn merge_upstream(&self, owner: &str, repo: &str, body: PostReposMergeUpstream) -> Result<MergedUpstream, ReposMergeUpstreamError> {
+
+        let request_uri = format!("{}/repos/{}/{}/merge-upstream", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostReposMergeUpstream::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                409 => Err(ReposMergeUpstreamError::Status409),
+                422 => Err(ReposMergeUpstreamError::Status422),
+                code => Err(ReposMergeUpstreamError::Generic { code }),
             }
         }
     }
@@ -17559,12 +17731,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for update](https://docs.github.com/rest/reference/repos/#update-a-repository)
     ///
-    /// The `update_async` endpoint is enabled with the `nebula` cargo feature.
-    /// The `update_async` endpoint is enabled with the `baptiste` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "nebula")]
-    #[cfg(feature = "baptiste")]
     pub async fn update_async(&self, owner: &str, repo: &str, body: PatchReposUpdate) -> Result<FullRepository, ReposUpdateError> {
 
         let request_uri = format!("{}/repos/{}/{}", super::GITHUB_BASE_API_URL, owner, repo);
@@ -17574,7 +17741,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PatchReposUpdate::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ("Accept", "application/vnd.github.baptiste-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -17606,13 +17773,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for update](https://docs.github.com/rest/reference/repos/#update-a-repository)
     ///
-    /// The `update` endpoint is enabled with the `nebula` cargo feature.
-    /// The `update` endpoint is enabled with the `baptiste` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "nebula")]
-    #[cfg(feature = "baptiste")]
     pub fn update(&self, owner: &str, repo: &str, body: PatchReposUpdate) -> Result<FullRepository, ReposUpdateError> {
 
         let request_uri = format!("{}/repos/{}/{}", super::GITHUB_BASE_API_URL, owner, repo);
@@ -17622,7 +17784,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PatchReposUpdate::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.nebula-preview+json"), ("Accept", "application/vnd.github.baptiste-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -17660,10 +17822,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for update_branch_protection](https://docs.github.com/rest/reference/repos#update-branch-protection)
     ///
-    /// The `update_branch_protection_async` endpoint is enabled with the `luke-cage` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "luke-cage")]
     pub async fn update_branch_protection_async(&self, owner: &str, repo: &str, branch: &str, body: PutReposUpdateBranchProtection) -> Result<ProtectedBranch, ReposUpdateBranchProtectionError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection", super::GITHUB_BASE_API_URL, owner, repo, branch);
@@ -17673,7 +17832,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PutReposUpdateBranchProtection::from_json(body)?),
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -17689,7 +17848,6 @@ impl<'api> Repos<'api> {
         } else {
             match github_response.status_code() {
                 403 => Err(ReposUpdateBranchProtectionError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(ReposUpdateBranchProtectionError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(ReposUpdateBranchProtectionError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(ReposUpdateBranchProtectionError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposUpdateBranchProtectionError::Generic { code }),
@@ -17711,11 +17869,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for update_branch_protection](https://docs.github.com/rest/reference/repos#update-branch-protection)
     ///
-    /// The `update_branch_protection` endpoint is enabled with the `luke-cage` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "luke-cage")]
     pub fn update_branch_protection(&self, owner: &str, repo: &str, branch: &str, body: PutReposUpdateBranchProtection) -> Result<ProtectedBranch, ReposUpdateBranchProtectionError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection", super::GITHUB_BASE_API_URL, owner, repo, branch);
@@ -17725,7 +17880,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PutReposUpdateBranchProtection::from_json(body)?),
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -17741,7 +17896,6 @@ impl<'api> Repos<'api> {
         } else {
             match github_response.status_code() {
                 403 => Err(ReposUpdateBranchProtectionError::Status403(crate::adapters::to_json(github_response)?)),
-                415 => Err(ReposUpdateBranchProtectionError::Status415(crate::adapters::to_json(github_response)?)),
                 422 => Err(ReposUpdateBranchProtectionError::Status422(crate::adapters::to_json(github_response)?)),
                 404 => Err(ReposUpdateBranchProtectionError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposUpdateBranchProtectionError::Generic { code }),
@@ -17990,10 +18144,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for update_pull_request_review_protection](https://docs.github.com/rest/reference/repos#update-pull-request-review-protection)
     ///
-    /// The `update_pull_request_review_protection_async` endpoint is enabled with the `luke-cage` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "luke-cage")]
     pub async fn update_pull_request_review_protection_async(&self, owner: &str, repo: &str, branch: &str, body: PatchReposUpdatePullRequestReviewProtection) -> Result<ProtectedBranchPullRequestReview, ReposUpdatePullRequestReviewProtectionError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_pull_request_reviews", super::GITHUB_BASE_API_URL, owner, repo, branch);
@@ -18003,7 +18154,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PatchReposUpdatePullRequestReviewProtection::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -18036,11 +18187,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for update_pull_request_review_protection](https://docs.github.com/rest/reference/repos#update-pull-request-review-protection)
     ///
-    /// The `update_pull_request_review_protection` endpoint is enabled with the `luke-cage` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "luke-cage")]
     pub fn update_pull_request_review_protection(&self, owner: &str, repo: &str, branch: &str, body: PatchReposUpdatePullRequestReviewProtection) -> Result<ProtectedBranchPullRequestReview, ReposUpdatePullRequestReviewProtectionError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_pull_request_reviews", super::GITHUB_BASE_API_URL, owner, repo, branch);
@@ -18050,7 +18198,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PatchReposUpdatePullRequestReviewProtection::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.luke-cage-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -18494,7 +18642,7 @@ impl<'api> Repos<'api> {
     /// 
     /// **Notes:**
     /// *   GitHub renames asset filenames that have special characters, non-alphanumeric characters, and leading or trailing periods. The "[List assets for a release](https://docs.github.com/rest/reference/repos#list-assets-for-a-release)"
-    /// endpoint lists the renamed filenames. For more information and help, contact [GitHub Support](https://support.github.com/contact?tags=rest-api).
+    /// endpoint lists the renamed filenames. For more information and help, contact [GitHub Support](https://support.github.com/contact?tags=dotcom-rest-api).
     /// *   If you upload an asset with the same filename as another uploaded asset, you'll receive an error and must delete the old file before you can re-upload the new asset.
     /// 
     /// [GitHub API docs for upload_release_asset](https://docs.github.com/rest/reference/repos#upload-a-release-asset)
@@ -18526,6 +18674,7 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                422 => Err(ReposUploadReleaseAssetError::Status422),
                 code => Err(ReposUploadReleaseAssetError::Generic { code }),
             }
         }
@@ -18551,7 +18700,7 @@ impl<'api> Repos<'api> {
     /// 
     /// **Notes:**
     /// *   GitHub renames asset filenames that have special characters, non-alphanumeric characters, and leading or trailing periods. The "[List assets for a release](https://docs.github.com/rest/reference/repos#list-assets-for-a-release)"
-    /// endpoint lists the renamed filenames. For more information and help, contact [GitHub Support](https://support.github.com/contact?tags=rest-api).
+    /// endpoint lists the renamed filenames. For more information and help, contact [GitHub Support](https://support.github.com/contact?tags=dotcom-rest-api).
     /// *   If you upload an asset with the same filename as another uploaded asset, you'll receive an error and must delete the old file before you can re-upload the new asset.
     /// 
     /// [GitHub API docs for upload_release_asset](https://docs.github.com/rest/reference/repos#upload-a-release-asset)
@@ -18585,6 +18734,7 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                422 => Err(ReposUploadReleaseAssetError::Status422),
                 code => Err(ReposUploadReleaseAssetError::Generic { code }),
             }
         }

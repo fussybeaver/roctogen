@@ -399,7 +399,7 @@ pub enum OrgsListBlockedUsersError {
     // -- endpoint errors
 
     #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
+    Status415(PostProjectsCreateForAuthenticatedUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -847,8 +847,6 @@ pub enum OrgsUpdateError {
     Status422(PostProjectsCreateCardResponse422),
     #[error("Conflict")]
     Status409(BasicError),
-    #[error("Preview header missing")]
-    Status415(GetProjectsListForUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -2323,10 +2321,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// [GitHub API docs for get](https://docs.github.com/rest/reference/orgs#get-an-organization)
     ///
-    /// The `get_async` endpoint is enabled with the `surtur` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "surtur")]
     pub async fn get_async(&self, org: &str) -> Result<OrganizationFull, OrgsGetError> {
 
         let request_uri = format!("{}/orgs/{}", super::GITHUB_BASE_API_URL, org);
@@ -2336,7 +2331,7 @@ impl<'api> Orgs<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.surtur-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2367,11 +2362,8 @@ impl<'api> Orgs<'api> {
     /// 
     /// [GitHub API docs for get](https://docs.github.com/rest/reference/orgs#get-an-organization)
     ///
-    /// The `get` endpoint is enabled with the `surtur` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "surtur")]
     pub fn get(&self, org: &str) -> Result<OrganizationFull, OrgsGetError> {
 
         let request_uri = format!("{}/orgs/{}", super::GITHUB_BASE_API_URL, org);
@@ -2381,7 +2373,7 @@ impl<'api> Orgs<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.surtur-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -5031,10 +5023,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// [GitHub API docs for update](https://docs.github.com/rest/reference/orgs/#update-an-organization)
     ///
-    /// The `update_async` endpoint is enabled with the `surtur` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "surtur")]
     pub async fn update_async(&self, org: &str, body: PatchOrgsUpdate) -> Result<OrganizationFull, OrgsUpdateError> {
 
         let request_uri = format!("{}/orgs/{}", super::GITHUB_BASE_API_URL, org);
@@ -5044,7 +5033,7 @@ impl<'api> Orgs<'api> {
             uri: request_uri,
             body: Some(PatchOrgsUpdate::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.surtur-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -5061,7 +5050,6 @@ impl<'api> Orgs<'api> {
             match github_response.status_code() {
                 422 => Err(OrgsUpdateError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 409 => Err(OrgsUpdateError::Status409(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(OrgsUpdateError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsUpdateError::Generic { code }),
             }
         }
@@ -5077,11 +5065,8 @@ impl<'api> Orgs<'api> {
     /// 
     /// [GitHub API docs for update](https://docs.github.com/rest/reference/orgs/#update-an-organization)
     ///
-    /// The `update` endpoint is enabled with the `surtur` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "surtur")]
     pub fn update(&self, org: &str, body: PatchOrgsUpdate) -> Result<OrganizationFull, OrgsUpdateError> {
 
         let request_uri = format!("{}/orgs/{}", super::GITHUB_BASE_API_URL, org);
@@ -5091,7 +5076,7 @@ impl<'api> Orgs<'api> {
             uri: request_uri,
             body: Some(PatchOrgsUpdate::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.surtur-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -5108,7 +5093,6 @@ impl<'api> Orgs<'api> {
             match github_response.status_code() {
                 422 => Err(OrgsUpdateError::Status422(crate::adapters::to_json(github_response)?)),
                 409 => Err(OrgsUpdateError::Status409(crate::adapters::to_json(github_response)?)),
-                415 => Err(OrgsUpdateError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsUpdateError::Generic { code }),
             }
         }

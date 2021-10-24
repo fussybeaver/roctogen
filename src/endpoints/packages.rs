@@ -77,6 +77,29 @@ pub enum PackagesDeletePackageForOrgError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Delete a package for a user](Packages::delete_package_for_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum PackagesDeletePackageForUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Delete a package version for the authenticated user](Packages::delete_package_version_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesDeletePackageVersionForAuthenticatedUserError {
@@ -103,6 +126,29 @@ pub enum PackagesDeletePackageVersionForAuthenticatedUserError {
 /// Errors for the [Delete package version for an organization](Packages::delete_package_version_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesDeletePackageVersionForOrgError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Delete package version for a user](Packages::delete_package_version_for_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum PackagesDeletePackageVersionForUserError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -294,6 +340,65 @@ pub enum PackagesGetPackageVersionForUserError {
     Generic { code: u16 },
 }
 
+/// Errors for the [List packages for the authenticated user&#x27;s namespace](Packages::list_packages_for_authenticated_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum PackagesListPackagesForAuthenticatedUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List packages for an organization](Packages::list_packages_for_organization_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum PackagesListPackagesForOrganizationError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List packages for a user](Packages::list_packages_for_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum PackagesListPackagesForUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Restore a package for the authenticated user](Packages::restore_package_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesRestorePackageForAuthenticatedUserError {
@@ -340,6 +445,29 @@ pub enum PackagesRestorePackageForOrgError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Restore a package for a user](Packages::restore_package_for_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum PackagesRestorePackageForUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Restore a package version for the authenticated user](Packages::restore_package_version_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesRestorePackageVersionForAuthenticatedUserError {
@@ -366,6 +494,29 @@ pub enum PackagesRestorePackageVersionForAuthenticatedUserError {
 /// Errors for the [Restore package version for an organization](Packages::restore_package_version_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesRestorePackageVersionForOrgError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Restore package version for a user](Packages::restore_package_version_for_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum PackagesRestorePackageVersionForUserError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -493,6 +644,99 @@ impl<'enc> From<&'enc PerPage> for PackagesGetAllPackageVersionsForPackageOwnedB
         }
     }
 }
+/// Query parameters for the [List packages for the authenticated user&#x27;s namespace](Packages::list_packages_for_authenticated_user_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct PackagesListPackagesForAuthenticatedUserParams<'req> {
+    /// The type of supported package. Can be one of `npm`, `maven`, `rubygems`, `nuget`, `docker`, or `container`. Packages in GitHub's Gradle registry have the type `maven`. Docker images pushed to GitHub's Container registry (`ghcr.io`) have the type `container`. You can use the type `docker` to find images that were pushed to GitHub's Docker registry (`docker.pkg.github.com`), even if these have now been migrated to the Container registry.
+    package_type: &'req str, 
+    /// The selected visibility of the packages. Can be one of `public`, `private`, or `internal`. Only `container` package_types currently support `internal` visibility properly. For other ecosystems `internal` is synonymous with `private`. This parameter is optional and only filters an existing result set.
+    visibility: Option<&'req str>
+}
+
+impl<'req> PackagesListPackagesForAuthenticatedUserParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The type of supported package. Can be one of `npm`, `maven`, `rubygems`, `nuget`, `docker`, or `container`. Packages in GitHub's Gradle registry have the type `maven`. Docker images pushed to GitHub's Container registry (`ghcr.io`) have the type `container`. You can use the type `docker` to find images that were pushed to GitHub's Docker registry (`docker.pkg.github.com`), even if these have now been migrated to the Container registry.
+    pub fn package_type(self, package_type: &'req str) -> Self {
+        Self { 
+            package_type: package_type,
+            visibility: self.visibility, 
+        }
+    }
+
+    /// The selected visibility of the packages. Can be one of `public`, `private`, or `internal`. Only `container` package_types currently support `internal` visibility properly. For other ecosystems `internal` is synonymous with `private`. This parameter is optional and only filters an existing result set.
+    pub fn visibility(self, visibility: &'req str) -> Self {
+        Self { 
+            package_type: self.package_type, 
+            visibility: Some(visibility),
+        }
+    }
+}
+
+/// Query parameters for the [List packages for an organization](Packages::list_packages_for_organization_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct PackagesListPackagesForOrganizationParams<'req> {
+    /// The type of supported package. Can be one of `npm`, `maven`, `rubygems`, `nuget`, `docker`, or `container`. Packages in GitHub's Gradle registry have the type `maven`. Docker images pushed to GitHub's Container registry (`ghcr.io`) have the type `container`. You can use the type `docker` to find images that were pushed to GitHub's Docker registry (`docker.pkg.github.com`), even if these have now been migrated to the Container registry.
+    package_type: &'req str, 
+    /// The selected visibility of the packages. Can be one of `public`, `private`, or `internal`. Only `container` package_types currently support `internal` visibility properly. For other ecosystems `internal` is synonymous with `private`. This parameter is optional and only filters an existing result set.
+    visibility: Option<&'req str>
+}
+
+impl<'req> PackagesListPackagesForOrganizationParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The type of supported package. Can be one of `npm`, `maven`, `rubygems`, `nuget`, `docker`, or `container`. Packages in GitHub's Gradle registry have the type `maven`. Docker images pushed to GitHub's Container registry (`ghcr.io`) have the type `container`. You can use the type `docker` to find images that were pushed to GitHub's Docker registry (`docker.pkg.github.com`), even if these have now been migrated to the Container registry.
+    pub fn package_type(self, package_type: &'req str) -> Self {
+        Self { 
+            package_type: package_type,
+            visibility: self.visibility, 
+        }
+    }
+
+    /// The selected visibility of the packages. Can be one of `public`, `private`, or `internal`. Only `container` package_types currently support `internal` visibility properly. For other ecosystems `internal` is synonymous with `private`. This parameter is optional and only filters an existing result set.
+    pub fn visibility(self, visibility: &'req str) -> Self {
+        Self { 
+            package_type: self.package_type, 
+            visibility: Some(visibility),
+        }
+    }
+}
+
+/// Query parameters for the [List packages for a user](Packages::list_packages_for_user_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct PackagesListPackagesForUserParams<'req> {
+    /// The type of supported package. Can be one of `npm`, `maven`, `rubygems`, `nuget`, `docker`, or `container`. Packages in GitHub's Gradle registry have the type `maven`. Docker images pushed to GitHub's Container registry (`ghcr.io`) have the type `container`. You can use the type `docker` to find images that were pushed to GitHub's Docker registry (`docker.pkg.github.com`), even if these have now been migrated to the Container registry.
+    package_type: &'req str, 
+    /// The selected visibility of the packages. Can be one of `public`, `private`, or `internal`. Only `container` package_types currently support `internal` visibility properly. For other ecosystems `internal` is synonymous with `private`. This parameter is optional and only filters an existing result set.
+    visibility: Option<&'req str>
+}
+
+impl<'req> PackagesListPackagesForUserParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The type of supported package. Can be one of `npm`, `maven`, `rubygems`, `nuget`, `docker`, or `container`. Packages in GitHub's Gradle registry have the type `maven`. Docker images pushed to GitHub's Container registry (`ghcr.io`) have the type `container`. You can use the type `docker` to find images that were pushed to GitHub's Docker registry (`docker.pkg.github.com`), even if these have now been migrated to the Container registry.
+    pub fn package_type(self, package_type: &'req str) -> Self {
+        Self { 
+            package_type: package_type,
+            visibility: self.visibility, 
+        }
+    }
+
+    /// The selected visibility of the packages. Can be one of `public`, `private`, or `internal`. Only `container` package_types currently support `internal` visibility properly. For other ecosystems `internal` is synonymous with `private`. This parameter is optional and only filters an existing result set.
+    pub fn visibility(self, visibility: &'req str) -> Self {
+        Self { 
+            package_type: self.package_type, 
+            visibility: Some(visibility),
+        }
+    }
+}
+
 /// Query parameters for the [Restore a package for the authenticated user](Packages::restore_package_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct PackagesRestorePackageForAuthenticatedUserParams<'req> {
@@ -521,6 +765,26 @@ pub struct PackagesRestorePackageForOrgParams<'req> {
 }
 
 impl<'req> PackagesRestorePackageForOrgParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// package token
+    pub fn token(self, token: &'req str) -> Self {
+        Self { 
+            token: Some(token),
+        }
+    }
+}
+
+/// Query parameters for the [Restore a package for a user](Packages::restore_package_for_user_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct PackagesRestorePackageForUserParams<'req> {
+    /// package token
+    token: Option<&'req str>
+}
+
+impl<'req> PackagesRestorePackageForUserParams<'req> {
     pub fn new() -> Self {
         Self::default()
     }
@@ -717,6 +981,97 @@ impl<'api> Packages<'api> {
 
     /// ---
     ///
+    /// # Delete a package for a user
+    ///
+    /// Deletes an entire package for a user. You cannot delete a public package if any version of the package has more than 5,000 downloads. In this scenario, contact GitHub support for further assistance.
+    /// 
+    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:delete` scopes. In addition:
+    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// - If `package_type` is `container`, you must also have admin permissions to the container you want to delete.
+    /// 
+    /// [GitHub API docs for delete_package_for_user](https://docs.github.com/rest/reference/packages#delete-a-package-for-a-user)
+    ///
+    /// ---
+    pub async fn delete_package_for_user_async(&self, package_type: &str, package_name: &str, username: &str) -> Result<(), PackagesDeletePackageForUserError> {
+
+        let request_uri = format!("{}/users/{}/packages/{}/{}", super::GITHUB_BASE_API_URL, package_type, package_name, username);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(PackagesDeletePackageForUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(PackagesDeletePackageForUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(PackagesDeletePackageForUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(PackagesDeletePackageForUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete a package for a user
+    ///
+    /// Deletes an entire package for a user. You cannot delete a public package if any version of the package has more than 5,000 downloads. In this scenario, contact GitHub support for further assistance.
+    /// 
+    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:delete` scopes. In addition:
+    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// - If `package_type` is `container`, you must also have admin permissions to the container you want to delete.
+    /// 
+    /// [GitHub API docs for delete_package_for_user](https://docs.github.com/rest/reference/packages#delete-a-package-for-a-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn delete_package_for_user(&self, package_type: &str, package_name: &str, username: &str) -> Result<(), PackagesDeletePackageForUserError> {
+
+        let request_uri = format!("{}/users/{}/packages/{}/{}", super::GITHUB_BASE_API_URL, package_type, package_name, username);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(PackagesDeletePackageForUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(PackagesDeletePackageForUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(PackagesDeletePackageForUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(PackagesDeletePackageForUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Delete a package version for the authenticated user
     ///
     /// Deletes a specific package version for a package owned by the authenticated user.  If the package is public and the package version has more than 5,000 downloads, you cannot delete the package version. In this scenario, contact GitHub support for further assistance.
@@ -891,6 +1246,97 @@ impl<'api> Packages<'api> {
                 403 => Err(PackagesDeletePackageVersionForOrgError::Status403(crate::adapters::to_json(github_response)?)),
                 401 => Err(PackagesDeletePackageVersionForOrgError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(PackagesDeletePackageVersionForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete package version for a user
+    ///
+    /// Deletes a specific package version for a user. If the package is public and the package version has more than 5,000 downloads, you cannot delete the package version. In this scenario, contact GitHub support for further assistance.
+    /// 
+    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:delete` scopes. In addition:
+    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// - If `package_type` is `container`, you must also have admin permissions to the container you want to delete.
+    /// 
+    /// [GitHub API docs for delete_package_version_for_user](https://docs.github.com/rest/reference/packages#delete-a-package-version-for-a-user)
+    ///
+    /// ---
+    pub async fn delete_package_version_for_user_async(&self, package_type: &str, package_name: &str, username: &str, package_version_id: i32) -> Result<(), PackagesDeletePackageVersionForUserError> {
+
+        let request_uri = format!("{}/users/{}/packages/{}/{}/versions/{}", super::GITHUB_BASE_API_URL, package_type, package_name, username, package_version_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(PackagesDeletePackageVersionForUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(PackagesDeletePackageVersionForUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(PackagesDeletePackageVersionForUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(PackagesDeletePackageVersionForUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete package version for a user
+    ///
+    /// Deletes a specific package version for a user. If the package is public and the package version has more than 5,000 downloads, you cannot delete the package version. In this scenario, contact GitHub support for further assistance.
+    /// 
+    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:delete` scopes. In addition:
+    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// - If `package_type` is `container`, you must also have admin permissions to the container you want to delete.
+    /// 
+    /// [GitHub API docs for delete_package_version_for_user](https://docs.github.com/rest/reference/packages#delete-a-package-version-for-a-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn delete_package_version_for_user(&self, package_type: &str, package_name: &str, username: &str, package_version_id: i32) -> Result<(), PackagesDeletePackageVersionForUserError> {
+
+        let request_uri = format!("{}/users/{}/packages/{}/{}/versions/{}", super::GITHUB_BASE_API_URL, package_type, package_name, username, package_version_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(PackagesDeletePackageVersionForUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(PackagesDeletePackageVersionForUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(PackagesDeletePackageVersionForUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(PackagesDeletePackageVersionForUserError::Generic { code }),
             }
         }
     }
@@ -1680,6 +2126,278 @@ impl<'api> Packages<'api> {
 
     /// ---
     ///
+    /// # List packages for the authenticated user&#x27;s namespace
+    ///
+    /// Lists packages owned by the authenticated user within the user's namespace.
+    /// 
+    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
+    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// 
+    /// [GitHub API docs for list_packages_for_authenticated_user](https://docs.github.com/rest/reference/packages#list-packages-for-the-authenticated-user)
+    ///
+    /// ---
+    pub async fn list_packages_for_authenticated_user_async(&self, query_params: impl Into<PackagesListPackagesForAuthenticatedUserParams<'api>>) -> Result<Vec<Package>, PackagesListPackagesForAuthenticatedUserError> {
+
+        let mut request_uri = format!("{}/user/packages", super::GITHUB_BASE_API_URL);
+
+        request_uri.push_str("?");
+        request_uri.push_str(&serde_urlencoded::to_string(query_params.into())?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(PackagesListPackagesForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List packages for the authenticated user&#x27;s namespace
+    ///
+    /// Lists packages owned by the authenticated user within the user's namespace.
+    /// 
+    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
+    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// 
+    /// [GitHub API docs for list_packages_for_authenticated_user](https://docs.github.com/rest/reference/packages#list-packages-for-the-authenticated-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_packages_for_authenticated_user(&self, query_params: impl Into<PackagesListPackagesForAuthenticatedUserParams<'api>>) -> Result<Vec<Package>, PackagesListPackagesForAuthenticatedUserError> {
+
+        let mut request_uri = format!("{}/user/packages", super::GITHUB_BASE_API_URL);
+
+        request_uri.push_str("?");
+        let qp: PackagesListPackagesForAuthenticatedUserParams = query_params.into();
+        request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(PackagesListPackagesForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List packages for an organization
+    ///
+    /// Lists all packages in an organization readable by the user.
+    /// 
+    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
+    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// 
+    /// [GitHub API docs for list_packages_for_organization](https://docs.github.com/rest/reference/packages#list-packages-for-an-organization)
+    ///
+    /// ---
+    pub async fn list_packages_for_organization_async(&self, org: &str, query_params: impl Into<PackagesListPackagesForOrganizationParams<'api>>) -> Result<Vec<Package>, PackagesListPackagesForOrganizationError> {
+
+        let mut request_uri = format!("{}/orgs/{}/packages", super::GITHUB_BASE_API_URL, org);
+
+        request_uri.push_str("?");
+        request_uri.push_str(&serde_urlencoded::to_string(query_params.into())?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(PackagesListPackagesForOrganizationError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(PackagesListPackagesForOrganizationError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(PackagesListPackagesForOrganizationError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List packages for an organization
+    ///
+    /// Lists all packages in an organization readable by the user.
+    /// 
+    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
+    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// 
+    /// [GitHub API docs for list_packages_for_organization](https://docs.github.com/rest/reference/packages#list-packages-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_packages_for_organization(&self, org: &str, query_params: impl Into<PackagesListPackagesForOrganizationParams<'api>>) -> Result<Vec<Package>, PackagesListPackagesForOrganizationError> {
+
+        let mut request_uri = format!("{}/orgs/{}/packages", super::GITHUB_BASE_API_URL, org);
+
+        request_uri.push_str("?");
+        let qp: PackagesListPackagesForOrganizationParams = query_params.into();
+        request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(PackagesListPackagesForOrganizationError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(PackagesListPackagesForOrganizationError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(PackagesListPackagesForOrganizationError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List packages for a user
+    ///
+    /// Lists all packages in a user's namespace for which the requesting user has access.
+    /// 
+    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
+    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// 
+    /// [GitHub API docs for list_packages_for_user](https://docs.github.com/rest/reference/packages#list-packages-for-user)
+    ///
+    /// ---
+    pub async fn list_packages_for_user_async(&self, username: &str, query_params: impl Into<PackagesListPackagesForUserParams<'api>>) -> Result<Vec<Package>, PackagesListPackagesForUserError> {
+
+        let mut request_uri = format!("{}/users/{}/packages", super::GITHUB_BASE_API_URL, username);
+
+        request_uri.push_str("?");
+        request_uri.push_str(&serde_urlencoded::to_string(query_params.into())?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(PackagesListPackagesForUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(PackagesListPackagesForUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(PackagesListPackagesForUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List packages for a user
+    ///
+    /// Lists all packages in a user's namespace for which the requesting user has access.
+    /// 
+    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
+    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// 
+    /// [GitHub API docs for list_packages_for_user](https://docs.github.com/rest/reference/packages#list-packages-for-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_packages_for_user(&self, username: &str, query_params: impl Into<PackagesListPackagesForUserParams<'api>>) -> Result<Vec<Package>, PackagesListPackagesForUserError> {
+
+        let mut request_uri = format!("{}/users/{}/packages", super::GITHUB_BASE_API_URL, username);
+
+        request_uri.push_str("?");
+        let qp: PackagesListPackagesForUserParams = query_params.into();
+        request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(PackagesListPackagesForUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(PackagesListPackagesForUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(PackagesListPackagesForUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Restore a package for the authenticated user
     ///
     /// Restores a package owned by the authenticated user.
@@ -1892,6 +2610,114 @@ impl<'api> Packages<'api> {
 
     /// ---
     ///
+    /// # Restore a package for a user
+    ///
+    /// Restores an entire package for a user.
+    /// 
+    /// You can restore a deleted package under the following conditions:
+    ///   - The package was deleted within the last 30 days.
+    ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
+    /// 
+    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scopes. In addition:
+    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// - If `package_type` is `container`, you must also have admin permissions to the container that you want to restore.
+    /// 
+    /// [GitHub API docs for restore_package_for_user](https://docs.github.com/rest/reference/packages#restore-a-package-for-a-user)
+    ///
+    /// ---
+    pub async fn restore_package_for_user_async(&self, package_type: &str, package_name: &str, username: &str, query_params: Option<impl Into<PackagesRestorePackageForUserParams<'api>>>) -> Result<(), PackagesRestorePackageForUserError> {
+
+        let mut request_uri = format!("{}/users/{}/packages/{}/{}/restore", super::GITHUB_BASE_API_URL, package_type, package_name, username);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(PackagesRestorePackageForUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(PackagesRestorePackageForUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(PackagesRestorePackageForUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(PackagesRestorePackageForUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Restore a package for a user
+    ///
+    /// Restores an entire package for a user.
+    /// 
+    /// You can restore a deleted package under the following conditions:
+    ///   - The package was deleted within the last 30 days.
+    ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
+    /// 
+    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scopes. In addition:
+    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// - If `package_type` is `container`, you must also have admin permissions to the container that you want to restore.
+    /// 
+    /// [GitHub API docs for restore_package_for_user](https://docs.github.com/rest/reference/packages#restore-a-package-for-a-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn restore_package_for_user(&self, package_type: &str, package_name: &str, username: &str, query_params: Option<impl Into<PackagesRestorePackageForUserParams<'api>>>) -> Result<(), PackagesRestorePackageForUserError> {
+
+        let mut request_uri = format!("{}/users/{}/packages/{}/{}/restore", super::GITHUB_BASE_API_URL, package_type, package_name, username);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: PackagesRestorePackageForUserParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(PackagesRestorePackageForUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(PackagesRestorePackageForUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(PackagesRestorePackageForUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(PackagesRestorePackageForUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Restore a package version for the authenticated user
     ///
     /// Restores a package version owned by the authenticated user.
@@ -2080,6 +2906,105 @@ impl<'api> Packages<'api> {
                 403 => Err(PackagesRestorePackageVersionForOrgError::Status403(crate::adapters::to_json(github_response)?)),
                 401 => Err(PackagesRestorePackageVersionForOrgError::Status401(crate::adapters::to_json(github_response)?)),
                 code => Err(PackagesRestorePackageVersionForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Restore package version for a user
+    ///
+    /// Restores a specific package version for a user.
+    /// 
+    /// You can restore a deleted package under the following conditions:
+    ///   - The package was deleted within the last 30 days.
+    ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
+    /// 
+    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scopes. In addition:
+    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// - If `package_type` is `container`, you must also have admin permissions to the container that you want to restore.
+    /// 
+    /// [GitHub API docs for restore_package_version_for_user](https://docs.github.com/rest/reference/packages#restore-a-package-version-for-a-user)
+    ///
+    /// ---
+    pub async fn restore_package_version_for_user_async(&self, package_type: &str, package_name: &str, username: &str, package_version_id: i32) -> Result<(), PackagesRestorePackageVersionForUserError> {
+
+        let request_uri = format!("{}/users/{}/packages/{}/{}/versions/{}/restore", super::GITHUB_BASE_API_URL, package_type, package_name, username, package_version_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(PackagesRestorePackageVersionForUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(PackagesRestorePackageVersionForUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(PackagesRestorePackageVersionForUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(PackagesRestorePackageVersionForUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Restore package version for a user
+    ///
+    /// Restores a specific package version for a user.
+    /// 
+    /// You can restore a deleted package under the following conditions:
+    ///   - The package was deleted within the last 30 days.
+    ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
+    /// 
+    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scopes. In addition:
+    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// - If `package_type` is `container`, you must also have admin permissions to the container that you want to restore.
+    /// 
+    /// [GitHub API docs for restore_package_version_for_user](https://docs.github.com/rest/reference/packages#restore-a-package-version-for-a-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn restore_package_version_for_user(&self, package_type: &str, package_name: &str, username: &str, package_version_id: i32) -> Result<(), PackagesRestorePackageVersionForUserError> {
+
+        let request_uri = format!("{}/users/{}/packages/{}/{}/versions/{}/restore", super::GITHUB_BASE_API_URL, package_type, package_name, username, package_version_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(PackagesRestorePackageVersionForUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(PackagesRestorePackageVersionForUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(PackagesRestorePackageVersionForUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(PackagesRestorePackageVersionForUserError::Generic { code }),
             }
         }
     }

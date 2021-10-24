@@ -506,6 +506,25 @@ pub enum ActionsDownloadJobLogsForWorkflowRunError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Download workflow run attempt logs](Actions::download_workflow_run_attempt_logs_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsDownloadWorkflowRunAttemptLogsError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Response")]
+    Status302,
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Download workflow run logs](Actions::download_workflow_run_logs_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsDownloadWorkflowRunLogsError {
@@ -882,6 +901,23 @@ pub enum ActionsGetWorkflowRunError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Get a workflow run attempt](Actions::get_workflow_run_attempt_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsGetWorkflowRunAttemptError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Get workflow run usage](Actions::get_workflow_run_usage_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetWorkflowRunUsageError {
@@ -963,6 +999,25 @@ pub enum ActionsListJobsForWorkflowRunError {
 
     // -- endpoint errors
 
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List jobs for a workflow run attempt](Actions::list_jobs_for_workflow_run_attempt_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsListJobsForWorkflowRunAttemptError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1463,6 +1518,46 @@ pub enum ActionsUpdateSelfHostedRunnerGroupForOrgError {
 }
 
 
+/// Query parameters for the [Get a workflow run](Actions::get_workflow_run_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct ActionsGetWorkflowRunParams {
+    /// If `true` pull requests are omitted from the response (empty array).
+    exclude_pull_requests: Option<bool>
+}
+
+impl ActionsGetWorkflowRunParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// If `true` pull requests are omitted from the response (empty array).
+    pub fn exclude_pull_requests(self, exclude_pull_requests: bool) -> Self {
+        Self { 
+            exclude_pull_requests: Some(exclude_pull_requests),
+        }
+    }
+}
+
+/// Query parameters for the [Get a workflow run attempt](Actions::get_workflow_run_attempt_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct ActionsGetWorkflowRunAttemptParams {
+    /// If `true` pull requests are omitted from the response (empty array).
+    exclude_pull_requests: Option<bool>
+}
+
+impl ActionsGetWorkflowRunAttemptParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// If `true` pull requests are omitted from the response (empty array).
+    pub fn exclude_pull_requests(self, exclude_pull_requests: bool) -> Self {
+        Self { 
+            exclude_pull_requests: Some(exclude_pull_requests),
+        }
+    }
+}
+
 /// Query parameters for the [List artifacts for a repository](Actions::list_artifacts_for_repo_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsListArtifactsForRepoParams {
@@ -1588,6 +1683,46 @@ impl<'req> ActionsListJobsForWorkflowRunParams<'req> {
 }
 
 impl<'enc> From<&'enc PerPage> for ActionsListJobsForWorkflowRunParams<'enc> {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [List jobs for a workflow run attempt](Actions::list_jobs_for_workflow_run_attempt_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct ActionsListJobsForWorkflowRunAttemptParams {
+    /// Results per page (max 100)
+    per_page: Option<u16>, 
+    /// Page number of the results to fetch.
+    page: Option<u16>
+}
+
+impl ActionsListJobsForWorkflowRunAttemptParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Results per page (max 100)
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self { 
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// Page number of the results to fetch.
+    pub fn page(self, page: u16) -> Self {
+        Self { 
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for ActionsListJobsForWorkflowRunAttemptParams {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -2052,7 +2187,9 @@ pub struct ActionsListWorkflowRunsParams<'req> {
     /// Page number of the results to fetch.
     page: Option<u16>, 
     
-    created: Option<chrono::DateTime<chrono::Utc>>
+    created: Option<chrono::DateTime<chrono::Utc>>, 
+    /// If `true` pull requests are omitted from the response (empty array).
+    exclude_pull_requests: Option<bool>
 }
 
 impl<'req> ActionsListWorkflowRunsParams<'req> {
@@ -2070,6 +2207,7 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
             per_page: self.per_page, 
             page: self.page, 
             created: self.created, 
+            exclude_pull_requests: self.exclude_pull_requests, 
         }
     }
 
@@ -2083,6 +2221,7 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
             per_page: self.per_page, 
             page: self.page, 
             created: self.created, 
+            exclude_pull_requests: self.exclude_pull_requests, 
         }
     }
 
@@ -2096,6 +2235,7 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
             per_page: self.per_page, 
             page: self.page, 
             created: self.created, 
+            exclude_pull_requests: self.exclude_pull_requests, 
         }
     }
 
@@ -2109,6 +2249,7 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
             per_page: self.per_page, 
             page: self.page, 
             created: self.created, 
+            exclude_pull_requests: self.exclude_pull_requests, 
         }
     }
 
@@ -2122,6 +2263,7 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
             per_page: Some(per_page),
             page: self.page, 
             created: self.created, 
+            exclude_pull_requests: self.exclude_pull_requests, 
         }
     }
 
@@ -2135,6 +2277,7 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
             per_page: self.per_page, 
             page: Some(page),
             created: self.created, 
+            exclude_pull_requests: self.exclude_pull_requests, 
         }
     }
 
@@ -2148,6 +2291,21 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
             per_page: self.per_page, 
             page: self.page, 
             created: Some(created),
+            exclude_pull_requests: self.exclude_pull_requests, 
+        }
+    }
+
+    /// If `true` pull requests are omitted from the response (empty array).
+    pub fn exclude_pull_requests(self, exclude_pull_requests: bool) -> Self {
+        Self { 
+            actor: self.actor, 
+            branch: self.branch, 
+            event: self.event, 
+            status: self.status, 
+            per_page: self.per_page, 
+            page: self.page, 
+            created: self.created, 
+            exclude_pull_requests: Some(exclude_pull_requests),
         }
     }
 }
@@ -2177,7 +2335,9 @@ pub struct ActionsListWorkflowRunsForRepoParams<'req> {
     /// Page number of the results to fetch.
     page: Option<u16>, 
     
-    created: Option<chrono::DateTime<chrono::Utc>>
+    created: Option<chrono::DateTime<chrono::Utc>>, 
+    /// If `true` pull requests are omitted from the response (empty array).
+    exclude_pull_requests: Option<bool>
 }
 
 impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
@@ -2195,6 +2355,7 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
             per_page: self.per_page, 
             page: self.page, 
             created: self.created, 
+            exclude_pull_requests: self.exclude_pull_requests, 
         }
     }
 
@@ -2208,6 +2369,7 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
             per_page: self.per_page, 
             page: self.page, 
             created: self.created, 
+            exclude_pull_requests: self.exclude_pull_requests, 
         }
     }
 
@@ -2221,6 +2383,7 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
             per_page: self.per_page, 
             page: self.page, 
             created: self.created, 
+            exclude_pull_requests: self.exclude_pull_requests, 
         }
     }
 
@@ -2234,6 +2397,7 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
             per_page: self.per_page, 
             page: self.page, 
             created: self.created, 
+            exclude_pull_requests: self.exclude_pull_requests, 
         }
     }
 
@@ -2247,6 +2411,7 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
             per_page: Some(per_page),
             page: self.page, 
             created: self.created, 
+            exclude_pull_requests: self.exclude_pull_requests, 
         }
     }
 
@@ -2260,6 +2425,7 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
             per_page: self.per_page, 
             page: Some(page),
             created: self.created, 
+            exclude_pull_requests: self.exclude_pull_requests, 
         }
     }
 
@@ -2273,6 +2439,21 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
             per_page: self.per_page, 
             page: self.page, 
             created: Some(created),
+            exclude_pull_requests: self.exclude_pull_requests, 
+        }
+    }
+
+    /// If `true` pull requests are omitted from the response (empty array).
+    pub fn exclude_pull_requests(self, exclude_pull_requests: bool) -> Self {
+        Self { 
+            actor: self.actor, 
+            branch: self.branch, 
+            event: self.event, 
+            status: self.status, 
+            per_page: self.per_page, 
+            page: self.page, 
+            created: self.created, 
+            exclude_pull_requests: Some(exclude_pull_requests),
         }
     }
 }
@@ -4993,6 +5174,91 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
+    /// # Download workflow run attempt logs
+    ///
+    /// Gets a redirect URL to download an archive of log files for a specific workflow run attempt. This link expires after
+    /// 1 minute. Look for `Location:` in the response header to find the URL for the download. Anyone with read access to
+    /// the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope.
+    /// GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// 
+    /// [GitHub API docs for download_workflow_run_attempt_logs](https://docs.github.com/rest/reference/actions#download-workflow-run-attempt-logs)
+    ///
+    /// ---
+    pub async fn download_workflow_run_attempt_logs_async(&self, owner: &str, repo: &str, run_id: i32, attempt_number: i32) -> Result<(), ActionsDownloadWorkflowRunAttemptLogsError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/attempts/{}/logs", super::GITHUB_BASE_API_URL, owner, repo, run_id, attempt_number);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                302 => Err(ActionsDownloadWorkflowRunAttemptLogsError::Status302),
+                code => Err(ActionsDownloadWorkflowRunAttemptLogsError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Download workflow run attempt logs
+    ///
+    /// Gets a redirect URL to download an archive of log files for a specific workflow run attempt. This link expires after
+    /// 1 minute. Look for `Location:` in the response header to find the URL for the download. Anyone with read access to
+    /// the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope.
+    /// GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// 
+    /// [GitHub API docs for download_workflow_run_attempt_logs](https://docs.github.com/rest/reference/actions#download-workflow-run-attempt-logs)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn download_workflow_run_attempt_logs(&self, owner: &str, repo: &str, run_id: i32, attempt_number: i32) -> Result<(), ActionsDownloadWorkflowRunAttemptLogsError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/attempts/{}/logs", super::GITHUB_BASE_API_URL, owner, repo, run_id, attempt_number);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                302 => Err(ActionsDownloadWorkflowRunAttemptLogsError::Status302),
+                code => Err(ActionsDownloadWorkflowRunAttemptLogsError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Download workflow run logs
     ///
     /// Gets a redirect URL to download an archive of log files for a workflow run. This link expires after 1 minute. Look for
@@ -6673,10 +6939,14 @@ impl<'api> Actions<'api> {
     /// [GitHub API docs for get_workflow_run](https://docs.github.com/rest/reference/actions#get-a-workflow-run)
     ///
     /// ---
-    pub async fn get_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<WorkflowRun, ActionsGetWorkflowRunError> {
+    pub async fn get_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsGetWorkflowRunParams>>) -> Result<WorkflowRun, ActionsGetWorkflowRunError> {
 
-        let request_uri = format!("{}/repos/{}/{}/actions/runs/{}", super::GITHUB_BASE_API_URL, owner, repo, run_id);
+        let mut request_uri = format!("{}/repos/{}/{}/actions/runs/{}", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
 
         let req = GitHubRequest {
             uri: request_uri,
@@ -6712,10 +6982,15 @@ impl<'api> Actions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_workflow_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<WorkflowRun, ActionsGetWorkflowRunError> {
+    pub fn get_workflow_run(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsGetWorkflowRunParams>>) -> Result<WorkflowRun, ActionsGetWorkflowRunError> {
 
-        let request_uri = format!("{}/repos/{}/{}/actions/runs/{}", super::GITHUB_BASE_API_URL, owner, repo, run_id);
+        let mut request_uri = format!("{}/repos/{}/{}/actions/runs/{}", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: ActionsGetWorkflowRunParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
 
         let req = GitHubRequest {
             uri: request_uri,
@@ -6737,6 +7012,98 @@ impl<'api> Actions<'api> {
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetWorkflowRunError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get a workflow run attempt
+    ///
+    /// Gets a specific workflow run attempt. Anyone with read access to the repository
+    /// can use this endpoint. If the repository is private you must use an access token
+    /// with the `repo` scope. GitHub Apps must have the `actions:read` permission to
+    /// use this endpoint.
+    /// 
+    /// [GitHub API docs for get_workflow_run_attempt](https://docs.github.com/rest/reference/actions#get-a-workflow-run-attempt)
+    ///
+    /// ---
+    pub async fn get_workflow_run_attempt_async(&self, owner: &str, repo: &str, run_id: i32, attempt_number: i32, query_params: Option<impl Into<ActionsGetWorkflowRunAttemptParams>>) -> Result<WorkflowRun, ActionsGetWorkflowRunAttemptError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/actions/runs/{}/attempts/{}", super::GITHUB_BASE_API_URL, owner, repo, run_id, attempt_number);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetWorkflowRunAttemptError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get a workflow run attempt
+    ///
+    /// Gets a specific workflow run attempt. Anyone with read access to the repository
+    /// can use this endpoint. If the repository is private you must use an access token
+    /// with the `repo` scope. GitHub Apps must have the `actions:read` permission to
+    /// use this endpoint.
+    /// 
+    /// [GitHub API docs for get_workflow_run_attempt](https://docs.github.com/rest/reference/actions#get-a-workflow-run-attempt)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_workflow_run_attempt(&self, owner: &str, repo: &str, run_id: i32, attempt_number: i32, query_params: Option<impl Into<ActionsGetWorkflowRunAttemptParams>>) -> Result<WorkflowRun, ActionsGetWorkflowRunAttemptError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/actions/runs/{}/attempts/{}", super::GITHUB_BASE_API_URL, owner, repo, run_id, attempt_number);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: ActionsGetWorkflowRunAttemptParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetWorkflowRunAttemptError::Generic { code }),
             }
         }
     }
@@ -7157,6 +7524,94 @@ impl<'api> Actions<'api> {
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListJobsForWorkflowRunError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List jobs for a workflow run attempt
+    ///
+    /// Lists jobs for a specific workflow run attempt. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint. You can use parameters to narrow the list of results. For more information about using parameters, see [Parameters](https://docs.github.com/rest/overview/resources-in-the-rest-api#parameters).
+    /// 
+    /// [GitHub API docs for list_jobs_for_workflow_run_attempt](https://docs.github.com/rest/reference/actions#list-jobs-for-a-workflow-run-attempt)
+    ///
+    /// ---
+    pub async fn list_jobs_for_workflow_run_attempt_async(&self, owner: &str, repo: &str, run_id: i32, attempt_number: i32, query_params: Option<impl Into<ActionsListJobsForWorkflowRunAttemptParams>>) -> Result<GetActionsListJobsForWorkflowRunResponse200, ActionsListJobsForWorkflowRunAttemptError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/actions/runs/{}/attempts/{}/jobs", super::GITHUB_BASE_API_URL, owner, repo, run_id, attempt_number);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsListJobsForWorkflowRunAttemptError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ActionsListJobsForWorkflowRunAttemptError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List jobs for a workflow run attempt
+    ///
+    /// Lists jobs for a specific workflow run attempt. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint. You can use parameters to narrow the list of results. For more information about using parameters, see [Parameters](https://docs.github.com/rest/overview/resources-in-the-rest-api#parameters).
+    /// 
+    /// [GitHub API docs for list_jobs_for_workflow_run_attempt](https://docs.github.com/rest/reference/actions#list-jobs-for-a-workflow-run-attempt)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_jobs_for_workflow_run_attempt(&self, owner: &str, repo: &str, run_id: i32, attempt_number: i32, query_params: Option<impl Into<ActionsListJobsForWorkflowRunAttemptParams>>) -> Result<GetActionsListJobsForWorkflowRunResponse200, ActionsListJobsForWorkflowRunAttemptError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/actions/runs/{}/attempts/{}/jobs", super::GITHUB_BASE_API_URL, owner, repo, run_id, attempt_number);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: ActionsListJobsForWorkflowRunAttemptParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsListJobsForWorkflowRunAttemptError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(ActionsListJobsForWorkflowRunAttemptError::Generic { code }),
             }
         }
     }

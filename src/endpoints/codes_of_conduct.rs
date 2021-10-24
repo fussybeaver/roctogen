@@ -71,23 +71,6 @@ pub enum CodesOfConductGetConductCodeError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Get the code of conduct for a repository](CodesOfConduct::get_for_repo_async()) endpoint.
-#[derive(Debug, thiserror::Error)]
-pub enum CodesOfConductGetForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
-    #[error("Status code: {}", code)]
-    Generic { code: u16 },
-}
-
 
 
 impl<'api> CodesOfConduct<'api> {
@@ -239,93 +222,6 @@ impl<'api> CodesOfConduct<'api> {
                 404 => Err(CodesOfConductGetConductCodeError::Status404(crate::adapters::to_json(github_response)?)),
                 304 => Err(CodesOfConductGetConductCodeError::Status304),
                 code => Err(CodesOfConductGetConductCodeError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Get the code of conduct for a repository
-    ///
-    /// Returns the contents of the repository's code of conduct file, if one is detected.
-    /// 
-    /// A code of conduct is detected if there is a file named `CODE_OF_CONDUCT` in the root directory of the repository. GitHub detects which code of conduct it is using fuzzy matching.
-    /// 
-    /// [GitHub API docs for get_for_repo](https://docs.github.com/rest/reference/codes-of-conduct#get-the-code-of-conduct-for-a-repository)
-    ///
-    /// The `get_for_repo_async` endpoint is enabled with the `scarlet-witch` cargo feature.
-    ///
-    /// ---
-    #[cfg(feature = "scarlet-witch")]
-    pub async fn get_for_repo_async(&self, owner: &str, repo: &str) -> Result<CodeOfConduct, CodesOfConductGetForRepoError> {
-
-        let request_uri = format!("{}/repos/{}/{}/community/code_of_conduct", super::GITHUB_BASE_API_URL, owner, repo);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![("Accept", "application/vnd.github.scarlet-witch-preview+json"), ]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch_async(request).await?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
-        } else {
-            match github_response.status_code() {
-                code => Err(CodesOfConductGetForRepoError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Get the code of conduct for a repository
-    ///
-    /// Returns the contents of the repository's code of conduct file, if one is detected.
-    /// 
-    /// A code of conduct is detected if there is a file named `CODE_OF_CONDUCT` in the root directory of the repository. GitHub detects which code of conduct it is using fuzzy matching.
-    /// 
-    /// [GitHub API docs for get_for_repo](https://docs.github.com/rest/reference/codes-of-conduct#get-the-code-of-conduct-for-a-repository)
-    ///
-    /// The `get_for_repo` endpoint is enabled with the `scarlet-witch` cargo feature.
-    ///
-    /// ---
-    #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "scarlet-witch")]
-    pub fn get_for_repo(&self, owner: &str, repo: &str) -> Result<CodeOfConduct, CodesOfConductGetForRepoError> {
-
-        let request_uri = format!("{}/repos/{}/{}/community/code_of_conduct", super::GITHUB_BASE_API_URL, owner, repo);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![("Accept", "application/vnd.github.scarlet-witch-preview+json"), ]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch(request)?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
-        } else {
-            match github_response.status_code() {
-                code => Err(CodesOfConductGetForRepoError::Generic { code }),
             }
         }
     }

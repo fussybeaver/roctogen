@@ -277,9 +277,9 @@ pub enum MigrationsListForOrgError {
     Generic { code: u16 },
 }
 
-/// Errors for the [List repositories in an organization migration](Migrations::list_repos_for_org_async()) endpoint.
+/// Errors for the [List repositories for a user migration](Migrations::list_repos_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum MigrationsListReposForOrgError {
+pub enum MigrationsListReposForAuthenticatedUserError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -296,9 +296,9 @@ pub enum MigrationsListReposForOrgError {
     Generic { code: u16 },
 }
 
-/// Errors for the [List repositories for a user migration](Migrations::list_repos_for_user_async()) endpoint.
+/// Errors for the [List repositories in an organization migration](Migrations::list_repos_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum MigrationsListReposForUserError {
+pub enum MigrationsListReposForOrgError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -637,6 +637,46 @@ impl<'enc> From<&'enc PerPage> for MigrationsListForOrgParams {
         }
     }
 }
+/// Query parameters for the [List repositories for a user migration](Migrations::list_repos_for_authenticated_user_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct MigrationsListReposForAuthenticatedUserParams {
+    /// Results per page (max 100)
+    per_page: Option<u16>, 
+    /// Page number of the results to fetch.
+    page: Option<u16>
+}
+
+impl MigrationsListReposForAuthenticatedUserParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Results per page (max 100)
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self { 
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// Page number of the results to fetch.
+    pub fn page(self, page: u16) -> Self {
+        Self { 
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for MigrationsListReposForAuthenticatedUserParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [List repositories in an organization migration](Migrations::list_repos_for_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct MigrationsListReposForOrgParams {
@@ -669,46 +709,6 @@ impl MigrationsListReposForOrgParams {
 }
 
 impl<'enc> From<&'enc PerPage> for MigrationsListReposForOrgParams {
-    fn from(per_page: &'enc PerPage) -> Self {
-        Self {
-            per_page: Some(per_page.per_page),
-            page: Some(per_page.page),
-            ..Default::default()
-        }
-    }
-}
-/// Query parameters for the [List repositories for a user migration](Migrations::list_repos_for_user_async()) endpoint.
-#[derive(Default, Serialize)]
-pub struct MigrationsListReposForUserParams {
-    /// Results per page (max 100)
-    per_page: Option<u16>, 
-    /// Page number of the results to fetch.
-    page: Option<u16>
-}
-
-impl MigrationsListReposForUserParams {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    /// Results per page (max 100)
-    pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
-            per_page: Some(per_page),
-            page: self.page, 
-        }
-    }
-
-    /// Page number of the results to fetch.
-    pub fn page(self, page: u16) -> Self {
-        Self { 
-            per_page: self.per_page, 
-            page: Some(page),
-        }
-    }
-}
-
-impl<'enc> From<&'enc PerPage> for MigrationsListReposForUserParams {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -804,10 +804,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for delete_archive_for_authenticated_user](https://docs.github.com/rest/reference/migrations#delete-a-user-migration-archive)
     ///
-    /// The `delete_archive_for_authenticated_user_async` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "wyandotte")]
     pub async fn delete_archive_for_authenticated_user_async(&self, migration_id: i32) -> Result<(), MigrationsDeleteArchiveForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/migrations/{}/archive", super::GITHUB_BASE_API_URL, migration_id);
@@ -817,7 +814,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -849,11 +846,8 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for delete_archive_for_authenticated_user](https://docs.github.com/rest/reference/migrations#delete-a-user-migration-archive)
     ///
-    /// The `delete_archive_for_authenticated_user` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "wyandotte")]
     pub fn delete_archive_for_authenticated_user(&self, migration_id: i32) -> Result<(), MigrationsDeleteArchiveForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/migrations/{}/archive", super::GITHUB_BASE_API_URL, migration_id);
@@ -863,7 +857,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -895,10 +889,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for delete_archive_for_org](https://docs.github.com/rest/reference/migrations#delete-an-organization-migration-archive)
     ///
-    /// The `delete_archive_for_org_async` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "wyandotte")]
     pub async fn delete_archive_for_org_async(&self, org: &str, migration_id: i32) -> Result<(), MigrationsDeleteArchiveForOrgError> {
 
         let request_uri = format!("{}/orgs/{}/migrations/{}/archive", super::GITHUB_BASE_API_URL, org, migration_id);
@@ -908,7 +899,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -937,11 +928,8 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for delete_archive_for_org](https://docs.github.com/rest/reference/migrations#delete-an-organization-migration-archive)
     ///
-    /// The `delete_archive_for_org` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "wyandotte")]
     pub fn delete_archive_for_org(&self, org: &str, migration_id: i32) -> Result<(), MigrationsDeleteArchiveForOrgError> {
 
         let request_uri = format!("{}/orgs/{}/migrations/{}/archive", super::GITHUB_BASE_API_URL, org, migration_id);
@@ -951,7 +939,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -980,10 +968,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for download_archive_for_org](https://docs.github.com/rest/reference/migrations#download-an-organization-migration-archive)
     ///
-    /// The `download_archive_for_org_async` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "wyandotte")]
     pub async fn download_archive_for_org_async(&self, org: &str, migration_id: i32) -> Result<(), MigrationsDownloadArchiveForOrgError> {
 
         let request_uri = format!("{}/orgs/{}/migrations/{}/archive", super::GITHUB_BASE_API_URL, org, migration_id);
@@ -993,7 +978,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1023,11 +1008,8 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for download_archive_for_org](https://docs.github.com/rest/reference/migrations#download-an-organization-migration-archive)
     ///
-    /// The `download_archive_for_org` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "wyandotte")]
     pub fn download_archive_for_org(&self, org: &str, migration_id: i32) -> Result<(), MigrationsDownloadArchiveForOrgError> {
 
         let request_uri = format!("{}/orgs/{}/migrations/{}/archive", super::GITHUB_BASE_API_URL, org, migration_id);
@@ -1037,7 +1019,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1087,10 +1069,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for get_archive_for_authenticated_user](https://docs.github.com/rest/reference/migrations#download-a-user-migration-archive)
     ///
-    /// The `get_archive_for_authenticated_user_async` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "wyandotte")]
     pub async fn get_archive_for_authenticated_user_async(&self, migration_id: i32) -> Result<(), MigrationsGetArchiveForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/migrations/{}/archive", super::GITHUB_BASE_API_URL, migration_id);
@@ -1100,7 +1079,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1152,11 +1131,8 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for get_archive_for_authenticated_user](https://docs.github.com/rest/reference/migrations#download-a-user-migration-archive)
     ///
-    /// The `get_archive_for_authenticated_user` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "wyandotte")]
     pub fn get_archive_for_authenticated_user(&self, migration_id: i32) -> Result<(), MigrationsGetArchiveForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/migrations/{}/archive", super::GITHUB_BASE_API_URL, migration_id);
@@ -1166,7 +1142,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1303,7 +1279,7 @@ impl<'api> Migrations<'api> {
     /// If there are problems, you will see one of these in the `status` field:
     /// 
     /// *   `auth_failed` - the import requires authentication in order to connect to the original repository. To update authentication for the import, please see the [Update an import](https://docs.github.com/rest/reference/migrations#update-an-import) section.
-    /// *   `error` - the import encountered an error. The import progress response will include the `failed_step` and an error message. Contact [GitHub Support](https://support.github.com/contact?tags=rest-api) for more information.
+    /// *   `error` - the import encountered an error. The import progress response will include the `failed_step` and an error message. Contact [GitHub Support](https://support.github.com/contact?tags=dotcom-rest-api) for more information.
     /// *   `detection_needs_auth` - the importer requires authentication for the originating repository to continue detection. To update authentication for the import, please see the [Update an import](https://docs.github.com/rest/reference/migrations#update-an-import) section.
     /// *   `detection_found_nothing` - the importer didn't recognize any source control at the URL. To resolve, [Cancel the import](https://docs.github.com/rest/reference/migrations#cancel-an-import) and [retry](https://docs.github.com/rest/reference/migrations#start-an-import) with the correct URL.
     /// *   `detection_found_multiple` - the importer found several projects or repositories at the provided URL. When this is the case, the Import Progress response will also include a `project_choices` field with the possible project choices as values. To update project choice, please see the [Update an import](https://docs.github.com/rest/reference/migrations#update-an-import) section.
@@ -1375,7 +1351,7 @@ impl<'api> Migrations<'api> {
     /// If there are problems, you will see one of these in the `status` field:
     /// 
     /// *   `auth_failed` - the import requires authentication in order to connect to the original repository. To update authentication for the import, please see the [Update an import](https://docs.github.com/rest/reference/migrations#update-an-import) section.
-    /// *   `error` - the import encountered an error. The import progress response will include the `failed_step` and an error message. Contact [GitHub Support](https://support.github.com/contact?tags=rest-api) for more information.
+    /// *   `error` - the import encountered an error. The import progress response will include the `failed_step` and an error message. Contact [GitHub Support](https://support.github.com/contact?tags=dotcom-rest-api) for more information.
     /// *   `detection_needs_auth` - the importer requires authentication for the originating repository to continue detection. To update authentication for the import, please see the [Update an import](https://docs.github.com/rest/reference/migrations#update-an-import) section.
     /// *   `detection_found_nothing` - the importer didn't recognize any source control at the URL. To resolve, [Cancel the import](https://docs.github.com/rest/reference/migrations#cancel-an-import) and [retry](https://docs.github.com/rest/reference/migrations#start-an-import) with the correct URL.
     /// *   `detection_found_multiple` - the importer found several projects or repositories at the provided URL. When this is the case, the Import Progress response will also include a `project_choices` field with the possible project choices as values. To update project choice, please see the [Update an import](https://docs.github.com/rest/reference/migrations#update-an-import) section.
@@ -1519,10 +1495,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for get_status_for_authenticated_user](https://docs.github.com/rest/reference/migrations#get-a-user-migration-status)
     ///
-    /// The `get_status_for_authenticated_user_async` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "wyandotte")]
     pub async fn get_status_for_authenticated_user_async(&self, migration_id: i32, query_params: Option<impl Into<MigrationsGetStatusForAuthenticatedUserParams>>) -> Result<Migration, MigrationsGetStatusForAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/user/migrations/{}", super::GITHUB_BASE_API_URL, migration_id);
@@ -1536,7 +1509,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1575,11 +1548,8 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for get_status_for_authenticated_user](https://docs.github.com/rest/reference/migrations#get-a-user-migration-status)
     ///
-    /// The `get_status_for_authenticated_user` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "wyandotte")]
     pub fn get_status_for_authenticated_user(&self, migration_id: i32, query_params: Option<impl Into<MigrationsGetStatusForAuthenticatedUserParams>>) -> Result<Migration, MigrationsGetStatusForAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/user/migrations/{}", super::GITHUB_BASE_API_URL, migration_id);
@@ -1594,7 +1564,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1633,10 +1603,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for get_status_for_org](https://docs.github.com/rest/reference/migrations#get-an-organization-migration-status)
     ///
-    /// The `get_status_for_org_async` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "wyandotte")]
     pub async fn get_status_for_org_async(&self, org: &str, migration_id: i32, query_params: Option<impl Into<MigrationsGetStatusForOrgParams>>) -> Result<Migration, MigrationsGetStatusForOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/migrations/{}", super::GITHUB_BASE_API_URL, org, migration_id);
@@ -1650,7 +1617,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1686,11 +1653,8 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for get_status_for_org](https://docs.github.com/rest/reference/migrations#get-an-organization-migration-status)
     ///
-    /// The `get_status_for_org` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "wyandotte")]
     pub fn get_status_for_org(&self, org: &str, migration_id: i32, query_params: Option<impl Into<MigrationsGetStatusForOrgParams>>) -> Result<Migration, MigrationsGetStatusForOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/migrations/{}", super::GITHUB_BASE_API_URL, org, migration_id);
@@ -1705,7 +1669,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1734,10 +1698,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/migrations#list-user-migrations)
     ///
-    /// The `list_for_authenticated_user_async` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "wyandotte")]
     pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<MigrationsListForAuthenticatedUserParams>>) -> Result<Vec<Migration>, MigrationsListForAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/user/migrations", super::GITHUB_BASE_API_URL);
@@ -1751,7 +1712,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1782,11 +1743,8 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/migrations#list-user-migrations)
     ///
-    /// The `list_for_authenticated_user` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "wyandotte")]
     pub fn list_for_authenticated_user(&self, query_params: Option<impl Into<MigrationsListForAuthenticatedUserParams>>) -> Result<Vec<Migration>, MigrationsListForAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/user/migrations", super::GITHUB_BASE_API_URL);
@@ -1801,7 +1759,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1832,10 +1790,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/migrations#list-organization-migrations)
     ///
-    /// The `list_for_org_async` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "wyandotte")]
     pub async fn list_for_org_async(&self, org: &str, query_params: Option<impl Into<MigrationsListForOrgParams>>) -> Result<Vec<Migration>, MigrationsListForOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/migrations", super::GITHUB_BASE_API_URL, org);
@@ -1849,7 +1804,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1877,11 +1832,8 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/migrations#list-organization-migrations)
     ///
-    /// The `list_for_org` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "wyandotte")]
     pub fn list_for_org(&self, org: &str, query_params: Option<impl Into<MigrationsListForOrgParams>>) -> Result<Vec<Migration>, MigrationsListForOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/migrations", super::GITHUB_BASE_API_URL, org);
@@ -1896,7 +1848,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1918,16 +1870,101 @@ impl<'api> Migrations<'api> {
 
     /// ---
     ///
+    /// # List repositories for a user migration
+    ///
+    /// Lists all the repositories for this user migration.
+    /// 
+    /// [GitHub API docs for list_repos_for_authenticated_user](https://docs.github.com/rest/reference/migrations#list-repositories-for-a-user-migration)
+    ///
+    /// ---
+    pub async fn list_repos_for_authenticated_user_async(&self, migration_id: i32, query_params: Option<impl Into<MigrationsListReposForAuthenticatedUserParams>>) -> Result<Vec<MinimalRepository>, MigrationsListReposForAuthenticatedUserError> {
+
+        let mut request_uri = format!("{}/user/migrations/{}/repositories", super::GITHUB_BASE_API_URL, migration_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(MigrationsListReposForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(MigrationsListReposForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List repositories for a user migration
+    ///
+    /// Lists all the repositories for this user migration.
+    /// 
+    /// [GitHub API docs for list_repos_for_authenticated_user](https://docs.github.com/rest/reference/migrations#list-repositories-for-a-user-migration)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_repos_for_authenticated_user(&self, migration_id: i32, query_params: Option<impl Into<MigrationsListReposForAuthenticatedUserParams>>) -> Result<Vec<MinimalRepository>, MigrationsListReposForAuthenticatedUserError> {
+
+        let mut request_uri = format!("{}/user/migrations/{}/repositories", super::GITHUB_BASE_API_URL, migration_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: MigrationsListReposForAuthenticatedUserParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(MigrationsListReposForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(MigrationsListReposForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List repositories in an organization migration
     ///
     /// List all the repositories for this organization migration.
     /// 
     /// [GitHub API docs for list_repos_for_org](https://docs.github.com/rest/reference/migrations#list-repositories-in-an-organization-migration)
     ///
-    /// The `list_repos_for_org_async` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "wyandotte")]
     pub async fn list_repos_for_org_async(&self, org: &str, migration_id: i32, query_params: Option<impl Into<MigrationsListReposForOrgParams>>) -> Result<Vec<MinimalRepository>, MigrationsListReposForOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/migrations/{}/repositories", super::GITHUB_BASE_API_URL, org, migration_id);
@@ -1941,7 +1978,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1970,11 +2007,8 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for list_repos_for_org](https://docs.github.com/rest/reference/migrations#list-repositories-in-an-organization-migration)
     ///
-    /// The `list_repos_for_org` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "wyandotte")]
     pub fn list_repos_for_org(&self, org: &str, migration_id: i32, query_params: Option<impl Into<MigrationsListReposForOrgParams>>) -> Result<Vec<MinimalRepository>, MigrationsListReposForOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/migrations/{}/repositories", super::GITHUB_BASE_API_URL, org, migration_id);
@@ -1989,7 +2023,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2006,100 +2040,6 @@ impl<'api> Migrations<'api> {
             match github_response.status_code() {
                 404 => Err(MigrationsListReposForOrgError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsListReposForOrgError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # List repositories for a user migration
-    ///
-    /// Lists all the repositories for this user migration.
-    /// 
-    /// [GitHub API docs for list_repos_for_user](https://docs.github.com/rest/reference/migrations#list-repositories-for-a-user-migration)
-    ///
-    /// The `list_repos_for_user_async` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
-    /// ---
-    #[cfg(feature = "wyandotte")]
-    pub async fn list_repos_for_user_async(&self, migration_id: i32, query_params: Option<impl Into<MigrationsListReposForUserParams>>) -> Result<Vec<MinimalRepository>, MigrationsListReposForUserError> {
-
-        let mut request_uri = format!("{}/user/migrations/{}/repositories", super::GITHUB_BASE_API_URL, migration_id);
-
-        if let Some(params) = query_params {
-            request_uri.push_str("?");
-            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
-        }
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch_async(request).await?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
-        } else {
-            match github_response.status_code() {
-                404 => Err(MigrationsListReposForUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(MigrationsListReposForUserError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # List repositories for a user migration
-    ///
-    /// Lists all the repositories for this user migration.
-    /// 
-    /// [GitHub API docs for list_repos_for_user](https://docs.github.com/rest/reference/migrations#list-repositories-for-a-user-migration)
-    ///
-    /// The `list_repos_for_user` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
-    /// ---
-    #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "wyandotte")]
-    pub fn list_repos_for_user(&self, migration_id: i32, query_params: Option<impl Into<MigrationsListReposForUserParams>>) -> Result<Vec<MinimalRepository>, MigrationsListReposForUserError> {
-
-        let mut request_uri = format!("{}/user/migrations/{}/repositories", super::GITHUB_BASE_API_URL, migration_id);
-
-        if let Some(params) = query_params {
-            request_uri.push_str("?");
-            let qp: MigrationsListReposForUserParams = params.into();
-            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
-        }
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch(request)?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
-        } else {
-            match github_response.status_code() {
-                404 => Err(MigrationsListReposForUserError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(MigrationsListReposForUserError::Generic { code }),
             }
         }
     }
@@ -2519,10 +2459,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for unlock_repo_for_authenticated_user](https://docs.github.com/rest/reference/migrations#unlock-a-user-repository)
     ///
-    /// The `unlock_repo_for_authenticated_user_async` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "wyandotte")]
     pub async fn unlock_repo_for_authenticated_user_async(&self, migration_id: i32, repo_name: &str) -> Result<(), MigrationsUnlockRepoForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/migrations/{}/repos/{}/lock", super::GITHUB_BASE_API_URL, migration_id, repo_name);
@@ -2532,7 +2469,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2564,11 +2501,8 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for unlock_repo_for_authenticated_user](https://docs.github.com/rest/reference/migrations#unlock-a-user-repository)
     ///
-    /// The `unlock_repo_for_authenticated_user` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "wyandotte")]
     pub fn unlock_repo_for_authenticated_user(&self, migration_id: i32, repo_name: &str) -> Result<(), MigrationsUnlockRepoForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/migrations/{}/repos/{}/lock", super::GITHUB_BASE_API_URL, migration_id, repo_name);
@@ -2578,7 +2512,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2610,10 +2544,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for unlock_repo_for_org](https://docs.github.com/rest/reference/migrations#unlock-an-organization-repository)
     ///
-    /// The `unlock_repo_for_org_async` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "wyandotte")]
     pub async fn unlock_repo_for_org_async(&self, org: &str, migration_id: i32, repo_name: &str) -> Result<(), MigrationsUnlockRepoForOrgError> {
 
         let request_uri = format!("{}/orgs/{}/migrations/{}/repos/{}/lock", super::GITHUB_BASE_API_URL, org, migration_id, repo_name);
@@ -2623,7 +2554,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2652,11 +2583,8 @@ impl<'api> Migrations<'api> {
     /// 
     /// [GitHub API docs for unlock_repo_for_org](https://docs.github.com/rest/reference/migrations#unlock-an-organization-repository)
     ///
-    /// The `unlock_repo_for_org` endpoint is enabled with the `wyandotte` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "wyandotte")]
     pub fn unlock_repo_for_org(&self, org: &str, migration_id: i32, repo_name: &str) -> Result<(), MigrationsUnlockRepoForOrgError> {
 
         let request_uri = format!("{}/orgs/{}/migrations/{}/repos/{}/lock", super::GITHUB_BASE_API_URL, org, migration_id, repo_name);
@@ -2666,7 +2594,7 @@ impl<'api> Migrations<'api> {
             uri: request_uri,
             body: None,
             method: "DELETE",
-            headers: vec![("Accept", "application/vnd.github.wyandotte-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
