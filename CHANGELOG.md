@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.12.0 (06/01/2022)
+- [**closed**] Upstream changes (codespaces) [#56](https://github.com/fussybeaver/roctogen/pull/56)
+- [**closed**] Add check and fix github release action [#55](https://github.com/fussybeaver/roctogen/pull/55)
+
+---
+
 ## v0.11.0 (24/10/2021)
 - [**maintenance**][**rust**] 🚧 OpenAPI types changed [#54](https://github.com/fussybeaver/roctogen/pull/54)
 - [**closed**] Generate types in update workflow [#53](https://github.com/fussybeaver/roctogen/pull/53)
