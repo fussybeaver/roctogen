@@ -54,7 +54,7 @@ pub enum SecretScanningGetAlertError {
     Generic { code: u16 },
 }
 
-/// Errors for the [List secret scanning alerts by organization](SecretScanning::list_alerts_for_org_async()) endpoint.
+/// Errors for the [List secret scanning alerts for an organization](SecretScanning::list_alerts_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SecretScanningListAlertsForOrgError {
     #[error(transparent)]
@@ -96,6 +96,27 @@ pub enum SecretScanningListAlertsForRepoError {
     Generic { code: u16 },
 }
 
+/// Errors for the [List locations for a secret scanning alert](SecretScanning::list_locations_for_alert_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum SecretScanningListLocationsForAlertError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Repository is public, or secret scanning is disabled for the repository, or the resource is not found")]
+    Status404,
+    #[error("Service unavailable")]
+    Status503(GetSearchUsersResponse503),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Update a secret scanning alert](SecretScanning::update_alert_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SecretScanningUpdateAlertError {
@@ -120,12 +141,12 @@ pub enum SecretScanningUpdateAlertError {
 }
 
 
-/// Query parameters for the [List secret scanning alerts by organization](SecretScanning::list_alerts_for_org_async()) endpoint.
+/// Query parameters for the [List secret scanning alerts for an organization](SecretScanning::list_alerts_for_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct SecretScanningListAlertsForOrgParams<'req> {
     /// Set to `open` or `resolved` to only list secret scanning alerts in a specific state.
     state: Option<&'req str>, 
-    /// A comma-separated list of secret types to return. By default all secret types are returned.
+    /// A comma-separated list of secret types to return. By default all secret types are returned. See \"[About secret scanning for private repositories](https://docs.github.com/code-security/secret-security/about-secret-scanning#about-secret-scanning-for-private-repositories)\" for a complete list of secret types (API slug).
     secret_type: Option<&'req str>, 
     /// A comma-separated list of resolutions. Only secret scanning alerts with one of these resolutions are listed. Valid resolutions are `false_positive`, `wont_fix`, `revoked`, `pattern_edited`, `pattern_deleted` or `used_in_tests`.
     resolution: Option<&'req str>, 
@@ -151,7 +172,7 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
         }
     }
 
-    /// A comma-separated list of secret types to return. By default all secret types are returned.
+    /// A comma-separated list of secret types to return. By default all secret types are returned. See \"[About secret scanning for private repositories](https://docs.github.com/code-security/secret-security/about-secret-scanning#about-secret-scanning-for-private-repositories)\" for a complete list of secret types (API slug).
     pub fn secret_type(self, secret_type: &'req str) -> Self {
         Self { 
             state: self.state, 
@@ -290,6 +311,46 @@ impl<'enc> From<&'enc PerPage> for SecretScanningListAlertsForRepoParams<'enc> {
         }
     }
 }
+/// Query parameters for the [List locations for a secret scanning alert](SecretScanning::list_locations_for_alert_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct SecretScanningListLocationsForAlertParams {
+    /// Page number of the results to fetch.
+    page: Option<u16>, 
+    /// Results per page (max 100)
+    per_page: Option<u16>
+}
+
+impl SecretScanningListLocationsForAlertParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Page number of the results to fetch.
+    pub fn page(self, page: u16) -> Self {
+        Self { 
+            page: Some(page),
+            per_page: self.per_page, 
+        }
+    }
+
+    /// Results per page (max 100)
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self { 
+            page: self.page, 
+            per_page: Some(per_page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for SecretScanningListLocationsForAlertParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 
 impl<'api> SecretScanning<'api> {
     /// ---
@@ -381,14 +442,14 @@ impl<'api> SecretScanning<'api> {
 
     /// ---
     ///
-    /// # List secret scanning alerts by organization
+    /// # List secret scanning alerts for an organization
     ///
-    /// Lists all secret scanning alerts for all eligible repositories in an organization, from newest to oldest.
+    /// Lists secret scanning alerts for eligible repositories in an organization, from newest to oldest.
     /// To use this endpoint, you must be an administrator for the repository or organization, and you must use an access token with the `repo` scope or `security_events` scope.
     /// 
     /// GitHub Apps must have the `secret_scanning_alerts` read permission to use this endpoint.
     /// 
-    /// [GitHub API docs for list_alerts_for_org](https://docs.github.com/rest/reference/secret-scanning#list-secret-scanning-alerts-by-organization)
+    /// [GitHub API docs for list_alerts_for_org](https://docs.github.com/rest/reference/secret-scanning#list-secret-scanning-alerts-for-an-organization)
     ///
     /// ---
     pub async fn list_alerts_for_org_async(&self, org: &str, query_params: Option<impl Into<SecretScanningListAlertsForOrgParams<'api>>>) -> Result<Vec<OrganizationSecretScanningAlert>, SecretScanningListAlertsForOrgError> {
@@ -428,14 +489,14 @@ impl<'api> SecretScanning<'api> {
 
     /// ---
     ///
-    /// # List secret scanning alerts by organization
+    /// # List secret scanning alerts for an organization
     ///
-    /// Lists all secret scanning alerts for all eligible repositories in an organization, from newest to oldest.
+    /// Lists secret scanning alerts for eligible repositories in an organization, from newest to oldest.
     /// To use this endpoint, you must be an administrator for the repository or organization, and you must use an access token with the `repo` scope or `security_events` scope.
     /// 
     /// GitHub Apps must have the `secret_scanning_alerts` read permission to use this endpoint.
     /// 
-    /// [GitHub API docs for list_alerts_for_org](https://docs.github.com/rest/reference/secret-scanning#list-secret-scanning-alerts-by-organization)
+    /// [GitHub API docs for list_alerts_for_org](https://docs.github.com/rest/reference/secret-scanning#list-secret-scanning-alerts-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -479,7 +540,7 @@ impl<'api> SecretScanning<'api> {
     ///
     /// # List secret scanning alerts for a repository
     ///
-    /// Lists all secret scanning alerts for a private repository, from newest to oldest. To use this endpoint, you must be an administrator for the repository or organization, and you must use an access token with the `repo` scope or `security_events` scope.
+    /// Lists secret scanning alerts for a private repository, from newest to oldest. To use this endpoint, you must be an administrator for the repository or organization, and you must use an access token with the `repo` scope or `security_events` scope.
     /// 
     /// GitHub Apps must have the `secret_scanning_alerts` read permission to use this endpoint.
     /// 
@@ -525,7 +586,7 @@ impl<'api> SecretScanning<'api> {
     ///
     /// # List secret scanning alerts for a repository
     ///
-    /// Lists all secret scanning alerts for a private repository, from newest to oldest. To use this endpoint, you must be an administrator for the repository or organization, and you must use an access token with the `repo` scope or `security_events` scope.
+    /// Lists secret scanning alerts for a private repository, from newest to oldest. To use this endpoint, you must be an administrator for the repository or organization, and you must use an access token with the `repo` scope or `security_events` scope.
     /// 
     /// GitHub Apps must have the `secret_scanning_alerts` read permission to use this endpoint.
     /// 
@@ -565,6 +626,100 @@ impl<'api> SecretScanning<'api> {
                 404 => Err(SecretScanningListAlertsForRepoError::Status404),
                 503 => Err(SecretScanningListAlertsForRepoError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(SecretScanningListAlertsForRepoError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List locations for a secret scanning alert
+    ///
+    /// Lists all locations for a given secret scanning alert for a private repository. To use this endpoint, you must be an administrator for the repository or organization, and you must use an access token with the `repo` scope or `security_events` scope.
+    /// 
+    /// GitHub Apps must have the `secret_scanning_alerts` read permission to use this endpoint.
+    /// 
+    /// [GitHub API docs for list_locations_for_alert](https://docs.github.com/rest/reference/secret-scanning#list-locations-for-a-secret-scanning-alert)
+    ///
+    /// ---
+    pub async fn list_locations_for_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber, query_params: Option<impl Into<SecretScanningListLocationsForAlertParams>>) -> Result<Vec<SecretScanningLocation>, SecretScanningListLocationsForAlertError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/secret-scanning/alerts/{}/locations", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(SecretScanningListLocationsForAlertError::Status404),
+                503 => Err(SecretScanningListLocationsForAlertError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(SecretScanningListLocationsForAlertError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List locations for a secret scanning alert
+    ///
+    /// Lists all locations for a given secret scanning alert for a private repository. To use this endpoint, you must be an administrator for the repository or organization, and you must use an access token with the `repo` scope or `security_events` scope.
+    /// 
+    /// GitHub Apps must have the `secret_scanning_alerts` read permission to use this endpoint.
+    /// 
+    /// [GitHub API docs for list_locations_for_alert](https://docs.github.com/rest/reference/secret-scanning#list-locations-for-a-secret-scanning-alert)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_locations_for_alert(&self, owner: &str, repo: &str, alert_number: AlertNumber, query_params: Option<impl Into<SecretScanningListLocationsForAlertParams>>) -> Result<Vec<SecretScanningLocation>, SecretScanningListLocationsForAlertError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/secret-scanning/alerts/{}/locations", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: SecretScanningListLocationsForAlertParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(SecretScanningListLocationsForAlertError::Status404),
+                503 => Err(SecretScanningListLocationsForAlertError::Status503(crate::adapters::to_json(github_response)?)),
+                code => Err(SecretScanningListLocationsForAlertError::Generic { code }),
             }
         }
     }

@@ -1194,8 +1194,6 @@ pub enum ReposGetAllTopicsError {
 
     // -- endpoint errors
 
-    #[error("Preview header missing")]
-    Status415(PostProjectsCreateForAuthenticatedUserResponse415),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
@@ -2767,8 +2765,6 @@ pub enum ReposReplaceAllTopicsError {
 
     // -- endpoint errors
 
-    #[error("Preview header missing")]
-    Status415(PostProjectsCreateForAuthenticatedUserResponse415),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed")]
@@ -5050,7 +5046,11 @@ impl<'api> Repos<'api> {
     ///
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. See "[Secondary rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#secondary-rate-limits)" and "[Dealing with secondary rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-secondary-rate-limits)" for details.
     /// 
-    /// For more information on permission levels, see "[Repository permission levels for an organization](https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/repository-permission-levels-for-an-organization#permission-levels-for-repositories-owned-by-an-organization)".
+    /// For more information on permission levels, see "[Repository permission levels for an organization](https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/repository-permission-levels-for-an-organization#permission-levels-for-repositories-owned-by-an-organization)". There are restrictions on which permissions can be granted to organization members when an organization base role is in place. In this case, the permission being given must be equal to or higher than the org base permission. Otherwise, the request will fail with:
+    /// 
+    /// ```nocompile
+    /// Cannot assign {member} permission of {role name}
+    /// ```
     /// 
     /// Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
     /// 
@@ -5101,7 +5101,11 @@ impl<'api> Repos<'api> {
     ///
     /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. See "[Secondary rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#secondary-rate-limits)" and "[Dealing with secondary rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-secondary-rate-limits)" for details.
     /// 
-    /// For more information on permission levels, see "[Repository permission levels for an organization](https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/repository-permission-levels-for-an-organization#permission-levels-for-repositories-owned-by-an-organization)".
+    /// For more information on permission levels, see "[Repository permission levels for an organization](https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/repository-permission-levels-for-an-organization#permission-levels-for-repositories-owned-by-an-organization)". There are restrictions on which permissions can be granted to organization members when an organization base role is in place. In this case, the permission being given must be equal to or higher than the org base permission. Otherwise, the request will fail with:
+    /// 
+    /// ```nocompile
+    /// Cannot assign {member} permission of {role name}
+    /// ```
     /// 
     /// Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
     /// 
@@ -8839,8 +8843,6 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Disable Git LFS for a repository
-    ///
-    /// **Note:** The Git LFS API endpoints are currently in beta and are subject to change.
     /// 
     /// [GitHub API docs for disable_lfs_for_repo](https://docs.github.com/rest/reference/repos#disable-git-lfs-for-a-repository)
     ///
@@ -8877,8 +8879,6 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Disable Git LFS for a repository
-    ///
-    /// **Note:** The Git LFS API endpoints are currently in beta and are subject to change.
     /// 
     /// [GitHub API docs for disable_lfs_for_repo](https://docs.github.com/rest/reference/repos#disable-git-lfs-for-a-repository)
     ///
@@ -9240,8 +9240,6 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Enable Git LFS for a repository
-    ///
-    /// **Note:** The Git LFS API endpoints are currently in beta and are subject to change.
     /// 
     /// [GitHub API docs for enable_lfs_for_repo](https://docs.github.com/rest/reference/repos#enable-git-lfs-for-a-repository)
     ///
@@ -9279,8 +9277,6 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Enable Git LFS for a repository
-    ///
-    /// **Note:** The Git LFS API endpoints are currently in beta and are subject to change.
     /// 
     /// [GitHub API docs for enable_lfs_for_repo](https://docs.github.com/rest/reference/repos#enable-git-lfs-for-a-repository)
     ///
@@ -9885,10 +9881,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for get_all_topics](https://docs.github.com/rest/reference/repos#get-all-repository-topics)
     ///
-    /// The `get_all_topics_async` endpoint is enabled with the `mercy` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "mercy")]
     pub async fn get_all_topics_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetAllTopicsParams>>) -> Result<Topic, ReposGetAllTopicsError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/topics", super::GITHUB_BASE_API_URL, owner, repo);
@@ -9902,7 +9895,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.mercy-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -9917,7 +9910,6 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                415 => Err(ReposGetAllTopicsError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(ReposGetAllTopicsError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposGetAllTopicsError::Generic { code }),
             }
@@ -9930,11 +9922,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for get_all_topics](https://docs.github.com/rest/reference/repos#get-all-repository-topics)
     ///
-    /// The `get_all_topics` endpoint is enabled with the `mercy` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "mercy")]
     pub fn get_all_topics(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetAllTopicsParams>>) -> Result<Topic, ReposGetAllTopicsError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/topics", super::GITHUB_BASE_API_URL, owner, repo);
@@ -9949,7 +9938,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.mercy-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -9964,7 +9953,6 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                415 => Err(ReposGetAllTopicsError::Status415(crate::adapters::to_json(github_response)?)),
                 404 => Err(ReposGetAllTopicsError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposGetAllTopicsError::Generic { code }),
             }
@@ -16106,8 +16094,6 @@ impl<'api> Repos<'api> {
     ///
     /// # Sync a fork branch with the upstream repository
     ///
-    /// **Note:** This endpoint is currently in beta and subject to change.
-    /// 
     /// Sync a branch of a forked repository to keep it up-to-date with the upstream repository.
     /// 
     /// [GitHub API docs for merge_upstream](https://docs.github.com/rest/reference/repos#sync-a-fork-branch-with-the-upstream-repository)
@@ -16148,8 +16134,6 @@ impl<'api> Repos<'api> {
     ///
     /// # Sync a fork branch with the upstream repository
     ///
-    /// **Note:** This endpoint is currently in beta and subject to change.
-    /// 
     /// Sync a branch of a forked repository to keep it up-to-date with the upstream repository.
     /// 
     /// [GitHub API docs for merge_upstream](https://docs.github.com/rest/reference/repos#sync-a-fork-branch-with-the-upstream-repository)
@@ -16968,10 +16952,7 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for replace_all_topics](https://docs.github.com/rest/reference/repos#replace-all-repository-topics)
     ///
-    /// The `replace_all_topics_async` endpoint is enabled with the `mercy` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "mercy")]
     pub async fn replace_all_topics_async(&self, owner: &str, repo: &str, body: PutReposReplaceAllTopics) -> Result<Topic, ReposReplaceAllTopicsError> {
 
         let request_uri = format!("{}/repos/{}/{}/topics", super::GITHUB_BASE_API_URL, owner, repo);
@@ -16981,7 +16962,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PutReposReplaceAllTopics::from_json(body)?),
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.mercy-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -16996,7 +16977,6 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                415 => Err(ReposReplaceAllTopicsError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(ReposReplaceAllTopicsError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(ReposReplaceAllTopicsError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReposReplaceAllTopicsError::Generic { code }),
@@ -17010,11 +16990,8 @@ impl<'api> Repos<'api> {
     /// 
     /// [GitHub API docs for replace_all_topics](https://docs.github.com/rest/reference/repos#replace-all-repository-topics)
     ///
-    /// The `replace_all_topics` endpoint is enabled with the `mercy` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "mercy")]
     pub fn replace_all_topics(&self, owner: &str, repo: &str, body: PutReposReplaceAllTopics) -> Result<Topic, ReposReplaceAllTopicsError> {
 
         let request_uri = format!("{}/repos/{}/{}/topics", super::GITHUB_BASE_API_URL, owner, repo);
@@ -17024,7 +17001,7 @@ impl<'api> Repos<'api> {
             uri: request_uri,
             body: Some(PutReposReplaceAllTopics::from_json(body)?),
             method: "PUT",
-            headers: vec![("Accept", "application/vnd.github.mercy-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -17039,7 +17016,6 @@ impl<'api> Repos<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                415 => Err(ReposReplaceAllTopicsError::Status415(crate::adapters::to_json(github_response)?)),
                 404 => Err(ReposReplaceAllTopicsError::Status404(crate::adapters::to_json(github_response)?)),
                 422 => Err(ReposReplaceAllTopicsError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReposReplaceAllTopicsError::Generic { code }),
@@ -18383,7 +18359,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Updating required status checks requires admin or owner permissions to the repository and branch protection to be enabled.
     /// 
-    /// [GitHub API docs for update_status_check_protection](https://docs.github.com/rest/reference/repos#update-status-check-potection)
+    /// [GitHub API docs for update_status_check_protection](https://docs.github.com/rest/reference/repos#update-status-check-protection)
     ///
     /// ---
     pub async fn update_status_check_protection_async(&self, owner: &str, repo: &str, branch: &str, body: PatchReposUpdateStatusCheckProtection) -> Result<StatusCheckPolicy, ReposUpdateStatusCheckProtectionError> {
@@ -18425,7 +18401,7 @@ impl<'api> Repos<'api> {
     /// 
     /// Updating required status checks requires admin or owner permissions to the repository and branch protection to be enabled.
     /// 
-    /// [GitHub API docs for update_status_check_protection](https://docs.github.com/rest/reference/repos#update-status-check-potection)
+    /// [GitHub API docs for update_status_check_protection](https://docs.github.com/rest/reference/repos#update-status-check-protection)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

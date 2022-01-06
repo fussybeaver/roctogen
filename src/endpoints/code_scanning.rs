@@ -69,6 +69,8 @@ pub enum CodeScanningGetAlertError {
 
     // -- endpoint errors
 
+    #[error("Not modified")]
+    Status304,
     #[error("Response if GitHub Advanced Security is not enabled for this repository")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -161,6 +163,8 @@ pub enum CodeScanningListAlertsForRepoError {
 
     // -- endpoint errors
 
+    #[error("Not modified")]
+    Status304,
     #[error("Response if GitHub Advanced Security is not enabled for this repository")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -320,7 +324,7 @@ impl<'enc> From<&'enc PerPage> for CodeScanningListAlertInstancesParams {
 }
 /// Query parameters for the [List code scanning alerts for a repository](CodeScanning::list_alerts_for_repo_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct CodeScanningListAlertsForRepoParams {
+pub struct CodeScanningListAlertsForRepoParams<'req> {
     /// The name of a code scanning tool. Only results by this tool will be listed. You can specify the tool by using either `tool_name` or `tool_guid`, but not both.
     tool_name: Option<CodeScanningAnalysisToolName>, 
     /// The GUID of a code scanning tool. Only results by this tool will be listed. Note that some code scanning tools may not include a GUID in their analysis data. You can specify the tool by using either `tool_guid` or `tool_name`, but not both.
@@ -331,11 +335,15 @@ pub struct CodeScanningListAlertsForRepoParams {
     per_page: Option<u16>, 
     /// The Git reference for the results you want to list. The `ref` for a branch can be formatted either as `refs/heads/<branch name>` or simply `<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
     git_ref: Option<CodeScanningRef>, 
+    /// One of `asc` (ascending) or `desc` (descending).
+    direction: Option<&'req str>, 
+    /// Can be one of `created`, `updated`, `number`.
+    sort: Option<&'req str>, 
     /// Set to `open`, `fixed`, or `dismissed` to list code scanning alerts in a specific state.
     state: Option<CodeScanningAlertState>
 }
 
-impl CodeScanningListAlertsForRepoParams {
+impl<'req> CodeScanningListAlertsForRepoParams<'req> {
     pub fn new() -> Self {
         Self::default()
     }
@@ -348,6 +356,8 @@ impl CodeScanningListAlertsForRepoParams {
             page: self.page, 
             per_page: self.per_page, 
             git_ref: self.git_ref, 
+            direction: self.direction, 
+            sort: self.sort, 
             state: self.state, 
         }
     }
@@ -360,6 +370,8 @@ impl CodeScanningListAlertsForRepoParams {
             page: self.page, 
             per_page: self.per_page, 
             git_ref: self.git_ref, 
+            direction: self.direction, 
+            sort: self.sort, 
             state: self.state, 
         }
     }
@@ -372,6 +384,8 @@ impl CodeScanningListAlertsForRepoParams {
             page: Some(page),
             per_page: self.per_page, 
             git_ref: self.git_ref, 
+            direction: self.direction, 
+            sort: self.sort, 
             state: self.state, 
         }
     }
@@ -384,6 +398,8 @@ impl CodeScanningListAlertsForRepoParams {
             page: self.page, 
             per_page: Some(per_page),
             git_ref: self.git_ref, 
+            direction: self.direction, 
+            sort: self.sort, 
             state: self.state, 
         }
     }
@@ -396,6 +412,36 @@ impl CodeScanningListAlertsForRepoParams {
             page: self.page, 
             per_page: self.per_page, 
             git_ref: Some(git_ref),
+            direction: self.direction, 
+            sort: self.sort, 
+            state: self.state, 
+        }
+    }
+
+    /// One of `asc` (ascending) or `desc` (descending).
+    pub fn direction(self, direction: &'req str) -> Self {
+        Self { 
+            tool_name: self.tool_name, 
+            tool_guid: self.tool_guid, 
+            page: self.page, 
+            per_page: self.per_page, 
+            git_ref: self.git_ref, 
+            direction: Some(direction),
+            sort: self.sort, 
+            state: self.state, 
+        }
+    }
+
+    /// Can be one of `created`, `updated`, `number`.
+    pub fn sort(self, sort: &'req str) -> Self {
+        Self { 
+            tool_name: self.tool_name, 
+            tool_guid: self.tool_guid, 
+            page: self.page, 
+            per_page: self.per_page, 
+            git_ref: self.git_ref, 
+            direction: self.direction, 
+            sort: Some(sort),
             state: self.state, 
         }
     }
@@ -408,12 +454,14 @@ impl CodeScanningListAlertsForRepoParams {
             page: self.page, 
             per_page: self.per_page, 
             git_ref: self.git_ref, 
+            direction: self.direction, 
+            sort: self.sort, 
             state: Some(state),
         }
     }
 }
 
-impl<'enc> From<&'enc PerPage> for CodeScanningListAlertsForRepoParams {
+impl<'enc> From<&'enc PerPage> for CodeScanningListAlertsForRepoParams<'enc> {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -534,7 +582,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// Deletes a specified code scanning analysis from a repository. For
     /// private repositories, you must use an access token with the `repo` scope. For public repositories,
-    /// you must use an access token with `public_repo` and `repo:security_events` scopes.
+    /// you must use an access token with `public_repo` scope.
     /// GitHub Apps must have the `security_events` write permission to use this endpoint.
     /// 
     /// You can delete one analysis at a time.
@@ -566,13 +614,13 @@ impl<'api> CodeScanning<'api> {
     /// ```
     /// 
     /// The response from a successful `DELETE` operation provides you with
-    /// two alternative URLs for deleting the next analysis in the set
-    /// (see the example default response below).
+    /// two alternative URLs for deleting the next analysis in the set:
+    /// `next_analysis_url` and `confirm_delete_url`.
     /// Use the `next_analysis_url` URL if you want to avoid accidentally deleting the final analysis
-    /// in the set. This is a useful option if you want to preserve at least one analysis
+    /// in a set. This is a useful option if you want to preserve at least one analysis
     /// for the specified tool in your repository.
     /// Use the `confirm_delete_url` URL if you are content to remove all analyses for a tool.
-    /// When you delete the last analysis in a set the value of `next_analysis_url` and `confirm_delete_url`
+    /// When you delete the last analysis in a set, the value of `next_analysis_url` and `confirm_delete_url`
     /// in the 200 response is `null`.
     /// 
     /// As an example of the deletion process,
@@ -582,9 +630,11 @@ impl<'api> CodeScanning<'api> {
     /// You therefore have two separate sets of analyses for this tool.
     /// You've now decided that you want to remove all of the analyses for the tool.
     /// To do this you must make 15 separate deletion requests.
-    /// To start, you must find the deletable analysis for one of the sets,
-    /// step through deleting the analyses in that set,
-    /// and then repeat the process for the second set.
+    /// To start, you must find an analysis that's identified as deletable.
+    /// Each set of analyses always has one that's identified as deletable.
+    /// Having found the deletable analysis for one of the two sets,
+    /// delete this analysis and then continue deleting the next analysis in the set until they're all deleted.
+    /// Then repeat the process for the second set.
     /// The procedure therefore consists of a nested loop:
     /// 
     /// **Outer loop**:
@@ -643,7 +693,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// Deletes a specified code scanning analysis from a repository. For
     /// private repositories, you must use an access token with the `repo` scope. For public repositories,
-    /// you must use an access token with `public_repo` and `repo:security_events` scopes.
+    /// you must use an access token with `public_repo` scope.
     /// GitHub Apps must have the `security_events` write permission to use this endpoint.
     /// 
     /// You can delete one analysis at a time.
@@ -675,13 +725,13 @@ impl<'api> CodeScanning<'api> {
     /// ```
     /// 
     /// The response from a successful `DELETE` operation provides you with
-    /// two alternative URLs for deleting the next analysis in the set
-    /// (see the example default response below).
+    /// two alternative URLs for deleting the next analysis in the set:
+    /// `next_analysis_url` and `confirm_delete_url`.
     /// Use the `next_analysis_url` URL if you want to avoid accidentally deleting the final analysis
-    /// in the set. This is a useful option if you want to preserve at least one analysis
+    /// in a set. This is a useful option if you want to preserve at least one analysis
     /// for the specified tool in your repository.
     /// Use the `confirm_delete_url` URL if you are content to remove all analyses for a tool.
-    /// When you delete the last analysis in a set the value of `next_analysis_url` and `confirm_delete_url`
+    /// When you delete the last analysis in a set, the value of `next_analysis_url` and `confirm_delete_url`
     /// in the 200 response is `null`.
     /// 
     /// As an example of the deletion process,
@@ -691,9 +741,11 @@ impl<'api> CodeScanning<'api> {
     /// You therefore have two separate sets of analyses for this tool.
     /// You've now decided that you want to remove all of the analyses for the tool.
     /// To do this you must make 15 separate deletion requests.
-    /// To start, you must find the deletable analysis for one of the sets,
-    /// step through deleting the analyses in that set,
-    /// and then repeat the process for the second set.
+    /// To start, you must find an analysis that's identified as deletable.
+    /// Each set of analyses always has one that's identified as deletable.
+    /// Having found the deletable analysis for one of the two sets,
+    /// delete this analysis and then continue deleting the next analysis in the set until they're all deleted.
+    /// Then repeat the process for the second set.
     /// The procedure therefore consists of a nested loop:
     /// 
     /// **Outer loop**:
@@ -752,7 +804,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// # Get a code scanning alert
     ///
-    /// Gets a single code scanning alert. You must use an access token with the `security_events` scope to use this endpoint. GitHub Apps must have the `security_events` read permission to use this endpoint.
+    /// Gets a single code scanning alert. You must use an access token with the `security_events` scope to use this endpoint with private repos, the `public_repo` scope also grants permission to read security events on public repos only. GitHub Apps must have the `security_events` read permission to use this endpoint.
     /// 
     /// **Deprecation notice**:
     /// The instances field is deprecated and will, in future, not be included in the response for this endpoint. The example response reflects this change. The same information can now be retrieved via a GET request to the URL specified by `instances_url`.
@@ -784,6 +836,7 @@ impl<'api> CodeScanning<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                304 => Err(CodeScanningGetAlertError::Status304),
                 403 => Err(CodeScanningGetAlertError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(CodeScanningGetAlertError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 503 => Err(CodeScanningGetAlertError::Status503(crate::adapters::to_json_async(github_response).await?)),
@@ -796,7 +849,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// # Get a code scanning alert
     ///
-    /// Gets a single code scanning alert. You must use an access token with the `security_events` scope to use this endpoint. GitHub Apps must have the `security_events` read permission to use this endpoint.
+    /// Gets a single code scanning alert. You must use an access token with the `security_events` scope to use this endpoint with private repos, the `public_repo` scope also grants permission to read security events on public repos only. GitHub Apps must have the `security_events` read permission to use this endpoint.
     /// 
     /// **Deprecation notice**:
     /// The instances field is deprecated and will, in future, not be included in the response for this endpoint. The example response reflects this change. The same information can now be retrieved via a GET request to the URL specified by `instances_url`.
@@ -829,6 +882,7 @@ impl<'api> CodeScanning<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                304 => Err(CodeScanningGetAlertError::Status304),
                 403 => Err(CodeScanningGetAlertError::Status403(crate::adapters::to_json(github_response)?)),
                 404 => Err(CodeScanningGetAlertError::Status404(crate::adapters::to_json(github_response)?)),
                 503 => Err(CodeScanningGetAlertError::Status503(crate::adapters::to_json(github_response)?)),
@@ -842,7 +896,8 @@ impl<'api> CodeScanning<'api> {
     /// # Get a code scanning analysis for a repository
     ///
     /// Gets a specified code scanning analysis for a repository.
-    /// You must use an access token with the `security_events` scope to use this endpoint.
+    /// You must use an access token with the `security_events` scope to use this endpoint with private repos,
+    /// the `public_repo` scope also grants permission to read security events on public repos only.
     /// GitHub Apps must have the `security_events` read permission to use this endpoint.
     /// 
     /// The default JSON response contains fields that describe the analysis.
@@ -900,7 +955,8 @@ impl<'api> CodeScanning<'api> {
     /// # Get a code scanning analysis for a repository
     ///
     /// Gets a specified code scanning analysis for a repository.
-    /// You must use an access token with the `security_events` scope to use this endpoint.
+    /// You must use an access token with the `security_events` scope to use this endpoint with private repos,
+    /// the `public_repo` scope also grants permission to read security events on public repos only.
     /// GitHub Apps must have the `security_events` read permission to use this endpoint.
     /// 
     /// The default JSON response contains fields that describe the analysis.
@@ -958,7 +1014,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// # Get information about a SARIF upload
     ///
-    /// Gets information about a SARIF upload, including the status and the URL of the analysis that was uploaded so that you can retrieve details of the analysis. For more information, see "[Get a code scanning analysis for a repository](/rest/reference/code-scanning#get-a-code-scanning-analysis-for-a-repository)." You must use an access token with the `security_events` scope to use this endpoint. GitHub Apps must have the `security_events` read permission to use this endpoint.
+    /// Gets information about a SARIF upload, including the status and the URL of the analysis that was uploaded so that you can retrieve details of the analysis. For more information, see "[Get a code scanning analysis for a repository](/rest/reference/code-scanning#get-a-code-scanning-analysis-for-a-repository)." You must use an access token with the `security_events` scope to use this endpoint with private repos, the `public_repo` scope also grants permission to read security events on public repos only. GitHub Apps must have the `security_events` read permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_sarif](https://docs.github.com/rest/reference/code-scanning#list-recent-code-scanning-analyses-for-a-repository)
     ///
@@ -999,7 +1055,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// # Get information about a SARIF upload
     ///
-    /// Gets information about a SARIF upload, including the status and the URL of the analysis that was uploaded so that you can retrieve details of the analysis. For more information, see "[Get a code scanning analysis for a repository](/rest/reference/code-scanning#get-a-code-scanning-analysis-for-a-repository)." You must use an access token with the `security_events` scope to use this endpoint. GitHub Apps must have the `security_events` read permission to use this endpoint.
+    /// Gets information about a SARIF upload, including the status and the URL of the analysis that was uploaded so that you can retrieve details of the analysis. For more information, see "[Get a code scanning analysis for a repository](/rest/reference/code-scanning#get-a-code-scanning-analysis-for-a-repository)." You must use an access token with the `security_events` scope to use this endpoint with private repos, the `public_repo` scope also grants permission to read security events on public repos only. GitHub Apps must have the `security_events` read permission to use this endpoint.
     /// 
     /// [GitHub API docs for get_sarif](https://docs.github.com/rest/reference/code-scanning#list-recent-code-scanning-analyses-for-a-repository)
     ///
@@ -1041,7 +1097,10 @@ impl<'api> CodeScanning<'api> {
     ///
     /// # List instances of a code scanning alert
     ///
-    /// Lists all instances of the specified code scanning alert. You must use an access token with the `security_events` scope to use this endpoint. GitHub Apps must have the `security_events` read permission to use this endpoint.
+    /// Lists all instances of the specified code scanning alert.
+    /// You must use an access token with the `security_events` scope to use this endpoint with private repos,
+    /// the `public_repo` scope also grants permission to read security events on public repos only.
+    /// GitHub Apps must have the `security_events` read permission to use this endpoint.
     /// 
     /// [GitHub API docs for list_alert_instances](https://docs.github.com/rest/reference/code-scanning#list-instances-of-a-code-scanning-alert)
     ///
@@ -1086,7 +1145,10 @@ impl<'api> CodeScanning<'api> {
     ///
     /// # List instances of a code scanning alert
     ///
-    /// Lists all instances of the specified code scanning alert. You must use an access token with the `security_events` scope to use this endpoint. GitHub Apps must have the `security_events` read permission to use this endpoint.
+    /// Lists all instances of the specified code scanning alert.
+    /// You must use an access token with the `security_events` scope to use this endpoint with private repos,
+    /// the `public_repo` scope also grants permission to read security events on public repos only.
+    /// GitHub Apps must have the `security_events` read permission to use this endpoint.
     /// 
     /// [GitHub API docs for list_alert_instances](https://docs.github.com/rest/reference/code-scanning#list-instances-of-a-code-scanning-alert)
     ///
@@ -1135,8 +1197,9 @@ impl<'api> CodeScanning<'api> {
     ///
     /// Lists all open code scanning alerts for the default branch (usually `main`
     /// or `master`). You must use an access token with the `security_events` scope to use
-    /// this endpoint. GitHub Apps must have the `security_events` read permission to use
-    /// this endpoint.
+    /// this endpoint with private repos, the `public_repo` scope also grants permission to read
+    /// security events on public repos only. GitHub Apps must have the `security_events` read
+    /// permission to use this endpoint.
     /// 
     /// The response includes a `most_recent_instance` object.
     /// This provides details of the most recent instance of this alert
@@ -1146,7 +1209,7 @@ impl<'api> CodeScanning<'api> {
     /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/reference/code-scanning#list-code-scanning-alerts-for-a-repository)
     ///
     /// ---
-    pub async fn list_alerts_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodeScanningListAlertsForRepoParams>>) -> Result<Vec<CodeScanningAlertItems>, CodeScanningListAlertsForRepoError> {
+    pub async fn list_alerts_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodeScanningListAlertsForRepoParams<'api>>>) -> Result<Vec<CodeScanningAlertItems>, CodeScanningListAlertsForRepoError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/code-scanning/alerts", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -1174,6 +1237,7 @@ impl<'api> CodeScanning<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                304 => Err(CodeScanningListAlertsForRepoError::Status304),
                 403 => Err(CodeScanningListAlertsForRepoError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(CodeScanningListAlertsForRepoError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 503 => Err(CodeScanningListAlertsForRepoError::Status503(crate::adapters::to_json_async(github_response).await?)),
@@ -1188,8 +1252,9 @@ impl<'api> CodeScanning<'api> {
     ///
     /// Lists all open code scanning alerts for the default branch (usually `main`
     /// or `master`). You must use an access token with the `security_events` scope to use
-    /// this endpoint. GitHub Apps must have the `security_events` read permission to use
-    /// this endpoint.
+    /// this endpoint with private repos, the `public_repo` scope also grants permission to read
+    /// security events on public repos only. GitHub Apps must have the `security_events` read
+    /// permission to use this endpoint.
     /// 
     /// The response includes a `most_recent_instance` object.
     /// This provides details of the most recent instance of this alert
@@ -1200,7 +1265,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_alerts_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodeScanningListAlertsForRepoParams>>) -> Result<Vec<CodeScanningAlertItems>, CodeScanningListAlertsForRepoError> {
+    pub fn list_alerts_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodeScanningListAlertsForRepoParams<'api>>>) -> Result<Vec<CodeScanningAlertItems>, CodeScanningListAlertsForRepoError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/code-scanning/alerts", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -1229,6 +1294,7 @@ impl<'api> CodeScanning<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                304 => Err(CodeScanningListAlertsForRepoError::Status304),
                 403 => Err(CodeScanningListAlertsForRepoError::Status403(crate::adapters::to_json(github_response)?)),
                 404 => Err(CodeScanningListAlertsForRepoError::Status404(crate::adapters::to_json(github_response)?)),
                 503 => Err(CodeScanningListAlertsForRepoError::Status503(crate::adapters::to_json(github_response)?)),
@@ -1252,7 +1318,8 @@ impl<'api> CodeScanning<'api> {
     /// For very old analyses this data is not available,
     /// and `0` is returned in this field.
     /// 
-    /// You must use an access token with the `security_events` scope to use this endpoint.
+    /// You must use an access token with the `security_events` scope to use this endpoint with private repos,
+    /// the `public_repo` scope also grants permission to read security events on public repos only.
     /// GitHub Apps must have the `security_events` read permission to use this endpoint.
     /// 
     /// **Deprecation notice**:
@@ -1312,7 +1379,8 @@ impl<'api> CodeScanning<'api> {
     /// For very old analyses this data is not available,
     /// and `0` is returned in this field.
     /// 
-    /// You must use an access token with the `security_events` scope to use this endpoint.
+    /// You must use an access token with the `security_events` scope to use this endpoint with private repos,
+    /// the `public_repo` scope also grants permission to read security events on public repos only.
     /// GitHub Apps must have the `security_events` read permission to use this endpoint.
     /// 
     /// **Deprecation notice**:
@@ -1363,7 +1431,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// # Update a code scanning alert
     ///
-    /// Updates the status of a single code scanning alert. You must use an access token with the `security_events` scope to use this endpoint. GitHub Apps must have the `security_events` write permission to use this endpoint.
+    /// Updates the status of a single code scanning alert. You must use an access token with the `security_events` scope to use this endpoint with private repositories. You can also use tokens with the `public_repo` scope for public repositories only. GitHub Apps must have the `security_events` write permission to use this endpoint.
     /// 
     /// [GitHub API docs for update_alert](https://docs.github.com/rest/reference/code-scanning#update-a-code-scanning-alert)
     ///
@@ -1404,7 +1472,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// # Update a code scanning alert
     ///
-    /// Updates the status of a single code scanning alert. You must use an access token with the `security_events` scope to use this endpoint. GitHub Apps must have the `security_events` write permission to use this endpoint.
+    /// Updates the status of a single code scanning alert. You must use an access token with the `security_events` scope to use this endpoint with private repositories. You can also use tokens with the `public_repo` scope for public repositories only. GitHub Apps must have the `security_events` write permission to use this endpoint.
     /// 
     /// [GitHub API docs for update_alert](https://docs.github.com/rest/reference/code-scanning#update-a-code-scanning-alert)
     ///
@@ -1446,7 +1514,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// # Upload an analysis as SARIF data
     ///
-    /// Uploads SARIF data containing the results of a code scanning analysis to make the results available in a repository. You must use an access token with the `security_events` scope to use this endpoint. GitHub Apps must have the `security_events` write permission to use this endpoint.
+    /// Uploads SARIF data containing the results of a code scanning analysis to make the results available in a repository. You must use an access token with the `security_events` scope to use this endpoint for private repositories. You can also use tokens with the `public_repo` scope for public repositories only. GitHub Apps must have the `security_events` write permission to use this endpoint.
     /// 
     /// There are two places where you can upload code scanning results.
     ///  - If you upload to a pull request, for example `--ref refs/pull/42/merge` or `--ref refs/pull/42/head`, then the results appear as alerts in a pull request check. For more information, see "[Triaging code scanning alerts in pull requests](/code-security/secure-coding/triaging-code-scanning-alerts-in-pull-requests)."
@@ -1505,7 +1573,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// # Upload an analysis as SARIF data
     ///
-    /// Uploads SARIF data containing the results of a code scanning analysis to make the results available in a repository. You must use an access token with the `security_events` scope to use this endpoint. GitHub Apps must have the `security_events` write permission to use this endpoint.
+    /// Uploads SARIF data containing the results of a code scanning analysis to make the results available in a repository. You must use an access token with the `security_events` scope to use this endpoint for private repositories. You can also use tokens with the `public_repo` scope for public repositories only. GitHub Apps must have the `security_events` write permission to use this endpoint.
     /// 
     /// There are two places where you can upload code scanning results.
     ///  - If you upload to a pull request, for example `--ref refs/pull/42/merge` or `--ref refs/pull/42/head`, then the results appear as alerts in a pull request check. For more information, see "[Triaging code scanning alerts in pull requests](/code-security/secure-coding/triaging-code-scanning-alerts-in-pull-requests)."

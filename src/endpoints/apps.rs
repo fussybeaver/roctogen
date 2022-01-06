@@ -75,35 +75,6 @@ pub enum AppsCheckTokenError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Create a content attachment](Apps::create_content_attachment_async()) endpoint.
-#[derive(Debug, thiserror::Error)]
-pub enum AppsCreateContentAttachmentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
-    #[error("Validation failed")]
-    Status422(ValidationError),
-    #[error("Resource not found")]
-    Status404(BasicError),
-    #[error("Gone")]
-    Status410(BasicError),
-    #[error("Preview header missing")]
-    Status415(PostProjectsCreateForAuthenticatedUserResponse415),
-    #[error("Not modified")]
-    Status304,
-    #[error("Forbidden")]
-    Status403(BasicError),
-    #[error("Status code: {}", code)]
-    Generic { code: u16 },
-}
-
 /// Errors for the [Create a GitHub App from a manifest](Apps::create_from_manifest_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsCreateFromManifestError {
@@ -1482,109 +1453,6 @@ impl<'api> Apps<'api> {
                 422 => Err(AppsCheckTokenError::Status422(crate::adapters::to_json(github_response)?)),
                 404 => Err(AppsCheckTokenError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(AppsCheckTokenError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Create a content attachment
-    ///
-    /// Creates an attachment under a content reference URL in the body or comment of an issue or pull request. Use the `id` and `repository` `full_name` of the content reference from the [`content_reference` event](https://docs.github.com/webhooks/event-payloads/#content_reference) to create an attachment.
-    /// 
-    /// The app must create a content attachment within six hours of the content reference URL being posted. See "[Using content attachments](https://docs.github.com/apps/using-content-attachments/)" for details about content attachments.
-    /// 
-    /// You must use an [installation access token](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-an-installation) to access this endpoint.
-    /// 
-    /// [GitHub API docs for create_content_attachment](https://docs.github.com/rest/reference/apps#create-a-content-attachment)
-    ///
-    /// The `create_content_attachment_async` endpoint is enabled with the `corsair` cargo feature.
-    ///
-    /// ---
-    #[cfg(feature = "corsair")]
-    pub async fn create_content_attachment_async(&self, owner: &str, repo: &str, content_reference_id: i32, body: PostAppsCreateContentAttachment) -> Result<ContentReferenceAttachment, AppsCreateContentAttachmentError> {
-
-        let request_uri = format!("{}/repos/{}/{}/content_references/{}/attachments", super::GITHUB_BASE_API_URL, owner, repo, content_reference_id);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: Some(PostAppsCreateContentAttachment::from_json(body)?),
-            method: "POST",
-            headers: vec![("Accept", "application/vnd.github.corsair-preview+json"), ]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch_async(request).await?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
-        } else {
-            match github_response.status_code() {
-                422 => Err(AppsCreateContentAttachmentError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(AppsCreateContentAttachmentError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                410 => Err(AppsCreateContentAttachmentError::Status410(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(AppsCreateContentAttachmentError::Status415(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(AppsCreateContentAttachmentError::Status304),
-                403 => Err(AppsCreateContentAttachmentError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(AppsCreateContentAttachmentError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Create a content attachment
-    ///
-    /// Creates an attachment under a content reference URL in the body or comment of an issue or pull request. Use the `id` and `repository` `full_name` of the content reference from the [`content_reference` event](https://docs.github.com/webhooks/event-payloads/#content_reference) to create an attachment.
-    /// 
-    /// The app must create a content attachment within six hours of the content reference URL being posted. See "[Using content attachments](https://docs.github.com/apps/using-content-attachments/)" for details about content attachments.
-    /// 
-    /// You must use an [installation access token](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-an-installation) to access this endpoint.
-    /// 
-    /// [GitHub API docs for create_content_attachment](https://docs.github.com/rest/reference/apps#create-a-content-attachment)
-    ///
-    /// The `create_content_attachment` endpoint is enabled with the `corsair` cargo feature.
-    ///
-    /// ---
-    #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "corsair")]
-    pub fn create_content_attachment(&self, owner: &str, repo: &str, content_reference_id: i32, body: PostAppsCreateContentAttachment) -> Result<ContentReferenceAttachment, AppsCreateContentAttachmentError> {
-
-        let request_uri = format!("{}/repos/{}/{}/content_references/{}/attachments", super::GITHUB_BASE_API_URL, owner, repo, content_reference_id);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: Some(PostAppsCreateContentAttachment::from_json(body)?),
-            method: "POST",
-            headers: vec![("Accept", "application/vnd.github.corsair-preview+json"), ]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch(request)?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
-        } else {
-            match github_response.status_code() {
-                422 => Err(AppsCreateContentAttachmentError::Status422(crate::adapters::to_json(github_response)?)),
-                404 => Err(AppsCreateContentAttachmentError::Status404(crate::adapters::to_json(github_response)?)),
-                410 => Err(AppsCreateContentAttachmentError::Status410(crate::adapters::to_json(github_response)?)),
-                415 => Err(AppsCreateContentAttachmentError::Status415(crate::adapters::to_json(github_response)?)),
-                304 => Err(AppsCreateContentAttachmentError::Status304),
-                403 => Err(AppsCreateContentAttachmentError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(AppsCreateContentAttachmentError::Generic { code }),
             }
         }
     }
@@ -3042,10 +2910,7 @@ impl<'api> Apps<'api> {
     /// 
     /// [GitHub API docs for list_installation_repos_for_authenticated_user](https://docs.github.com/rest/reference/apps#list-repositories-accessible-to-the-user-access-token)
     ///
-    /// The `list_installation_repos_for_authenticated_user_async` endpoint is enabled with the `mercy` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "mercy")]
     pub async fn list_installation_repos_for_authenticated_user_async(&self, installation_id: i32, query_params: Option<impl Into<AppsListInstallationReposForAuthenticatedUserParams>>) -> Result<GetAppsListInstallationReposForAuthenticatedUserResponse200, AppsListInstallationReposForAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/user/installations/{}/repositories", super::GITHUB_BASE_API_URL, installation_id);
@@ -3059,7 +2924,7 @@ impl<'api> Apps<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.mercy-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3096,11 +2961,8 @@ impl<'api> Apps<'api> {
     /// 
     /// [GitHub API docs for list_installation_repos_for_authenticated_user](https://docs.github.com/rest/reference/apps#list-repositories-accessible-to-the-user-access-token)
     ///
-    /// The `list_installation_repos_for_authenticated_user` endpoint is enabled with the `mercy` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "mercy")]
     pub fn list_installation_repos_for_authenticated_user(&self, installation_id: i32, query_params: Option<impl Into<AppsListInstallationReposForAuthenticatedUserParams>>) -> Result<GetAppsListInstallationReposForAuthenticatedUserResponse200, AppsListInstallationReposForAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/user/installations/{}/repositories", super::GITHUB_BASE_API_URL, installation_id);
@@ -3115,7 +2977,7 @@ impl<'api> Apps<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.mercy-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3530,10 +3392,7 @@ impl<'api> Apps<'api> {
     /// 
     /// [GitHub API docs for list_repos_accessible_to_installation](https://docs.github.com/rest/reference/apps#list-repositories-accessible-to-the-app-installation)
     ///
-    /// The `list_repos_accessible_to_installation_async` endpoint is enabled with the `mercy` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "mercy")]
     pub async fn list_repos_accessible_to_installation_async(&self, query_params: Option<impl Into<AppsListReposAccessibleToInstallationParams>>) -> Result<GetAppsListReposAccessibleToInstallationResponse200, AppsListReposAccessibleToInstallationError> {
 
         let mut request_uri = format!("{}/installation/repositories", super::GITHUB_BASE_API_URL);
@@ -3547,7 +3406,7 @@ impl<'api> Apps<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.mercy-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3580,11 +3439,8 @@ impl<'api> Apps<'api> {
     /// 
     /// [GitHub API docs for list_repos_accessible_to_installation](https://docs.github.com/rest/reference/apps#list-repositories-accessible-to-the-app-installation)
     ///
-    /// The `list_repos_accessible_to_installation` endpoint is enabled with the `mercy` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "mercy")]
     pub fn list_repos_accessible_to_installation(&self, query_params: Option<impl Into<AppsListReposAccessibleToInstallationParams>>) -> Result<GetAppsListReposAccessibleToInstallationResponse200, AppsListReposAccessibleToInstallationError> {
 
         let mut request_uri = format!("{}/installation/repositories", super::GITHUB_BASE_API_URL);
@@ -3599,7 +3455,7 @@ impl<'api> Apps<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.mercy-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;

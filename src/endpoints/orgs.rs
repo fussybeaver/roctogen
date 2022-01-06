@@ -404,6 +404,23 @@ pub enum OrgsListBlockedUsersError {
     Generic { code: u16 },
 }
 
+/// Errors for the [List custom repository roles in an organization](Orgs::list_custom_roles_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsListCustomRolesError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [List failed organization invitations](Orgs::list_failed_invitations_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListFailedInvitationsError {
@@ -918,7 +935,7 @@ pub enum OrgsUpdateWebhookConfigForOrgError {
 pub struct OrgsGetAuditLogParams<'req> {
     /// A search phrase. For more information, see [Searching the audit log](https://docs.github.com/github/setting-up-and-managing-organizations-and-teams/reviewing-the-audit-log-for-your-organization#searching-the-audit-log).
     phrase: Option<&'req str>, 
-    /// The event types to include:  - `web` - returns web (non-Git) events - `git` - returns Git events - `all` - returns both web and Git events  The default is `web`.
+    /// The event types to include:  - `web` - returns web (non-Git) events. - `git` - returns Git events. - `all` - returns both web and Git events.  The default is `web`.
     include: Option<&'req str>, 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header). If specified, the query only searches for events after this cursor.
     after: Option<&'req str>, 
@@ -927,9 +944,7 @@ pub struct OrgsGetAuditLogParams<'req> {
     /// The order of audit log events. To list newest events first, specify `desc`. To list oldest events first, specify `asc`.  The default is `desc`.
     order: Option<&'req str>, 
     /// Results per page (max 100)
-    per_page: Option<u16>, 
-    /// Page number of the results to fetch.
-    page: Option<u16>
+    per_page: Option<u16>
 }
 
 impl<'req> OrgsGetAuditLogParams<'req> {
@@ -946,11 +961,10 @@ impl<'req> OrgsGetAuditLogParams<'req> {
             before: self.before, 
             order: self.order, 
             per_page: self.per_page, 
-            page: self.page, 
         }
     }
 
-    /// The event types to include:  - `web` - returns web (non-Git) events - `git` - returns Git events - `all` - returns both web and Git events  The default is `web`.
+    /// The event types to include:  - `web` - returns web (non-Git) events. - `git` - returns Git events. - `all` - returns both web and Git events.  The default is `web`.
     pub fn include(self, include: &'req str) -> Self {
         Self { 
             phrase: self.phrase, 
@@ -959,7 +973,6 @@ impl<'req> OrgsGetAuditLogParams<'req> {
             before: self.before, 
             order: self.order, 
             per_page: self.per_page, 
-            page: self.page, 
         }
     }
 
@@ -972,7 +985,6 @@ impl<'req> OrgsGetAuditLogParams<'req> {
             before: self.before, 
             order: self.order, 
             per_page: self.per_page, 
-            page: self.page, 
         }
     }
 
@@ -985,7 +997,6 @@ impl<'req> OrgsGetAuditLogParams<'req> {
             before: Some(before),
             order: self.order, 
             per_page: self.per_page, 
-            page: self.page, 
         }
     }
 
@@ -998,7 +1009,6 @@ impl<'req> OrgsGetAuditLogParams<'req> {
             before: self.before, 
             order: Some(order),
             per_page: self.per_page, 
-            page: self.page, 
         }
     }
 
@@ -1011,33 +1021,10 @@ impl<'req> OrgsGetAuditLogParams<'req> {
             before: self.before, 
             order: self.order, 
             per_page: Some(per_page),
-            page: self.page, 
-        }
-    }
-
-    /// Page number of the results to fetch.
-    pub fn page(self, page: u16) -> Self {
-        Self { 
-            phrase: self.phrase, 
-            include: self.include, 
-            after: self.after, 
-            before: self.before, 
-            order: self.order, 
-            per_page: self.per_page, 
-            page: Some(page),
         }
     }
 }
 
-impl<'enc> From<&'enc PerPage> for OrgsGetAuditLogParams<'enc> {
-    fn from(per_page: &'enc PerPage) -> Self {
-        Self {
-            per_page: Some(per_page.per_page),
-            page: Some(per_page.page),
-            ..Default::default()
-        }
-    }
-}
 /// Query parameters for the [List organizations](Orgs::list_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsListParams {
@@ -3136,6 +3123,89 @@ impl<'api> Orgs<'api> {
             match github_response.status_code() {
                 415 => Err(OrgsListBlockedUsersError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsListBlockedUsersError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List custom repository roles in an organization
+    ///
+    /// List the custom repository roles available in this organization. In order to see custom
+    /// repository roles in an organization, the authenticated user must be an organization owner.
+    /// 
+    /// For more information on custom repository roles, see "[Managing custom repository roles for an organization](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-custom-repository-roles-for-an-organization)".
+    /// 
+    /// [GitHub API docs for list_custom_roles](https://docs.github.com/rest/reference/orgs#list-custom-repository-roles-in-an-organization)
+    ///
+    /// ---
+    pub async fn list_custom_roles_async(&self, organization_id: &str) -> Result<GetOrgsListCustomRolesResponse200, OrgsListCustomRolesError> {
+
+        let request_uri = format!("{}/organizations/{}/custom_roles", super::GITHUB_BASE_API_URL, organization_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsListCustomRolesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List custom repository roles in an organization
+    ///
+    /// List the custom repository roles available in this organization. In order to see custom
+    /// repository roles in an organization, the authenticated user must be an organization owner.
+    /// 
+    /// For more information on custom repository roles, see "[Managing custom repository roles for an organization](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-custom-repository-roles-for-an-organization)".
+    /// 
+    /// [GitHub API docs for list_custom_roles](https://docs.github.com/rest/reference/orgs#list-custom-repository-roles-in-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_custom_roles(&self, organization_id: &str) -> Result<GetOrgsListCustomRolesResponse200, OrgsListCustomRolesError> {
+
+        let request_uri = format!("{}/organizations/{}/custom_roles", super::GITHUB_BASE_API_URL, organization_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsListCustomRolesError::Generic { code }),
             }
         }
     }

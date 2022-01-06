@@ -31,6 +31,27 @@ pub fn new(auth: &Auth) -> EnterpriseAdmin {
     EnterpriseAdmin { auth }
 }
 
+/// Errors for the [Add custom labels to a self-hosted runner for an enterprise](EnterpriseAdmin::add_custom_labels_to_self_hosted_runner_for_enterprise_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum EnterpriseAdminAddCustomLabelsToSelfHostedRunnerForEnterpriseError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Validation failed")]
+    Status422(ValidationErrorSimple),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Add organization access to a self-hosted runner group in an enterprise](EnterpriseAdmin::add_org_access_to_self_hosted_runner_group_in_enterprise_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum EnterpriseAdminAddOrgAccessToSelfHostedRunnerGroupInEnterpriseError {
@@ -337,6 +358,25 @@ pub enum EnterpriseAdminGetSelfHostedRunnerGroupForEnterpriseError {
     Generic { code: u16 },
 }
 
+/// Errors for the [List labels for a self-hosted runner for an enterprise](EnterpriseAdmin::list_labels_for_self_hosted_runner_for_enterprise_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum EnterpriseAdminListLabelsForSelfHostedRunnerForEnterpriseError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [List organization access to a self-hosted runner group in an enterprise](EnterpriseAdmin::list_org_access_to_self_hosted_runner_group_in_enterprise_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum EnterpriseAdminListOrgAccessToSelfHostedRunnerGroupInEnterpriseError {
@@ -507,6 +547,48 @@ pub enum EnterpriseAdminProvisionAndInviteEnterpriseUserError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Remove all custom labels from a self-hosted runner for an enterprise](EnterpriseAdmin::remove_all_custom_labels_from_self_hosted_runner_for_enterprise_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum EnterpriseAdminRemoveAllCustomLabelsFromSelfHostedRunnerForEnterpriseError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Validation failed")]
+    Status422(ValidationErrorSimple),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Remove a custom label from a self-hosted runner for an enterprise](EnterpriseAdmin::remove_custom_label_from_self_hosted_runner_for_enterprise_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum EnterpriseAdminRemoveCustomLabelFromSelfHostedRunnerForEnterpriseError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Validation failed")]
+    Status422(ValidationErrorSimple),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Remove organization access to a self-hosted runner group in an enterprise](EnterpriseAdmin::remove_org_access_to_self_hosted_runner_group_in_enterprise_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum EnterpriseAdminRemoveOrgAccessToSelfHostedRunnerGroupInEnterpriseError {
@@ -554,6 +636,27 @@ pub enum EnterpriseAdminSetAllowedActionsEnterpriseError {
 
     // -- endpoint errors
 
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Set custom labels for a self-hosted runner for an enterprise](EnterpriseAdmin::set_custom_labels_for_self_hosted_runner_for_enterprise_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum EnterpriseAdminSetCustomLabelsForSelfHostedRunnerForEnterpriseError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Validation failed")]
+    Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -717,7 +820,7 @@ pub enum EnterpriseAdminUpdateSelfHostedRunnerGroupForEnterpriseError {
 pub struct EnterpriseAdminGetAuditLogParams<'req> {
     /// A search phrase. For more information, see [Searching the audit log](https://docs.github.com/github/setting-up-and-managing-organizations-and-teams/reviewing-the-audit-log-for-your-organization#searching-the-audit-log).
     phrase: Option<&'req str>, 
-    /// The event types to include:  - `web` - returns web (non-Git) events - `git` - returns Git events - `all` - returns both web and Git events  The default is `web`.
+    /// The event types to include:  - `web` - returns web (non-Git) events. - `git` - returns Git events. - `all` - returns both web and Git events.  The default is `web`.
     include: Option<&'req str>, 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header). If specified, the query only searches for events after this cursor.
     after: Option<&'req str>, 
@@ -749,7 +852,7 @@ impl<'req> EnterpriseAdminGetAuditLogParams<'req> {
         }
     }
 
-    /// The event types to include:  - `web` - returns web (non-Git) events - `git` - returns Git events - `all` - returns both web and Git events  The default is `web`.
+    /// The event types to include:  - `web` - returns web (non-Git) events. - `git` - returns Git events. - `all` - returns both web and Git events.  The default is `web`.
     pub fn include(self, include: &'req str) -> Self {
         Self { 
             phrase: self.phrase, 
@@ -1162,6 +1265,91 @@ impl<'enc> From<&'enc PerPage> for EnterpriseAdminListSelfHostedRunnersInGroupFo
 }
 
 impl<'api> EnterpriseAdmin<'api> {
+    /// ---
+    ///
+    /// # Add custom labels to a self-hosted runner for an enterprise
+    ///
+    /// Add custom labels to a self-hosted runner configured in an enterprise.
+    /// 
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for add_custom_labels_to_self_hosted_runner_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#add-custom-labels-to-a-self-hosted-runner-for-an-enterprise)
+    ///
+    /// ---
+    pub async fn add_custom_labels_to_self_hosted_runner_for_enterprise_async(&self, enterprise: &str, runner_id: i32, body: PostEnterpriseAdminAddCustomLabelsToSelfHostedRunnerForEnterprise) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, EnterpriseAdminAddCustomLabelsToSelfHostedRunnerForEnterpriseError> {
+
+        let request_uri = format!("{}/enterprises/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, enterprise, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostEnterpriseAdminAddCustomLabelsToSelfHostedRunnerForEnterprise::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(EnterpriseAdminAddCustomLabelsToSelfHostedRunnerForEnterpriseError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(EnterpriseAdminAddCustomLabelsToSelfHostedRunnerForEnterpriseError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(EnterpriseAdminAddCustomLabelsToSelfHostedRunnerForEnterpriseError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Add custom labels to a self-hosted runner for an enterprise
+    ///
+    /// Add custom labels to a self-hosted runner configured in an enterprise.
+    /// 
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for add_custom_labels_to_self_hosted_runner_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#add-custom-labels-to-a-self-hosted-runner-for-an-enterprise)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn add_custom_labels_to_self_hosted_runner_for_enterprise(&self, enterprise: &str, runner_id: i32, body: PostEnterpriseAdminAddCustomLabelsToSelfHostedRunnerForEnterprise) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, EnterpriseAdminAddCustomLabelsToSelfHostedRunnerForEnterpriseError> {
+
+        let request_uri = format!("{}/enterprises/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, enterprise, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostEnterpriseAdminAddCustomLabelsToSelfHostedRunnerForEnterprise::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(EnterpriseAdminAddCustomLabelsToSelfHostedRunnerForEnterpriseError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(EnterpriseAdminAddCustomLabelsToSelfHostedRunnerForEnterpriseError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(EnterpriseAdminAddCustomLabelsToSelfHostedRunnerForEnterpriseError::Generic { code }),
+            }
+        }
+    }
+
     /// ---
     ///
     /// # Add organization access to a self-hosted runner group in an enterprise
@@ -2656,6 +2844,89 @@ impl<'api> EnterpriseAdmin<'api> {
 
     /// ---
     ///
+    /// # List labels for a self-hosted runner for an enterprise
+    ///
+    /// Lists all labels for a self-hosted runner configured in an enterprise.
+    /// 
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for list_labels_for_self_hosted_runner_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-labels-for-a-self-hosted-runner-for-an-enterprise)
+    ///
+    /// ---
+    pub async fn list_labels_for_self_hosted_runner_for_enterprise_async(&self, enterprise: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, EnterpriseAdminListLabelsForSelfHostedRunnerForEnterpriseError> {
+
+        let request_uri = format!("{}/enterprises/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, enterprise, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(EnterpriseAdminListLabelsForSelfHostedRunnerForEnterpriseError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(EnterpriseAdminListLabelsForSelfHostedRunnerForEnterpriseError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List labels for a self-hosted runner for an enterprise
+    ///
+    /// Lists all labels for a self-hosted runner configured in an enterprise.
+    /// 
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for list_labels_for_self_hosted_runner_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#list-labels-for-a-self-hosted-runner-for-an-enterprise)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_labels_for_self_hosted_runner_for_enterprise(&self, enterprise: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, EnterpriseAdminListLabelsForSelfHostedRunnerForEnterpriseError> {
+
+        let request_uri = format!("{}/enterprises/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, enterprise, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(EnterpriseAdminListLabelsForSelfHostedRunnerForEnterpriseError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(EnterpriseAdminListLabelsForSelfHostedRunnerForEnterpriseError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List organization access to a self-hosted runner group in an enterprise
     ///
     /// Lists the organizations with access to a self-hosted runner group.
@@ -3559,6 +3830,186 @@ impl<'api> EnterpriseAdmin<'api> {
 
     /// ---
     ///
+    /// # Remove all custom labels from a self-hosted runner for an enterprise
+    ///
+    /// Remove all custom labels from a self-hosted runner configured in an
+    /// enterprise. Returns the remaining read-only labels from the runner.
+    /// 
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for remove_all_custom_labels_from_self_hosted_runner_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#remove-all-custom-labels-from-a-self-hosted-runner-for-an-enterprise)
+    ///
+    /// ---
+    pub async fn remove_all_custom_labels_from_self_hosted_runner_for_enterprise_async(&self, enterprise: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, EnterpriseAdminRemoveAllCustomLabelsFromSelfHostedRunnerForEnterpriseError> {
+
+        let request_uri = format!("{}/enterprises/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, enterprise, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(EnterpriseAdminRemoveAllCustomLabelsFromSelfHostedRunnerForEnterpriseError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(EnterpriseAdminRemoveAllCustomLabelsFromSelfHostedRunnerForEnterpriseError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(EnterpriseAdminRemoveAllCustomLabelsFromSelfHostedRunnerForEnterpriseError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove all custom labels from a self-hosted runner for an enterprise
+    ///
+    /// Remove all custom labels from a self-hosted runner configured in an
+    /// enterprise. Returns the remaining read-only labels from the runner.
+    /// 
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for remove_all_custom_labels_from_self_hosted_runner_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#remove-all-custom-labels-from-a-self-hosted-runner-for-an-enterprise)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn remove_all_custom_labels_from_self_hosted_runner_for_enterprise(&self, enterprise: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, EnterpriseAdminRemoveAllCustomLabelsFromSelfHostedRunnerForEnterpriseError> {
+
+        let request_uri = format!("{}/enterprises/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, enterprise, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(EnterpriseAdminRemoveAllCustomLabelsFromSelfHostedRunnerForEnterpriseError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(EnterpriseAdminRemoveAllCustomLabelsFromSelfHostedRunnerForEnterpriseError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(EnterpriseAdminRemoveAllCustomLabelsFromSelfHostedRunnerForEnterpriseError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove a custom label from a self-hosted runner for an enterprise
+    ///
+    /// Remove a custom label from a self-hosted runner configured
+    /// in an enterprise. Returns the remaining labels from the runner.
+    /// 
+    /// This endpoint returns a `404 Not Found` status if the custom label is not
+    /// present on the runner.
+    /// 
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for remove_custom_label_from_self_hosted_runner_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#remove-a-custom-label-from-a-self-hosted-runner-for-an-enterprise)
+    ///
+    /// ---
+    pub async fn remove_custom_label_from_self_hosted_runner_for_enterprise_async(&self, enterprise: &str, runner_id: i32, name: &str) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, EnterpriseAdminRemoveCustomLabelFromSelfHostedRunnerForEnterpriseError> {
+
+        let request_uri = format!("{}/enterprises/{}/actions/runners/{}/labels/{}", super::GITHUB_BASE_API_URL, enterprise, runner_id, name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(EnterpriseAdminRemoveCustomLabelFromSelfHostedRunnerForEnterpriseError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(EnterpriseAdminRemoveCustomLabelFromSelfHostedRunnerForEnterpriseError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(EnterpriseAdminRemoveCustomLabelFromSelfHostedRunnerForEnterpriseError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove a custom label from a self-hosted runner for an enterprise
+    ///
+    /// Remove a custom label from a self-hosted runner configured
+    /// in an enterprise. Returns the remaining labels from the runner.
+    /// 
+    /// This endpoint returns a `404 Not Found` status if the custom label is not
+    /// present on the runner.
+    /// 
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for remove_custom_label_from_self_hosted_runner_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#remove-a-custom-label-from-a-self-hosted-runner-for-an-enterprise)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn remove_custom_label_from_self_hosted_runner_for_enterprise(&self, enterprise: &str, runner_id: i32, name: &str) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, EnterpriseAdminRemoveCustomLabelFromSelfHostedRunnerForEnterpriseError> {
+
+        let request_uri = format!("{}/enterprises/{}/actions/runners/{}/labels/{}", super::GITHUB_BASE_API_URL, enterprise, runner_id, name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(EnterpriseAdminRemoveCustomLabelFromSelfHostedRunnerForEnterpriseError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(EnterpriseAdminRemoveCustomLabelFromSelfHostedRunnerForEnterpriseError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(EnterpriseAdminRemoveCustomLabelFromSelfHostedRunnerForEnterpriseError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Remove organization access to a self-hosted runner group in an enterprise
     ///
     /// Removes an organization from the list of selected organizations that can access a self-hosted runner group. The runner group must have `visibility` set to `selected`. For more information, see "[Create a self-hosted runner group for an enterprise](#create-a-self-hosted-runner-group-for-an-enterprise)."
@@ -3796,6 +4247,93 @@ impl<'api> EnterpriseAdmin<'api> {
         } else {
             match github_response.status_code() {
                 code => Err(EnterpriseAdminSetAllowedActionsEnterpriseError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Set custom labels for a self-hosted runner for an enterprise
+    ///
+    /// Remove all previous custom labels and set the new custom labels for a specific
+    /// self-hosted runner configured in an enterprise.
+    /// 
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for set_custom_labels_for_self_hosted_runner_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#set-custom-labels-for-a-self-hosted-runner-for-an-enterprise)
+    ///
+    /// ---
+    pub async fn set_custom_labels_for_self_hosted_runner_for_enterprise_async(&self, enterprise: &str, runner_id: i32, body: PutEnterpriseAdminSetCustomLabelsForSelfHostedRunnerForEnterprise) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, EnterpriseAdminSetCustomLabelsForSelfHostedRunnerForEnterpriseError> {
+
+        let request_uri = format!("{}/enterprises/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, enterprise, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PutEnterpriseAdminSetCustomLabelsForSelfHostedRunnerForEnterprise::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(EnterpriseAdminSetCustomLabelsForSelfHostedRunnerForEnterpriseError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(EnterpriseAdminSetCustomLabelsForSelfHostedRunnerForEnterpriseError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(EnterpriseAdminSetCustomLabelsForSelfHostedRunnerForEnterpriseError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Set custom labels for a self-hosted runner for an enterprise
+    ///
+    /// Remove all previous custom labels and set the new custom labels for a specific
+    /// self-hosted runner configured in an enterprise.
+    /// 
+    /// You must authenticate using an access token with the `manage_runners:enterprise` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for set_custom_labels_for_self_hosted_runner_for_enterprise](https://docs.github.com/rest/reference/enterprise-admin#set-custom-labels-for-a-self-hosted-runner-for-an-enterprise)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn set_custom_labels_for_self_hosted_runner_for_enterprise(&self, enterprise: &str, runner_id: i32, body: PutEnterpriseAdminSetCustomLabelsForSelfHostedRunnerForEnterprise) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, EnterpriseAdminSetCustomLabelsForSelfHostedRunnerForEnterpriseError> {
+
+        let request_uri = format!("{}/enterprises/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, enterprise, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PutEnterpriseAdminSetCustomLabelsForSelfHostedRunnerForEnterprise::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(EnterpriseAdminSetCustomLabelsForSelfHostedRunnerForEnterpriseError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(EnterpriseAdminSetCustomLabelsForSelfHostedRunnerForEnterpriseError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(EnterpriseAdminSetCustomLabelsForSelfHostedRunnerForEnterpriseError::Generic { code }),
             }
         }
     }
