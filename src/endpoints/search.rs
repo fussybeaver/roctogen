@@ -163,8 +163,6 @@ pub enum SearchTopicsError {
 
     #[error("Not modified")]
     Status304,
-    #[error("Preview header missing")]
-    Status415(PostProjectsCreateForAuthenticatedUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1231,16 +1229,9 @@ impl<'api> Search<'api> {
     /// 
     /// This query searches for repositories with the word `tetris` in the name, the description, or the README. The results are limited to repositories where the primary language is assembly. The results are sorted by stars in descending order, so that the most popular repositories appear first in the search results.
     /// 
-    /// When you include the `mercy` preview header, you can also search for multiple topics by adding more `topic:` instances. For example, your query might look like this:
-    /// 
-    /// `q=topic:ruby+topic:rails`
-    /// 
     /// [GitHub API docs for repos](https://docs.github.com/rest/reference/search#search-repositories)
     ///
-    /// The `repos_async` endpoint is enabled with the `mercy` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "mercy")]
     pub async fn repos_async(&self, query_params: impl Into<SearchReposParams<'api>>) -> Result<GetSearchReposResponse200, SearchReposError> {
 
         let mut request_uri = format!("{}/search/repositories", super::GITHUB_BASE_API_URL);
@@ -1252,7 +1243,7 @@ impl<'api> Search<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.mercy-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1289,17 +1280,10 @@ impl<'api> Search<'api> {
     /// 
     /// This query searches for repositories with the word `tetris` in the name, the description, or the README. The results are limited to repositories where the primary language is assembly. The results are sorted by stars in descending order, so that the most popular repositories appear first in the search results.
     /// 
-    /// When you include the `mercy` preview header, you can also search for multiple topics by adding more `topic:` instances. For example, your query might look like this:
-    /// 
-    /// `q=topic:ruby+topic:rails`
-    /// 
     /// [GitHub API docs for repos](https://docs.github.com/rest/reference/search#search-repositories)
-    ///
-    /// The `repos` endpoint is enabled with the `mercy` cargo feature.
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "mercy")]
     pub fn repos(&self, query_params: impl Into<SearchReposParams<'api>>) -> Result<GetSearchReposResponse200, SearchReposError> {
 
         let mut request_uri = format!("{}/search/repositories", super::GITHUB_BASE_API_URL);
@@ -1312,7 +1296,7 @@ impl<'api> Search<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.mercy-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1351,10 +1335,7 @@ impl<'api> Search<'api> {
     /// 
     /// [GitHub API docs for topics](https://docs.github.com/rest/reference/search#search-topics)
     ///
-    /// The `topics_async` endpoint is enabled with the `mercy` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "mercy")]
     pub async fn topics_async(&self, query_params: impl Into<SearchTopicsParams<'api>>) -> Result<GetSearchTopicsResponse200, SearchTopicsError> {
 
         let mut request_uri = format!("{}/search/topics", super::GITHUB_BASE_API_URL);
@@ -1366,7 +1347,7 @@ impl<'api> Search<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.mercy-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1382,7 +1363,6 @@ impl<'api> Search<'api> {
         } else {
             match github_response.status_code() {
                 304 => Err(SearchTopicsError::Status304),
-                415 => Err(SearchTopicsError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(SearchTopicsError::Generic { code }),
             }
         }
@@ -1404,11 +1384,8 @@ impl<'api> Search<'api> {
     /// 
     /// [GitHub API docs for topics](https://docs.github.com/rest/reference/search#search-topics)
     ///
-    /// The `topics` endpoint is enabled with the `mercy` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "mercy")]
     pub fn topics(&self, query_params: impl Into<SearchTopicsParams<'api>>) -> Result<GetSearchTopicsResponse200, SearchTopicsError> {
 
         let mut request_uri = format!("{}/search/topics", super::GITHUB_BASE_API_URL);
@@ -1421,7 +1398,7 @@ impl<'api> Search<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.mercy-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1437,7 +1414,6 @@ impl<'api> Search<'api> {
         } else {
             match github_response.status_code() {
                 304 => Err(SearchTopicsError::Status304),
-                415 => Err(SearchTopicsError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(SearchTopicsError::Generic { code }),
             }
         }

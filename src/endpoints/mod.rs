@@ -45,6 +45,7 @@ pub mod code_scanning;
 pub mod checks;
 pub mod billing;
 pub mod interactions;
+pub mod codespaces;
 pub mod emojis;
 
 pub struct PerPage {

@@ -1417,7 +1417,7 @@ impl<'api> Pulls<'api> {
     /// 
     /// Creates a review comment in the pull request diff. To add a regular comment to a pull request timeline, see "[Create an issue comment](https://docs.github.com/rest/reference/issues#create-an-issue-comment)." We recommend creating a review comment using `line`, `side`, and optionally `start_line` and `start_side` if your comment applies to more than one line in the pull request diff.
     /// 
-    /// You can still create a review comment using the `position` parameter. When you use `position`, the `line`, `side`, `start_line`, and `start_side` parameters are not required. For more information, see the [`comfort-fade` preview notice](https://docs.github.com/rest/reference/pulls#create-a-review-comment-for-a-pull-request-preview-notices).
+    /// You can still create a review comment using the `position` parameter. When you use `position`, the `line`, `side`, `start_line`, and `start_side` parameters are not required.
     /// 
     /// **Note:** The position value equals the number of lines down from the first "@@" hunk header in the file you want to add a comment. The line just below the "@@" line is position 1, the next line is position 2, and so on. The position in the diff continues to increase through lines of whitespace and additional hunks until the beginning of a new file.
     /// 
@@ -1425,10 +1425,7 @@ impl<'api> Pulls<'api> {
     /// 
     /// [GitHub API docs for create_review_comment](https://docs.github.com/rest/reference/pulls#create-a-review-comment-for-a-pull-request)
     ///
-    /// The `create_review_comment_async` endpoint is enabled with the `comfort-fade` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "comfort-fade")]
     pub async fn create_review_comment_async(&self, owner: &str, repo: &str, pull_number: i32, body: PostPullsCreateReviewComment) -> Result<PullRequestReviewComment, PullsCreateReviewCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
@@ -1438,7 +1435,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: Some(PostPullsCreateReviewComment::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1467,7 +1464,7 @@ impl<'api> Pulls<'api> {
     /// 
     /// Creates a review comment in the pull request diff. To add a regular comment to a pull request timeline, see "[Create an issue comment](https://docs.github.com/rest/reference/issues#create-an-issue-comment)." We recommend creating a review comment using `line`, `side`, and optionally `start_line` and `start_side` if your comment applies to more than one line in the pull request diff.
     /// 
-    /// You can still create a review comment using the `position` parameter. When you use `position`, the `line`, `side`, `start_line`, and `start_side` parameters are not required. For more information, see the [`comfort-fade` preview notice](https://docs.github.com/rest/reference/pulls#create-a-review-comment-for-a-pull-request-preview-notices).
+    /// You can still create a review comment using the `position` parameter. When you use `position`, the `line`, `side`, `start_line`, and `start_side` parameters are not required.
     /// 
     /// **Note:** The position value equals the number of lines down from the first "@@" hunk header in the file you want to add a comment. The line just below the "@@" line is position 1, the next line is position 2, and so on. The position in the diff continues to increase through lines of whitespace and additional hunks until the beginning of a new file.
     /// 
@@ -1475,11 +1472,8 @@ impl<'api> Pulls<'api> {
     /// 
     /// [GitHub API docs for create_review_comment](https://docs.github.com/rest/reference/pulls#create-a-review-comment-for-a-pull-request)
     ///
-    /// The `create_review_comment` endpoint is enabled with the `comfort-fade` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "comfort-fade")]
     pub fn create_review_comment(&self, owner: &str, repo: &str, pull_number: i32, body: PostPullsCreateReviewComment) -> Result<PullRequestReviewComment, PullsCreateReviewCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
@@ -1489,7 +1483,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: Some(PostPullsCreateReviewComment::from_json(body)?),
             method: "POST",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1942,10 +1936,7 @@ impl<'api> Pulls<'api> {
     /// 
     /// [GitHub API docs for get_review_comment](https://docs.github.com/rest/reference/pulls#get-a-review-comment-for-a-pull-request)
     ///
-    /// The `get_review_comment_async` endpoint is enabled with the `comfort-fade` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "comfort-fade")]
     pub async fn get_review_comment_async(&self, owner: &str, repo: &str, comment_id: i32) -> Result<PullRequestReviewComment, PullsGetReviewCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
@@ -1955,7 +1946,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -1984,11 +1975,8 @@ impl<'api> Pulls<'api> {
     /// 
     /// [GitHub API docs for get_review_comment](https://docs.github.com/rest/reference/pulls#get-a-review-comment-for-a-pull-request)
     ///
-    /// The `get_review_comment` endpoint is enabled with the `comfort-fade` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "comfort-fade")]
     pub fn get_review_comment(&self, owner: &str, repo: &str, comment_id: i32) -> Result<PullRequestReviewComment, PullsGetReviewCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
@@ -1998,7 +1986,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2463,10 +2451,7 @@ impl<'api> Pulls<'api> {
     /// 
     /// [GitHub API docs for list_review_comments](https://docs.github.com/rest/reference/pulls#list-review-comments-on-a-pull-request)
     ///
-    /// The `list_review_comments_async` endpoint is enabled with the `comfort-fade` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "comfort-fade")]
     pub async fn list_review_comments_async(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListReviewCommentsParams<'api>>>) -> Result<Vec<PullRequestReviewComment>, PullsListReviewCommentsError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
@@ -2480,7 +2465,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2508,11 +2493,8 @@ impl<'api> Pulls<'api> {
     /// 
     /// [GitHub API docs for list_review_comments](https://docs.github.com/rest/reference/pulls#list-review-comments-on-a-pull-request)
     ///
-    /// The `list_review_comments` endpoint is enabled with the `comfort-fade` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "comfort-fade")]
     pub fn list_review_comments(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListReviewCommentsParams<'api>>>) -> Result<Vec<PullRequestReviewComment>, PullsListReviewCommentsError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
@@ -2527,7 +2509,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2555,10 +2537,7 @@ impl<'api> Pulls<'api> {
     /// 
     /// [GitHub API docs for list_review_comments_for_repo](https://docs.github.com/rest/reference/pulls#list-review-comments-in-a-repository)
     ///
-    /// The `list_review_comments_for_repo_async` endpoint is enabled with the `comfort-fade` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "comfort-fade")]
     pub async fn list_review_comments_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<PullsListReviewCommentsForRepoParams<'api>>>) -> Result<Vec<PullRequestReviewComment>, PullsListReviewCommentsForRepoError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/comments", super::GITHUB_BASE_API_URL, owner, repo);
@@ -2572,7 +2551,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -2600,11 +2579,8 @@ impl<'api> Pulls<'api> {
     /// 
     /// [GitHub API docs for list_review_comments_for_repo](https://docs.github.com/rest/reference/pulls#list-review-comments-in-a-repository)
     ///
-    /// The `list_review_comments_for_repo` endpoint is enabled with the `comfort-fade` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "comfort-fade")]
     pub fn list_review_comments_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<PullsListReviewCommentsForRepoParams<'api>>>) -> Result<Vec<PullRequestReviewComment>, PullsListReviewCommentsForRepoError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/comments", super::GITHUB_BASE_API_URL, owner, repo);
@@ -2619,7 +2595,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: None,
             method: "GET",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3300,10 +3276,7 @@ impl<'api> Pulls<'api> {
     /// 
     /// [GitHub API docs for update_review_comment](https://docs.github.com/rest/reference/pulls#update-a-review-comment-for-a-pull-request)
     ///
-    /// The `update_review_comment_async` endpoint is enabled with the `comfort-fade` cargo feature.
-    ///
     /// ---
-    #[cfg(feature = "comfort-fade")]
     pub async fn update_review_comment_async(&self, owner: &str, repo: &str, comment_id: i32, body: PatchPullsUpdateReviewComment) -> Result<PullRequestReviewComment, PullsUpdateReviewCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
@@ -3313,7 +3286,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: Some(PatchPullsUpdateReviewComment::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;
@@ -3341,11 +3314,8 @@ impl<'api> Pulls<'api> {
     /// 
     /// [GitHub API docs for update_review_comment](https://docs.github.com/rest/reference/pulls#update-a-review-comment-for-a-pull-request)
     ///
-    /// The `update_review_comment` endpoint is enabled with the `comfort-fade` cargo feature.
-    ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "comfort-fade")]
     pub fn update_review_comment(&self, owner: &str, repo: &str, comment_id: i32, body: PatchPullsUpdateReviewComment) -> Result<PullRequestReviewComment, PullsUpdateReviewCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
@@ -3355,7 +3325,7 @@ impl<'api> Pulls<'api> {
             uri: request_uri,
             body: Some(PatchPullsUpdateReviewComment::from_json(body)?),
             method: "PATCH",
-            headers: vec![("Accept", "application/vnd.github.comfort-fade-preview+json"), ]
+            headers: vec![]
         };
 
         let request = GitHubRequestBuilder::build(req, self.auth)?;

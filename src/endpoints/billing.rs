@@ -82,6 +82,44 @@ pub enum BillingGetGithubActionsBillingUserError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Get GitHub Advanced Security active committers for an enterprise](Billing::get_github_advanced_security_billing_ghe_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum BillingGetGithubAdvancedSecurityBillingGheError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Response if GitHub Advanced Security is not enabled for this repository")]
+    Status403(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get GitHub Advanced Security active committers for an organization](Billing::get_github_advanced_security_billing_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum BillingGetGithubAdvancedSecurityBillingOrgError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Response if GitHub Advanced Security is not enabled for this repository")]
+    Status403(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Get GitHub Packages billing for an enterprise](Billing::get_github_packages_billing_ghe_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum BillingGetGithubPackagesBillingGheError {
@@ -185,6 +223,86 @@ pub enum BillingGetSharedStorageBillingUserError {
 }
 
 
+/// Query parameters for the [Get GitHub Advanced Security active committers for an enterprise](Billing::get_github_advanced_security_billing_ghe_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct BillingGetGithubAdvancedSecurityBillingGheParams {
+    /// Results per page (max 100)
+    per_page: Option<u16>, 
+    /// Page number of the results to fetch.
+    page: Option<u16>
+}
+
+impl BillingGetGithubAdvancedSecurityBillingGheParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Results per page (max 100)
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self { 
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// Page number of the results to fetch.
+    pub fn page(self, page: u16) -> Self {
+        Self { 
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for BillingGetGithubAdvancedSecurityBillingGheParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [Get GitHub Advanced Security active committers for an organization](Billing::get_github_advanced_security_billing_org_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct BillingGetGithubAdvancedSecurityBillingOrgParams {
+    /// Results per page (max 100)
+    per_page: Option<u16>, 
+    /// Page number of the results to fetch.
+    page: Option<u16>
+}
+
+impl BillingGetGithubAdvancedSecurityBillingOrgParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Results per page (max 100)
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self { 
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// Page number of the results to fetch.
+    pub fn page(self, page: u16) -> Self {
+        Self { 
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for BillingGetGithubAdvancedSecurityBillingOrgParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 
 impl<'api> Billing<'api> {
     /// ---
@@ -438,6 +556,188 @@ impl<'api> Billing<'api> {
         } else {
             match github_response.status_code() {
                 code => Err(BillingGetGithubActionsBillingUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get GitHub Advanced Security active committers for an enterprise
+    ///
+    /// Gets the GitHub Advanced Security active committers for an enterprise per repository.
+    /// Each distinct user login across all repositories is counted as a single Advanced Security seat, so the total_advanced_security_committers is not the sum of active_users for each repository.
+    /// 
+    /// [GitHub API docs for get_github_advanced_security_billing_ghe](https://docs.github.com/rest/reference/billing#export-advanced-security-active-committers-data-for-enterprise)
+    ///
+    /// ---
+    pub async fn get_github_advanced_security_billing_ghe_async(&self, enterprise: &str, query_params: Option<impl Into<BillingGetGithubAdvancedSecurityBillingGheParams>>) -> Result<AdvancedSecurityActiveCommitters, BillingGetGithubAdvancedSecurityBillingGheError> {
+
+        let mut request_uri = format!("{}/enterprises/{}/settings/billing/advanced-security", super::GITHUB_BASE_API_URL, enterprise);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(BillingGetGithubAdvancedSecurityBillingGheError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(BillingGetGithubAdvancedSecurityBillingGheError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get GitHub Advanced Security active committers for an enterprise
+    ///
+    /// Gets the GitHub Advanced Security active committers for an enterprise per repository.
+    /// Each distinct user login across all repositories is counted as a single Advanced Security seat, so the total_advanced_security_committers is not the sum of active_users for each repository.
+    /// 
+    /// [GitHub API docs for get_github_advanced_security_billing_ghe](https://docs.github.com/rest/reference/billing#export-advanced-security-active-committers-data-for-enterprise)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_github_advanced_security_billing_ghe(&self, enterprise: &str, query_params: Option<impl Into<BillingGetGithubAdvancedSecurityBillingGheParams>>) -> Result<AdvancedSecurityActiveCommitters, BillingGetGithubAdvancedSecurityBillingGheError> {
+
+        let mut request_uri = format!("{}/enterprises/{}/settings/billing/advanced-security", super::GITHUB_BASE_API_URL, enterprise);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: BillingGetGithubAdvancedSecurityBillingGheParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(BillingGetGithubAdvancedSecurityBillingGheError::Status403(crate::adapters::to_json(github_response)?)),
+                code => Err(BillingGetGithubAdvancedSecurityBillingGheError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get GitHub Advanced Security active committers for an organization
+    ///
+    /// Gets the GitHub Advanced Security active committers for an organization per repository.
+    /// Each distinct user login across all repositories is counted as a single Advanced Security seat, so the total_advanced_security_committers is not the sum of advanced_security_committers for each repository.
+    /// If this organization defers to an enterprise for billing, the total_advanced_security_committers returned from the organization API may include some users that are in more than one organization, so they will only consume a single Advanced Security seat at the enterprise level.
+    /// 
+    /// [GitHub API docs for get_github_advanced_security_billing_org](https://docs.github.com/rest/reference/billing#get-github-advanced-security-active-committers-for-an-organization)
+    ///
+    /// ---
+    pub async fn get_github_advanced_security_billing_org_async(&self, org: &str, query_params: Option<impl Into<BillingGetGithubAdvancedSecurityBillingOrgParams>>) -> Result<AdvancedSecurityActiveCommitters, BillingGetGithubAdvancedSecurityBillingOrgError> {
+
+        let mut request_uri = format!("{}/orgs/{}/settings/billing/advanced-security", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(BillingGetGithubAdvancedSecurityBillingOrgError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(BillingGetGithubAdvancedSecurityBillingOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get GitHub Advanced Security active committers for an organization
+    ///
+    /// Gets the GitHub Advanced Security active committers for an organization per repository.
+    /// Each distinct user login across all repositories is counted as a single Advanced Security seat, so the total_advanced_security_committers is not the sum of advanced_security_committers for each repository.
+    /// If this organization defers to an enterprise for billing, the total_advanced_security_committers returned from the organization API may include some users that are in more than one organization, so they will only consume a single Advanced Security seat at the enterprise level.
+    /// 
+    /// [GitHub API docs for get_github_advanced_security_billing_org](https://docs.github.com/rest/reference/billing#get-github-advanced-security-active-committers-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_github_advanced_security_billing_org(&self, org: &str, query_params: Option<impl Into<BillingGetGithubAdvancedSecurityBillingOrgParams>>) -> Result<AdvancedSecurityActiveCommitters, BillingGetGithubAdvancedSecurityBillingOrgError> {
+
+        let mut request_uri = format!("{}/orgs/{}/settings/billing/advanced-security", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: BillingGetGithubAdvancedSecurityBillingOrgParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(BillingGetGithubAdvancedSecurityBillingOrgError::Status403(crate::adapters::to_json(github_response)?)),
+                code => Err(BillingGetGithubAdvancedSecurityBillingOrgError::Generic { code }),
             }
         }
     }

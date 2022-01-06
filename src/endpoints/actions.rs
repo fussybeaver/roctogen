@@ -31,6 +31,48 @@ pub fn new(auth: &Auth) -> Actions {
     Actions { auth }
 }
 
+/// Errors for the [Add custom labels to a self-hosted runner for an organization](Actions::add_custom_labels_to_self_hosted_runner_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsAddCustomLabelsToSelfHostedRunnerForOrgError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Validation failed")]
+    Status422(ValidationErrorSimple),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Add custom labels to a self-hosted runner for a repository](Actions::add_custom_labels_to_self_hosted_runner_for_repo_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsAddCustomLabelsToSelfHostedRunnerForRepoError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Validation failed")]
+    Status422(ValidationErrorSimple),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Add repository access to a self-hosted runner group in an organization](Actions::add_repo_access_to_self_hosted_runner_group_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsAddRepoAccessToSelfHostedRunnerGroupInOrgError {
@@ -1022,6 +1064,44 @@ pub enum ActionsListJobsForWorkflowRunAttemptError {
     Generic { code: u16 },
 }
 
+/// Errors for the [List labels for a self-hosted runner for an organization](Actions::list_labels_for_self_hosted_runner_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsListLabelsForSelfHostedRunnerForOrgError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List labels for a self-hosted runner for a repository](Actions::list_labels_for_self_hosted_runner_for_repo_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsListLabelsForSelfHostedRunnerForRepoError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [List organization secrets](Actions::list_org_secrets_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListOrgSecretsError {
@@ -1294,6 +1374,86 @@ pub enum ActionsReRunWorkflowError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Remove all custom labels from a self-hosted runner for an organization](Actions::remove_all_custom_labels_from_self_hosted_runner_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForOrgError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Remove all custom labels from a self-hosted runner for a repository](Actions::remove_all_custom_labels_from_self_hosted_runner_for_repo_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForRepoError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Remove a custom label from a self-hosted runner for an organization](Actions::remove_custom_label_from_self_hosted_runner_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Validation failed")]
+    Status422(ValidationErrorSimple),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Remove a custom label from a self-hosted runner for a repository](Actions::remove_custom_label_from_self_hosted_runner_for_repo_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Validation failed")]
+    Status422(ValidationErrorSimple),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Remove repository access to a self-hosted runner group in an organization](Actions::remove_repo_access_to_self_hosted_runner_group_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsRemoveRepoAccessToSelfHostedRunnerGroupInOrgError {
@@ -1394,6 +1554,48 @@ pub enum ActionsSetAllowedActionsRepositoryError {
 
     // -- endpoint errors
 
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Set custom labels for a self-hosted runner for an organization](Actions::set_custom_labels_for_self_hosted_runner_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsSetCustomLabelsForSelfHostedRunnerForOrgError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Validation failed")]
+    Status422(ValidationErrorSimple),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Set custom labels for a self-hosted runner for a repository](Actions::set_custom_labels_for_self_hosted_runner_for_repo_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsSetCustomLabelsForSelfHostedRunnerForRepoError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Validation failed")]
+    Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -2469,6 +2671,178 @@ impl<'enc> From<&'enc PerPage> for ActionsListWorkflowRunsForRepoParams<'enc> {
 }
 
 impl<'api> Actions<'api> {
+    /// ---
+    ///
+    /// # Add custom labels to a self-hosted runner for an organization
+    ///
+    /// Add custom labels to a self-hosted runner configured in an organization.
+    /// 
+    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for add_custom_labels_to_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#add-custom-labels-to-a-self-hosted-runner-for-an-organization)
+    ///
+    /// ---
+    pub async fn add_custom_labels_to_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32, body: PostActionsAddCustomLabelsToSelfHostedRunnerForOrg) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsAddCustomLabelsToSelfHostedRunnerForOrgError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, org, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostActionsAddCustomLabelsToSelfHostedRunnerForOrg::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForOrgError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ActionsAddCustomLabelsToSelfHostedRunnerForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Add custom labels to a self-hosted runner for an organization
+    ///
+    /// Add custom labels to a self-hosted runner configured in an organization.
+    /// 
+    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for add_custom_labels_to_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#add-custom-labels-to-a-self-hosted-runner-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn add_custom_labels_to_self_hosted_runner_for_org(&self, org: &str, runner_id: i32, body: PostActionsAddCustomLabelsToSelfHostedRunnerForOrg) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsAddCustomLabelsToSelfHostedRunnerForOrgError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, org, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostActionsAddCustomLabelsToSelfHostedRunnerForOrg::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForOrgError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForOrgError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(ActionsAddCustomLabelsToSelfHostedRunnerForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Add custom labels to a self-hosted runner for a repository
+    ///
+    /// Add custom labels to a self-hosted runner configured in a repository.
+    /// 
+    /// You must authenticate using an access token with the `repo` scope to use this
+    /// endpoint.
+    /// 
+    /// [GitHub API docs for add_custom_labels_to_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#add-custom-labels-to-a-self-hosted-runner-for-a-repository)
+    ///
+    /// ---
+    pub async fn add_custom_labels_to_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32, body: PostActionsAddCustomLabelsToSelfHostedRunnerForRepo) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsAddCustomLabelsToSelfHostedRunnerForRepoError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostActionsAddCustomLabelsToSelfHostedRunnerForRepo::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForRepoError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForRepoError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ActionsAddCustomLabelsToSelfHostedRunnerForRepoError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Add custom labels to a self-hosted runner for a repository
+    ///
+    /// Add custom labels to a self-hosted runner configured in a repository.
+    /// 
+    /// You must authenticate using an access token with the `repo` scope to use this
+    /// endpoint.
+    /// 
+    /// [GitHub API docs for add_custom_labels_to_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#add-custom-labels-to-a-self-hosted-runner-for-a-repository)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn add_custom_labels_to_self_hosted_runner_for_repo(&self, owner: &str, repo: &str, runner_id: i32, body: PostActionsAddCustomLabelsToSelfHostedRunnerForRepo) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsAddCustomLabelsToSelfHostedRunnerForRepoError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostActionsAddCustomLabelsToSelfHostedRunnerForRepo::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForRepoError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForRepoError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(ActionsAddCustomLabelsToSelfHostedRunnerForRepoError::Generic { code }),
+            }
+        }
+    }
+
     /// ---
     ///
     /// # Add repository access to a self-hosted runner group in an organization
@@ -7618,6 +7992,174 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
+    /// # List labels for a self-hosted runner for an organization
+    ///
+    /// Lists all labels for a self-hosted runner configured in an organization.
+    /// 
+    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for list_labels_for_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#list-labels-for-a-self-hosted-runner-for-an-organization)
+    ///
+    /// ---
+    pub async fn list_labels_for_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsListLabelsForSelfHostedRunnerForOrgError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, org, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsListLabelsForSelfHostedRunnerForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ActionsListLabelsForSelfHostedRunnerForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List labels for a self-hosted runner for an organization
+    ///
+    /// Lists all labels for a self-hosted runner configured in an organization.
+    /// 
+    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for list_labels_for_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#list-labels-for-a-self-hosted-runner-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_labels_for_self_hosted_runner_for_org(&self, org: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsListLabelsForSelfHostedRunnerForOrgError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, org, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsListLabelsForSelfHostedRunnerForOrgError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(ActionsListLabelsForSelfHostedRunnerForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List labels for a self-hosted runner for a repository
+    ///
+    /// Lists all labels for a self-hosted runner configured in a repository.
+    /// 
+    /// You must authenticate using an access token with the `repo` scope to use this
+    /// endpoint.
+    /// 
+    /// [GitHub API docs for list_labels_for_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#list-labels-for-a-self-hosted-runner-for-a-repository)
+    ///
+    /// ---
+    pub async fn list_labels_for_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsListLabelsForSelfHostedRunnerForRepoError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsListLabelsForSelfHostedRunnerForRepoError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ActionsListLabelsForSelfHostedRunnerForRepoError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List labels for a self-hosted runner for a repository
+    ///
+    /// Lists all labels for a self-hosted runner configured in a repository.
+    /// 
+    /// You must authenticate using an access token with the `repo` scope to use this
+    /// endpoint.
+    /// 
+    /// [GitHub API docs for list_labels_for_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#list-labels-for-a-self-hosted-runner-for-a-repository)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_labels_for_self_hosted_runner_for_repo(&self, owner: &str, repo: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsListLabelsForSelfHostedRunnerForRepoError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsListLabelsForSelfHostedRunnerForRepoError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(ActionsListLabelsForSelfHostedRunnerForRepoError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List organization secrets
     ///
     /// Lists all secrets available in an organization without revealing their encrypted values. You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
@@ -8139,7 +8681,7 @@ impl<'api> Actions<'api> {
     /// [GitHub API docs for list_selected_repos_for_org_secret](https://docs.github.com/rest/reference/actions#list-selected-repositories-for-an-organization-secret)
     ///
     /// ---
-    pub async fn list_selected_repos_for_org_secret_async(&self, org: &str, secret_name: &str, query_params: Option<impl Into<ActionsListSelectedReposForOrgSecretParams>>) -> Result<GetActionsListSelectedReposForOrgSecretResponse200, ActionsListSelectedReposForOrgSecretError> {
+    pub async fn list_selected_repos_for_org_secret_async(&self, org: &str, secret_name: &str, query_params: Option<impl Into<ActionsListSelectedReposForOrgSecretParams>>) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, ActionsListSelectedReposForOrgSecretError> {
 
         let mut request_uri = format!("{}/orgs/{}/actions/secrets/{}/repositories", super::GITHUB_BASE_API_URL, org, secret_name);
 
@@ -8182,7 +8724,7 @@ impl<'api> Actions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_selected_repos_for_org_secret(&self, org: &str, secret_name: &str, query_params: Option<impl Into<ActionsListSelectedReposForOrgSecretParams>>) -> Result<GetActionsListSelectedReposForOrgSecretResponse200, ActionsListSelectedReposForOrgSecretError> {
+    pub fn list_selected_repos_for_org_secret(&self, org: &str, secret_name: &str, query_params: Option<impl Into<ActionsListSelectedReposForOrgSecretParams>>) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, ActionsListSelectedReposForOrgSecretError> {
 
         let mut request_uri = format!("{}/orgs/{}/actions/secrets/{}/repositories", super::GITHUB_BASE_API_URL, org, secret_name);
 
@@ -9015,6 +9557,366 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
+    /// # Remove all custom labels from a self-hosted runner for an organization
+    ///
+    /// Remove all custom labels from a self-hosted runner configured in an
+    /// organization. Returns the remaining read-only labels from the runner.
+    /// 
+    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for remove_all_custom_labels_from_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#remove-all-custom-labels-from-a-self-hosted-runner-for-an-organization)
+    ///
+    /// ---
+    pub async fn remove_all_custom_labels_from_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForOrgError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, org, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove all custom labels from a self-hosted runner for an organization
+    ///
+    /// Remove all custom labels from a self-hosted runner configured in an
+    /// organization. Returns the remaining read-only labels from the runner.
+    /// 
+    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for remove_all_custom_labels_from_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#remove-all-custom-labels-from-a-self-hosted-runner-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn remove_all_custom_labels_from_self_hosted_runner_for_org(&self, org: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForOrgError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, org, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForOrgError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove all custom labels from a self-hosted runner for a repository
+    ///
+    /// Remove all custom labels from a self-hosted runner configured in a
+    /// repository. Returns the remaining read-only labels from the runner.
+    /// 
+    /// You must authenticate using an access token with the `repo` scope to use this
+    /// endpoint.
+    /// 
+    /// [GitHub API docs for remove_all_custom_labels_from_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#remove-all-custom-labels-from-a-self-hosted-runner-for-a-repository)
+    ///
+    /// ---
+    pub async fn remove_all_custom_labels_from_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForRepoError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForRepoError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForRepoError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove all custom labels from a self-hosted runner for a repository
+    ///
+    /// Remove all custom labels from a self-hosted runner configured in a
+    /// repository. Returns the remaining read-only labels from the runner.
+    /// 
+    /// You must authenticate using an access token with the `repo` scope to use this
+    /// endpoint.
+    /// 
+    /// [GitHub API docs for remove_all_custom_labels_from_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#remove-all-custom-labels-from-a-self-hosted-runner-for-a-repository)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn remove_all_custom_labels_from_self_hosted_runner_for_repo(&self, owner: &str, repo: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForRepoError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForRepoError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForRepoError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove a custom label from a self-hosted runner for an organization
+    ///
+    /// Remove a custom label from a self-hosted runner configured
+    /// in an organization. Returns the remaining labels from the runner.
+    /// 
+    /// This endpoint returns a `404 Not Found` status if the custom label is not
+    /// present on the runner.
+    /// 
+    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for remove_custom_label_from_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#remove-a-custom-label-from-a-self-hosted-runner-for-an-organization)
+    ///
+    /// ---
+    pub async fn remove_custom_label_from_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32, name: &str) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runners/{}/labels/{}", super::GITHUB_BASE_API_URL, org, runner_id, name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove a custom label from a self-hosted runner for an organization
+    ///
+    /// Remove a custom label from a self-hosted runner configured
+    /// in an organization. Returns the remaining labels from the runner.
+    /// 
+    /// This endpoint returns a `404 Not Found` status if the custom label is not
+    /// present on the runner.
+    /// 
+    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for remove_custom_label_from_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#remove-a-custom-label-from-a-self-hosted-runner-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn remove_custom_label_from_self_hosted_runner_for_org(&self, org: &str, runner_id: i32, name: &str) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runners/{}/labels/{}", super::GITHUB_BASE_API_URL, org, runner_id, name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove a custom label from a self-hosted runner for a repository
+    ///
+    /// Remove a custom label from a self-hosted runner configured
+    /// in a repository. Returns the remaining labels from the runner.
+    /// 
+    /// This endpoint returns a `404 Not Found` status if the custom label is not
+    /// present on the runner.
+    /// 
+    /// You must authenticate using an access token with the `repo` scope to use this
+    /// endpoint.
+    /// 
+    /// [GitHub API docs for remove_custom_label_from_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#remove-a-custom-label-from-a-self-hosted-runner-for-a-repository)
+    ///
+    /// ---
+    pub async fn remove_custom_label_from_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32, name: &str) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/runners/{}/labels/{}", super::GITHUB_BASE_API_URL, owner, repo, runner_id, name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove a custom label from a self-hosted runner for a repository
+    ///
+    /// Remove a custom label from a self-hosted runner configured
+    /// in a repository. Returns the remaining labels from the runner.
+    /// 
+    /// This endpoint returns a `404 Not Found` status if the custom label is not
+    /// present on the runner.
+    /// 
+    /// You must authenticate using an access token with the `repo` scope to use this
+    /// endpoint.
+    /// 
+    /// [GitHub API docs for remove_custom_label_from_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#remove-a-custom-label-from-a-self-hosted-runner-for-a-repository)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn remove_custom_label_from_self_hosted_runner_for_repo(&self, owner: &str, repo: &str, runner_id: i32, name: &str) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/runners/{}/labels/{}", super::GITHUB_BASE_API_URL, owner, repo, runner_id, name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Remove repository access to a self-hosted runner group in an organization
     ///
     /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
@@ -9521,6 +10423,182 @@ impl<'api> Actions<'api> {
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetAllowedActionsRepositoryError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Set custom labels for a self-hosted runner for an organization
+    ///
+    /// Remove all previous custom labels and set the new custom labels for a specific
+    /// self-hosted runner configured in an organization.
+    /// 
+    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for set_custom_labels_for_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#set-custom-labels-for-a-self-hosted-runner-for-an-organization)
+    ///
+    /// ---
+    pub async fn set_custom_labels_for_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32, body: PutActionsSetCustomLabelsForSelfHostedRunnerForOrg) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsSetCustomLabelsForSelfHostedRunnerForOrgError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, org, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PutActionsSetCustomLabelsForSelfHostedRunnerForOrg::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForOrgError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ActionsSetCustomLabelsForSelfHostedRunnerForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Set custom labels for a self-hosted runner for an organization
+    ///
+    /// Remove all previous custom labels and set the new custom labels for a specific
+    /// self-hosted runner configured in an organization.
+    /// 
+    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for set_custom_labels_for_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#set-custom-labels-for-a-self-hosted-runner-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn set_custom_labels_for_self_hosted_runner_for_org(&self, org: &str, runner_id: i32, body: PutActionsSetCustomLabelsForSelfHostedRunnerForOrg) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsSetCustomLabelsForSelfHostedRunnerForOrgError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, org, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PutActionsSetCustomLabelsForSelfHostedRunnerForOrg::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForOrgError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForOrgError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(ActionsSetCustomLabelsForSelfHostedRunnerForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Set custom labels for a self-hosted runner for a repository
+    ///
+    /// Remove all previous custom labels and set the new custom labels for a specific
+    /// self-hosted runner configured in a repository.
+    /// 
+    /// You must authenticate using an access token with the `repo` scope to use this
+    /// endpoint.
+    /// 
+    /// [GitHub API docs for set_custom_labels_for_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#set-custom-labels-for-a-self-hosted-runner-for-a-repository)
+    ///
+    /// ---
+    pub async fn set_custom_labels_for_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32, body: PutActionsSetCustomLabelsForSelfHostedRunnerForRepo) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsSetCustomLabelsForSelfHostedRunnerForRepoError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PutActionsSetCustomLabelsForSelfHostedRunnerForRepo::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForRepoError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForRepoError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ActionsSetCustomLabelsForSelfHostedRunnerForRepoError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Set custom labels for a self-hosted runner for a repository
+    ///
+    /// Remove all previous custom labels and set the new custom labels for a specific
+    /// self-hosted runner configured in a repository.
+    /// 
+    /// You must authenticate using an access token with the `repo` scope to use this
+    /// endpoint.
+    /// 
+    /// [GitHub API docs for set_custom_labels_for_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#set-custom-labels-for-a-self-hosted-runner-for-a-repository)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn set_custom_labels_for_self_hosted_runner_for_repo(&self, owner: &str, repo: &str, runner_id: i32, body: PutActionsSetCustomLabelsForSelfHostedRunnerForRepo) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsSetCustomLabelsForSelfHostedRunnerForRepoError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PutActionsSetCustomLabelsForSelfHostedRunnerForRepo::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForRepoError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForRepoError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(ActionsSetCustomLabelsForSelfHostedRunnerForRepoError::Generic { code }),
             }
         }
     }
