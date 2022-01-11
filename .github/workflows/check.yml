@@ -1,8 +1,8 @@
 name: Check
-"on":
+on:
   repository_dispatch:
     types:
-      - octokit/openapi-release
+      - github-openapi-release
 
 jobs:
   update:
