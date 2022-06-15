@@ -15161,7 +15161,7 @@ impl<'api> Repos<'api> {
     /// [GitHub API docs for list_languages](https://docs.github.com/rest/reference/repos#list-repository-languages)
     ///
     /// ---
-    pub async fn list_languages_async(&self, owner: &str, repo: &str) -> Result<Language, ReposListLanguagesError> {
+    pub async fn list_languages_async(&self, owner: &str, repo: &str) -> Result<Map<String, i64>, ReposListLanguagesError> {
 
         let request_uri = format!("{}/repos/{}/{}/languages", super::GITHUB_BASE_API_URL, owner, repo);
 

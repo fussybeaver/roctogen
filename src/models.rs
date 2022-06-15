@@ -8644,6 +8644,7 @@ pub struct LabeledissueeventLabel {
 /// Language
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Language {     
+    
 }
 
 /// License
