@@ -77,8 +77,10 @@ impl<'api> CodesOfConduct<'api> {
     /// ---
     ///
     /// # Get all codes of conduct
+    ///
+    /// Returns array of all GitHub's codes of conduct.
     /// 
-    /// [GitHub API docs for get_all_codes_of_conduct](https://docs.github.com/rest/reference/codes-of-conduct#get-all-codes-of-conduct)
+    /// [GitHub API docs for get_all_codes_of_conduct](https://docs.github.com/rest/codes-of-conduct/codes-of-conduct#get-all-codes-of-conduct)
     ///
     /// ---
     pub async fn get_all_codes_of_conduct_async(&self) -> Result<Vec<CodeOfConduct>, CodesOfConductGetAllCodesOfConductError> {
@@ -114,8 +116,10 @@ impl<'api> CodesOfConduct<'api> {
     /// ---
     ///
     /// # Get all codes of conduct
+    ///
+    /// Returns array of all GitHub's codes of conduct.
     /// 
-    /// [GitHub API docs for get_all_codes_of_conduct](https://docs.github.com/rest/reference/codes-of-conduct#get-all-codes-of-conduct)
+    /// [GitHub API docs for get_all_codes_of_conduct](https://docs.github.com/rest/codes-of-conduct/codes-of-conduct#get-all-codes-of-conduct)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -152,8 +156,10 @@ impl<'api> CodesOfConduct<'api> {
     /// ---
     ///
     /// # Get a code of conduct
+    ///
+    /// Returns information about the specified GitHub code of conduct.
     /// 
-    /// [GitHub API docs for get_conduct_code](https://docs.github.com/rest/reference/codes-of-conduct#get-a-code-of-conduct)
+    /// [GitHub API docs for get_conduct_code](https://docs.github.com/rest/codes-of-conduct/codes-of-conduct#get-a-code-of-conduct)
     ///
     /// ---
     pub async fn get_conduct_code_async(&self, key: &str) -> Result<CodeOfConduct, CodesOfConductGetConductCodeError> {
@@ -190,8 +196,10 @@ impl<'api> CodesOfConduct<'api> {
     /// ---
     ///
     /// # Get a code of conduct
+    ///
+    /// Returns information about the specified GitHub code of conduct.
     /// 
-    /// [GitHub API docs for get_conduct_code](https://docs.github.com/rest/reference/codes-of-conduct#get-a-code-of-conduct)
+    /// [GitHub API docs for get_conduct_code](https://docs.github.com/rest/codes-of-conduct/codes-of-conduct#get-a-code-of-conduct)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

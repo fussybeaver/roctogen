@@ -31,6 +31,31 @@ pub fn new(auth: &Auth) -> SecretScanning {
     SecretScanning { auth }
 }
 
+/// Errors for the [Create a push protection bypass](SecretScanning::create_push_protection_bypass_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum SecretScanningCreatePushProtectionBypassError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("User does not have enough permissions to perform this action.")]
+    Status403,
+    #[error("Placeholder ID not found, or push protection is disabled on this repository.")]
+    Status404,
+    #[error("Bad request, input data missing or incorrect.")]
+    Status422,
+    #[error("Service unavailable")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Get a secret scanning alert](SecretScanning::get_alert_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SecretScanningGetAlertError {
@@ -49,7 +74,28 @@ pub enum SecretScanningGetAlertError {
     #[error("Repository is public, or secret scanning is disabled for the repository, or the resource is not found")]
     Status404,
     #[error("Service unavailable")]
-    Status503(GetSearchUsersResponse503),
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List secret scanning alerts for an enterprise](SecretScanning::list_alerts_for_enterprise_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum SecretScanningListAlertsForEnterpriseError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Service unavailable")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -70,7 +116,7 @@ pub enum SecretScanningListAlertsForOrgError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Service unavailable")]
-    Status503(GetSearchUsersResponse503),
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -91,7 +137,7 @@ pub enum SecretScanningListAlertsForRepoError {
     #[error("Repository is public or secret scanning is disabled for the repository")]
     Status404,
     #[error("Service unavailable")]
-    Status503(GetSearchUsersResponse503),
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -112,7 +158,7 @@ pub enum SecretScanningListLocationsForAlertError {
     #[error("Repository is public, or secret scanning is disabled for the repository, or the resource is not found")]
     Status404,
     #[error("Service unavailable")]
-    Status503(GetSearchUsersResponse503),
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -130,30 +176,206 @@ pub enum SecretScanningUpdateAlertError {
 
     // -- endpoint errors
 
+    #[error("Bad request, resolution comment is invalid or the resolution was not changed.")]
+    Status400,
     #[error("Repository is public, or secret scanning is disabled for the repository, or the resource is not found")]
     Status404,
-    #[error("State does not match the resolution")]
+    #[error("State does not match the resolution or resolution comment")]
     Status422,
     #[error("Service unavailable")]
-    Status503(GetSearchUsersResponse503),
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+
+/// Query parameters for the [List secret scanning alerts for an enterprise](SecretScanning::list_alerts_for_enterprise_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct SecretScanningListAlertsForEnterpriseParams<'req> {
+    /// Set to `open` or `resolved` to only list secret scanning alerts in a specific state.
+    state: Option<&'req str>, 
+    /// A comma-separated list of secret types to return. By default all secret types are returned. See \"[Supported secret scanning patterns](https://docs.github.com/code-security/secret-scanning/introduction/supported-secret-scanning-patterns#supported-secrets)\" for a complete list of secret types.
+    secret_type: Option<&'req str>, 
+    /// A comma-separated list of resolutions. Only secret scanning alerts with one of these resolutions are listed. Valid resolutions are `false_positive`, `wont_fix`, `revoked`, `pattern_edited`, `pattern_deleted` or `used_in_tests`.
+    resolution: Option<&'req str>, 
+    /// The property to sort the results by. `created` means when the alert was created. `updated` means when the alert was updated or resolved.
+    sort: Option<&'req str>, 
+    /// The direction to sort the results by.
+    direction: Option<&'req str>, 
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    before: Option<&'req str>, 
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    after: Option<&'req str>, 
+    /// A comma-separated list of validities that, when present, will return alerts that match the validities in this list. Valid options are `active`, `inactive`, and `unknown`.
+    validity: Option<&'req str>
+}
+
+impl<'req> SecretScanningListAlertsForEnterpriseParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Set to `open` or `resolved` to only list secret scanning alerts in a specific state.
+    pub fn state(self, state: &'req str) -> Self {
+        Self { 
+            state: Some(state),
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
+            per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
+        }
+    }
+
+    /// A comma-separated list of secret types to return. By default all secret types are returned. See \"[Supported secret scanning patterns](https://docs.github.com/code-security/secret-scanning/introduction/supported-secret-scanning-patterns#supported-secrets)\" for a complete list of secret types.
+    pub fn secret_type(self, secret_type: &'req str) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: Some(secret_type),
+            resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
+            per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
+        }
+    }
+
+    /// A comma-separated list of resolutions. Only secret scanning alerts with one of these resolutions are listed. Valid resolutions are `false_positive`, `wont_fix`, `revoked`, `pattern_edited`, `pattern_deleted` or `used_in_tests`.
+    pub fn resolution(self, resolution: &'req str) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: Some(resolution),
+            sort: self.sort, 
+            direction: self.direction, 
+            per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
+        }
+    }
+
+    /// The property to sort the results by. `created` means when the alert was created. `updated` means when the alert was updated or resolved.
+    pub fn sort(self, sort: &'req str) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            sort: Some(sort),
+            direction: self.direction, 
+            per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
+        }
+    }
+
+    /// The direction to sort the results by.
+    pub fn direction(self, direction: &'req str) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            sort: self.sort, 
+            direction: Some(direction),
+            per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
+        }
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
+            per_page: Some(per_page),
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
+        }
+    }
+
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn before(self, before: &'req str) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
+            per_page: self.per_page, 
+            before: Some(before),
+            after: self.after, 
+            validity: self.validity, 
+        }
+    }
+
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn after(self, after: &'req str) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
+            per_page: self.per_page, 
+            before: self.before, 
+            after: Some(after),
+            validity: self.validity, 
+        }
+    }
+
+    /// A comma-separated list of validities that, when present, will return alerts that match the validities in this list. Valid options are `active`, `inactive`, and `unknown`.
+    pub fn validity(self, validity: &'req str) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
+            per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: Some(validity),
+        }
+    }
+}
 
 /// Query parameters for the [List secret scanning alerts for an organization](SecretScanning::list_alerts_for_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct SecretScanningListAlertsForOrgParams<'req> {
     /// Set to `open` or `resolved` to only list secret scanning alerts in a specific state.
     state: Option<&'req str>, 
-    /// A comma-separated list of secret types to return. By default all secret types are returned. See \"[About secret scanning for private repositories](https://docs.github.com/code-security/secret-security/about-secret-scanning#about-secret-scanning-for-private-repositories)\" for a complete list of secret types (API slug).
+    /// A comma-separated list of secret types to return. By default all secret types are returned. See \"[Supported secret scanning patterns](https://docs.github.com/code-security/secret-scanning/introduction/supported-secret-scanning-patterns#supported-secrets)\" for a complete list of secret types.
     secret_type: Option<&'req str>, 
     /// A comma-separated list of resolutions. Only secret scanning alerts with one of these resolutions are listed. Valid resolutions are `false_positive`, `wont_fix`, `revoked`, `pattern_edited`, `pattern_deleted` or `used_in_tests`.
     resolution: Option<&'req str>, 
-    /// Page number of the results to fetch.
+    /// The property to sort the results by. `created` means when the alert was created. `updated` means when the alert was updated or resolved.
+    sort: Option<&'req str>, 
+    /// The direction to sort the results by.
+    direction: Option<&'req str>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>, 
-    /// Results per page (max 100)
-    per_page: Option<u16>
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for events before this cursor. To receive an initial cursor on your first request, include an empty \"before\" query string.
+    before: Option<&'req str>, 
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for events after this cursor.  To receive an initial cursor on your first request, include an empty \"after\" query string.
+    after: Option<&'req str>, 
+    /// A comma-separated list of validities that, when present, will return alerts that match the validities in this list. Valid options are `active`, `inactive`, and `unknown`.
+    validity: Option<&'req str>
 }
 
 impl<'req> SecretScanningListAlertsForOrgParams<'req> {
@@ -167,19 +389,29 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
             state: Some(state),
             secret_type: self.secret_type, 
             resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
             page: self.page, 
             per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
         }
     }
 
-    /// A comma-separated list of secret types to return. By default all secret types are returned. See \"[About secret scanning for private repositories](https://docs.github.com/code-security/secret-security/about-secret-scanning#about-secret-scanning-for-private-repositories)\" for a complete list of secret types (API slug).
+    /// A comma-separated list of secret types to return. By default all secret types are returned. See \"[Supported secret scanning patterns](https://docs.github.com/code-security/secret-scanning/introduction/supported-secret-scanning-patterns#supported-secrets)\" for a complete list of secret types.
     pub fn secret_type(self, secret_type: &'req str) -> Self {
         Self { 
             state: self.state, 
             secret_type: Some(secret_type),
             resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
             page: self.page, 
             per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
         }
     }
 
@@ -189,30 +421,125 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: Some(resolution),
+            sort: self.sort, 
+            direction: self.direction, 
             page: self.page, 
             per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The property to sort the results by. `created` means when the alert was created. `updated` means when the alert was updated or resolved.
+    pub fn sort(self, sort: &'req str) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            sort: Some(sort),
+            direction: self.direction, 
+            page: self.page, 
+            per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
+        }
+    }
+
+    /// The direction to sort the results by.
+    pub fn direction(self, direction: &'req str) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            sort: self.sort, 
+            direction: Some(direction),
+            page: self.page, 
+            per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
             page: Some(page),
             per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
             page: self.page, 
             per_page: Some(per_page),
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
+        }
+    }
+
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for events before this cursor. To receive an initial cursor on your first request, include an empty \"before\" query string.
+    pub fn before(self, before: &'req str) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
+            page: self.page, 
+            per_page: self.per_page, 
+            before: Some(before),
+            after: self.after, 
+            validity: self.validity, 
+        }
+    }
+
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for events after this cursor.  To receive an initial cursor on your first request, include an empty \"after\" query string.
+    pub fn after(self, after: &'req str) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
+            page: self.page, 
+            per_page: self.per_page, 
+            before: self.before, 
+            after: Some(after),
+            validity: self.validity, 
+        }
+    }
+
+    /// A comma-separated list of validities that, when present, will return alerts that match the validities in this list. Valid options are `active`, `inactive`, and `unknown`.
+    pub fn validity(self, validity: &'req str) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
+            page: self.page, 
+            per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: Some(validity),
         }
     }
 }
@@ -231,14 +558,24 @@ impl<'enc> From<&'enc PerPage> for SecretScanningListAlertsForOrgParams<'enc> {
 pub struct SecretScanningListAlertsForRepoParams<'req> {
     /// Set to `open` or `resolved` to only list secret scanning alerts in a specific state.
     state: Option<&'req str>, 
-    /// A comma-separated list of secret types to return. By default all secret types are returned. See \"[About secret scanning for private repositories](https://docs.github.com/code-security/secret-security/about-secret-scanning#about-secret-scanning-for-private-repositories)\" for a complete list of secret types (API slug).
+    /// A comma-separated list of secret types to return. By default all secret types are returned. See \"[Supported secret scanning patterns](https://docs.github.com/code-security/secret-scanning/introduction/supported-secret-scanning-patterns#supported-secrets)\" for a complete list of secret types.
     secret_type: Option<&'req str>, 
     /// A comma-separated list of resolutions. Only secret scanning alerts with one of these resolutions are listed. Valid resolutions are `false_positive`, `wont_fix`, `revoked`, `pattern_edited`, `pattern_deleted` or `used_in_tests`.
     resolution: Option<&'req str>, 
-    /// Page number of the results to fetch.
+    /// The property to sort the results by. `created` means when the alert was created. `updated` means when the alert was updated or resolved.
+    sort: Option<&'req str>, 
+    /// The direction to sort the results by.
+    direction: Option<&'req str>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>, 
-    /// Results per page (max 100)
-    per_page: Option<u16>
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for events before this cursor. To receive an initial cursor on your first request, include an empty \"before\" query string.
+    before: Option<&'req str>, 
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for events after this cursor.  To receive an initial cursor on your first request, include an empty \"after\" query string.
+    after: Option<&'req str>, 
+    /// A comma-separated list of validities that, when present, will return alerts that match the validities in this list. Valid options are `active`, `inactive`, and `unknown`.
+    validity: Option<&'req str>
 }
 
 impl<'req> SecretScanningListAlertsForRepoParams<'req> {
@@ -252,19 +589,29 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
             state: Some(state),
             secret_type: self.secret_type, 
             resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
             page: self.page, 
             per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
         }
     }
 
-    /// A comma-separated list of secret types to return. By default all secret types are returned. See \"[About secret scanning for private repositories](https://docs.github.com/code-security/secret-security/about-secret-scanning#about-secret-scanning-for-private-repositories)\" for a complete list of secret types (API slug).
+    /// A comma-separated list of secret types to return. By default all secret types are returned. See \"[Supported secret scanning patterns](https://docs.github.com/code-security/secret-scanning/introduction/supported-secret-scanning-patterns#supported-secrets)\" for a complete list of secret types.
     pub fn secret_type(self, secret_type: &'req str) -> Self {
         Self { 
             state: self.state, 
             secret_type: Some(secret_type),
             resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
             page: self.page, 
             per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
         }
     }
 
@@ -274,30 +621,125 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: Some(resolution),
+            sort: self.sort, 
+            direction: self.direction, 
             page: self.page, 
             per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The property to sort the results by. `created` means when the alert was created. `updated` means when the alert was updated or resolved.
+    pub fn sort(self, sort: &'req str) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            sort: Some(sort),
+            direction: self.direction, 
+            page: self.page, 
+            per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
+        }
+    }
+
+    /// The direction to sort the results by.
+    pub fn direction(self, direction: &'req str) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            sort: self.sort, 
+            direction: Some(direction),
+            page: self.page, 
+            per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
             page: Some(page),
             per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
             page: self.page, 
             per_page: Some(per_page),
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
+        }
+    }
+
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for events before this cursor. To receive an initial cursor on your first request, include an empty \"before\" query string.
+    pub fn before(self, before: &'req str) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
+            page: self.page, 
+            per_page: self.per_page, 
+            before: Some(before),
+            after: self.after, 
+            validity: self.validity, 
+        }
+    }
+
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for events after this cursor.  To receive an initial cursor on your first request, include an empty \"after\" query string.
+    pub fn after(self, after: &'req str) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
+            page: self.page, 
+            per_page: self.per_page, 
+            before: self.before, 
+            after: Some(after),
+            validity: self.validity, 
+        }
+    }
+
+    /// A comma-separated list of validities that, when present, will return alerts that match the validities in this list. Valid options are `active`, `inactive`, and `unknown`.
+    pub fn validity(self, validity: &'req str) -> Self {
+        Self { 
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
+            page: self.page, 
+            per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: Some(validity),
         }
     }
 }
@@ -314,9 +756,9 @@ impl<'enc> From<&'enc PerPage> for SecretScanningListAlertsForRepoParams<'enc> {
 /// Query parameters for the [List locations for a secret scanning alert](SecretScanning::list_locations_for_alert_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct SecretScanningListLocationsForAlertParams {
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>
 }
 
@@ -325,7 +767,7 @@ impl SecretScanningListLocationsForAlertParams {
         Self::default()
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             page: Some(page),
@@ -333,7 +775,7 @@ impl SecretScanningListLocationsForAlertParams {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             page: self.page, 
@@ -355,13 +797,108 @@ impl<'enc> From<&'enc PerPage> for SecretScanningListLocationsForAlertParams {
 impl<'api> SecretScanning<'api> {
     /// ---
     ///
+    /// # Create a push protection bypass
+    ///
+    /// Creates a bypass for a previously push protected secret.
+    /// 
+    /// The authenticated user must be the original author of the committed secret.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for create_push_protection_bypass](https://docs.github.com/rest/secret-scanning/secret-scanning#create-a-push-protection-bypass)
+    ///
+    /// ---
+    pub async fn create_push_protection_bypass_async(&self, owner: &str, repo: &str, body: PostSecretScanningCreatePushProtectionBypass) -> Result<SecretScanningPushProtectionBypass, SecretScanningCreatePushProtectionBypassError> {
+
+        let request_uri = format!("{}/repos/{}/{}/secret-scanning/push-protection-bypasses", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostSecretScanningCreatePushProtectionBypass::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(SecretScanningCreatePushProtectionBypassError::Status403),
+                404 => Err(SecretScanningCreatePushProtectionBypassError::Status404),
+                422 => Err(SecretScanningCreatePushProtectionBypassError::Status422),
+                503 => Err(SecretScanningCreatePushProtectionBypassError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(SecretScanningCreatePushProtectionBypassError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create a push protection bypass
+    ///
+    /// Creates a bypass for a previously push protected secret.
+    /// 
+    /// The authenticated user must be the original author of the committed secret.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for create_push_protection_bypass](https://docs.github.com/rest/secret-scanning/secret-scanning#create-a-push-protection-bypass)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn create_push_protection_bypass(&self, owner: &str, repo: &str, body: PostSecretScanningCreatePushProtectionBypass) -> Result<SecretScanningPushProtectionBypass, SecretScanningCreatePushProtectionBypassError> {
+
+        let request_uri = format!("{}/repos/{}/{}/secret-scanning/push-protection-bypasses", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostSecretScanningCreatePushProtectionBypass::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(SecretScanningCreatePushProtectionBypassError::Status403),
+                404 => Err(SecretScanningCreatePushProtectionBypassError::Status404),
+                422 => Err(SecretScanningCreatePushProtectionBypassError::Status422),
+                503 => Err(SecretScanningCreatePushProtectionBypassError::Status503(crate::adapters::to_json(github_response)?)),
+                code => Err(SecretScanningCreatePushProtectionBypassError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Get a secret scanning alert
     ///
-    /// Gets a single secret scanning alert detected in a private repository. To use this endpoint, you must be an administrator for the repository or organization, and you must use an access token with the `repo` scope or `security_events` scope.
+    /// Gets a single secret scanning alert detected in an eligible repository.
     /// 
-    /// GitHub Apps must have the `secret_scanning_alerts` read permission to use this endpoint.
+    /// The authenticated user must be an administrator for the repository or for the organization that owns the repository to use this endpoint.
     /// 
-    /// [GitHub API docs for get_alert](https://docs.github.com/rest/reference/secret-scanning#get-a-secret-scanning-alert)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
+    /// 
+    /// [GitHub API docs for get_alert](https://docs.github.com/rest/secret-scanning/secret-scanning#get-a-secret-scanning-alert)
     ///
     /// ---
     pub async fn get_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber) -> Result<SecretScanningAlert, SecretScanningGetAlertError> {
@@ -400,11 +937,13 @@ impl<'api> SecretScanning<'api> {
     ///
     /// # Get a secret scanning alert
     ///
-    /// Gets a single secret scanning alert detected in a private repository. To use this endpoint, you must be an administrator for the repository or organization, and you must use an access token with the `repo` scope or `security_events` scope.
+    /// Gets a single secret scanning alert detected in an eligible repository.
     /// 
-    /// GitHub Apps must have the `secret_scanning_alerts` read permission to use this endpoint.
+    /// The authenticated user must be an administrator for the repository or for the organization that owns the repository to use this endpoint.
     /// 
-    /// [GitHub API docs for get_alert](https://docs.github.com/rest/reference/secret-scanning#get-a-secret-scanning-alert)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
+    /// 
+    /// [GitHub API docs for get_alert](https://docs.github.com/rest/secret-scanning/secret-scanning#get-a-secret-scanning-alert)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -442,14 +981,117 @@ impl<'api> SecretScanning<'api> {
 
     /// ---
     ///
+    /// # List secret scanning alerts for an enterprise
+    ///
+    /// Lists secret scanning alerts for eligible repositories in an enterprise, from newest to oldest.
+    /// 
+    /// Alerts are only returned for organizations in the enterprise for which the authenticated user is an organization owner or a [security manager](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-security-managers-in-your-organization).
+    /// 
+    /// The authenticated user must be a member of the enterprise in order to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope or `security_events` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for list_alerts_for_enterprise](https://docs.github.com/rest/secret-scanning/secret-scanning#list-secret-scanning-alerts-for-an-enterprise)
+    ///
+    /// ---
+    pub async fn list_alerts_for_enterprise_async(&self, enterprise: &str, query_params: Option<impl Into<SecretScanningListAlertsForEnterpriseParams<'api>>>) -> Result<Vec<OrganizationSecretScanningAlert>, SecretScanningListAlertsForEnterpriseError> {
+
+        let mut request_uri = format!("{}/enterprises/{}/secret-scanning/alerts", super::GITHUB_BASE_API_URL, enterprise);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(SecretScanningListAlertsForEnterpriseError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(SecretScanningListAlertsForEnterpriseError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(SecretScanningListAlertsForEnterpriseError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List secret scanning alerts for an enterprise
+    ///
+    /// Lists secret scanning alerts for eligible repositories in an enterprise, from newest to oldest.
+    /// 
+    /// Alerts are only returned for organizations in the enterprise for which the authenticated user is an organization owner or a [security manager](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-security-managers-in-your-organization).
+    /// 
+    /// The authenticated user must be a member of the enterprise in order to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope or `security_events` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for list_alerts_for_enterprise](https://docs.github.com/rest/secret-scanning/secret-scanning#list-secret-scanning-alerts-for-an-enterprise)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_alerts_for_enterprise(&self, enterprise: &str, query_params: Option<impl Into<SecretScanningListAlertsForEnterpriseParams<'api>>>) -> Result<Vec<OrganizationSecretScanningAlert>, SecretScanningListAlertsForEnterpriseError> {
+
+        let mut request_uri = format!("{}/enterprises/{}/secret-scanning/alerts", super::GITHUB_BASE_API_URL, enterprise);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: SecretScanningListAlertsForEnterpriseParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(SecretScanningListAlertsForEnterpriseError::Status404(crate::adapters::to_json(github_response)?)),
+                503 => Err(SecretScanningListAlertsForEnterpriseError::Status503(crate::adapters::to_json(github_response)?)),
+                code => Err(SecretScanningListAlertsForEnterpriseError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List secret scanning alerts for an organization
     ///
     /// Lists secret scanning alerts for eligible repositories in an organization, from newest to oldest.
-    /// To use this endpoint, you must be an administrator for the repository or organization, and you must use an access token with the `repo` scope or `security_events` scope.
     /// 
-    /// GitHub Apps must have the `secret_scanning_alerts` read permission to use this endpoint.
+    /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for list_alerts_for_org](https://docs.github.com/rest/reference/secret-scanning#list-secret-scanning-alerts-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
+    /// 
+    /// [GitHub API docs for list_alerts_for_org](https://docs.github.com/rest/secret-scanning/secret-scanning#list-secret-scanning-alerts-for-an-organization)
     ///
     /// ---
     pub async fn list_alerts_for_org_async(&self, org: &str, query_params: Option<impl Into<SecretScanningListAlertsForOrgParams<'api>>>) -> Result<Vec<OrganizationSecretScanningAlert>, SecretScanningListAlertsForOrgError> {
@@ -492,11 +1134,12 @@ impl<'api> SecretScanning<'api> {
     /// # List secret scanning alerts for an organization
     ///
     /// Lists secret scanning alerts for eligible repositories in an organization, from newest to oldest.
-    /// To use this endpoint, you must be an administrator for the repository or organization, and you must use an access token with the `repo` scope or `security_events` scope.
     /// 
-    /// GitHub Apps must have the `secret_scanning_alerts` read permission to use this endpoint.
+    /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for list_alerts_for_org](https://docs.github.com/rest/reference/secret-scanning#list-secret-scanning-alerts-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
+    /// 
+    /// [GitHub API docs for list_alerts_for_org](https://docs.github.com/rest/secret-scanning/secret-scanning#list-secret-scanning-alerts-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -540,11 +1183,13 @@ impl<'api> SecretScanning<'api> {
     ///
     /// # List secret scanning alerts for a repository
     ///
-    /// Lists secret scanning alerts for a private repository, from newest to oldest. To use this endpoint, you must be an administrator for the repository or organization, and you must use an access token with the `repo` scope or `security_events` scope.
+    /// Lists secret scanning alerts for an eligible repository, from newest to oldest.
     /// 
-    /// GitHub Apps must have the `secret_scanning_alerts` read permission to use this endpoint.
+    /// The authenticated user must be an administrator for the repository or for the organization that owns the repository to use this endpoint.
     /// 
-    /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/reference/secret-scanning#list-secret-scanning-alerts-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
+    /// 
+    /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/secret-scanning/secret-scanning#list-secret-scanning-alerts-for-a-repository)
     ///
     /// ---
     pub async fn list_alerts_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<SecretScanningListAlertsForRepoParams<'api>>>) -> Result<Vec<SecretScanningAlert>, SecretScanningListAlertsForRepoError> {
@@ -586,11 +1231,13 @@ impl<'api> SecretScanning<'api> {
     ///
     /// # List secret scanning alerts for a repository
     ///
-    /// Lists secret scanning alerts for a private repository, from newest to oldest. To use this endpoint, you must be an administrator for the repository or organization, and you must use an access token with the `repo` scope or `security_events` scope.
+    /// Lists secret scanning alerts for an eligible repository, from newest to oldest.
     /// 
-    /// GitHub Apps must have the `secret_scanning_alerts` read permission to use this endpoint.
+    /// The authenticated user must be an administrator for the repository or for the organization that owns the repository to use this endpoint.
     /// 
-    /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/reference/secret-scanning#list-secret-scanning-alerts-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
+    /// 
+    /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/secret-scanning/secret-scanning#list-secret-scanning-alerts-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -634,11 +1281,13 @@ impl<'api> SecretScanning<'api> {
     ///
     /// # List locations for a secret scanning alert
     ///
-    /// Lists all locations for a given secret scanning alert for a private repository. To use this endpoint, you must be an administrator for the repository or organization, and you must use an access token with the `repo` scope or `security_events` scope.
+    /// Lists all locations for a given secret scanning alert for an eligible repository.
     /// 
-    /// GitHub Apps must have the `secret_scanning_alerts` read permission to use this endpoint.
+    /// The authenticated user must be an administrator for the repository or for the organization that owns the repository to use this endpoint.
     /// 
-    /// [GitHub API docs for list_locations_for_alert](https://docs.github.com/rest/reference/secret-scanning#list-locations-for-a-secret-scanning-alert)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
+    /// 
+    /// [GitHub API docs for list_locations_for_alert](https://docs.github.com/rest/secret-scanning/secret-scanning#list-locations-for-a-secret-scanning-alert)
     ///
     /// ---
     pub async fn list_locations_for_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber, query_params: Option<impl Into<SecretScanningListLocationsForAlertParams>>) -> Result<Vec<SecretScanningLocation>, SecretScanningListLocationsForAlertError> {
@@ -680,11 +1329,13 @@ impl<'api> SecretScanning<'api> {
     ///
     /// # List locations for a secret scanning alert
     ///
-    /// Lists all locations for a given secret scanning alert for a private repository. To use this endpoint, you must be an administrator for the repository or organization, and you must use an access token with the `repo` scope or `security_events` scope.
+    /// Lists all locations for a given secret scanning alert for an eligible repository.
     /// 
-    /// GitHub Apps must have the `secret_scanning_alerts` read permission to use this endpoint.
+    /// The authenticated user must be an administrator for the repository or for the organization that owns the repository to use this endpoint.
     /// 
-    /// [GitHub API docs for list_locations_for_alert](https://docs.github.com/rest/reference/secret-scanning#list-locations-for-a-secret-scanning-alert)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
+    /// 
+    /// [GitHub API docs for list_locations_for_alert](https://docs.github.com/rest/secret-scanning/secret-scanning#list-locations-for-a-secret-scanning-alert)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -728,11 +1379,13 @@ impl<'api> SecretScanning<'api> {
     ///
     /// # Update a secret scanning alert
     ///
-    /// Updates the status of a secret scanning alert in a private repository. To use this endpoint, you must be an administrator for the repository or organization, and you must use an access token with the `repo` scope or `security_events` scope.
+    /// Updates the status of a secret scanning alert in an eligible repository.
     /// 
-    /// GitHub Apps must have the `secret_scanning_alerts` write permission to use this endpoint.
+    /// The authenticated user must be an administrator for the repository or for the organization that owns the repository to use this endpoint.
     /// 
-    /// [GitHub API docs for update_alert](https://docs.github.com/rest/reference/secret-scanning#update-a-secret-scanning-alert)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
+    /// 
+    /// [GitHub API docs for update_alert](https://docs.github.com/rest/secret-scanning/secret-scanning#update-a-secret-scanning-alert)
     ///
     /// ---
     pub async fn update_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber, body: PatchSecretScanningUpdateAlert) -> Result<SecretScanningAlert, SecretScanningUpdateAlertError> {
@@ -759,6 +1412,7 @@ impl<'api> SecretScanning<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                400 => Err(SecretScanningUpdateAlertError::Status400),
                 404 => Err(SecretScanningUpdateAlertError::Status404),
                 422 => Err(SecretScanningUpdateAlertError::Status422),
                 503 => Err(SecretScanningUpdateAlertError::Status503(crate::adapters::to_json_async(github_response).await?)),
@@ -771,11 +1425,13 @@ impl<'api> SecretScanning<'api> {
     ///
     /// # Update a secret scanning alert
     ///
-    /// Updates the status of a secret scanning alert in a private repository. To use this endpoint, you must be an administrator for the repository or organization, and you must use an access token with the `repo` scope or `security_events` scope.
+    /// Updates the status of a secret scanning alert in an eligible repository.
     /// 
-    /// GitHub Apps must have the `secret_scanning_alerts` write permission to use this endpoint.
+    /// The authenticated user must be an administrator for the repository or for the organization that owns the repository to use this endpoint.
     /// 
-    /// [GitHub API docs for update_alert](https://docs.github.com/rest/reference/secret-scanning#update-a-secret-scanning-alert)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
+    /// 
+    /// [GitHub API docs for update_alert](https://docs.github.com/rest/secret-scanning/secret-scanning#update-a-secret-scanning-alert)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -803,6 +1459,7 @@ impl<'api> SecretScanning<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                400 => Err(SecretScanningUpdateAlertError::Status400),
                 404 => Err(SecretScanningUpdateAlertError::Status404),
                 422 => Err(SecretScanningUpdateAlertError::Status422),
                 503 => Err(SecretScanningUpdateAlertError::Status503(crate::adapters::to_json(github_response)?)),

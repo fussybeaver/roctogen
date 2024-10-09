@@ -247,9 +247,9 @@ pub enum ChecksUpdateError {
 /// Query parameters for the [List check run annotations](Checks::list_annotations_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ChecksListAnnotationsParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -258,7 +258,7 @@ impl ChecksListAnnotationsParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -266,7 +266,7 @@ impl ChecksListAnnotationsParams {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             per_page: self.per_page, 
@@ -289,13 +289,13 @@ impl<'enc> From<&'enc PerPage> for ChecksListAnnotationsParams {
 pub struct ChecksListForRefParams<'req> {
     /// Returns check runs with the specified `name`.
     check_name: Option<&'req str>, 
-    /// Returns check runs with the specified `status`. Can be one of `queued`, `in_progress`, or `completed`.
+    /// Returns check runs with the specified `status`.
     status: Option<&'req str>, 
-    /// Filters check runs by their `completed_at` timestamp. Can be one of `latest` (returning the most recent check runs) or `all`.
+    /// Filters check runs by their `completed_at` timestamp. `latest` returns the most recent check runs.
     filter: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>, 
     
     app_id: Option<i32>
@@ -318,7 +318,7 @@ impl<'req> ChecksListForRefParams<'req> {
         }
     }
 
-    /// Returns check runs with the specified `status`. Can be one of `queued`, `in_progress`, or `completed`.
+    /// Returns check runs with the specified `status`.
     pub fn status(self, status: &'req str) -> Self {
         Self { 
             check_name: self.check_name, 
@@ -330,7 +330,7 @@ impl<'req> ChecksListForRefParams<'req> {
         }
     }
 
-    /// Filters check runs by their `completed_at` timestamp. Can be one of `latest` (returning the most recent check runs) or `all`.
+    /// Filters check runs by their `completed_at` timestamp. `latest` returns the most recent check runs.
     pub fn filter(self, filter: &'req str) -> Self {
         Self { 
             check_name: self.check_name, 
@@ -342,7 +342,7 @@ impl<'req> ChecksListForRefParams<'req> {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             check_name: self.check_name, 
@@ -354,7 +354,7 @@ impl<'req> ChecksListForRefParams<'req> {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             check_name: self.check_name, 
@@ -393,13 +393,13 @@ impl<'enc> From<&'enc PerPage> for ChecksListForRefParams<'enc> {
 pub struct ChecksListForSuiteParams<'req> {
     /// Returns check runs with the specified `name`.
     check_name: Option<&'req str>, 
-    /// Returns check runs with the specified `status`. Can be one of `queued`, `in_progress`, or `completed`.
+    /// Returns check runs with the specified `status`.
     status: Option<&'req str>, 
-    /// Filters check runs by their `completed_at` timestamp. Can be one of `latest` (returning the most recent check runs) or `all`.
+    /// Filters check runs by their `completed_at` timestamp. `latest` returns the most recent check runs.
     filter: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -419,7 +419,7 @@ impl<'req> ChecksListForSuiteParams<'req> {
         }
     }
 
-    /// Returns check runs with the specified `status`. Can be one of `queued`, `in_progress`, or `completed`.
+    /// Returns check runs with the specified `status`.
     pub fn status(self, status: &'req str) -> Self {
         Self { 
             check_name: self.check_name, 
@@ -430,7 +430,7 @@ impl<'req> ChecksListForSuiteParams<'req> {
         }
     }
 
-    /// Filters check runs by their `completed_at` timestamp. Can be one of `latest` (returning the most recent check runs) or `all`.
+    /// Filters check runs by their `completed_at` timestamp. `latest` returns the most recent check runs.
     pub fn filter(self, filter: &'req str) -> Self {
         Self { 
             check_name: self.check_name, 
@@ -441,7 +441,7 @@ impl<'req> ChecksListForSuiteParams<'req> {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             check_name: self.check_name, 
@@ -452,7 +452,7 @@ impl<'req> ChecksListForSuiteParams<'req> {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             check_name: self.check_name, 
@@ -480,9 +480,9 @@ pub struct ChecksListSuitesForRefParams<'req> {
     app_id: Option<i32>, 
     /// Returns check runs with the specified `name`.
     check_name: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -511,7 +511,7 @@ impl<'req> ChecksListSuitesForRefParams<'req> {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             app_id: self.app_id, 
@@ -521,7 +521,7 @@ impl<'req> ChecksListSuitesForRefParams<'req> {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             app_id: self.app_id, 
@@ -547,13 +547,16 @@ impl<'api> Checks<'api> {
     ///
     /// # Create a check run
     ///
-    /// **Note:** The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
+    /// Creates a new check run for a specific commit in a repository.
     /// 
-    /// Creates a new check run for a specific commit in a repository. Your GitHub App must have the `checks:write` permission to create check runs.
+    /// To create a check run, you must use a GitHub App. OAuth apps and authenticated users are not able to create a check suite.
     /// 
     /// In a check suite, GitHub limits the number of check runs with the same name to 1000. Once these check runs exceed 1000, GitHub will start to automatically delete older check runs.
     /// 
-    /// [GitHub API docs for create](https://docs.github.com/rest/reference/checks#create-a-check-run)
+    /// > [!NOTE]
+    /// > The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
+    /// 
+    /// [GitHub API docs for create](https://docs.github.com/rest/checks/runs#create-a-check-run)
     ///
     /// ---
     pub async fn create_async(&self, owner: &str, repo: &str, body: PostChecksCreate) -> Result<CheckRun, ChecksCreateError> {
@@ -589,13 +592,16 @@ impl<'api> Checks<'api> {
     ///
     /// # Create a check run
     ///
-    /// **Note:** The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
+    /// Creates a new check run for a specific commit in a repository.
     /// 
-    /// Creates a new check run for a specific commit in a repository. Your GitHub App must have the `checks:write` permission to create check runs.
+    /// To create a check run, you must use a GitHub App. OAuth apps and authenticated users are not able to create a check suite.
     /// 
     /// In a check suite, GitHub limits the number of check runs with the same name to 1000. Once these check runs exceed 1000, GitHub will start to automatically delete older check runs.
     /// 
-    /// [GitHub API docs for create](https://docs.github.com/rest/reference/checks#create-a-check-run)
+    /// > [!NOTE]
+    /// > The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
+    /// 
+    /// [GitHub API docs for create](https://docs.github.com/rest/checks/runs#create-a-check-run)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -632,11 +638,14 @@ impl<'api> Checks<'api> {
     ///
     /// # Create a check suite
     ///
-    /// **Note:** The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array and a `null` value for `head_branch`.
+    /// Creates a check suite manually. By default, check suites are automatically created when you create a [check run](https://docs.github.com/rest/checks/runs). You only need to use this endpoint for manually creating check suites when you've disabled automatic creation using "[Update repository preferences for check suites](https://docs.github.com/rest/checks/suites#update-repository-preferences-for-check-suites)".
     /// 
-    /// By default, check suites are automatically created when you create a [check run](https://docs.github.com/rest/reference/checks#check-runs). You only need to use this endpoint for manually creating check suites when you've disabled automatic creation using "[Update repository preferences for check suites](https://docs.github.com/rest/reference/checks#update-repository-preferences-for-check-suites)". Your GitHub App must have the `checks:write` permission to create check suites.
+    /// > [!NOTE]
+    /// > The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array and a `null` value for `head_branch`.
     /// 
-    /// [GitHub API docs for create_suite](https://docs.github.com/rest/reference/checks#create-a-check-suite)
+    /// OAuth apps and personal access tokens (classic) cannot use this endpoint.
+    /// 
+    /// [GitHub API docs for create_suite](https://docs.github.com/rest/checks/suites#create-a-check-suite)
     ///
     /// ---
     pub async fn create_suite_async(&self, owner: &str, repo: &str, body: PostChecksCreateSuite) -> Result<CheckSuite, ChecksCreateSuiteError> {
@@ -673,11 +682,14 @@ impl<'api> Checks<'api> {
     ///
     /// # Create a check suite
     ///
-    /// **Note:** The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array and a `null` value for `head_branch`.
+    /// Creates a check suite manually. By default, check suites are automatically created when you create a [check run](https://docs.github.com/rest/checks/runs). You only need to use this endpoint for manually creating check suites when you've disabled automatic creation using "[Update repository preferences for check suites](https://docs.github.com/rest/checks/suites#update-repository-preferences-for-check-suites)".
     /// 
-    /// By default, check suites are automatically created when you create a [check run](https://docs.github.com/rest/reference/checks#check-runs). You only need to use this endpoint for manually creating check suites when you've disabled automatic creation using "[Update repository preferences for check suites](https://docs.github.com/rest/reference/checks#update-repository-preferences-for-check-suites)". Your GitHub App must have the `checks:write` permission to create check suites.
+    /// > [!NOTE]
+    /// > The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array and a `null` value for `head_branch`.
     /// 
-    /// [GitHub API docs for create_suite](https://docs.github.com/rest/reference/checks#create-a-check-suite)
+    /// OAuth apps and personal access tokens (classic) cannot use this endpoint.
+    /// 
+    /// [GitHub API docs for create_suite](https://docs.github.com/rest/checks/suites#create-a-check-suite)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -715,11 +727,14 @@ impl<'api> Checks<'api> {
     ///
     /// # Get a check run
     ///
-    /// **Note:** The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
+    /// Gets a single check run using its `id`.
     /// 
-    /// Gets a single check run using its `id`. GitHub Apps must have the `checks:read` permission on a private repository or pull access to a public repository to get check runs. OAuth Apps and authenticated users must have the `repo` scope to get check runs in a private repository.
+    /// > [!NOTE]
+    /// > The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/checks#get-a-check-run)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
+    /// 
+    /// [GitHub API docs for get](https://docs.github.com/rest/checks/runs#get-a-check-run)
     ///
     /// ---
     pub async fn get_async(&self, owner: &str, repo: &str, check_run_id: i32) -> Result<CheckRun, ChecksGetError> {
@@ -755,11 +770,14 @@ impl<'api> Checks<'api> {
     ///
     /// # Get a check run
     ///
-    /// **Note:** The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
+    /// Gets a single check run using its `id`.
     /// 
-    /// Gets a single check run using its `id`. GitHub Apps must have the `checks:read` permission on a private repository or pull access to a public repository to get check runs. OAuth Apps and authenticated users must have the `repo` scope to get check runs in a private repository.
+    /// > [!NOTE]
+    /// > The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/checks#get-a-check-run)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
+    /// 
+    /// [GitHub API docs for get](https://docs.github.com/rest/checks/runs#get-a-check-run)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -796,11 +814,14 @@ impl<'api> Checks<'api> {
     ///
     /// # Get a check suite
     ///
-    /// **Note:** The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array and a `null` value for `head_branch`.
+    /// Gets a single check suite using its `id`.
     /// 
-    /// Gets a single check suite using its `id`. GitHub Apps must have the `checks:read` permission on a private repository or pull access to a public repository to get check suites. OAuth Apps and authenticated users must have the `repo` scope to get check suites in a private repository.
+    /// > [!NOTE]
+    /// > The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array and a `null` value for `head_branch`.
     /// 
-    /// [GitHub API docs for get_suite](https://docs.github.com/rest/reference/checks#get-a-check-suite)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
+    /// 
+    /// [GitHub API docs for get_suite](https://docs.github.com/rest/checks/suites#get-a-check-suite)
     ///
     /// ---
     pub async fn get_suite_async(&self, owner: &str, repo: &str, check_suite_id: i32) -> Result<CheckSuite, ChecksGetSuiteError> {
@@ -836,11 +857,14 @@ impl<'api> Checks<'api> {
     ///
     /// # Get a check suite
     ///
-    /// **Note:** The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array and a `null` value for `head_branch`.
+    /// Gets a single check suite using its `id`.
     /// 
-    /// Gets a single check suite using its `id`. GitHub Apps must have the `checks:read` permission on a private repository or pull access to a public repository to get check suites. OAuth Apps and authenticated users must have the `repo` scope to get check suites in a private repository.
+    /// > [!NOTE]
+    /// > The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array and a `null` value for `head_branch`.
     /// 
-    /// [GitHub API docs for get_suite](https://docs.github.com/rest/reference/checks#get-a-check-suite)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
+    /// 
+    /// [GitHub API docs for get_suite](https://docs.github.com/rest/checks/suites#get-a-check-suite)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -877,9 +901,11 @@ impl<'api> Checks<'api> {
     ///
     /// # List check run annotations
     ///
-    /// Lists annotations for a check run using the annotation `id`. GitHub Apps must have the `checks:read` permission on a private repository or pull access to a public repository to get annotations for a check run. OAuth Apps and authenticated users must have the `repo` scope to get annotations for a check run in a private repository.
+    /// Lists annotations for a check run using the annotation `id`.
     /// 
-    /// [GitHub API docs for list_annotations](https://docs.github.com/rest/reference/checks#list-check-run-annotations)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
+    /// 
+    /// [GitHub API docs for list_annotations](https://docs.github.com/rest/checks/runs#list-check-run-annotations)
     ///
     /// ---
     pub async fn list_annotations_async(&self, owner: &str, repo: &str, check_run_id: i32, query_params: Option<impl Into<ChecksListAnnotationsParams>>) -> Result<Vec<CheckAnnotation>, ChecksListAnnotationsError> {
@@ -919,9 +945,11 @@ impl<'api> Checks<'api> {
     ///
     /// # List check run annotations
     ///
-    /// Lists annotations for a check run using the annotation `id`. GitHub Apps must have the `checks:read` permission on a private repository or pull access to a public repository to get annotations for a check run. OAuth Apps and authenticated users must have the `repo` scope to get annotations for a check run in a private repository.
+    /// Lists annotations for a check run using the annotation `id`.
     /// 
-    /// [GitHub API docs for list_annotations](https://docs.github.com/rest/reference/checks#list-check-run-annotations)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
+    /// 
+    /// [GitHub API docs for list_annotations](https://docs.github.com/rest/checks/runs#list-check-run-annotations)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -963,11 +991,16 @@ impl<'api> Checks<'api> {
     ///
     /// # List check runs for a Git reference
     ///
-    /// **Note:** The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
+    /// Lists check runs for a commit ref. The `ref` can be a SHA, branch name, or a tag name.
     /// 
-    /// Lists check runs for a commit ref. The `ref` can be a SHA, branch name, or a tag name. GitHub Apps must have the `checks:read` permission on a private repository or pull access to a public repository to get check runs. OAuth Apps and authenticated users must have the `repo` scope to get check runs in a private repository.
+    /// > [!NOTE]
+    /// > The endpoints to manage checks only look for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
     /// 
-    /// [GitHub API docs for list_for_ref](https://docs.github.com/rest/reference/checks#list-check-runs-for-a-git-reference)
+    /// If there are more than 1000 check suites on a single git reference, this endpoint will limit check runs to the 1000 most recent check suites. To iterate over all possible check runs, use the [List check suites for a Git reference](https://docs.github.com/rest/reference/checks#list-check-suites-for-a-git-reference) endpoint and provide the `check_suite_id` parameter to the [List check runs in a check suite](https://docs.github.com/rest/reference/checks#list-check-runs-in-a-check-suite) endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
+    /// 
+    /// [GitHub API docs for list_for_ref](https://docs.github.com/rest/checks/runs#list-check-runs-for-a-git-reference)
     ///
     /// ---
     pub async fn list_for_ref_async(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ChecksListForRefParams<'api>>>) -> Result<GetChecksListForRefResponse200, ChecksListForRefError> {
@@ -1007,11 +1040,16 @@ impl<'api> Checks<'api> {
     ///
     /// # List check runs for a Git reference
     ///
-    /// **Note:** The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
+    /// Lists check runs for a commit ref. The `ref` can be a SHA, branch name, or a tag name.
     /// 
-    /// Lists check runs for a commit ref. The `ref` can be a SHA, branch name, or a tag name. GitHub Apps must have the `checks:read` permission on a private repository or pull access to a public repository to get check runs. OAuth Apps and authenticated users must have the `repo` scope to get check runs in a private repository.
+    /// > [!NOTE]
+    /// > The endpoints to manage checks only look for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
     /// 
-    /// [GitHub API docs for list_for_ref](https://docs.github.com/rest/reference/checks#list-check-runs-for-a-git-reference)
+    /// If there are more than 1000 check suites on a single git reference, this endpoint will limit check runs to the 1000 most recent check suites. To iterate over all possible check runs, use the [List check suites for a Git reference](https://docs.github.com/rest/reference/checks#list-check-suites-for-a-git-reference) endpoint and provide the `check_suite_id` parameter to the [List check runs in a check suite](https://docs.github.com/rest/reference/checks#list-check-runs-in-a-check-suite) endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
+    /// 
+    /// [GitHub API docs for list_for_ref](https://docs.github.com/rest/checks/runs#list-check-runs-for-a-git-reference)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1053,11 +1091,14 @@ impl<'api> Checks<'api> {
     ///
     /// # List check runs in a check suite
     ///
-    /// **Note:** The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
+    /// Lists check runs for a check suite using its `id`.
     /// 
-    /// Lists check runs for a check suite using its `id`. GitHub Apps must have the `checks:read` permission on a private repository or pull access to a public repository to get check runs. OAuth Apps and authenticated users must have the `repo` scope to get check runs in a private repository.
+    /// > [!NOTE]
+    /// > The endpoints to manage checks only look for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
     /// 
-    /// [GitHub API docs for list_for_suite](https://docs.github.com/rest/reference/checks#list-check-runs-in-a-check-suite)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
+    /// 
+    /// [GitHub API docs for list_for_suite](https://docs.github.com/rest/checks/runs#list-check-runs-in-a-check-suite)
     ///
     /// ---
     pub async fn list_for_suite_async(&self, owner: &str, repo: &str, check_suite_id: i32, query_params: Option<impl Into<ChecksListForSuiteParams<'api>>>) -> Result<GetChecksListForRefResponse200, ChecksListForSuiteError> {
@@ -1097,11 +1138,14 @@ impl<'api> Checks<'api> {
     ///
     /// # List check runs in a check suite
     ///
-    /// **Note:** The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
+    /// Lists check runs for a check suite using its `id`.
     /// 
-    /// Lists check runs for a check suite using its `id`. GitHub Apps must have the `checks:read` permission on a private repository or pull access to a public repository to get check runs. OAuth Apps and authenticated users must have the `repo` scope to get check runs in a private repository.
+    /// > [!NOTE]
+    /// > The endpoints to manage checks only look for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
     /// 
-    /// [GitHub API docs for list_for_suite](https://docs.github.com/rest/reference/checks#list-check-runs-in-a-check-suite)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
+    /// 
+    /// [GitHub API docs for list_for_suite](https://docs.github.com/rest/checks/runs#list-check-runs-in-a-check-suite)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1143,11 +1187,14 @@ impl<'api> Checks<'api> {
     ///
     /// # List check suites for a Git reference
     ///
-    /// **Note:** The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array and a `null` value for `head_branch`.
+    /// Lists check suites for a commit `ref`. The `ref` can be a SHA, branch name, or a tag name.
     /// 
-    /// Lists check suites for a commit `ref`. The `ref` can be a SHA, branch name, or a tag name. GitHub Apps must have the `checks:read` permission on a private repository or pull access to a public repository to list check suites. OAuth Apps and authenticated users must have the `repo` scope to get check suites in a private repository.
+    /// > [!NOTE]
+    /// > The endpoints to manage checks only look for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array and a `null` value for `head_branch`.
     /// 
-    /// [GitHub API docs for list_suites_for_ref](https://docs.github.com/rest/reference/checks#list-check-suites-for-a-git-reference)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
+    /// 
+    /// [GitHub API docs for list_suites_for_ref](https://docs.github.com/rest/checks/suites#list-check-suites-for-a-git-reference)
     ///
     /// ---
     pub async fn list_suites_for_ref_async(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ChecksListSuitesForRefParams<'api>>>) -> Result<GetChecksListSuitesForRefResponse200, ChecksListSuitesForRefError> {
@@ -1187,11 +1234,14 @@ impl<'api> Checks<'api> {
     ///
     /// # List check suites for a Git reference
     ///
-    /// **Note:** The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array and a `null` value for `head_branch`.
+    /// Lists check suites for a commit `ref`. The `ref` can be a SHA, branch name, or a tag name.
     /// 
-    /// Lists check suites for a commit `ref`. The `ref` can be a SHA, branch name, or a tag name. GitHub Apps must have the `checks:read` permission on a private repository or pull access to a public repository to list check suites. OAuth Apps and authenticated users must have the `repo` scope to get check suites in a private repository.
+    /// > [!NOTE]
+    /// > The endpoints to manage checks only look for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array and a `null` value for `head_branch`.
     /// 
-    /// [GitHub API docs for list_suites_for_ref](https://docs.github.com/rest/reference/checks#list-check-suites-for-a-git-reference)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
+    /// 
+    /// [GitHub API docs for list_suites_for_ref](https://docs.github.com/rest/checks/suites#list-check-suites-for-a-git-reference)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1235,12 +1285,14 @@ impl<'api> Checks<'api> {
     ///
     /// Triggers GitHub to rerequest an existing check run, without pushing new code to a repository. This endpoint will trigger the [`check_run` webhook](https://docs.github.com/webhooks/event-payloads/#check_run) event with the action `rerequested`. When a check run is `rerequested`, its `status` is reset to `queued` and the `conclusion` is cleared.
     /// 
-    /// To rerequest a check run, your GitHub App must have the `checks:read` permission on a private repository or pull access to a public repository.
+    /// For more information about how to re-run GitHub Actions jobs, see "[Re-run a job from a workflow run](https://docs.github.com/rest/actions/workflow-runs#re-run-a-job-from-a-workflow-run)".
     /// 
-    /// [GitHub API docs for rerequest_run](https://docs.github.com/rest/reference/checks#rerequest-a-check-run)
+    /// OAuth apps and personal access tokens (classic) cannot use this endpoint.
+    /// 
+    /// [GitHub API docs for rerequest_run](https://docs.github.com/rest/checks/runs#rerequest-a-check-run)
     ///
     /// ---
-    pub async fn rerequest_run_async(&self, owner: &str, repo: &str, check_run_id: i32) -> Result<HashMap<String, Value>, ChecksRerequestRunError> {
+    pub async fn rerequest_run_async(&self, owner: &str, repo: &str, check_run_id: i32) -> Result<EmptyObject, ChecksRerequestRunError> {
 
         let request_uri = format!("{}/repos/{}/{}/check-runs/{}/rerequest", super::GITHUB_BASE_API_URL, owner, repo, check_run_id);
 
@@ -1278,13 +1330,15 @@ impl<'api> Checks<'api> {
     ///
     /// Triggers GitHub to rerequest an existing check run, without pushing new code to a repository. This endpoint will trigger the [`check_run` webhook](https://docs.github.com/webhooks/event-payloads/#check_run) event with the action `rerequested`. When a check run is `rerequested`, its `status` is reset to `queued` and the `conclusion` is cleared.
     /// 
-    /// To rerequest a check run, your GitHub App must have the `checks:read` permission on a private repository or pull access to a public repository.
+    /// For more information about how to re-run GitHub Actions jobs, see "[Re-run a job from a workflow run](https://docs.github.com/rest/actions/workflow-runs#re-run-a-job-from-a-workflow-run)".
     /// 
-    /// [GitHub API docs for rerequest_run](https://docs.github.com/rest/reference/checks#rerequest-a-check-run)
+    /// OAuth apps and personal access tokens (classic) cannot use this endpoint.
+    /// 
+    /// [GitHub API docs for rerequest_run](https://docs.github.com/rest/checks/runs#rerequest-a-check-run)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn rerequest_run(&self, owner: &str, repo: &str, check_run_id: i32) -> Result<HashMap<String, Value>, ChecksRerequestRunError> {
+    pub fn rerequest_run(&self, owner: &str, repo: &str, check_run_id: i32) -> Result<EmptyObject, ChecksRerequestRunError> {
 
         let request_uri = format!("{}/repos/{}/{}/check-runs/{}/rerequest", super::GITHUB_BASE_API_URL, owner, repo, check_run_id);
 
@@ -1322,12 +1376,12 @@ impl<'api> Checks<'api> {
     ///
     /// Triggers GitHub to rerequest an existing check suite, without pushing new code to a repository. This endpoint will trigger the [`check_suite` webhook](https://docs.github.com/webhooks/event-payloads/#check_suite) event with the action `rerequested`. When a check suite is `rerequested`, its `status` is reset to `queued` and the `conclusion` is cleared.
     /// 
-    /// To rerequest a check suite, your GitHub App must have the `checks:read` permission on a private repository or pull access to a public repository.
+    /// OAuth apps and personal access tokens (classic) cannot use this endpoint.
     /// 
-    /// [GitHub API docs for rerequest_suite](https://docs.github.com/rest/reference/checks#rerequest-a-check-suite)
+    /// [GitHub API docs for rerequest_suite](https://docs.github.com/rest/checks/suites#rerequest-a-check-suite)
     ///
     /// ---
-    pub async fn rerequest_suite_async(&self, owner: &str, repo: &str, check_suite_id: i32) -> Result<HashMap<String, Value>, ChecksRerequestSuiteError> {
+    pub async fn rerequest_suite_async(&self, owner: &str, repo: &str, check_suite_id: i32) -> Result<EmptyObject, ChecksRerequestSuiteError> {
 
         let request_uri = format!("{}/repos/{}/{}/check-suites/{}/rerequest", super::GITHUB_BASE_API_URL, owner, repo, check_suite_id);
 
@@ -1362,13 +1416,13 @@ impl<'api> Checks<'api> {
     ///
     /// Triggers GitHub to rerequest an existing check suite, without pushing new code to a repository. This endpoint will trigger the [`check_suite` webhook](https://docs.github.com/webhooks/event-payloads/#check_suite) event with the action `rerequested`. When a check suite is `rerequested`, its `status` is reset to `queued` and the `conclusion` is cleared.
     /// 
-    /// To rerequest a check suite, your GitHub App must have the `checks:read` permission on a private repository or pull access to a public repository.
+    /// OAuth apps and personal access tokens (classic) cannot use this endpoint.
     /// 
-    /// [GitHub API docs for rerequest_suite](https://docs.github.com/rest/reference/checks#rerequest-a-check-suite)
+    /// [GitHub API docs for rerequest_suite](https://docs.github.com/rest/checks/suites#rerequest-a-check-suite)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn rerequest_suite(&self, owner: &str, repo: &str, check_suite_id: i32) -> Result<HashMap<String, Value>, ChecksRerequestSuiteError> {
+    pub fn rerequest_suite(&self, owner: &str, repo: &str, check_suite_id: i32) -> Result<EmptyObject, ChecksRerequestSuiteError> {
 
         let request_uri = format!("{}/repos/{}/{}/check-suites/{}/rerequest", super::GITHUB_BASE_API_URL, owner, repo, check_suite_id);
 
@@ -1401,9 +1455,10 @@ impl<'api> Checks<'api> {
     ///
     /// # Update repository preferences for check suites
     ///
-    /// Changes the default automatic flow when creating check suites. By default, a check suite is automatically created each time code is pushed to a repository. When you disable the automatic creation of check suites, you can manually [Create a check suite](https://docs.github.com/rest/reference/checks#create-a-check-suite). You must have admin permissions in the repository to set preferences for check suites.
+    /// Changes the default automatic flow when creating check suites. By default, a check suite is automatically created each time code is pushed to a repository. When you disable the automatic creation of check suites, you can manually [Create a check suite](https://docs.github.com/rest/checks/suites#create-a-check-suite).
+    /// You must have admin permissions in the repository to set preferences for check suites.
     /// 
-    /// [GitHub API docs for set_suites_preferences](https://docs.github.com/rest/reference/checks#update-repository-preferences-for-check-suites)
+    /// [GitHub API docs for set_suites_preferences](https://docs.github.com/rest/checks/suites#update-repository-preferences-for-check-suites)
     ///
     /// ---
     pub async fn set_suites_preferences_async(&self, owner: &str, repo: &str, body: PatchChecksSetSuitesPreferences) -> Result<CheckSuitePreference, ChecksSetSuitesPreferencesError> {
@@ -1439,9 +1494,10 @@ impl<'api> Checks<'api> {
     ///
     /// # Update repository preferences for check suites
     ///
-    /// Changes the default automatic flow when creating check suites. By default, a check suite is automatically created each time code is pushed to a repository. When you disable the automatic creation of check suites, you can manually [Create a check suite](https://docs.github.com/rest/reference/checks#create-a-check-suite). You must have admin permissions in the repository to set preferences for check suites.
+    /// Changes the default automatic flow when creating check suites. By default, a check suite is automatically created each time code is pushed to a repository. When you disable the automatic creation of check suites, you can manually [Create a check suite](https://docs.github.com/rest/checks/suites#create-a-check-suite).
+    /// You must have admin permissions in the repository to set preferences for check suites.
     /// 
-    /// [GitHub API docs for set_suites_preferences](https://docs.github.com/rest/reference/checks#update-repository-preferences-for-check-suites)
+    /// [GitHub API docs for set_suites_preferences](https://docs.github.com/rest/checks/suites#update-repository-preferences-for-check-suites)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1478,11 +1534,14 @@ impl<'api> Checks<'api> {
     ///
     /// # Update a check run
     ///
-    /// **Note:** The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
+    /// Updates a check run for a specific commit in a repository.
     /// 
-    /// Updates a check run for a specific commit in a repository. Your GitHub App must have the `checks:write` permission to edit check runs.
+    /// > [!NOTE]
+    /// > The endpoints to manage checks only look for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
     /// 
-    /// [GitHub API docs for update](https://docs.github.com/rest/reference/checks#update-a-check-run)
+    /// OAuth apps and personal access tokens (classic) cannot use this endpoint.
+    /// 
+    /// [GitHub API docs for update](https://docs.github.com/rest/checks/runs#update-a-check-run)
     ///
     /// ---
     pub async fn update_async(&self, owner: &str, repo: &str, check_run_id: i32, body: PatchChecksUpdate) -> Result<CheckRun, ChecksUpdateError> {
@@ -1518,11 +1577,14 @@ impl<'api> Checks<'api> {
     ///
     /// # Update a check run
     ///
-    /// **Note:** The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
+    /// Updates a check run for a specific commit in a repository.
     /// 
-    /// Updates a check run for a specific commit in a repository. Your GitHub App must have the `checks:write` permission to edit check runs.
+    /// > [!NOTE]
+    /// > The endpoints to manage checks only look for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
     /// 
-    /// [GitHub API docs for update](https://docs.github.com/rest/reference/checks#update-a-check-run)
+    /// OAuth apps and personal access tokens (classic) cannot use this endpoint.
+    /// 
+    /// [GitHub API docs for update](https://docs.github.com/rest/checks/runs#update-a-check-run)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

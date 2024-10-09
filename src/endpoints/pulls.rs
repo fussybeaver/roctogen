@@ -65,7 +65,7 @@ pub enum PullsCreateError {
 
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -103,7 +103,7 @@ pub enum PullsCreateReviewError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -124,7 +124,7 @@ pub enum PullsCreateReviewCommentError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -145,7 +145,7 @@ pub enum PullsDeletePendingReviewError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Resource not found")]
     Status404(BasicError),
@@ -187,7 +187,7 @@ pub enum PullsDismissReviewError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -208,10 +208,14 @@ pub enum PullsGetError {
 
     #[error("Not modified")]
     Status304,
-    #[error("Internal Error")]
-    Status500(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
+    #[error("Unacceptable")]
+    Status406(BasicError),
+    #[error("Internal Error")]
+    Status500(BasicError),
+    #[error("Service unavailable")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -269,7 +273,7 @@ pub enum PullsListError {
 
     #[error("Not modified")]
     Status304,
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -324,15 +328,17 @@ pub enum PullsListFilesError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Internal Error")]
     Status500(BasicError),
+    #[error("Service unavailable")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
-/// Errors for the [List requested reviewers for a pull request](Pulls::list_requested_reviewers_async()) endpoint.
+/// Errors for the [Get all requested reviewers for a pull request](Pulls::list_requested_reviewers_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsListRequestedReviewersError {
     #[error(transparent)]
@@ -417,7 +423,7 @@ pub enum PullsMergeError {
     Status405(PutTeamsAddOrUpdateProjectPermissionsLegacyResponse403),
     #[error("Conflict if sha was provided and pull request head did not match")]
     Status409(PutTeamsAddOrUpdateProjectPermissionsLegacyResponse403),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -440,7 +446,7 @@ pub enum PullsRemoveRequestedReviewersError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -482,7 +488,7 @@ pub enum PullsSubmitReviewError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -503,7 +509,7 @@ pub enum PullsUpdateError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -524,7 +530,7 @@ pub enum PullsUpdateBranchError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -545,7 +551,7 @@ pub enum PullsUpdateReviewError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -578,13 +584,13 @@ pub struct PullsListParams<'req> {
     head: Option<&'req str>, 
     /// Filter pulls by base branch name. Example: `gh-pages`.
     base: Option<&'req str>, 
-    /// What to sort results by. Can be either `created`, `updated`, `popularity` (comment count) or `long-running` (age, filtering by pulls updated in the last month).
+    /// What to sort results by. `popularity` will sort by the number of comments. `long-running` will sort by date created and will limit the results to pull requests that have been open for more than a month and have had activity within the past month.
     sort: Option<&'req str>, 
-    /// The direction of the sort. Can be either `asc` or `desc`. Default: `desc` when sort is `created` or sort is not specified, otherwise `asc`.
+    /// The direction of the sort. Default: `desc` when sort is `created` or sort is not specified, otherwise `asc`.
     direction: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -632,7 +638,7 @@ impl<'req> PullsListParams<'req> {
         }
     }
 
-    /// What to sort results by. Can be either `created`, `updated`, `popularity` (comment count) or `long-running` (age, filtering by pulls updated in the last month).
+    /// What to sort results by. `popularity` will sort by the number of comments. `long-running` will sort by date created and will limit the results to pull requests that have been open for more than a month and have had activity within the past month.
     pub fn sort(self, sort: &'req str) -> Self {
         Self { 
             state: self.state, 
@@ -645,7 +651,7 @@ impl<'req> PullsListParams<'req> {
         }
     }
 
-    /// The direction of the sort. Can be either `asc` or `desc`. Default: `desc` when sort is `created` or sort is not specified, otherwise `asc`.
+    /// The direction of the sort. Default: `desc` when sort is `created` or sort is not specified, otherwise `asc`.
     pub fn direction(self, direction: &'req str) -> Self {
         Self { 
             state: self.state, 
@@ -658,7 +664,7 @@ impl<'req> PullsListParams<'req> {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             state: self.state, 
@@ -671,7 +677,7 @@ impl<'req> PullsListParams<'req> {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             state: self.state, 
@@ -697,9 +703,9 @@ impl<'enc> From<&'enc PerPage> for PullsListParams<'enc> {
 /// Query parameters for the [List comments for a pull request review](Pulls::list_comments_for_review_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct PullsListCommentsForReviewParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -708,7 +714,7 @@ impl PullsListCommentsForReviewParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -716,7 +722,7 @@ impl PullsListCommentsForReviewParams {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             per_page: self.per_page, 
@@ -737,9 +743,9 @@ impl<'enc> From<&'enc PerPage> for PullsListCommentsForReviewParams {
 /// Query parameters for the [List commits on a pull request](Pulls::list_commits_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct PullsListCommitsParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -748,7 +754,7 @@ impl PullsListCommitsParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -756,7 +762,7 @@ impl PullsListCommitsParams {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             per_page: self.per_page, 
@@ -777,9 +783,9 @@ impl<'enc> From<&'enc PerPage> for PullsListCommitsParams {
 /// Query parameters for the [List pull requests files](Pulls::list_files_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct PullsListFilesParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -788,7 +794,7 @@ impl PullsListFilesParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -796,7 +802,7 @@ impl PullsListFilesParams {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             per_page: self.per_page, 
@@ -814,58 +820,18 @@ impl<'enc> From<&'enc PerPage> for PullsListFilesParams {
         }
     }
 }
-/// Query parameters for the [List requested reviewers for a pull request](Pulls::list_requested_reviewers_async()) endpoint.
-#[derive(Default, Serialize)]
-pub struct PullsListRequestedReviewersParams {
-    /// Results per page (max 100)
-    per_page: Option<u16>, 
-    /// Page number of the results to fetch.
-    page: Option<u16>
-}
-
-impl PullsListRequestedReviewersParams {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    /// Results per page (max 100)
-    pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
-            per_page: Some(per_page),
-            page: self.page, 
-        }
-    }
-
-    /// Page number of the results to fetch.
-    pub fn page(self, page: u16) -> Self {
-        Self { 
-            per_page: self.per_page, 
-            page: Some(page),
-        }
-    }
-}
-
-impl<'enc> From<&'enc PerPage> for PullsListRequestedReviewersParams {
-    fn from(per_page: &'enc PerPage) -> Self {
-        Self {
-            per_page: Some(per_page.per_page),
-            page: Some(per_page.page),
-            ..Default::default()
-        }
-    }
-}
 /// Query parameters for the [List review comments on a pull request](Pulls::list_review_comments_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct PullsListReviewCommentsParams<'req> {
-    /// One of `created` (when the repository was starred) or `updated` (when it was last pushed to).
+    /// The property to sort the results by.
     sort: Option<&'req str>, 
-    /// Can be either `asc` or `desc`. Ignored without `sort` parameter.
+    /// The direction to sort results. Ignored without `sort` parameter.
     direction: Option<&'req str>, 
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -874,7 +840,7 @@ impl<'req> PullsListReviewCommentsParams<'req> {
         Self::default()
     }
 
-    /// One of `created` (when the repository was starred) or `updated` (when it was last pushed to).
+    /// The property to sort the results by.
     pub fn sort(self, sort: &'req str) -> Self {
         Self { 
             sort: Some(sort),
@@ -885,7 +851,7 @@ impl<'req> PullsListReviewCommentsParams<'req> {
         }
     }
 
-    /// Can be either `asc` or `desc`. Ignored without `sort` parameter.
+    /// The direction to sort results. Ignored without `sort` parameter.
     pub fn direction(self, direction: &'req str) -> Self {
         Self { 
             sort: self.sort, 
@@ -896,7 +862,7 @@ impl<'req> PullsListReviewCommentsParams<'req> {
         }
     }
 
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             sort: self.sort, 
@@ -907,7 +873,7 @@ impl<'req> PullsListReviewCommentsParams<'req> {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             sort: self.sort, 
@@ -918,7 +884,7 @@ impl<'req> PullsListReviewCommentsParams<'req> {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             sort: self.sort, 
@@ -944,13 +910,13 @@ impl<'enc> From<&'enc PerPage> for PullsListReviewCommentsParams<'enc> {
 pub struct PullsListReviewCommentsForRepoParams<'req> {
     
     sort: Option<&'req str>, 
-    /// Can be either `asc` or `desc`. Ignored without `sort` parameter.
+    /// The direction to sort results. Ignored without `sort` parameter.
     direction: Option<&'req str>, 
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -970,7 +936,7 @@ impl<'req> PullsListReviewCommentsForRepoParams<'req> {
         }
     }
 
-    /// Can be either `asc` or `desc`. Ignored without `sort` parameter.
+    /// The direction to sort results. Ignored without `sort` parameter.
     pub fn direction(self, direction: &'req str) -> Self {
         Self { 
             sort: self.sort, 
@@ -981,7 +947,7 @@ impl<'req> PullsListReviewCommentsForRepoParams<'req> {
         }
     }
 
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             sort: self.sort, 
@@ -992,7 +958,7 @@ impl<'req> PullsListReviewCommentsForRepoParams<'req> {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             sort: self.sort, 
@@ -1003,7 +969,7 @@ impl<'req> PullsListReviewCommentsForRepoParams<'req> {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             sort: self.sort, 
@@ -1027,9 +993,9 @@ impl<'enc> From<&'enc PerPage> for PullsListReviewCommentsForRepoParams<'enc> {
 /// Query parameters for the [List reviews for a pull request](Pulls::list_reviews_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct PullsListReviewsParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1038,7 +1004,7 @@ impl PullsListReviewsParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -1046,7 +1012,7 @@ impl PullsListReviewsParams {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             per_page: self.per_page, 
@@ -1069,8 +1035,10 @@ impl<'api> Pulls<'api> {
     /// ---
     ///
     /// # Check if a pull request has been merged
+    ///
+    /// Checks if a pull request has been merged into the base branch. The HTTP status of the response indicates whether or not the pull request has been merged; the response body is empty.
     /// 
-    /// [GitHub API docs for check_if_merged](https://docs.github.com/rest/reference/pulls#check-if-a-pull-request-has-been-merged)
+    /// [GitHub API docs for check_if_merged](https://docs.github.com/rest/pulls/pulls#check-if-a-pull-request-has-been-merged)
     ///
     /// ---
     pub async fn check_if_merged_async(&self, owner: &str, repo: &str, pull_number: i32) -> Result<(), PullsCheckIfMergedError> {
@@ -1106,8 +1074,10 @@ impl<'api> Pulls<'api> {
     /// ---
     ///
     /// # Check if a pull request has been merged
+    ///
+    /// Checks if a pull request has been merged into the base branch. The HTTP status of the response indicates whether or not the pull request has been merged; the response body is empty.
     /// 
-    /// [GitHub API docs for check_if_merged](https://docs.github.com/rest/reference/pulls#check-if-a-pull-request-has-been-merged)
+    /// [GitHub API docs for check_if_merged](https://docs.github.com/rest/pulls/pulls#check-if-a-pull-request-has-been-merged)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1145,15 +1115,20 @@ impl<'api> Pulls<'api> {
     ///
     /// # Create a pull request
     ///
-    /// Draft pull requests are available in public repositories with GitHub Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing plans, and in public and private repositories with GitHub Team and GitHub Enterprise Cloud. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
+    /// Draft pull requests are available in public repositories with GitHub Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing plans, and in public and private repositories with GitHub Team and GitHub Enterprise Cloud. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// To open or update a pull request in a public repository, you must have write access to the head or the source branch. For organization-owned repositories, you must be a member of the organization that owns the repository to open or update a pull request.
     /// 
-    /// You can create a new pull request.
+    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)" and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
     /// 
-    /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. See "[Secondary rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#secondary-rate-limits)" and "[Dealing with secondary rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-rate-limits)" for details.
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
     /// 
-    /// [GitHub API docs for create](https://docs.github.com/rest/reference/pulls#create-a-pull-request)
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for create](https://docs.github.com/rest/pulls/pulls#create-a-pull-request)
     ///
     /// ---
     pub async fn create_async(&self, owner: &str, repo: &str, body: PostPullsCreate) -> Result<PullRequest, PullsCreateError> {
@@ -1191,15 +1166,20 @@ impl<'api> Pulls<'api> {
     ///
     /// # Create a pull request
     ///
-    /// Draft pull requests are available in public repositories with GitHub Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing plans, and in public and private repositories with GitHub Team and GitHub Enterprise Cloud. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
+    /// Draft pull requests are available in public repositories with GitHub Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing plans, and in public and private repositories with GitHub Team and GitHub Enterprise Cloud. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// To open or update a pull request in a public repository, you must have write access to the head or the source branch. For organization-owned repositories, you must be a member of the organization that owns the repository to open or update a pull request.
     /// 
-    /// You can create a new pull request.
+    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)" and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
     /// 
-    /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. See "[Secondary rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#secondary-rate-limits)" and "[Dealing with secondary rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-rate-limits)" for details.
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
     /// 
-    /// [GitHub API docs for create](https://docs.github.com/rest/reference/pulls#create-a-pull-request)
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for create](https://docs.github.com/rest/pulls/pulls#create-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1240,12 +1220,20 @@ impl<'api> Pulls<'api> {
     ///
     /// Creates a reply to a review comment for a pull request. For the `comment_id`, provide the ID of the review comment you are replying to. This must be the ID of a _top-level review comment_, not a reply to that comment. Replies to replies are not supported.
     /// 
-    /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. See "[Secondary rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#secondary-rate-limits)" and "[Dealing with secondary rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-secondary-rate-limits)" for details.
+    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)"
+    /// and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
     /// 
-    /// [GitHub API docs for create_reply_for_review_comment](https://docs.github.com/rest/reference/pulls#create-a-reply-for-a-review-comment)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for create_reply_for_review_comment](https://docs.github.com/rest/pulls/comments#create-a-reply-for-a-review-comment)
     ///
     /// ---
-    pub async fn create_reply_for_review_comment_async(&self, owner: &str, repo: &str, pull_number: i32, comment_id: i32, body: PostPullsCreateReplyForReviewComment) -> Result<PullRequestReviewComment, PullsCreateReplyForReviewCommentError> {
+    pub async fn create_reply_for_review_comment_async(&self, owner: &str, repo: &str, pull_number: i32, comment_id: i64, body: PostPullsCreateReplyForReviewComment) -> Result<PullRequestReviewComment, PullsCreateReplyForReviewCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/comments/{}/replies", super::GITHUB_BASE_API_URL, owner, repo, pull_number, comment_id);
 
@@ -1281,13 +1269,21 @@ impl<'api> Pulls<'api> {
     ///
     /// Creates a reply to a review comment for a pull request. For the `comment_id`, provide the ID of the review comment you are replying to. This must be the ID of a _top-level review comment_, not a reply to that comment. Replies to replies are not supported.
     /// 
-    /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. See "[Secondary rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#secondary-rate-limits)" and "[Dealing with secondary rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-secondary-rate-limits)" for details.
+    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)"
+    /// and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
     /// 
-    /// [GitHub API docs for create_reply_for_review_comment](https://docs.github.com/rest/reference/pulls#create-a-reply-for-a-review-comment)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for create_reply_for_review_comment](https://docs.github.com/rest/pulls/comments#create-a-reply-for-a-review-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_reply_for_review_comment(&self, owner: &str, repo: &str, pull_number: i32, comment_id: i32, body: PostPullsCreateReplyForReviewComment) -> Result<PullRequestReviewComment, PullsCreateReplyForReviewCommentError> {
+    pub fn create_reply_for_review_comment(&self, owner: &str, repo: &str, pull_number: i32, comment_id: i64, body: PostPullsCreateReplyForReviewComment) -> Result<PullRequestReviewComment, PullsCreateReplyForReviewCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/comments/{}/replies", super::GITHUB_BASE_API_URL, owner, repo, pull_number, comment_id);
 
@@ -1321,15 +1317,25 @@ impl<'api> Pulls<'api> {
     ///
     /// # Create a review for a pull request
     ///
-    /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. See "[Secondary rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#secondary-rate-limits)" and "[Dealing with secondary rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-secondary-rate-limits)" for details.
+    /// Creates a review on a specified pull request.
     /// 
-    /// Pull request reviews created in the `PENDING` state do not include the `submitted_at` property in the response.
+    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)" and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
     /// 
-    /// **Note:** To comment on a specific line in a file, you need to first determine the _position_ of that line in the diff. The GitHub REST API v3 offers the `application/vnd.github.v3.diff` [media type](https://docs.github.com/rest/overview/media-types#commits-commit-comparison-and-pull-requests). To see a pull request diff, add this media type to the `Accept` header of a call to the [single pull request](https://docs.github.com/rest/reference/pulls#get-a-pull-request) endpoint.
+    /// Pull request reviews created in the `PENDING` state are not submitted and therefore do not include the `submitted_at` property in the response. To create a pending review for a pull request, leave the `event` parameter blank. For more information about submitting a `PENDING` review, see "[Submit a review for a pull request](https://docs.github.com/rest/pulls/reviews#submit-a-review-for-a-pull-request)."
+    /// 
+    /// > [!NOTE]
+    /// > To comment on a specific line in a file, you need to first determine the position of that line in the diff. To see a pull request diff, add the `application/vnd.github.v3.diff` media type to the `Accept` header of a call to the [Get a pull request](https://docs.github.com/rest/pulls/pulls#get-a-pull-request) endpoint.
     /// 
     /// The `position` value equals the number of lines down from the first "@@" hunk header in the file you want to add a comment. The line just below the "@@" line is position 1, the next line is position 2, and so on. The position in the diff continues to increase through lines of whitespace and additional hunks until the beginning of a new file.
     /// 
-    /// [GitHub API docs for create_review](https://docs.github.com/rest/reference/pulls#create-a-review-for-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for create_review](https://docs.github.com/rest/pulls/reviews#create-a-review-for-a-pull-request)
     ///
     /// ---
     pub async fn create_review_async(&self, owner: &str, repo: &str, pull_number: i32, body: PostPullsCreateReview) -> Result<PullRequestReview, PullsCreateReviewError> {
@@ -1367,15 +1373,25 @@ impl<'api> Pulls<'api> {
     ///
     /// # Create a review for a pull request
     ///
-    /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. See "[Secondary rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#secondary-rate-limits)" and "[Dealing with secondary rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-secondary-rate-limits)" for details.
+    /// Creates a review on a specified pull request.
     /// 
-    /// Pull request reviews created in the `PENDING` state do not include the `submitted_at` property in the response.
+    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)" and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
     /// 
-    /// **Note:** To comment on a specific line in a file, you need to first determine the _position_ of that line in the diff. The GitHub REST API v3 offers the `application/vnd.github.v3.diff` [media type](https://docs.github.com/rest/overview/media-types#commits-commit-comparison-and-pull-requests). To see a pull request diff, add this media type to the `Accept` header of a call to the [single pull request](https://docs.github.com/rest/reference/pulls#get-a-pull-request) endpoint.
+    /// Pull request reviews created in the `PENDING` state are not submitted and therefore do not include the `submitted_at` property in the response. To create a pending review for a pull request, leave the `event` parameter blank. For more information about submitting a `PENDING` review, see "[Submit a review for a pull request](https://docs.github.com/rest/pulls/reviews#submit-a-review-for-a-pull-request)."
+    /// 
+    /// > [!NOTE]
+    /// > To comment on a specific line in a file, you need to first determine the position of that line in the diff. To see a pull request diff, add the `application/vnd.github.v3.diff` media type to the `Accept` header of a call to the [Get a pull request](https://docs.github.com/rest/pulls/pulls#get-a-pull-request) endpoint.
     /// 
     /// The `position` value equals the number of lines down from the first "@@" hunk header in the file you want to add a comment. The line just below the "@@" line is position 1, the next line is position 2, and so on. The position in the diff continues to increase through lines of whitespace and additional hunks until the beginning of a new file.
     /// 
-    /// [GitHub API docs for create_review](https://docs.github.com/rest/reference/pulls#create-a-review-for-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for create_review](https://docs.github.com/rest/pulls/reviews#create-a-review-for-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1414,16 +1430,23 @@ impl<'api> Pulls<'api> {
     ///
     /// # Create a review comment for a pull request
     ///
+    /// Creates a review comment on the diff of a specified pull request. To add a regular comment to a pull request timeline, see "[Create an issue comment](https://docs.github.com/rest/issues/comments#create-an-issue-comment)."
     /// 
-    /// Creates a review comment in the pull request diff. To add a regular comment to a pull request timeline, see "[Create an issue comment](https://docs.github.com/rest/reference/issues#create-an-issue-comment)." We recommend creating a review comment using `line`, `side`, and optionally `start_line` and `start_side` if your comment applies to more than one line in the pull request diff.
+    /// If your comment applies to more than one line in the pull request diff, you should use the parameters `line`, `side`, and optionally `start_line` and `start_side` in your request.
     /// 
-    /// You can still create a review comment using the `position` parameter. When you use `position`, the `line`, `side`, `start_line`, and `start_side` parameters are not required.
+    /// The `position` parameter is deprecated. If you use `position`, the `line`, `side`, `start_line`, and `start_side` parameters are not required.
     /// 
-    /// **Note:** The position value equals the number of lines down from the first "@@" hunk header in the file you want to add a comment. The line just below the "@@" line is position 1, the next line is position 2, and so on. The position in the diff continues to increase through lines of whitespace and additional hunks until the beginning of a new file.
+    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)"
+    /// and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
     /// 
-    /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. See "[Secondary rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#secondary-rate-limits)" and "[Dealing with secondary rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-secondary-rate-limits)" for details.
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
     /// 
-    /// [GitHub API docs for create_review_comment](https://docs.github.com/rest/reference/pulls#create-a-review-comment-for-a-pull-request)
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for create_review_comment](https://docs.github.com/rest/pulls/comments#create-a-review-comment-for-a-pull-request)
     ///
     /// ---
     pub async fn create_review_comment_async(&self, owner: &str, repo: &str, pull_number: i32, body: PostPullsCreateReviewComment) -> Result<PullRequestReviewComment, PullsCreateReviewCommentError> {
@@ -1461,16 +1484,23 @@ impl<'api> Pulls<'api> {
     ///
     /// # Create a review comment for a pull request
     ///
+    /// Creates a review comment on the diff of a specified pull request. To add a regular comment to a pull request timeline, see "[Create an issue comment](https://docs.github.com/rest/issues/comments#create-an-issue-comment)."
     /// 
-    /// Creates a review comment in the pull request diff. To add a regular comment to a pull request timeline, see "[Create an issue comment](https://docs.github.com/rest/reference/issues#create-an-issue-comment)." We recommend creating a review comment using `line`, `side`, and optionally `start_line` and `start_side` if your comment applies to more than one line in the pull request diff.
+    /// If your comment applies to more than one line in the pull request diff, you should use the parameters `line`, `side`, and optionally `start_line` and `start_side` in your request.
     /// 
-    /// You can still create a review comment using the `position` parameter. When you use `position`, the `line`, `side`, `start_line`, and `start_side` parameters are not required.
+    /// The `position` parameter is deprecated. If you use `position`, the `line`, `side`, `start_line`, and `start_side` parameters are not required.
     /// 
-    /// **Note:** The position value equals the number of lines down from the first "@@" hunk header in the file you want to add a comment. The line just below the "@@" line is position 1, the next line is position 2, and so on. The position in the diff continues to increase through lines of whitespace and additional hunks until the beginning of a new file.
+    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)"
+    /// and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
     /// 
-    /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. See "[Secondary rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#secondary-rate-limits)" and "[Dealing with secondary rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-secondary-rate-limits)" for details.
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
     /// 
-    /// [GitHub API docs for create_review_comment](https://docs.github.com/rest/reference/pulls#create-a-review-comment-for-a-pull-request)
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for create_review_comment](https://docs.github.com/rest/pulls/comments#create-a-review-comment-for-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1508,8 +1538,17 @@ impl<'api> Pulls<'api> {
     /// ---
     ///
     /// # Delete a pending review for a pull request
+    ///
+    /// Deletes a pull request review that has not been submitted. Submitted reviews cannot be deleted.
     /// 
-    /// [GitHub API docs for delete_pending_review](https://docs.github.com/rest/reference/pulls#delete-a-pending-review-for-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for delete_pending_review](https://docs.github.com/rest/pulls/reviews#delete-a-pending-review-for-a-pull-request)
     ///
     /// ---
     pub async fn delete_pending_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32) -> Result<PullRequestReview, PullsDeletePendingReviewError> {
@@ -1546,8 +1585,17 @@ impl<'api> Pulls<'api> {
     /// ---
     ///
     /// # Delete a pending review for a pull request
+    ///
+    /// Deletes a pull request review that has not been submitted. Submitted reviews cannot be deleted.
     /// 
-    /// [GitHub API docs for delete_pending_review](https://docs.github.com/rest/reference/pulls#delete-a-pending-review-for-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for delete_pending_review](https://docs.github.com/rest/pulls/reviews#delete-a-pending-review-for-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1588,10 +1636,10 @@ impl<'api> Pulls<'api> {
     ///
     /// Deletes a review comment.
     /// 
-    /// [GitHub API docs for delete_review_comment](https://docs.github.com/rest/reference/pulls#delete-a-review-comment-for-a-pull-request)
+    /// [GitHub API docs for delete_review_comment](https://docs.github.com/rest/pulls/comments#delete-a-review-comment-for-a-pull-request)
     ///
     /// ---
-    pub async fn delete_review_comment_async(&self, owner: &str, repo: &str, comment_id: i32) -> Result<(), PullsDeleteReviewCommentError> {
+    pub async fn delete_review_comment_async(&self, owner: &str, repo: &str, comment_id: i64) -> Result<(), PullsDeleteReviewCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -1627,11 +1675,11 @@ impl<'api> Pulls<'api> {
     ///
     /// Deletes a review comment.
     /// 
-    /// [GitHub API docs for delete_review_comment](https://docs.github.com/rest/reference/pulls#delete-a-review-comment-for-a-pull-request)
+    /// [GitHub API docs for delete_review_comment](https://docs.github.com/rest/pulls/comments#delete-a-review-comment-for-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_review_comment(&self, owner: &str, repo: &str, comment_id: i32) -> Result<(), PullsDeleteReviewCommentError> {
+    pub fn delete_review_comment(&self, owner: &str, repo: &str, comment_id: i64) -> Result<(), PullsDeleteReviewCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -1665,9 +1713,19 @@ impl<'api> Pulls<'api> {
     ///
     /// # Dismiss a review for a pull request
     ///
-    /// **Note:** To dismiss a pull request review on a [protected branch](https://docs.github.com/rest/reference/repos#branches), you must be a repository administrator or be included in the list of people or teams who can dismiss pull request reviews.
+    /// Dismisses a specified review on a pull request.
     /// 
-    /// [GitHub API docs for dismiss_review](https://docs.github.com/rest/reference/pulls#dismiss-a-review-for-a-pull-request)
+    /// > [!NOTE]
+    /// > To dismiss a pull request review on a [protected branch](https://docs.github.com/rest/branches/branch-protection), you must be a repository administrator or be included in the list of people or teams who can dismiss pull request reviews.
+    /// 
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for dismiss_review](https://docs.github.com/rest/pulls/reviews#dismiss-a-review-for-a-pull-request)
     ///
     /// ---
     pub async fn dismiss_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, body: PutPullsDismissReview) -> Result<PullRequestReview, PullsDismissReviewError> {
@@ -1705,9 +1763,19 @@ impl<'api> Pulls<'api> {
     ///
     /// # Dismiss a review for a pull request
     ///
-    /// **Note:** To dismiss a pull request review on a [protected branch](https://docs.github.com/rest/reference/repos#branches), you must be a repository administrator or be included in the list of people or teams who can dismiss pull request reviews.
+    /// Dismisses a specified review on a pull request.
     /// 
-    /// [GitHub API docs for dismiss_review](https://docs.github.com/rest/reference/pulls#dismiss-a-review-for-a-pull-request)
+    /// > [!NOTE]
+    /// > To dismiss a pull request review on a [protected branch](https://docs.github.com/rest/branches/branch-protection), you must be a repository administrator or be included in the list of people or teams who can dismiss pull request reviews.
+    /// 
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for dismiss_review](https://docs.github.com/rest/pulls/reviews#dismiss-a-review-for-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1746,23 +1814,31 @@ impl<'api> Pulls<'api> {
     ///
     /// # Get a pull request
     ///
-    /// Draft pull requests are available in public repositories with GitHub Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing plans, and in public and private repositories with GitHub Team and GitHub Enterprise Cloud. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
+    /// Draft pull requests are available in public repositories with GitHub Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing plans, and in public and private repositories with GitHub Team and GitHub Enterprise Cloud. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Lists details of a pull request by providing its number.
     /// 
-    /// When you get, [create](https://docs.github.com/rest/reference/pulls/#create-a-pull-request), or [edit](https://docs.github.com/rest/reference/pulls#update-a-pull-request) a pull request, GitHub creates a merge commit to test whether the pull request can be automatically merged into the base branch. This test commit is not added to the base branch or the head branch. You can review the status of the test commit using the `mergeable` key. For more information, see "[Checking mergeability of pull requests](https://docs.github.com/rest/guides/getting-started-with-the-git-database-api#checking-mergeability-of-pull-requests)".
+    /// When you get, [create](https://docs.github.com/rest/pulls/pulls/#create-a-pull-request), or [edit](https://docs.github.com/rest/pulls/pulls#update-a-pull-request) a pull request, GitHub creates a merge commit to test whether the pull request can be automatically merged into the base branch. This test commit is not added to the base branch or the head branch. You can review the status of the test commit using the `mergeable` key. For more information, see "[Checking mergeability of pull requests](https://docs.github.com/rest/guides/getting-started-with-the-git-database-api#checking-mergeability-of-pull-requests)".
     /// 
     /// The value of the `mergeable` attribute can be `true`, `false`, or `null`. If the value is `null`, then GitHub has started a background job to compute the mergeability. After giving the job time to complete, resubmit the request. When the job finishes, you will see a non-`null` value for the `mergeable` attribute in the response. If `mergeable` is `true`, then `merge_commit_sha` will be the SHA of the _test_ merge commit.
     /// 
     /// The value of the `merge_commit_sha` attribute changes depending on the state of the pull request. Before merging a pull request, the `merge_commit_sha` attribute holds the SHA of the _test_ merge commit. After merging a pull request, the `merge_commit_sha` attribute changes depending on how you merged the pull request:
     /// 
-    /// *   If merged as a [merge commit](https://help.github.com/articles/about-merge-methods-on-github/), `merge_commit_sha` represents the SHA of the merge commit.
-    /// *   If merged via a [squash](https://help.github.com/articles/about-merge-methods-on-github/#squashing-your-merge-commits), `merge_commit_sha` represents the SHA of the squashed commit on the base branch.
-    /// *   If [rebased](https://help.github.com/articles/about-merge-methods-on-github/#rebasing-and-merging-your-commits), `merge_commit_sha` represents the commit that the base branch was updated to.
+    /// *   If merged as a [merge commit](https://docs.github.com/articles/about-merge-methods-on-github/), `merge_commit_sha` represents the SHA of the merge commit.
+    /// *   If merged via a [squash](https://docs.github.com/articles/about-merge-methods-on-github/#squashing-your-merge-commits), `merge_commit_sha` represents the SHA of the squashed commit on the base branch.
+    /// *   If [rebased](https://docs.github.com/articles/about-merge-methods-on-github/#rebasing-and-merging-your-commits), `merge_commit_sha` represents the commit that the base branch was updated to.
     /// 
-    /// Pass the appropriate [media type](https://docs.github.com/rest/overview/media-types/#commits-commit-comparison-and-pull-requests) to fetch diff and patch formats.
+    /// Pass the appropriate [media type](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types) to fetch diff and patch formats.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/pulls#get-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// - **`application/vnd.github.diff`**: For more information, see "[git-diff](https://git-scm.com/docs/git-diff)" in the Git documentation. If a diff is corrupt, contact us through the [GitHub Support portal](https://support.github.com/). Include the repository name and pull request ID in your message.
+    /// 
+    /// [GitHub API docs for get](https://docs.github.com/rest/pulls/pulls#get-a-pull-request)
     ///
     /// ---
     pub async fn get_async(&self, owner: &str, repo: &str, pull_number: i32) -> Result<PullRequest, PullsGetError> {
@@ -1790,8 +1866,10 @@ impl<'api> Pulls<'api> {
         } else {
             match github_response.status_code() {
                 304 => Err(PullsGetError::Status304),
-                500 => Err(PullsGetError::Status500(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(PullsGetError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                406 => Err(PullsGetError::Status406(crate::adapters::to_json_async(github_response).await?)),
+                500 => Err(PullsGetError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(PullsGetError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(PullsGetError::Generic { code }),
             }
         }
@@ -1801,23 +1879,31 @@ impl<'api> Pulls<'api> {
     ///
     /// # Get a pull request
     ///
-    /// Draft pull requests are available in public repositories with GitHub Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing plans, and in public and private repositories with GitHub Team and GitHub Enterprise Cloud. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
+    /// Draft pull requests are available in public repositories with GitHub Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing plans, and in public and private repositories with GitHub Team and GitHub Enterprise Cloud. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Lists details of a pull request by providing its number.
     /// 
-    /// When you get, [create](https://docs.github.com/rest/reference/pulls/#create-a-pull-request), or [edit](https://docs.github.com/rest/reference/pulls#update-a-pull-request) a pull request, GitHub creates a merge commit to test whether the pull request can be automatically merged into the base branch. This test commit is not added to the base branch or the head branch. You can review the status of the test commit using the `mergeable` key. For more information, see "[Checking mergeability of pull requests](https://docs.github.com/rest/guides/getting-started-with-the-git-database-api#checking-mergeability-of-pull-requests)".
+    /// When you get, [create](https://docs.github.com/rest/pulls/pulls/#create-a-pull-request), or [edit](https://docs.github.com/rest/pulls/pulls#update-a-pull-request) a pull request, GitHub creates a merge commit to test whether the pull request can be automatically merged into the base branch. This test commit is not added to the base branch or the head branch. You can review the status of the test commit using the `mergeable` key. For more information, see "[Checking mergeability of pull requests](https://docs.github.com/rest/guides/getting-started-with-the-git-database-api#checking-mergeability-of-pull-requests)".
     /// 
     /// The value of the `mergeable` attribute can be `true`, `false`, or `null`. If the value is `null`, then GitHub has started a background job to compute the mergeability. After giving the job time to complete, resubmit the request. When the job finishes, you will see a non-`null` value for the `mergeable` attribute in the response. If `mergeable` is `true`, then `merge_commit_sha` will be the SHA of the _test_ merge commit.
     /// 
     /// The value of the `merge_commit_sha` attribute changes depending on the state of the pull request. Before merging a pull request, the `merge_commit_sha` attribute holds the SHA of the _test_ merge commit. After merging a pull request, the `merge_commit_sha` attribute changes depending on how you merged the pull request:
     /// 
-    /// *   If merged as a [merge commit](https://help.github.com/articles/about-merge-methods-on-github/), `merge_commit_sha` represents the SHA of the merge commit.
-    /// *   If merged via a [squash](https://help.github.com/articles/about-merge-methods-on-github/#squashing-your-merge-commits), `merge_commit_sha` represents the SHA of the squashed commit on the base branch.
-    /// *   If [rebased](https://help.github.com/articles/about-merge-methods-on-github/#rebasing-and-merging-your-commits), `merge_commit_sha` represents the commit that the base branch was updated to.
+    /// *   If merged as a [merge commit](https://docs.github.com/articles/about-merge-methods-on-github/), `merge_commit_sha` represents the SHA of the merge commit.
+    /// *   If merged via a [squash](https://docs.github.com/articles/about-merge-methods-on-github/#squashing-your-merge-commits), `merge_commit_sha` represents the SHA of the squashed commit on the base branch.
+    /// *   If [rebased](https://docs.github.com/articles/about-merge-methods-on-github/#rebasing-and-merging-your-commits), `merge_commit_sha` represents the commit that the base branch was updated to.
     /// 
-    /// Pass the appropriate [media type](https://docs.github.com/rest/overview/media-types/#commits-commit-comparison-and-pull-requests) to fetch diff and patch formats.
+    /// Pass the appropriate [media type](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types) to fetch diff and patch formats.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/pulls#get-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// - **`application/vnd.github.diff`**: For more information, see "[git-diff](https://git-scm.com/docs/git-diff)" in the Git documentation. If a diff is corrupt, contact us through the [GitHub Support portal](https://support.github.com/). Include the repository name and pull request ID in your message.
+    /// 
+    /// [GitHub API docs for get](https://docs.github.com/rest/pulls/pulls#get-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1846,8 +1932,10 @@ impl<'api> Pulls<'api> {
         } else {
             match github_response.status_code() {
                 304 => Err(PullsGetError::Status304),
-                500 => Err(PullsGetError::Status500(crate::adapters::to_json(github_response)?)),
                 404 => Err(PullsGetError::Status404(crate::adapters::to_json(github_response)?)),
+                406 => Err(PullsGetError::Status406(crate::adapters::to_json(github_response)?)),
+                500 => Err(PullsGetError::Status500(crate::adapters::to_json(github_response)?)),
+                503 => Err(PullsGetError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(PullsGetError::Generic { code }),
             }
         }
@@ -1856,8 +1944,17 @@ impl<'api> Pulls<'api> {
     /// ---
     ///
     /// # Get a review for a pull request
+    ///
+    /// Retrieves a pull request review by its ID.
     /// 
-    /// [GitHub API docs for get_review](https://docs.github.com/rest/reference/pulls#get-a-review-for-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for get_review](https://docs.github.com/rest/pulls/reviews#get-a-review-for-a-pull-request)
     ///
     /// ---
     pub async fn get_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32) -> Result<PullRequestReview, PullsGetReviewError> {
@@ -1893,8 +1990,17 @@ impl<'api> Pulls<'api> {
     /// ---
     ///
     /// # Get a review for a pull request
+    ///
+    /// Retrieves a pull request review by its ID.
     /// 
-    /// [GitHub API docs for get_review](https://docs.github.com/rest/reference/pulls#get-a-review-for-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for get_review](https://docs.github.com/rest/pulls/reviews#get-a-review-for-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1932,12 +2038,19 @@ impl<'api> Pulls<'api> {
     ///
     /// # Get a review comment for a pull request
     ///
-    /// Provides details for a review comment.
+    /// Provides details for a specified review comment.
     /// 
-    /// [GitHub API docs for get_review_comment](https://docs.github.com/rest/reference/pulls#get-a-review-comment-for-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for get_review_comment](https://docs.github.com/rest/pulls/comments#get-a-review-comment-for-a-pull-request)
     ///
     /// ---
-    pub async fn get_review_comment_async(&self, owner: &str, repo: &str, comment_id: i32) -> Result<PullRequestReviewComment, PullsGetReviewCommentError> {
+    pub async fn get_review_comment_async(&self, owner: &str, repo: &str, comment_id: i64) -> Result<PullRequestReviewComment, PullsGetReviewCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -1971,13 +2084,20 @@ impl<'api> Pulls<'api> {
     ///
     /// # Get a review comment for a pull request
     ///
-    /// Provides details for a review comment.
+    /// Provides details for a specified review comment.
     /// 
-    /// [GitHub API docs for get_review_comment](https://docs.github.com/rest/reference/pulls#get-a-review-comment-for-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for get_review_comment](https://docs.github.com/rest/pulls/comments#get-a-review-comment-for-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_review_comment(&self, owner: &str, repo: &str, comment_id: i32) -> Result<PullRequestReviewComment, PullsGetReviewCommentError> {
+    pub fn get_review_comment(&self, owner: &str, repo: &str, comment_id: i64) -> Result<PullRequestReviewComment, PullsGetReviewCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -2011,9 +2131,22 @@ impl<'api> Pulls<'api> {
     ///
     /// # List pull requests
     ///
-    /// Draft pull requests are available in public repositories with GitHub Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing plans, and in public and private repositories with GitHub Team and GitHub Enterprise Cloud. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
+    /// Lists pull requests in a specified repository.
     /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/pulls#list-pull-requests)
+    /// Draft pull requests are available in public repositories with GitHub
+    /// Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing
+    /// plans, and in public and private repositories with GitHub Team and GitHub Enterprise
+    /// Cloud. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)
+    /// in the GitHub Help documentation.
+    /// 
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for list](https://docs.github.com/rest/pulls/pulls#list-pull-requests)
     ///
     /// ---
     pub async fn list_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<PullsListParams<'api>>>) -> Result<Vec<PullRequestSimple>, PullsListError> {
@@ -2055,9 +2188,22 @@ impl<'api> Pulls<'api> {
     ///
     /// # List pull requests
     ///
-    /// Draft pull requests are available in public repositories with GitHub Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing plans, and in public and private repositories with GitHub Team and GitHub Enterprise Cloud. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
+    /// Lists pull requests in a specified repository.
     /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/pulls#list-pull-requests)
+    /// Draft pull requests are available in public repositories with GitHub
+    /// Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing
+    /// plans, and in public and private repositories with GitHub Team and GitHub Enterprise
+    /// Cloud. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)
+    /// in the GitHub Help documentation.
+    /// 
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for list](https://docs.github.com/rest/pulls/pulls#list-pull-requests)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2101,9 +2247,16 @@ impl<'api> Pulls<'api> {
     ///
     /// # List comments for a pull request review
     ///
-    /// List comments for a specific pull request review.
+    /// Lists comments for a specific pull request review.
     /// 
-    /// [GitHub API docs for list_comments_for_review](https://docs.github.com/rest/reference/pulls#list-comments-for-a-pull-request-review)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for list_comments_for_review](https://docs.github.com/rest/pulls/reviews#list-comments-for-a-pull-request-review)
     ///
     /// ---
     pub async fn list_comments_for_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, query_params: Option<impl Into<PullsListCommentsForReviewParams>>) -> Result<Vec<ReviewComment>, PullsListCommentsForReviewError> {
@@ -2144,9 +2297,16 @@ impl<'api> Pulls<'api> {
     ///
     /// # List comments for a pull request review
     ///
-    /// List comments for a specific pull request review.
+    /// Lists comments for a specific pull request review.
     /// 
-    /// [GitHub API docs for list_comments_for_review](https://docs.github.com/rest/reference/pulls#list-comments-for-a-pull-request-review)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for list_comments_for_review](https://docs.github.com/rest/pulls/reviews#list-comments-for-a-pull-request-review)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2189,9 +2349,18 @@ impl<'api> Pulls<'api> {
     ///
     /// # List commits on a pull request
     ///
-    /// Lists a maximum of 250 commits for a pull request. To receive a complete commit list for pull requests with more than 250 commits, use the [List commits](https://docs.github.com/rest/reference/repos#list-commits) endpoint.
+    /// Lists a maximum of 250 commits for a pull request. To receive a complete
+    /// commit list for pull requests with more than 250 commits, use the [List commits](https://docs.github.com/rest/commits/commits#list-commits)
+    /// endpoint.
     /// 
-    /// [GitHub API docs for list_commits](https://docs.github.com/rest/reference/pulls#list-commits-on-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for list_commits](https://docs.github.com/rest/pulls/pulls#list-commits-on-a-pull-request)
     ///
     /// ---
     pub async fn list_commits_async(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListCommitsParams>>) -> Result<Vec<Commit>, PullsListCommitsError> {
@@ -2231,9 +2400,18 @@ impl<'api> Pulls<'api> {
     ///
     /// # List commits on a pull request
     ///
-    /// Lists a maximum of 250 commits for a pull request. To receive a complete commit list for pull requests with more than 250 commits, use the [List commits](https://docs.github.com/rest/reference/repos#list-commits) endpoint.
+    /// Lists a maximum of 250 commits for a pull request. To receive a complete
+    /// commit list for pull requests with more than 250 commits, use the [List commits](https://docs.github.com/rest/commits/commits#list-commits)
+    /// endpoint.
     /// 
-    /// [GitHub API docs for list_commits](https://docs.github.com/rest/reference/pulls#list-commits-on-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for list_commits](https://docs.github.com/rest/pulls/pulls#list-commits-on-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2275,9 +2453,19 @@ impl<'api> Pulls<'api> {
     ///
     /// # List pull requests files
     ///
-    /// **Note:** Responses include a maximum of 3000 files. The paginated response returns 30 files per page by default.
+    /// Lists the files in a specified pull request.
     /// 
-    /// [GitHub API docs for list_files](https://docs.github.com/rest/reference/pulls#list-pull-requests-files)
+    /// > [!NOTE]
+    /// > Responses include a maximum of 3000 files. The paginated response returns 30 files per page by default.
+    /// 
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for list_files](https://docs.github.com/rest/pulls/pulls#list-pull-requests-files)
     ///
     /// ---
     pub async fn list_files_async(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListFilesParams>>) -> Result<Vec<DiffEntry>, PullsListFilesError> {
@@ -2310,6 +2498,7 @@ impl<'api> Pulls<'api> {
             match github_response.status_code() {
                 422 => Err(PullsListFilesError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 500 => Err(PullsListFilesError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(PullsListFilesError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(PullsListFilesError::Generic { code }),
             }
         }
@@ -2319,9 +2508,19 @@ impl<'api> Pulls<'api> {
     ///
     /// # List pull requests files
     ///
-    /// **Note:** Responses include a maximum of 3000 files. The paginated response returns 30 files per page by default.
+    /// Lists the files in a specified pull request.
     /// 
-    /// [GitHub API docs for list_files](https://docs.github.com/rest/reference/pulls#list-pull-requests-files)
+    /// > [!NOTE]
+    /// > Responses include a maximum of 3000 files. The paginated response returns 30 files per page by default.
+    /// 
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for list_files](https://docs.github.com/rest/pulls/pulls#list-pull-requests-files)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2356,6 +2555,7 @@ impl<'api> Pulls<'api> {
             match github_response.status_code() {
                 422 => Err(PullsListFilesError::Status422(crate::adapters::to_json(github_response)?)),
                 500 => Err(PullsListFilesError::Status500(crate::adapters::to_json(github_response)?)),
+                503 => Err(PullsListFilesError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(PullsListFilesError::Generic { code }),
             }
         }
@@ -2363,19 +2563,17 @@ impl<'api> Pulls<'api> {
 
     /// ---
     ///
-    /// # List requested reviewers for a pull request
+    /// # Get all requested reviewers for a pull request
+    ///
+    /// Gets the users or teams whose review is requested for a pull request. Once a requested reviewer submits a review, they are no longer considered a requested reviewer. Their review will instead be returned by the [List reviews for a pull request](https://docs.github.com/rest/pulls/reviews#list-reviews-for-a-pull-request) operation.
     /// 
-    /// [GitHub API docs for list_requested_reviewers](https://docs.github.com/rest/reference/pulls#list-requested-reviewers-for-a-pull-request)
+    /// [GitHub API docs for list_requested_reviewers](https://docs.github.com/rest/pulls/review-requests#get-all-requested-reviewers-for-a-pull-request)
     ///
     /// ---
-    pub async fn list_requested_reviewers_async(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListRequestedReviewersParams>>) -> Result<PullRequestReviewRequest, PullsListRequestedReviewersError> {
+    pub async fn list_requested_reviewers_async(&self, owner: &str, repo: &str, pull_number: i32) -> Result<PullRequestReviewRequest, PullsListRequestedReviewersError> {
 
-        let mut request_uri = format!("{}/repos/{}/{}/pulls/{}/requested_reviewers", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
+        let request_uri = format!("{}/repos/{}/{}/pulls/{}/requested_reviewers", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
-        if let Some(params) = query_params {
-            request_uri.push_str("?");
-            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
-        }
 
         let req = GitHubRequest {
             uri: request_uri,
@@ -2403,21 +2601,18 @@ impl<'api> Pulls<'api> {
 
     /// ---
     ///
-    /// # List requested reviewers for a pull request
+    /// # Get all requested reviewers for a pull request
+    ///
+    /// Gets the users or teams whose review is requested for a pull request. Once a requested reviewer submits a review, they are no longer considered a requested reviewer. Their review will instead be returned by the [List reviews for a pull request](https://docs.github.com/rest/pulls/reviews#list-reviews-for-a-pull-request) operation.
     /// 
-    /// [GitHub API docs for list_requested_reviewers](https://docs.github.com/rest/reference/pulls#list-requested-reviewers-for-a-pull-request)
+    /// [GitHub API docs for list_requested_reviewers](https://docs.github.com/rest/pulls/review-requests#get-all-requested-reviewers-for-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_requested_reviewers(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListRequestedReviewersParams>>) -> Result<PullRequestReviewRequest, PullsListRequestedReviewersError> {
+    pub fn list_requested_reviewers(&self, owner: &str, repo: &str, pull_number: i32) -> Result<PullRequestReviewRequest, PullsListRequestedReviewersError> {
 
-        let mut request_uri = format!("{}/repos/{}/{}/pulls/{}/requested_reviewers", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
+        let request_uri = format!("{}/repos/{}/{}/pulls/{}/requested_reviewers", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
-        if let Some(params) = query_params {
-            request_uri.push_str("?");
-            let qp: PullsListRequestedReviewersParams = params.into();
-            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
-        }
 
         let req = GitHubRequest {
             uri: request_uri,
@@ -2447,9 +2642,17 @@ impl<'api> Pulls<'api> {
     ///
     /// # List review comments on a pull request
     ///
-    /// Lists all review comments for a pull request. By default, review comments are in ascending order by ID.
+    /// Lists all review comments for a specified pull request. By default, review comments
+    /// are in ascending order by ID.
     /// 
-    /// [GitHub API docs for list_review_comments](https://docs.github.com/rest/reference/pulls#list-review-comments-on-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for list_review_comments](https://docs.github.com/rest/pulls/comments#list-review-comments-on-a-pull-request)
     ///
     /// ---
     pub async fn list_review_comments_async(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListReviewCommentsParams<'api>>>) -> Result<Vec<PullRequestReviewComment>, PullsListReviewCommentsError> {
@@ -2489,9 +2692,17 @@ impl<'api> Pulls<'api> {
     ///
     /// # List review comments on a pull request
     ///
-    /// Lists all review comments for a pull request. By default, review comments are in ascending order by ID.
+    /// Lists all review comments for a specified pull request. By default, review comments
+    /// are in ascending order by ID.
     /// 
-    /// [GitHub API docs for list_review_comments](https://docs.github.com/rest/reference/pulls#list-review-comments-on-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for list_review_comments](https://docs.github.com/rest/pulls/comments#list-review-comments-on-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2533,9 +2744,17 @@ impl<'api> Pulls<'api> {
     ///
     /// # List review comments in a repository
     ///
-    /// Lists review comments for all pull requests in a repository. By default, review comments are in ascending order by ID.
+    /// Lists review comments for all pull requests in a repository. By default,
+    /// review comments are in ascending order by ID.
     /// 
-    /// [GitHub API docs for list_review_comments_for_repo](https://docs.github.com/rest/reference/pulls#list-review-comments-in-a-repository)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for list_review_comments_for_repo](https://docs.github.com/rest/pulls/comments#list-review-comments-in-a-repository)
     ///
     /// ---
     pub async fn list_review_comments_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<PullsListReviewCommentsForRepoParams<'api>>>) -> Result<Vec<PullRequestReviewComment>, PullsListReviewCommentsForRepoError> {
@@ -2575,9 +2794,17 @@ impl<'api> Pulls<'api> {
     ///
     /// # List review comments in a repository
     ///
-    /// Lists review comments for all pull requests in a repository. By default, review comments are in ascending order by ID.
+    /// Lists review comments for all pull requests in a repository. By default,
+    /// review comments are in ascending order by ID.
     /// 
-    /// [GitHub API docs for list_review_comments_for_repo](https://docs.github.com/rest/reference/pulls#list-review-comments-in-a-repository)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for list_review_comments_for_repo](https://docs.github.com/rest/pulls/comments#list-review-comments-in-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2619,9 +2846,16 @@ impl<'api> Pulls<'api> {
     ///
     /// # List reviews for a pull request
     ///
-    /// The list of reviews returns in chronological order.
+    /// Lists all reviews for a specified pull request. The list of reviews returns in chronological order.
     /// 
-    /// [GitHub API docs for list_reviews](https://docs.github.com/rest/reference/pulls#list-reviews-for-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for list_reviews](https://docs.github.com/rest/pulls/reviews#list-reviews-for-a-pull-request)
     ///
     /// ---
     pub async fn list_reviews_async(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListReviewsParams>>) -> Result<Vec<PullRequestReview>, PullsListReviewsError> {
@@ -2661,9 +2895,16 @@ impl<'api> Pulls<'api> {
     ///
     /// # List reviews for a pull request
     ///
-    /// The list of reviews returns in chronological order.
+    /// Lists all reviews for a specified pull request. The list of reviews returns in chronological order.
     /// 
-    /// [GitHub API docs for list_reviews](https://docs.github.com/rest/reference/pulls#list-reviews-for-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for list_reviews](https://docs.github.com/rest/pulls/reviews#list-reviews-for-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2705,9 +2946,10 @@ impl<'api> Pulls<'api> {
     ///
     /// # Merge a pull request
     ///
-    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. See "[Secondary rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#secondary-rate-limits)" and "[Dealing with secondary rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-secondary-rate-limits)" for details.
+    /// Merges a pull request into the base branch.
+    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)" and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
     /// 
-    /// [GitHub API docs for merge](https://docs.github.com/rest/reference/pulls#merge-a-pull-request)
+    /// [GitHub API docs for merge](https://docs.github.com/rest/pulls/pulls#merge-a-pull-request)
     ///
     /// ---
     pub async fn merge_async(&self, owner: &str, repo: &str, pull_number: i32, body: PutPullsMerge) -> Result<PullRequestMergeResult, PullsMergeError> {
@@ -2748,9 +2990,10 @@ impl<'api> Pulls<'api> {
     ///
     /// # Merge a pull request
     ///
-    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. See "[Secondary rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#secondary-rate-limits)" and "[Dealing with secondary rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-secondary-rate-limits)" for details.
+    /// Merges a pull request into the base branch.
+    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)" and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
     /// 
-    /// [GitHub API docs for merge](https://docs.github.com/rest/reference/pulls#merge-a-pull-request)
+    /// [GitHub API docs for merge](https://docs.github.com/rest/pulls/pulls#merge-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2791,8 +3034,10 @@ impl<'api> Pulls<'api> {
     /// ---
     ///
     /// # Remove requested reviewers from a pull request
+    ///
+    /// Removes review requests from a pull request for a given set of users and/or teams.
     /// 
-    /// [GitHub API docs for remove_requested_reviewers](https://docs.github.com/rest/reference/pulls#remove-requested-reviewers-from-a-pull-request)
+    /// [GitHub API docs for remove_requested_reviewers](https://docs.github.com/rest/pulls/review-requests#remove-requested-reviewers-from-a-pull-request)
     ///
     /// ---
     pub async fn remove_requested_reviewers_async(&self, owner: &str, repo: &str, pull_number: i32, body: DeletePullsRemoveRequestedReviewers) -> Result<PullRequestSimple, PullsRemoveRequestedReviewersError> {
@@ -2828,8 +3073,10 @@ impl<'api> Pulls<'api> {
     /// ---
     ///
     /// # Remove requested reviewers from a pull request
+    ///
+    /// Removes review requests from a pull request for a given set of users and/or teams.
     /// 
-    /// [GitHub API docs for remove_requested_reviewers](https://docs.github.com/rest/reference/pulls#remove-requested-reviewers-from-a-pull-request)
+    /// [GitHub API docs for remove_requested_reviewers](https://docs.github.com/rest/pulls/review-requests#remove-requested-reviewers-from-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2867,9 +3114,10 @@ impl<'api> Pulls<'api> {
     ///
     /// # Request reviewers for a pull request
     ///
-    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. See "[Secondary rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#secondary-rate-limits)" and "[Dealing with secondary rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-secondary-rate-limits)" for details.
+    /// Requests reviews for a pull request from a given set of users and/or teams.
+    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)" and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
     /// 
-    /// [GitHub API docs for request_reviewers](https://docs.github.com/rest/reference/pulls#request-reviewers-for-a-pull-request)
+    /// [GitHub API docs for request_reviewers](https://docs.github.com/rest/pulls/review-requests#request-reviewers-for-a-pull-request)
     ///
     /// ---
     pub async fn request_reviewers_async(&self, owner: &str, repo: &str, pull_number: i32, body: PostPullsRequestReviewers) -> Result<PullRequestSimple, PullsRequestReviewersError> {
@@ -2907,9 +3155,10 @@ impl<'api> Pulls<'api> {
     ///
     /// # Request reviewers for a pull request
     ///
-    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. See "[Secondary rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#secondary-rate-limits)" and "[Dealing with secondary rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-secondary-rate-limits)" for details.
+    /// Requests reviews for a pull request from a given set of users and/or teams.
+    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)" and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
     /// 
-    /// [GitHub API docs for request_reviewers](https://docs.github.com/rest/reference/pulls#request-reviewers-for-a-pull-request)
+    /// [GitHub API docs for request_reviewers](https://docs.github.com/rest/pulls/review-requests#request-reviewers-for-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2947,8 +3196,17 @@ impl<'api> Pulls<'api> {
     /// ---
     ///
     /// # Submit a review for a pull request
+    ///
+    /// Submits a pending review for a pull request. For more information about creating a pending review for a pull request, see "[Create a review for a pull request](https://docs.github.com/rest/pulls/reviews#create-a-review-for-a-pull-request)."
     /// 
-    /// [GitHub API docs for submit_review](https://docs.github.com/rest/reference/pulls#submit-a-review-for-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for submit_review](https://docs.github.com/rest/pulls/reviews#submit-a-review-for-a-pull-request)
     ///
     /// ---
     pub async fn submit_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, body: PostPullsSubmitReview) -> Result<PullRequestReview, PullsSubmitReviewError> {
@@ -2986,8 +3244,17 @@ impl<'api> Pulls<'api> {
     /// ---
     ///
     /// # Submit a review for a pull request
+    ///
+    /// Submits a pending review for a pull request. For more information about creating a pending review for a pull request, see "[Create a review for a pull request](https://docs.github.com/rest/pulls/reviews#create-a-review-for-a-pull-request)."
     /// 
-    /// [GitHub API docs for submit_review](https://docs.github.com/rest/reference/pulls#submit-a-review-for-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for submit_review](https://docs.github.com/rest/pulls/reviews#submit-a-review-for-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3027,11 +3294,18 @@ impl<'api> Pulls<'api> {
     ///
     /// # Update a pull request
     ///
-    /// Draft pull requests are available in public repositories with GitHub Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing plans, and in public and private repositories with GitHub Team and GitHub Enterprise Cloud. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
+    /// Draft pull requests are available in public repositories with GitHub Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing plans, and in public and private repositories with GitHub Team and GitHub Enterprise Cloud. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// To open or update a pull request in a public repository, you must have write access to the head or the source branch. For organization-owned repositories, you must be a member of the organization that owns the repository to open or update a pull request.
     /// 
-    /// [GitHub API docs for update](https://docs.github.com/rest/reference/pulls/#update-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for update](https://docs.github.com/rest/pulls/pulls#update-a-pull-request)
     ///
     /// ---
     pub async fn update_async(&self, owner: &str, repo: &str, pull_number: i32, body: PatchPullsUpdate) -> Result<PullRequest, PullsUpdateError> {
@@ -3069,11 +3343,18 @@ impl<'api> Pulls<'api> {
     ///
     /// # Update a pull request
     ///
-    /// Draft pull requests are available in public repositories with GitHub Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing plans, and in public and private repositories with GitHub Team and GitHub Enterprise Cloud. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
+    /// Draft pull requests are available in public repositories with GitHub Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing plans, and in public and private repositories with GitHub Team and GitHub Enterprise Cloud. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// To open or update a pull request in a public repository, you must have write access to the head or the source branch. For organization-owned repositories, you must be a member of the organization that owns the repository to open or update a pull request.
     /// 
-    /// [GitHub API docs for update](https://docs.github.com/rest/reference/pulls/#update-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for update](https://docs.github.com/rest/pulls/pulls#update-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3113,8 +3394,9 @@ impl<'api> Pulls<'api> {
     /// # Update a pull request branch
     ///
     /// Updates the pull request branch with the latest upstream changes by merging HEAD from the base branch into the pull request branch.
+    /// Note: If making a request on behalf of a GitHub App you must also have permissions to write the contents of the head repository.
     /// 
-    /// [GitHub API docs for update_branch](https://docs.github.com/rest/reference/pulls#update-a-pull-request-branch)
+    /// [GitHub API docs for update_branch](https://docs.github.com/rest/pulls/pulls#update-a-pull-request-branch)
     ///
     /// ---
     pub async fn update_branch_async(&self, owner: &str, repo: &str, pull_number: i32, body: PutPullsUpdateBranch) -> Result<PutPullsUpdateBranchResponse202, PullsUpdateBranchError> {
@@ -3153,8 +3435,9 @@ impl<'api> Pulls<'api> {
     /// # Update a pull request branch
     ///
     /// Updates the pull request branch with the latest upstream changes by merging HEAD from the base branch into the pull request branch.
+    /// Note: If making a request on behalf of a GitHub App you must also have permissions to write the contents of the head repository.
     /// 
-    /// [GitHub API docs for update_branch](https://docs.github.com/rest/reference/pulls#update-a-pull-request-branch)
+    /// [GitHub API docs for update_branch](https://docs.github.com/rest/pulls/pulls#update-a-pull-request-branch)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3193,9 +3476,16 @@ impl<'api> Pulls<'api> {
     ///
     /// # Update a review for a pull request
     ///
-    /// Update the review summary comment with new text.
+    /// Updates the contents of a specified review summary comment.
     /// 
-    /// [GitHub API docs for update_review](https://docs.github.com/rest/reference/pulls#update-a-review-for-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for update_review](https://docs.github.com/rest/pulls/reviews#update-a-review-for-a-pull-request)
     ///
     /// ---
     pub async fn update_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, body: PutPullsUpdateReview) -> Result<PullRequestReview, PullsUpdateReviewError> {
@@ -3232,9 +3522,16 @@ impl<'api> Pulls<'api> {
     ///
     /// # Update a review for a pull request
     ///
-    /// Update the review summary comment with new text.
+    /// Updates the contents of a specified review summary comment.
     /// 
-    /// [GitHub API docs for update_review](https://docs.github.com/rest/reference/pulls#update-a-review-for-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for update_review](https://docs.github.com/rest/pulls/reviews#update-a-review-for-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3272,12 +3569,19 @@ impl<'api> Pulls<'api> {
     ///
     /// # Update a review comment for a pull request
     ///
-    /// Enables you to edit a review comment.
+    /// Edits the content of a specified review comment.
     /// 
-    /// [GitHub API docs for update_review_comment](https://docs.github.com/rest/reference/pulls#update-a-review-comment-for-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for update_review_comment](https://docs.github.com/rest/pulls/comments#update-a-review-comment-for-a-pull-request)
     ///
     /// ---
-    pub async fn update_review_comment_async(&self, owner: &str, repo: &str, comment_id: i32, body: PatchPullsUpdateReviewComment) -> Result<PullRequestReviewComment, PullsUpdateReviewCommentError> {
+    pub async fn update_review_comment_async(&self, owner: &str, repo: &str, comment_id: i64, body: PatchPullsUpdateReviewComment) -> Result<PullRequestReviewComment, PullsUpdateReviewCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -3310,13 +3614,20 @@ impl<'api> Pulls<'api> {
     ///
     /// # Update a review comment for a pull request
     ///
-    /// Enables you to edit a review comment.
+    /// Edits the content of a specified review comment.
     /// 
-    /// [GitHub API docs for update_review_comment](https://docs.github.com/rest/reference/pulls#update-a-review-comment-for-a-pull-request)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github-commitcomment.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    /// 
+    /// [GitHub API docs for update_review_comment](https://docs.github.com/rest/pulls/comments#update-a-review-comment-for-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_review_comment(&self, owner: &str, repo: &str, comment_id: i32, body: PatchPullsUpdateReviewComment) -> Result<PullRequestReviewComment, PullsUpdateReviewCommentError> {
+    pub fn update_review_comment(&self, owner: &str, repo: &str, comment_id: i64, body: PatchPullsUpdateReviewComment) -> Result<PullRequestReviewComment, PullsUpdateReviewCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 

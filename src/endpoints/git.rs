@@ -51,7 +51,7 @@ pub enum GitCreateBlobError {
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Validation failed")]
-    Status422(ValidationError),
+    Status422(PostGitCreateBlobResponse422),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -69,10 +69,12 @@ pub enum GitCreateCommitError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
     Status404(BasicError),
+    #[error("Conflict")]
+    Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -90,8 +92,10 @@ pub enum GitCreateRefError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
+    #[error("Conflict")]
+    Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -109,8 +113,10 @@ pub enum GitCreateTagError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
+    #[error("Conflict")]
+    Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -128,12 +134,14 @@ pub enum GitCreateTreeError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
+    #[error("Conflict")]
+    Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -151,8 +159,10 @@ pub enum GitDeleteRefError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
+    #[error("Conflict")]
+    Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -172,15 +182,17 @@ pub enum GitGetBlobError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
+    #[error("Conflict")]
+    Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
-/// Errors for the [Get a commit](Git::get_commit_async()) endpoint.
+/// Errors for the [Get a commit object](Git::get_commit_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GitGetCommitError {
     #[error(transparent)]
@@ -195,6 +207,8 @@ pub enum GitGetCommitError {
 
     #[error("Resource not found")]
     Status404(BasicError),
+    #[error("Conflict")]
+    Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -214,6 +228,8 @@ pub enum GitGetRefError {
 
     #[error("Resource not found")]
     Status404(BasicError),
+    #[error("Conflict")]
+    Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -233,6 +249,8 @@ pub enum GitGetTagError {
 
     #[error("Resource not found")]
     Status404(BasicError),
+    #[error("Conflict")]
+    Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -250,10 +268,12 @@ pub enum GitGetTreeError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
     Status404(BasicError),
+    #[error("Conflict")]
+    Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -271,6 +291,8 @@ pub enum GitListMatchingRefsError {
 
     // -- endpoint errors
 
+    #[error("Conflict")]
+    Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -288,8 +310,10 @@ pub enum GitUpdateRefError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
+    #[error("Conflict")]
+    Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -315,53 +339,13 @@ impl<'req> GitGetTreeParams<'req> {
     }
 }
 
-/// Query parameters for the [List matching references](Git::list_matching_refs_async()) endpoint.
-#[derive(Default, Serialize)]
-pub struct GitListMatchingRefsParams {
-    /// Results per page (max 100)
-    per_page: Option<u16>, 
-    /// Page number of the results to fetch.
-    page: Option<u16>
-}
-
-impl GitListMatchingRefsParams {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    /// Results per page (max 100)
-    pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
-            per_page: Some(per_page),
-            page: self.page, 
-        }
-    }
-
-    /// Page number of the results to fetch.
-    pub fn page(self, page: u16) -> Self {
-        Self { 
-            per_page: self.per_page, 
-            page: Some(page),
-        }
-    }
-}
-
-impl<'enc> From<&'enc PerPage> for GitListMatchingRefsParams {
-    fn from(per_page: &'enc PerPage) -> Self {
-        Self {
-            per_page: Some(per_page.per_page),
-            page: Some(per_page.page),
-            ..Default::default()
-        }
-    }
-}
 
 impl<'api> Git<'api> {
     /// ---
     ///
     /// # Create a blob
     /// 
-    /// [GitHub API docs for create_blob](https://docs.github.com/rest/reference/git#create-a-blob)
+    /// [GitHub API docs for create_blob](https://docs.github.com/rest/git/blobs#create-a-blob)
     ///
     /// ---
     pub async fn create_blob_async(&self, owner: &str, repo: &str, body: PostGitCreateBlob) -> Result<ShortBlob, GitCreateBlobError> {
@@ -401,7 +385,7 @@ impl<'api> Git<'api> {
     ///
     /// # Create a blob
     /// 
-    /// [GitHub API docs for create_blob](https://docs.github.com/rest/reference/git#create-a-blob)
+    /// [GitHub API docs for create_blob](https://docs.github.com/rest/git/blobs#create-a-blob)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -442,7 +426,7 @@ impl<'api> Git<'api> {
     ///
     /// # Create a commit
     ///
-    /// Creates a new Git [commit object](https://git-scm.com/book/en/v1/Git-Internals-Git-Objects#Commit-Objects).
+    /// Creates a new Git [commit object](https://git-scm.com/book/en/v2/Git-Internals-Git-Objects).
     /// 
     /// **Signature verification object**
     /// 
@@ -451,7 +435,7 @@ impl<'api> Git<'api> {
     /// | Name | Type | Description |
     /// | ---- | ---- | ----------- |
     /// | `verified` | `boolean` | Indicates whether GitHub considers the signature in this commit to be verified. |
-    /// | `reason` | `string` | The reason for verified value. Possible values and their meanings are enumerated in table below. |
+    /// | `reason` | `string` | The reason for verified value. Possible values and their meanings are enumerated in the table below. |
     /// | `signature` | `string` | The signature that was extracted from the commit. |
     /// | `payload` | `string` | The value that was signed. |
     /// 
@@ -466,14 +450,14 @@ impl<'api> Git<'api> {
     /// | `unsigned` | The object does not include a signature. |
     /// | `unknown_signature_type` | A non-PGP signature was found in the commit. |
     /// | `no_user` | No user was associated with the `committer` email address in the commit. |
-    /// | `unverified_email` | The `committer` email address in the commit was associated with a user, but the email address is not verified on her/his account. |
+    /// | `unverified_email` | The `committer` email address in the commit was associated with a user, but the email address is not verified on their account. |
     /// | `bad_email` | The `committer` email address in the commit is not included in the identities of the PGP key that made the signature. |
     /// | `unknown_key` | The key that made the signature has not been registered with any user's account. |
     /// | `malformed_signature` | There was an error parsing the signature. |
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
     /// 
-    /// [GitHub API docs for create_commit](https://docs.github.com/rest/reference/git#create-a-commit)
+    /// [GitHub API docs for create_commit](https://docs.github.com/rest/git/commits#create-a-commit)
     ///
     /// ---
     pub async fn create_commit_async(&self, owner: &str, repo: &str, body: PostGitCreateCommit) -> Result<GitCommit, GitCreateCommitError> {
@@ -502,6 +486,7 @@ impl<'api> Git<'api> {
             match github_response.status_code() {
                 422 => Err(GitCreateCommitError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(GitCreateCommitError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(GitCreateCommitError::Status409(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GitCreateCommitError::Generic { code }),
             }
         }
@@ -511,7 +496,7 @@ impl<'api> Git<'api> {
     ///
     /// # Create a commit
     ///
-    /// Creates a new Git [commit object](https://git-scm.com/book/en/v1/Git-Internals-Git-Objects#Commit-Objects).
+    /// Creates a new Git [commit object](https://git-scm.com/book/en/v2/Git-Internals-Git-Objects).
     /// 
     /// **Signature verification object**
     /// 
@@ -520,7 +505,7 @@ impl<'api> Git<'api> {
     /// | Name | Type | Description |
     /// | ---- | ---- | ----------- |
     /// | `verified` | `boolean` | Indicates whether GitHub considers the signature in this commit to be verified. |
-    /// | `reason` | `string` | The reason for verified value. Possible values and their meanings are enumerated in table below. |
+    /// | `reason` | `string` | The reason for verified value. Possible values and their meanings are enumerated in the table below. |
     /// | `signature` | `string` | The signature that was extracted from the commit. |
     /// | `payload` | `string` | The value that was signed. |
     /// 
@@ -535,14 +520,14 @@ impl<'api> Git<'api> {
     /// | `unsigned` | The object does not include a signature. |
     /// | `unknown_signature_type` | A non-PGP signature was found in the commit. |
     /// | `no_user` | No user was associated with the `committer` email address in the commit. |
-    /// | `unverified_email` | The `committer` email address in the commit was associated with a user, but the email address is not verified on her/his account. |
+    /// | `unverified_email` | The `committer` email address in the commit was associated with a user, but the email address is not verified on their account. |
     /// | `bad_email` | The `committer` email address in the commit is not included in the identities of the PGP key that made the signature. |
     /// | `unknown_key` | The key that made the signature has not been registered with any user's account. |
     /// | `malformed_signature` | There was an error parsing the signature. |
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
     /// 
-    /// [GitHub API docs for create_commit](https://docs.github.com/rest/reference/git#create-a-commit)
+    /// [GitHub API docs for create_commit](https://docs.github.com/rest/git/commits#create-a-commit)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -572,6 +557,7 @@ impl<'api> Git<'api> {
             match github_response.status_code() {
                 422 => Err(GitCreateCommitError::Status422(crate::adapters::to_json(github_response)?)),
                 404 => Err(GitCreateCommitError::Status404(crate::adapters::to_json(github_response)?)),
+                409 => Err(GitCreateCommitError::Status409(crate::adapters::to_json(github_response)?)),
                 code => Err(GitCreateCommitError::Generic { code }),
             }
         }
@@ -583,7 +569,7 @@ impl<'api> Git<'api> {
     ///
     /// Creates a reference for your repository. You are unable to create new references for empty repositories, even if the commit SHA-1 hash used exists. Empty repositories are repositories without branches.
     /// 
-    /// [GitHub API docs for create_ref](https://docs.github.com/rest/reference/git#create-a-reference)
+    /// [GitHub API docs for create_ref](https://docs.github.com/rest/git/refs#create-a-reference)
     ///
     /// ---
     pub async fn create_ref_async(&self, owner: &str, repo: &str, body: PostGitCreateRef) -> Result<GitRef, GitCreateRefError> {
@@ -611,6 +597,7 @@ impl<'api> Git<'api> {
         } else {
             match github_response.status_code() {
                 422 => Err(GitCreateRefError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(GitCreateRefError::Status409(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GitCreateRefError::Generic { code }),
             }
         }
@@ -622,7 +609,7 @@ impl<'api> Git<'api> {
     ///
     /// Creates a reference for your repository. You are unable to create new references for empty repositories, even if the commit SHA-1 hash used exists. Empty repositories are repositories without branches.
     /// 
-    /// [GitHub API docs for create_ref](https://docs.github.com/rest/reference/git#create-a-reference)
+    /// [GitHub API docs for create_ref](https://docs.github.com/rest/git/refs#create-a-reference)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -651,6 +638,7 @@ impl<'api> Git<'api> {
         } else {
             match github_response.status_code() {
                 422 => Err(GitCreateRefError::Status422(crate::adapters::to_json(github_response)?)),
+                409 => Err(GitCreateRefError::Status409(crate::adapters::to_json(github_response)?)),
                 code => Err(GitCreateRefError::Generic { code }),
             }
         }
@@ -660,7 +648,7 @@ impl<'api> Git<'api> {
     ///
     /// # Create a tag object
     ///
-    /// Note that creating a tag object does not create the reference that makes a tag in Git. If you want to create an annotated tag in Git, you have to do this call to create the tag object, and then [create](https://docs.github.com/rest/reference/git#create-a-reference) the `refs/tags/[tag]` reference. If you want to create a lightweight tag, you only have to [create](https://docs.github.com/rest/reference/git#create-a-reference) the tag reference - this call would be unnecessary.
+    /// Note that creating a tag object does not create the reference that makes a tag in Git. If you want to create an annotated tag in Git, you have to do this call to create the tag object, and then [create](https://docs.github.com/rest/git/refs#create-a-reference) the `refs/tags/[tag]` reference. If you want to create a lightweight tag, you only have to [create](https://docs.github.com/rest/git/refs#create-a-reference) the tag reference - this call would be unnecessary.
     /// 
     /// **Signature verification object**
     /// 
@@ -684,14 +672,14 @@ impl<'api> Git<'api> {
     /// | `unsigned` | The object does not include a signature. |
     /// | `unknown_signature_type` | A non-PGP signature was found in the commit. |
     /// | `no_user` | No user was associated with the `committer` email address in the commit. |
-    /// | `unverified_email` | The `committer` email address in the commit was associated with a user, but the email address is not verified on her/his account. |
+    /// | `unverified_email` | The `committer` email address in the commit was associated with a user, but the email address is not verified on their account. |
     /// | `bad_email` | The `committer` email address in the commit is not included in the identities of the PGP key that made the signature. |
     /// | `unknown_key` | The key that made the signature has not been registered with any user's account. |
     /// | `malformed_signature` | There was an error parsing the signature. |
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
     /// 
-    /// [GitHub API docs for create_tag](https://docs.github.com/rest/reference/git#create-a-tag-object)
+    /// [GitHub API docs for create_tag](https://docs.github.com/rest/git/tags#create-a-tag-object)
     ///
     /// ---
     pub async fn create_tag_async(&self, owner: &str, repo: &str, body: PostGitCreateTag) -> Result<GitTag, GitCreateTagError> {
@@ -719,6 +707,7 @@ impl<'api> Git<'api> {
         } else {
             match github_response.status_code() {
                 422 => Err(GitCreateTagError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(GitCreateTagError::Status409(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GitCreateTagError::Generic { code }),
             }
         }
@@ -728,7 +717,7 @@ impl<'api> Git<'api> {
     ///
     /// # Create a tag object
     ///
-    /// Note that creating a tag object does not create the reference that makes a tag in Git. If you want to create an annotated tag in Git, you have to do this call to create the tag object, and then [create](https://docs.github.com/rest/reference/git#create-a-reference) the `refs/tags/[tag]` reference. If you want to create a lightweight tag, you only have to [create](https://docs.github.com/rest/reference/git#create-a-reference) the tag reference - this call would be unnecessary.
+    /// Note that creating a tag object does not create the reference that makes a tag in Git. If you want to create an annotated tag in Git, you have to do this call to create the tag object, and then [create](https://docs.github.com/rest/git/refs#create-a-reference) the `refs/tags/[tag]` reference. If you want to create a lightweight tag, you only have to [create](https://docs.github.com/rest/git/refs#create-a-reference) the tag reference - this call would be unnecessary.
     /// 
     /// **Signature verification object**
     /// 
@@ -752,14 +741,14 @@ impl<'api> Git<'api> {
     /// | `unsigned` | The object does not include a signature. |
     /// | `unknown_signature_type` | A non-PGP signature was found in the commit. |
     /// | `no_user` | No user was associated with the `committer` email address in the commit. |
-    /// | `unverified_email` | The `committer` email address in the commit was associated with a user, but the email address is not verified on her/his account. |
+    /// | `unverified_email` | The `committer` email address in the commit was associated with a user, but the email address is not verified on their account. |
     /// | `bad_email` | The `committer` email address in the commit is not included in the identities of the PGP key that made the signature. |
     /// | `unknown_key` | The key that made the signature has not been registered with any user's account. |
     /// | `malformed_signature` | There was an error parsing the signature. |
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
     /// 
-    /// [GitHub API docs for create_tag](https://docs.github.com/rest/reference/git#create-a-tag-object)
+    /// [GitHub API docs for create_tag](https://docs.github.com/rest/git/tags#create-a-tag-object)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -788,6 +777,7 @@ impl<'api> Git<'api> {
         } else {
             match github_response.status_code() {
                 422 => Err(GitCreateTagError::Status422(crate::adapters::to_json(github_response)?)),
+                409 => Err(GitCreateTagError::Status409(crate::adapters::to_json(github_response)?)),
                 code => Err(GitCreateTagError::Generic { code }),
             }
         }
@@ -799,9 +789,11 @@ impl<'api> Git<'api> {
     ///
     /// The tree creation API accepts nested entries. If you specify both a tree and a nested path modifying that tree, this endpoint will overwrite the contents of the tree with the new path contents, and create a new tree structure.
     /// 
-    /// If you use this endpoint to add, delete, or modify the file contents in a tree, you will need to commit the tree and then update a branch to point to the commit. For more information see "[Create a commit](https://docs.github.com/rest/reference/git#create-a-commit)" and "[Update a reference](https://docs.github.com/rest/reference/git#update-a-reference)."
+    /// If you use this endpoint to add, delete, or modify the file contents in a tree, you will need to commit the tree and then update a branch to point to the commit. For more information see "[Create a commit](https://docs.github.com/rest/git/commits#create-a-commit)" and "[Update a reference](https://docs.github.com/rest/git/refs#update-a-reference)."
     /// 
-    /// [GitHub API docs for create_tree](https://docs.github.com/rest/reference/git#create-a-tree)
+    /// Returns an error if you try to delete a file that does not exist.
+    /// 
+    /// [GitHub API docs for create_tree](https://docs.github.com/rest/git/trees#create-a-tree)
     ///
     /// ---
     pub async fn create_tree_async(&self, owner: &str, repo: &str, body: PostGitCreateTree) -> Result<GitTree, GitCreateTreeError> {
@@ -831,6 +823,7 @@ impl<'api> Git<'api> {
                 422 => Err(GitCreateTreeError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(GitCreateTreeError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 403 => Err(GitCreateTreeError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(GitCreateTreeError::Status409(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GitCreateTreeError::Generic { code }),
             }
         }
@@ -842,9 +835,11 @@ impl<'api> Git<'api> {
     ///
     /// The tree creation API accepts nested entries. If you specify both a tree and a nested path modifying that tree, this endpoint will overwrite the contents of the tree with the new path contents, and create a new tree structure.
     /// 
-    /// If you use this endpoint to add, delete, or modify the file contents in a tree, you will need to commit the tree and then update a branch to point to the commit. For more information see "[Create a commit](https://docs.github.com/rest/reference/git#create-a-commit)" and "[Update a reference](https://docs.github.com/rest/reference/git#update-a-reference)."
+    /// If you use this endpoint to add, delete, or modify the file contents in a tree, you will need to commit the tree and then update a branch to point to the commit. For more information see "[Create a commit](https://docs.github.com/rest/git/commits#create-a-commit)" and "[Update a reference](https://docs.github.com/rest/git/refs#update-a-reference)."
     /// 
-    /// [GitHub API docs for create_tree](https://docs.github.com/rest/reference/git#create-a-tree)
+    /// Returns an error if you try to delete a file that does not exist.
+    /// 
+    /// [GitHub API docs for create_tree](https://docs.github.com/rest/git/trees#create-a-tree)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -875,6 +870,7 @@ impl<'api> Git<'api> {
                 422 => Err(GitCreateTreeError::Status422(crate::adapters::to_json(github_response)?)),
                 404 => Err(GitCreateTreeError::Status404(crate::adapters::to_json(github_response)?)),
                 403 => Err(GitCreateTreeError::Status403(crate::adapters::to_json(github_response)?)),
+                409 => Err(GitCreateTreeError::Status409(crate::adapters::to_json(github_response)?)),
                 code => Err(GitCreateTreeError::Generic { code }),
             }
         }
@@ -883,8 +879,10 @@ impl<'api> Git<'api> {
     /// ---
     ///
     /// # Delete a reference
+    ///
+    /// Deletes the provided reference.
     /// 
-    /// [GitHub API docs for delete_ref](https://docs.github.com/rest/reference/git#delete-a-reference)
+    /// [GitHub API docs for delete_ref](https://docs.github.com/rest/git/refs#delete-a-reference)
     ///
     /// ---
     pub async fn delete_ref_async(&self, owner: &str, repo: &str, git_ref: &str) -> Result<(), GitDeleteRefError> {
@@ -912,6 +910,7 @@ impl<'api> Git<'api> {
         } else {
             match github_response.status_code() {
                 422 => Err(GitDeleteRefError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(GitDeleteRefError::Status409(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GitDeleteRefError::Generic { code }),
             }
         }
@@ -920,8 +919,10 @@ impl<'api> Git<'api> {
     /// ---
     ///
     /// # Delete a reference
+    ///
+    /// Deletes the provided reference.
     /// 
-    /// [GitHub API docs for delete_ref](https://docs.github.com/rest/reference/git#delete-a-reference)
+    /// [GitHub API docs for delete_ref](https://docs.github.com/rest/git/refs#delete-a-reference)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -950,6 +951,7 @@ impl<'api> Git<'api> {
         } else {
             match github_response.status_code() {
                 422 => Err(GitDeleteRefError::Status422(crate::adapters::to_json(github_response)?)),
+                409 => Err(GitDeleteRefError::Status409(crate::adapters::to_json(github_response)?)),
                 code => Err(GitDeleteRefError::Generic { code }),
             }
         }
@@ -961,9 +963,14 @@ impl<'api> Git<'api> {
     ///
     /// The `content` in the response will always be Base64 encoded.
     /// 
-    /// _Note_: This API supports blobs up to 100 megabytes in size.
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
     /// 
-    /// [GitHub API docs for get_blob](https://docs.github.com/rest/reference/git#get-a-blob)
+    /// - **`application/vnd.github.raw+json`**: Returns the raw blob data.
+    /// - **`application/vnd.github+json`**: Returns a JSON representation of the blob with `content` as a base64 encoded string. This is the default if no media type is specified.
+    /// 
+    /// **Note** This endpoint supports blobs up to 100 megabytes in size.
+    /// 
+    /// [GitHub API docs for get_blob](https://docs.github.com/rest/git/blobs#get-a-blob)
     ///
     /// ---
     pub async fn get_blob_async(&self, owner: &str, repo: &str, file_sha: &str) -> Result<Blob, GitGetBlobError> {
@@ -993,6 +1000,7 @@ impl<'api> Git<'api> {
                 404 => Err(GitGetBlobError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(GitGetBlobError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 403 => Err(GitGetBlobError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(GitGetBlobError::Status409(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GitGetBlobError::Generic { code }),
             }
         }
@@ -1004,9 +1012,14 @@ impl<'api> Git<'api> {
     ///
     /// The `content` in the response will always be Base64 encoded.
     /// 
-    /// _Note_: This API supports blobs up to 100 megabytes in size.
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
     /// 
-    /// [GitHub API docs for get_blob](https://docs.github.com/rest/reference/git#get-a-blob)
+    /// - **`application/vnd.github.raw+json`**: Returns the raw blob data.
+    /// - **`application/vnd.github+json`**: Returns a JSON representation of the blob with `content` as a base64 encoded string. This is the default if no media type is specified.
+    /// 
+    /// **Note** This endpoint supports blobs up to 100 megabytes in size.
+    /// 
+    /// [GitHub API docs for get_blob](https://docs.github.com/rest/git/blobs#get-a-blob)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1037,6 +1050,7 @@ impl<'api> Git<'api> {
                 404 => Err(GitGetBlobError::Status404(crate::adapters::to_json(github_response)?)),
                 422 => Err(GitGetBlobError::Status422(crate::adapters::to_json(github_response)?)),
                 403 => Err(GitGetBlobError::Status403(crate::adapters::to_json(github_response)?)),
+                409 => Err(GitGetBlobError::Status409(crate::adapters::to_json(github_response)?)),
                 code => Err(GitGetBlobError::Generic { code }),
             }
         }
@@ -1044,9 +1058,11 @@ impl<'api> Git<'api> {
 
     /// ---
     ///
-    /// # Get a commit
+    /// # Get a commit object
     ///
-    /// Gets a Git [commit object](https://git-scm.com/book/en/v1/Git-Internals-Git-Objects#Commit-Objects).
+    /// Gets a Git [commit object](https://git-scm.com/book/en/v2/Git-Internals-Git-Objects).
+    /// 
+    /// To get the contents of a commit, see "[Get a commit](/rest/commits/commits#get-a-commit)."
     /// 
     /// **Signature verification object**
     /// 
@@ -1055,7 +1071,7 @@ impl<'api> Git<'api> {
     /// | Name | Type | Description |
     /// | ---- | ---- | ----------- |
     /// | `verified` | `boolean` | Indicates whether GitHub considers the signature in this commit to be verified. |
-    /// | `reason` | `string` | The reason for verified value. Possible values and their meanings are enumerated in table below. |
+    /// | `reason` | `string` | The reason for verified value. Possible values and their meanings are enumerated in the table below. |
     /// | `signature` | `string` | The signature that was extracted from the commit. |
     /// | `payload` | `string` | The value that was signed. |
     /// 
@@ -1070,14 +1086,14 @@ impl<'api> Git<'api> {
     /// | `unsigned` | The object does not include a signature. |
     /// | `unknown_signature_type` | A non-PGP signature was found in the commit. |
     /// | `no_user` | No user was associated with the `committer` email address in the commit. |
-    /// | `unverified_email` | The `committer` email address in the commit was associated with a user, but the email address is not verified on her/his account. |
+    /// | `unverified_email` | The `committer` email address in the commit was associated with a user, but the email address is not verified on their account. |
     /// | `bad_email` | The `committer` email address in the commit is not included in the identities of the PGP key that made the signature. |
     /// | `unknown_key` | The key that made the signature has not been registered with any user's account. |
     /// | `malformed_signature` | There was an error parsing the signature. |
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
     /// 
-    /// [GitHub API docs for get_commit](https://docs.github.com/rest/reference/git#get-a-commit)
+    /// [GitHub API docs for get_commit](https://docs.github.com/rest/git/commits#get-a-commit-object)
     ///
     /// ---
     pub async fn get_commit_async(&self, owner: &str, repo: &str, commit_sha: &str) -> Result<GitCommit, GitGetCommitError> {
@@ -1105,6 +1121,7 @@ impl<'api> Git<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(GitGetCommitError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(GitGetCommitError::Status409(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GitGetCommitError::Generic { code }),
             }
         }
@@ -1112,9 +1129,11 @@ impl<'api> Git<'api> {
 
     /// ---
     ///
-    /// # Get a commit
+    /// # Get a commit object
     ///
-    /// Gets a Git [commit object](https://git-scm.com/book/en/v1/Git-Internals-Git-Objects#Commit-Objects).
+    /// Gets a Git [commit object](https://git-scm.com/book/en/v2/Git-Internals-Git-Objects).
+    /// 
+    /// To get the contents of a commit, see "[Get a commit](/rest/commits/commits#get-a-commit)."
     /// 
     /// **Signature verification object**
     /// 
@@ -1123,7 +1142,7 @@ impl<'api> Git<'api> {
     /// | Name | Type | Description |
     /// | ---- | ---- | ----------- |
     /// | `verified` | `boolean` | Indicates whether GitHub considers the signature in this commit to be verified. |
-    /// | `reason` | `string` | The reason for verified value. Possible values and their meanings are enumerated in table below. |
+    /// | `reason` | `string` | The reason for verified value. Possible values and their meanings are enumerated in the table below. |
     /// | `signature` | `string` | The signature that was extracted from the commit. |
     /// | `payload` | `string` | The value that was signed. |
     /// 
@@ -1138,14 +1157,14 @@ impl<'api> Git<'api> {
     /// | `unsigned` | The object does not include a signature. |
     /// | `unknown_signature_type` | A non-PGP signature was found in the commit. |
     /// | `no_user` | No user was associated with the `committer` email address in the commit. |
-    /// | `unverified_email` | The `committer` email address in the commit was associated with a user, but the email address is not verified on her/his account. |
+    /// | `unverified_email` | The `committer` email address in the commit was associated with a user, but the email address is not verified on their account. |
     /// | `bad_email` | The `committer` email address in the commit is not included in the identities of the PGP key that made the signature. |
     /// | `unknown_key` | The key that made the signature has not been registered with any user's account. |
     /// | `malformed_signature` | There was an error parsing the signature. |
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
     /// 
-    /// [GitHub API docs for get_commit](https://docs.github.com/rest/reference/git#get-a-commit)
+    /// [GitHub API docs for get_commit](https://docs.github.com/rest/git/commits#get-a-commit-object)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1174,6 +1193,7 @@ impl<'api> Git<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(GitGetCommitError::Status404(crate::adapters::to_json(github_response)?)),
+                409 => Err(GitGetCommitError::Status409(crate::adapters::to_json(github_response)?)),
                 code => Err(GitGetCommitError::Generic { code }),
             }
         }
@@ -1185,9 +1205,10 @@ impl<'api> Git<'api> {
     ///
     /// Returns a single reference from your Git database. The `:ref` in the URL must be formatted as `heads/<branch name>` for branches and `tags/<tag name>` for tags. If the `:ref` doesn't match an existing ref, a `404` is returned.
     /// 
-    /// **Note:** You need to explicitly [request a pull request](https://docs.github.com/rest/reference/pulls#get-a-pull-request) to trigger a test merge commit, which checks the mergeability of pull requests. For more information, see "[Checking mergeability of pull requests](https://docs.github.com/rest/guides/getting-started-with-the-git-database-api#checking-mergeability-of-pull-requests)".
+    /// > [!NOTE]
+    /// > You need to explicitly [request a pull request](https://docs.github.com/rest/pulls/pulls#get-a-pull-request) to trigger a test merge commit, which checks the mergeability of pull requests. For more information, see "[Checking mergeability of pull requests](https://docs.github.com/rest/guides/getting-started-with-the-git-database-api#checking-mergeability-of-pull-requests)".
     /// 
-    /// [GitHub API docs for get_ref](https://docs.github.com/rest/reference/git#get-a-reference)
+    /// [GitHub API docs for get_ref](https://docs.github.com/rest/git/refs#get-a-reference)
     ///
     /// ---
     pub async fn get_ref_async(&self, owner: &str, repo: &str, git_ref: &str) -> Result<GitRef, GitGetRefError> {
@@ -1215,6 +1236,7 @@ impl<'api> Git<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(GitGetRefError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(GitGetRefError::Status409(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GitGetRefError::Generic { code }),
             }
         }
@@ -1226,9 +1248,10 @@ impl<'api> Git<'api> {
     ///
     /// Returns a single reference from your Git database. The `:ref` in the URL must be formatted as `heads/<branch name>` for branches and `tags/<tag name>` for tags. If the `:ref` doesn't match an existing ref, a `404` is returned.
     /// 
-    /// **Note:** You need to explicitly [request a pull request](https://docs.github.com/rest/reference/pulls#get-a-pull-request) to trigger a test merge commit, which checks the mergeability of pull requests. For more information, see "[Checking mergeability of pull requests](https://docs.github.com/rest/guides/getting-started-with-the-git-database-api#checking-mergeability-of-pull-requests)".
+    /// > [!NOTE]
+    /// > You need to explicitly [request a pull request](https://docs.github.com/rest/pulls/pulls#get-a-pull-request) to trigger a test merge commit, which checks the mergeability of pull requests. For more information, see "[Checking mergeability of pull requests](https://docs.github.com/rest/guides/getting-started-with-the-git-database-api#checking-mergeability-of-pull-requests)".
     /// 
-    /// [GitHub API docs for get_ref](https://docs.github.com/rest/reference/git#get-a-reference)
+    /// [GitHub API docs for get_ref](https://docs.github.com/rest/git/refs#get-a-reference)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1257,6 +1280,7 @@ impl<'api> Git<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(GitGetRefError::Status404(crate::adapters::to_json(github_response)?)),
+                409 => Err(GitGetRefError::Status409(crate::adapters::to_json(github_response)?)),
                 code => Err(GitGetRefError::Generic { code }),
             }
         }
@@ -1288,14 +1312,14 @@ impl<'api> Git<'api> {
     /// | `unsigned` | The object does not include a signature. |
     /// | `unknown_signature_type` | A non-PGP signature was found in the commit. |
     /// | `no_user` | No user was associated with the `committer` email address in the commit. |
-    /// | `unverified_email` | The `committer` email address in the commit was associated with a user, but the email address is not verified on her/his account. |
+    /// | `unverified_email` | The `committer` email address in the commit was associated with a user, but the email address is not verified on their account. |
     /// | `bad_email` | The `committer` email address in the commit is not included in the identities of the PGP key that made the signature. |
     /// | `unknown_key` | The key that made the signature has not been registered with any user's account. |
     /// | `malformed_signature` | There was an error parsing the signature. |
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
     /// 
-    /// [GitHub API docs for get_tag](https://docs.github.com/rest/reference/git#get-a-tag)
+    /// [GitHub API docs for get_tag](https://docs.github.com/rest/git/tags#get-a-tag)
     ///
     /// ---
     pub async fn get_tag_async(&self, owner: &str, repo: &str, tag_sha: &str) -> Result<GitTag, GitGetTagError> {
@@ -1323,6 +1347,7 @@ impl<'api> Git<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(GitGetTagError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(GitGetTagError::Status409(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GitGetTagError::Generic { code }),
             }
         }
@@ -1354,14 +1379,14 @@ impl<'api> Git<'api> {
     /// | `unsigned` | The object does not include a signature. |
     /// | `unknown_signature_type` | A non-PGP signature was found in the commit. |
     /// | `no_user` | No user was associated with the `committer` email address in the commit. |
-    /// | `unverified_email` | The `committer` email address in the commit was associated with a user, but the email address is not verified on her/his account. |
+    /// | `unverified_email` | The `committer` email address in the commit was associated with a user, but the email address is not verified on their account. |
     /// | `bad_email` | The `committer` email address in the commit is not included in the identities of the PGP key that made the signature. |
     /// | `unknown_key` | The key that made the signature has not been registered with any user's account. |
     /// | `malformed_signature` | There was an error parsing the signature. |
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
     /// 
-    /// [GitHub API docs for get_tag](https://docs.github.com/rest/reference/git#get-a-tag)
+    /// [GitHub API docs for get_tag](https://docs.github.com/rest/git/tags#get-a-tag)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1390,6 +1415,7 @@ impl<'api> Git<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(GitGetTagError::Status404(crate::adapters::to_json(github_response)?)),
+                409 => Err(GitGetTagError::Status409(crate::adapters::to_json(github_response)?)),
                 code => Err(GitGetTagError::Generic { code }),
             }
         }
@@ -1399,11 +1425,14 @@ impl<'api> Git<'api> {
     ///
     /// # Get a tree
     ///
-    /// Returns a single tree using the SHA1 value for that tree.
+    /// Returns a single tree using the SHA1 value or ref name for that tree.
     /// 
     /// If `truncated` is `true` in the response then the number of items in the `tree` array exceeded our maximum limit. If you need to fetch more items, use the non-recursive method of fetching trees, and fetch one sub-tree at a time.
     /// 
-    /// [GitHub API docs for get_tree](https://docs.github.com/rest/reference/git#get-a-tree)
+    /// > [!NOTE]
+    /// > The limit for the `tree` array is 100,000 entries with a maximum size of 7 MB when using the `recursive` parameter.
+    /// 
+    /// [GitHub API docs for get_tree](https://docs.github.com/rest/git/trees#get-a-tree)
     ///
     /// ---
     pub async fn get_tree_async(&self, owner: &str, repo: &str, tree_sha: &str, query_params: Option<impl Into<GitGetTreeParams<'api>>>) -> Result<GitTree, GitGetTreeError> {
@@ -1436,6 +1465,7 @@ impl<'api> Git<'api> {
             match github_response.status_code() {
                 422 => Err(GitGetTreeError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(GitGetTreeError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(GitGetTreeError::Status409(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GitGetTreeError::Generic { code }),
             }
         }
@@ -1445,11 +1475,14 @@ impl<'api> Git<'api> {
     ///
     /// # Get a tree
     ///
-    /// Returns a single tree using the SHA1 value for that tree.
+    /// Returns a single tree using the SHA1 value or ref name for that tree.
     /// 
     /// If `truncated` is `true` in the response then the number of items in the `tree` array exceeded our maximum limit. If you need to fetch more items, use the non-recursive method of fetching trees, and fetch one sub-tree at a time.
     /// 
-    /// [GitHub API docs for get_tree](https://docs.github.com/rest/reference/git#get-a-tree)
+    /// > [!NOTE]
+    /// > The limit for the `tree` array is 100,000 entries with a maximum size of 7 MB when using the `recursive` parameter.
+    /// 
+    /// [GitHub API docs for get_tree](https://docs.github.com/rest/git/trees#get-a-tree)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1484,6 +1517,7 @@ impl<'api> Git<'api> {
             match github_response.status_code() {
                 422 => Err(GitGetTreeError::Status422(crate::adapters::to_json(github_response)?)),
                 404 => Err(GitGetTreeError::Status404(crate::adapters::to_json(github_response)?)),
+                409 => Err(GitGetTreeError::Status409(crate::adapters::to_json(github_response)?)),
                 code => Err(GitGetTreeError::Generic { code }),
             }
         }
@@ -1497,21 +1531,18 @@ impl<'api> Git<'api> {
     /// 
     /// When you use this endpoint without providing a `:ref`, it will return an array of all the references from your Git database, including notes and stashes if they exist on the server. Anything in the namespace is returned, not just `heads` and `tags`.
     /// 
-    /// **Note:** You need to explicitly [request a pull request](https://docs.github.com/rest/reference/pulls#get-a-pull-request) to trigger a test merge commit, which checks the mergeability of pull requests. For more information, see "[Checking mergeability of pull requests](https://docs.github.com/rest/guides/getting-started-with-the-git-database-api#checking-mergeability-of-pull-requests)".
+    /// > [!NOTE]
+    /// > You need to explicitly [request a pull request](https://docs.github.com/rest/pulls/pulls#get-a-pull-request) to trigger a test merge commit, which checks the mergeability of pull requests. For more information, see "[Checking mergeability of pull requests](https://docs.github.com/rest/guides/getting-started-with-the-git-database-api#checking-mergeability-of-pull-requests)".
     /// 
     /// If you request matching references for a branch named `feature` but the branch `feature` doesn't exist, the response can still include other matching head refs that start with the word `feature`, such as `featureA` and `featureB`.
     /// 
-    /// [GitHub API docs for list_matching_refs](https://docs.github.com/rest/reference/git#list-matching-references)
+    /// [GitHub API docs for list_matching_refs](https://docs.github.com/rest/git/refs#list-matching-references)
     ///
     /// ---
-    pub async fn list_matching_refs_async(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<GitListMatchingRefsParams>>) -> Result<Vec<GitRef>, GitListMatchingRefsError> {
+    pub async fn list_matching_refs_async(&self, owner: &str, repo: &str, git_ref: &str) -> Result<Vec<GitRef>, GitListMatchingRefsError> {
 
-        let mut request_uri = format!("{}/repos/{}/{}/git/matching-refs/{}", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
+        let request_uri = format!("{}/repos/{}/{}/git/matching-refs/{}", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
-        if let Some(params) = query_params {
-            request_uri.push_str("?");
-            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
-        }
 
         let req = GitHubRequest {
             uri: request_uri,
@@ -1532,6 +1563,7 @@ impl<'api> Git<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                409 => Err(GitListMatchingRefsError::Status409(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GitListMatchingRefsError::Generic { code }),
             }
         }
@@ -1545,23 +1577,19 @@ impl<'api> Git<'api> {
     /// 
     /// When you use this endpoint without providing a `:ref`, it will return an array of all the references from your Git database, including notes and stashes if they exist on the server. Anything in the namespace is returned, not just `heads` and `tags`.
     /// 
-    /// **Note:** You need to explicitly [request a pull request](https://docs.github.com/rest/reference/pulls#get-a-pull-request) to trigger a test merge commit, which checks the mergeability of pull requests. For more information, see "[Checking mergeability of pull requests](https://docs.github.com/rest/guides/getting-started-with-the-git-database-api#checking-mergeability-of-pull-requests)".
+    /// > [!NOTE]
+    /// > You need to explicitly [request a pull request](https://docs.github.com/rest/pulls/pulls#get-a-pull-request) to trigger a test merge commit, which checks the mergeability of pull requests. For more information, see "[Checking mergeability of pull requests](https://docs.github.com/rest/guides/getting-started-with-the-git-database-api#checking-mergeability-of-pull-requests)".
     /// 
     /// If you request matching references for a branch named `feature` but the branch `feature` doesn't exist, the response can still include other matching head refs that start with the word `feature`, such as `featureA` and `featureB`.
     /// 
-    /// [GitHub API docs for list_matching_refs](https://docs.github.com/rest/reference/git#list-matching-references)
+    /// [GitHub API docs for list_matching_refs](https://docs.github.com/rest/git/refs#list-matching-references)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_matching_refs(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<GitListMatchingRefsParams>>) -> Result<Vec<GitRef>, GitListMatchingRefsError> {
+    pub fn list_matching_refs(&self, owner: &str, repo: &str, git_ref: &str) -> Result<Vec<GitRef>, GitListMatchingRefsError> {
 
-        let mut request_uri = format!("{}/repos/{}/{}/git/matching-refs/{}", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
+        let request_uri = format!("{}/repos/{}/{}/git/matching-refs/{}", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
-        if let Some(params) = query_params {
-            request_uri.push_str("?");
-            let qp: GitListMatchingRefsParams = params.into();
-            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
-        }
 
         let req = GitHubRequest {
             uri: request_uri,
@@ -1582,6 +1610,7 @@ impl<'api> Git<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                409 => Err(GitListMatchingRefsError::Status409(crate::adapters::to_json(github_response)?)),
                 code => Err(GitListMatchingRefsError::Generic { code }),
             }
         }
@@ -1590,8 +1619,10 @@ impl<'api> Git<'api> {
     /// ---
     ///
     /// # Update a reference
+    ///
+    /// Updates the provided reference to point to a new SHA. For more information, see "[Git References](https://git-scm.com/book/en/v2/Git-Internals-Git-References)" in the Git documentation.
     /// 
-    /// [GitHub API docs for update_ref](https://docs.github.com/rest/reference/git#update-a-reference)
+    /// [GitHub API docs for update_ref](https://docs.github.com/rest/git/refs#update-a-reference)
     ///
     /// ---
     pub async fn update_ref_async(&self, owner: &str, repo: &str, git_ref: &str, body: PatchGitUpdateRef) -> Result<GitRef, GitUpdateRefError> {
@@ -1619,6 +1650,7 @@ impl<'api> Git<'api> {
         } else {
             match github_response.status_code() {
                 422 => Err(GitUpdateRefError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(GitUpdateRefError::Status409(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(GitUpdateRefError::Generic { code }),
             }
         }
@@ -1627,8 +1659,10 @@ impl<'api> Git<'api> {
     /// ---
     ///
     /// # Update a reference
+    ///
+    /// Updates the provided reference to point to a new SHA. For more information, see "[Git References](https://git-scm.com/book/en/v2/Git-Internals-Git-References)" in the Git documentation.
     /// 
-    /// [GitHub API docs for update_ref](https://docs.github.com/rest/reference/git#update-a-reference)
+    /// [GitHub API docs for update_ref](https://docs.github.com/rest/git/refs#update-a-reference)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1657,6 +1691,7 @@ impl<'api> Git<'api> {
         } else {
             match github_response.status_code() {
                 422 => Err(GitUpdateRefError::Status422(crate::adapters::to_json(github_response)?)),
+                409 => Err(GitUpdateRefError::Status409(crate::adapters::to_json(github_response)?)),
                 code => Err(GitUpdateRefError::Generic { code }),
             }
         }

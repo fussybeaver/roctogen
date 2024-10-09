@@ -67,7 +67,7 @@ pub enum GistsCreateError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
     Status304,
@@ -163,7 +163,7 @@ pub enum GistsForkError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
     Status304,
@@ -232,7 +232,7 @@ pub enum GistsGetRevisionError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
     Status404(BasicError),
@@ -322,7 +322,7 @@ pub enum GistsListForUserError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -364,7 +364,7 @@ pub enum GistsListPublicError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
     Status304,
@@ -456,7 +456,7 @@ pub enum GistsUpdateError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
     Status404(BasicError),
@@ -487,11 +487,11 @@ pub enum GistsUpdateCommentError {
 /// Query parameters for the [List gists for the authenticated user](Gists::list_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct GistsListParams {
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -500,7 +500,7 @@ impl GistsListParams {
         Self::default()
     }
 
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             since: Some(since),
@@ -509,7 +509,7 @@ impl GistsListParams {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             since: self.since, 
@@ -518,7 +518,7 @@ impl GistsListParams {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             since: self.since, 
@@ -540,9 +540,9 @@ impl<'enc> From<&'enc PerPage> for GistsListParams {
 /// Query parameters for the [List gist comments](Gists::list_comments_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct GistsListCommentsParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -551,7 +551,7 @@ impl GistsListCommentsParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -559,7 +559,7 @@ impl GistsListCommentsParams {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             per_page: self.per_page, 
@@ -580,9 +580,9 @@ impl<'enc> From<&'enc PerPage> for GistsListCommentsParams {
 /// Query parameters for the [List gist commits](Gists::list_commits_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct GistsListCommitsParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -591,7 +591,7 @@ impl GistsListCommitsParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -599,7 +599,7 @@ impl GistsListCommitsParams {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             per_page: self.per_page, 
@@ -620,11 +620,11 @@ impl<'enc> From<&'enc PerPage> for GistsListCommitsParams {
 /// Query parameters for the [List gists for a user](Gists::list_for_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct GistsListForUserParams {
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -633,7 +633,7 @@ impl GistsListForUserParams {
         Self::default()
     }
 
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             since: Some(since),
@@ -642,7 +642,7 @@ impl GistsListForUserParams {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             since: self.since, 
@@ -651,7 +651,7 @@ impl GistsListForUserParams {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             since: self.since, 
@@ -673,9 +673,9 @@ impl<'enc> From<&'enc PerPage> for GistsListForUserParams {
 /// Query parameters for the [List gist forks](Gists::list_forks_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct GistsListForksParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -684,7 +684,7 @@ impl GistsListForksParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -692,7 +692,7 @@ impl GistsListForksParams {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             per_page: self.per_page, 
@@ -713,11 +713,11 @@ impl<'enc> From<&'enc PerPage> for GistsListForksParams {
 /// Query parameters for the [List public gists](Gists::list_public_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct GistsListPublicParams {
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -726,7 +726,7 @@ impl GistsListPublicParams {
         Self::default()
     }
 
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             since: Some(since),
@@ -735,7 +735,7 @@ impl GistsListPublicParams {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             since: self.since, 
@@ -744,7 +744,7 @@ impl GistsListPublicParams {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             since: self.since, 
@@ -766,11 +766,11 @@ impl<'enc> From<&'enc PerPage> for GistsListPublicParams {
 /// Query parameters for the [List starred gists](Gists::list_starred_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct GistsListStarredParams {
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -779,7 +779,7 @@ impl GistsListStarredParams {
         Self::default()
     }
 
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
         Self { 
             since: Some(since),
@@ -788,7 +788,7 @@ impl GistsListStarredParams {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             since: self.since, 
@@ -797,7 +797,7 @@ impl GistsListStarredParams {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             since: self.since, 
@@ -822,7 +822,7 @@ impl<'api> Gists<'api> {
     ///
     /// # Check if a gist is starred
     /// 
-    /// [GitHub API docs for check_is_starred](https://docs.github.com/rest/reference/gists#check-if-a-gist-is-starred)
+    /// [GitHub API docs for check_is_starred](https://docs.github.com/rest/gists/gists#check-if-a-gist-is-starred)
     ///
     /// ---
     pub async fn check_is_starred_async(&self, gist_id: &str) -> Result<(), GistsCheckIsStarredError> {
@@ -861,7 +861,7 @@ impl<'api> Gists<'api> {
     ///
     /// # Check if a gist is starred
     /// 
-    /// [GitHub API docs for check_is_starred](https://docs.github.com/rest/reference/gists#check-if-a-gist-is-starred)
+    /// [GitHub API docs for check_is_starred](https://docs.github.com/rest/gists/gists#check-if-a-gist-is-starred)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -903,9 +903,10 @@ impl<'api> Gists<'api> {
     ///
     /// Allows you to add a new gist with one or more files.
     /// 
-    /// **Note:** Don't name your files "gistfile" with a numerical suffix. This is the format of the automatic naming scheme that Gist uses internally.
+    /// > [!NOTE]
+    /// > Don't name your files "gistfile" with a numerical suffix. This is the format of the automatic naming scheme that Gist uses internally.
     /// 
-    /// [GitHub API docs for create](https://docs.github.com/rest/reference/gists#create-a-gist)
+    /// [GitHub API docs for create](https://docs.github.com/rest/gists/gists#create-a-gist)
     ///
     /// ---
     pub async fn create_async(&self, body: PostGistsCreate) -> Result<GistSimple, GistsCreateError> {
@@ -947,9 +948,10 @@ impl<'api> Gists<'api> {
     ///
     /// Allows you to add a new gist with one or more files.
     /// 
-    /// **Note:** Don't name your files "gistfile" with a numerical suffix. This is the format of the automatic naming scheme that Gist uses internally.
+    /// > [!NOTE]
+    /// > Don't name your files "gistfile" with a numerical suffix. This is the format of the automatic naming scheme that Gist uses internally.
     /// 
-    /// [GitHub API docs for create](https://docs.github.com/rest/reference/gists#create-a-gist)
+    /// [GitHub API docs for create](https://docs.github.com/rest/gists/gists#create-a-gist)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -989,8 +991,15 @@ impl<'api> Gists<'api> {
     /// ---
     ///
     /// # Create a gist comment
+    ///
+    /// Creates a comment on a gist.
     /// 
-    /// [GitHub API docs for create_comment](https://docs.github.com/rest/reference/gists#create-a-gist-comment)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.base64+json`**: Returns the base64-encoded contents. This can be useful if your gist contains any invalid UTF-8 sequences.
+    /// 
+    /// [GitHub API docs for create_comment](https://docs.github.com/rest/gists/comments#create-a-gist-comment)
     ///
     /// ---
     pub async fn create_comment_async(&self, gist_id: &str, body: PostGistsCreateComment) -> Result<GistComment, GistsCreateCommentError> {
@@ -1028,8 +1037,15 @@ impl<'api> Gists<'api> {
     /// ---
     ///
     /// # Create a gist comment
+    ///
+    /// Creates a comment on a gist.
     /// 
-    /// [GitHub API docs for create_comment](https://docs.github.com/rest/reference/gists#create-a-gist-comment)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.base64+json`**: Returns the base64-encoded contents. This can be useful if your gist contains any invalid UTF-8 sequences.
+    /// 
+    /// [GitHub API docs for create_comment](https://docs.github.com/rest/gists/comments#create-a-gist-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1069,7 +1085,7 @@ impl<'api> Gists<'api> {
     ///
     /// # Delete a gist
     /// 
-    /// [GitHub API docs for delete](https://docs.github.com/rest/reference/gists#delete-a-gist)
+    /// [GitHub API docs for delete](https://docs.github.com/rest/gists/gists#delete-a-gist)
     ///
     /// ---
     pub async fn delete_async(&self, gist_id: &str) -> Result<(), GistsDeleteError> {
@@ -1108,7 +1124,7 @@ impl<'api> Gists<'api> {
     ///
     /// # Delete a gist
     /// 
-    /// [GitHub API docs for delete](https://docs.github.com/rest/reference/gists#delete-a-gist)
+    /// [GitHub API docs for delete](https://docs.github.com/rest/gists/gists#delete-a-gist)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1148,10 +1164,10 @@ impl<'api> Gists<'api> {
     ///
     /// # Delete a gist comment
     /// 
-    /// [GitHub API docs for delete_comment](https://docs.github.com/rest/reference/gists#delete-a-gist-comment)
+    /// [GitHub API docs for delete_comment](https://docs.github.com/rest/gists/comments#delete-a-gist-comment)
     ///
     /// ---
-    pub async fn delete_comment_async(&self, gist_id: &str, comment_id: i32) -> Result<(), GistsDeleteCommentError> {
+    pub async fn delete_comment_async(&self, gist_id: &str, comment_id: i64) -> Result<(), GistsDeleteCommentError> {
 
         let request_uri = format!("{}/gists/{}/comments/{}", super::GITHUB_BASE_API_URL, gist_id, comment_id);
 
@@ -1187,11 +1203,11 @@ impl<'api> Gists<'api> {
     ///
     /// # Delete a gist comment
     /// 
-    /// [GitHub API docs for delete_comment](https://docs.github.com/rest/reference/gists#delete-a-gist-comment)
+    /// [GitHub API docs for delete_comment](https://docs.github.com/rest/gists/comments#delete-a-gist-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_comment(&self, gist_id: &str, comment_id: i32) -> Result<(), GistsDeleteCommentError> {
+    pub fn delete_comment(&self, gist_id: &str, comment_id: i64) -> Result<(), GistsDeleteCommentError> {
 
         let request_uri = format!("{}/gists/{}/comments/{}", super::GITHUB_BASE_API_URL, gist_id, comment_id);
 
@@ -1226,10 +1242,8 @@ impl<'api> Gists<'api> {
     /// ---
     ///
     /// # Fork a gist
-    ///
-    /// **Note**: This was previously `/gists/:gist_id/fork`.
     /// 
-    /// [GitHub API docs for fork](https://docs.github.com/rest/reference/gists#fork-a-gist)
+    /// [GitHub API docs for fork](https://docs.github.com/rest/gists/gists#fork-a-gist)
     ///
     /// ---
     pub async fn fork_async(&self, gist_id: &str) -> Result<BaseGist, GistsForkError> {
@@ -1268,10 +1282,8 @@ impl<'api> Gists<'api> {
     /// ---
     ///
     /// # Fork a gist
-    ///
-    /// **Note**: This was previously `/gists/:gist_id/fork`.
     /// 
-    /// [GitHub API docs for fork](https://docs.github.com/rest/reference/gists#fork-a-gist)
+    /// [GitHub API docs for fork](https://docs.github.com/rest/gists/gists#fork-a-gist)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1311,8 +1323,15 @@ impl<'api> Gists<'api> {
     /// ---
     ///
     /// # Get a gist
+    ///
+    /// Gets a specified gist.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/gists#get-a-gist)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.base64+json`**: Returns the base64-encoded contents. This can be useful if your gist contains any invalid UTF-8 sequences.
+    /// 
+    /// [GitHub API docs for get](https://docs.github.com/rest/gists/gists#get-a-gist)
     ///
     /// ---
     pub async fn get_async(&self, gist_id: &str) -> Result<GistSimple, GistsGetError> {
@@ -1350,8 +1369,15 @@ impl<'api> Gists<'api> {
     /// ---
     ///
     /// # Get a gist
+    ///
+    /// Gets a specified gist.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/gists#get-a-gist)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.base64+json`**: Returns the base64-encoded contents. This can be useful if your gist contains any invalid UTF-8 sequences.
+    /// 
+    /// [GitHub API docs for get](https://docs.github.com/rest/gists/gists#get-a-gist)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1390,11 +1416,18 @@ impl<'api> Gists<'api> {
     /// ---
     ///
     /// # Get a gist comment
+    ///
+    /// Gets a comment on a gist.
     /// 
-    /// [GitHub API docs for get_comment](https://docs.github.com/rest/reference/gists#get-a-gist-comment)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.base64+json`**: Returns the base64-encoded contents. This can be useful if your gist contains any invalid UTF-8 sequences.
+    /// 
+    /// [GitHub API docs for get_comment](https://docs.github.com/rest/gists/comments#get-a-gist-comment)
     ///
     /// ---
-    pub async fn get_comment_async(&self, gist_id: &str, comment_id: i32) -> Result<GistComment, GistsGetCommentError> {
+    pub async fn get_comment_async(&self, gist_id: &str, comment_id: i64) -> Result<GistComment, GistsGetCommentError> {
 
         let request_uri = format!("{}/gists/{}/comments/{}", super::GITHUB_BASE_API_URL, gist_id, comment_id);
 
@@ -1429,12 +1462,19 @@ impl<'api> Gists<'api> {
     /// ---
     ///
     /// # Get a gist comment
+    ///
+    /// Gets a comment on a gist.
     /// 
-    /// [GitHub API docs for get_comment](https://docs.github.com/rest/reference/gists#get-a-gist-comment)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.base64+json`**: Returns the base64-encoded contents. This can be useful if your gist contains any invalid UTF-8 sequences.
+    /// 
+    /// [GitHub API docs for get_comment](https://docs.github.com/rest/gists/comments#get-a-gist-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_comment(&self, gist_id: &str, comment_id: i32) -> Result<GistComment, GistsGetCommentError> {
+    pub fn get_comment(&self, gist_id: &str, comment_id: i64) -> Result<GistComment, GistsGetCommentError> {
 
         let request_uri = format!("{}/gists/{}/comments/{}", super::GITHUB_BASE_API_URL, gist_id, comment_id);
 
@@ -1469,8 +1509,15 @@ impl<'api> Gists<'api> {
     /// ---
     ///
     /// # Get a gist revision
+    ///
+    /// Gets a specified gist revision.
     /// 
-    /// [GitHub API docs for get_revision](https://docs.github.com/rest/reference/gists#get-a-gist-revision)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.base64+json`**: Returns the base64-encoded contents. This can be useful if your gist contains any invalid UTF-8 sequences.
+    /// 
+    /// [GitHub API docs for get_revision](https://docs.github.com/rest/gists/gists#get-a-gist-revision)
     ///
     /// ---
     pub async fn get_revision_async(&self, gist_id: &str, sha: &str) -> Result<GistSimple, GistsGetRevisionError> {
@@ -1508,8 +1555,15 @@ impl<'api> Gists<'api> {
     /// ---
     ///
     /// # Get a gist revision
+    ///
+    /// Gets a specified gist revision.
     /// 
-    /// [GitHub API docs for get_revision](https://docs.github.com/rest/reference/gists#get-a-gist-revision)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.base64+json`**: Returns the base64-encoded contents. This can be useful if your gist contains any invalid UTF-8 sequences.
+    /// 
+    /// [GitHub API docs for get_revision](https://docs.github.com/rest/gists/gists#get-a-gist-revision)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1551,7 +1605,7 @@ impl<'api> Gists<'api> {
     ///
     /// Lists the authenticated user's gists or if called anonymously, this endpoint returns all public gists:
     /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/gists#list-gists-for-the-authenticated-user)
+    /// [GitHub API docs for list](https://docs.github.com/rest/gists/gists#list-gists-for-the-authenticated-user)
     ///
     /// ---
     pub async fn list_async(&self, query_params: Option<impl Into<GistsListParams>>) -> Result<Vec<BaseGist>, GistsListError> {
@@ -1595,7 +1649,7 @@ impl<'api> Gists<'api> {
     ///
     /// Lists the authenticated user's gists or if called anonymously, this endpoint returns all public gists:
     /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/gists#list-gists-for-the-authenticated-user)
+    /// [GitHub API docs for list](https://docs.github.com/rest/gists/gists#list-gists-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1638,8 +1692,15 @@ impl<'api> Gists<'api> {
     /// ---
     ///
     /// # List gist comments
+    ///
+    /// Lists the comments on a gist.
     /// 
-    /// [GitHub API docs for list_comments](https://docs.github.com/rest/reference/gists#list-gist-comments)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.base64+json`**: Returns the base64-encoded contents. This can be useful if your gist contains any invalid UTF-8 sequences.
+    /// 
+    /// [GitHub API docs for list_comments](https://docs.github.com/rest/gists/comments#list-gist-comments)
     ///
     /// ---
     pub async fn list_comments_async(&self, gist_id: &str, query_params: Option<impl Into<GistsListCommentsParams>>) -> Result<Vec<GistComment>, GistsListCommentsError> {
@@ -1681,8 +1742,15 @@ impl<'api> Gists<'api> {
     /// ---
     ///
     /// # List gist comments
+    ///
+    /// Lists the comments on a gist.
     /// 
-    /// [GitHub API docs for list_comments](https://docs.github.com/rest/reference/gists#list-gist-comments)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.base64+json`**: Returns the base64-encoded contents. This can be useful if your gist contains any invalid UTF-8 sequences.
+    /// 
+    /// [GitHub API docs for list_comments](https://docs.github.com/rest/gists/comments#list-gist-comments)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1727,7 +1795,7 @@ impl<'api> Gists<'api> {
     ///
     /// # List gist commits
     /// 
-    /// [GitHub API docs for list_commits](https://docs.github.com/rest/reference/gists#list-gist-commits)
+    /// [GitHub API docs for list_commits](https://docs.github.com/rest/gists/gists#list-gist-commits)
     ///
     /// ---
     pub async fn list_commits_async(&self, gist_id: &str, query_params: Option<impl Into<GistsListCommitsParams>>) -> Result<Vec<GistCommit>, GistsListCommitsError> {
@@ -1770,7 +1838,7 @@ impl<'api> Gists<'api> {
     ///
     /// # List gist commits
     /// 
-    /// [GitHub API docs for list_commits](https://docs.github.com/rest/reference/gists#list-gist-commits)
+    /// [GitHub API docs for list_commits](https://docs.github.com/rest/gists/gists#list-gist-commits)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1817,7 +1885,7 @@ impl<'api> Gists<'api> {
     ///
     /// Lists public gists for the specified user:
     /// 
-    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/gists#list-gists-for-a-user)
+    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/gists/gists#list-gists-for-a-user)
     ///
     /// ---
     pub async fn list_for_user_async(&self, username: &str, query_params: Option<impl Into<GistsListForUserParams>>) -> Result<Vec<BaseGist>, GistsListForUserError> {
@@ -1860,7 +1928,7 @@ impl<'api> Gists<'api> {
     ///
     /// Lists public gists for the specified user:
     /// 
-    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/gists#list-gists-for-a-user)
+    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/gists/gists#list-gists-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1903,7 +1971,7 @@ impl<'api> Gists<'api> {
     ///
     /// # List gist forks
     /// 
-    /// [GitHub API docs for list_forks](https://docs.github.com/rest/reference/gists#list-gist-forks)
+    /// [GitHub API docs for list_forks](https://docs.github.com/rest/gists/gists#list-gist-forks)
     ///
     /// ---
     pub async fn list_forks_async(&self, gist_id: &str, query_params: Option<impl Into<GistsListForksParams>>) -> Result<Vec<GistSimple>, GistsListForksError> {
@@ -1946,7 +2014,7 @@ impl<'api> Gists<'api> {
     ///
     /// # List gist forks
     /// 
-    /// [GitHub API docs for list_forks](https://docs.github.com/rest/reference/gists#list-gist-forks)
+    /// [GitHub API docs for list_forks](https://docs.github.com/rest/gists/gists#list-gist-forks)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1993,9 +2061,9 @@ impl<'api> Gists<'api> {
     ///
     /// List public gists sorted by most recently updated to least recently updated.
     /// 
-    /// Note: With [pagination](https://docs.github.com/rest/overview/resources-in-the-rest-api#pagination), you can fetch up to 3000 gists. For example, you can fetch 100 pages with 30 gists per page or 30 pages with 100 gists per page.
+    /// Note: With [pagination](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api), you can fetch up to 3000 gists. For example, you can fetch 100 pages with 30 gists per page or 30 pages with 100 gists per page.
     /// 
-    /// [GitHub API docs for list_public](https://docs.github.com/rest/reference/gists#list-public-gists)
+    /// [GitHub API docs for list_public](https://docs.github.com/rest/gists/gists#list-public-gists)
     ///
     /// ---
     pub async fn list_public_async(&self, query_params: Option<impl Into<GistsListPublicParams>>) -> Result<Vec<BaseGist>, GistsListPublicError> {
@@ -2040,9 +2108,9 @@ impl<'api> Gists<'api> {
     ///
     /// List public gists sorted by most recently updated to least recently updated.
     /// 
-    /// Note: With [pagination](https://docs.github.com/rest/overview/resources-in-the-rest-api#pagination), you can fetch up to 3000 gists. For example, you can fetch 100 pages with 30 gists per page or 30 pages with 100 gists per page.
+    /// Note: With [pagination](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api), you can fetch up to 3000 gists. For example, you can fetch 100 pages with 30 gists per page or 30 pages with 100 gists per page.
     /// 
-    /// [GitHub API docs for list_public](https://docs.github.com/rest/reference/gists#list-public-gists)
+    /// [GitHub API docs for list_public](https://docs.github.com/rest/gists/gists#list-public-gists)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2089,7 +2157,7 @@ impl<'api> Gists<'api> {
     ///
     /// List the authenticated user's starred gists:
     /// 
-    /// [GitHub API docs for list_starred](https://docs.github.com/rest/reference/gists#list-starred-gists)
+    /// [GitHub API docs for list_starred](https://docs.github.com/rest/gists/gists#list-starred-gists)
     ///
     /// ---
     pub async fn list_starred_async(&self, query_params: Option<impl Into<GistsListStarredParams>>) -> Result<Vec<BaseGist>, GistsListStarredError> {
@@ -2134,7 +2202,7 @@ impl<'api> Gists<'api> {
     ///
     /// List the authenticated user's starred gists:
     /// 
-    /// [GitHub API docs for list_starred](https://docs.github.com/rest/reference/gists#list-starred-gists)
+    /// [GitHub API docs for list_starred](https://docs.github.com/rest/gists/gists#list-starred-gists)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2179,9 +2247,9 @@ impl<'api> Gists<'api> {
     ///
     /// # Star a gist
     ///
-    /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
+    /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP method](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
     /// 
-    /// [GitHub API docs for star](https://docs.github.com/rest/reference/gists#star-a-gist)
+    /// [GitHub API docs for star](https://docs.github.com/rest/gists/gists#star-a-gist)
     ///
     /// ---
     pub async fn star_async(&self, gist_id: &str) -> Result<(), GistsStarError> {
@@ -2220,9 +2288,9 @@ impl<'api> Gists<'api> {
     ///
     /// # Star a gist
     ///
-    /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
+    /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP method](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
     /// 
-    /// [GitHub API docs for star](https://docs.github.com/rest/reference/gists#star-a-gist)
+    /// [GitHub API docs for star](https://docs.github.com/rest/gists/gists#star-a-gist)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2262,7 +2330,7 @@ impl<'api> Gists<'api> {
     ///
     /// # Unstar a gist
     /// 
-    /// [GitHub API docs for unstar](https://docs.github.com/rest/reference/gists#unstar-a-gist)
+    /// [GitHub API docs for unstar](https://docs.github.com/rest/gists/gists#unstar-a-gist)
     ///
     /// ---
     pub async fn unstar_async(&self, gist_id: &str) -> Result<(), GistsUnstarError> {
@@ -2301,7 +2369,7 @@ impl<'api> Gists<'api> {
     ///
     /// # Unstar a gist
     /// 
-    /// [GitHub API docs for unstar](https://docs.github.com/rest/reference/gists#unstar-a-gist)
+    /// [GitHub API docs for unstar](https://docs.github.com/rest/gists/gists#unstar-a-gist)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2341,9 +2409,18 @@ impl<'api> Gists<'api> {
     ///
     /// # Update a gist
     ///
-    /// Allows you to update or delete a gist file and rename gist files. Files from the previous version of the gist that aren't explicitly changed during an edit are unchanged.
+    /// Allows you to update a gist's description and to update, delete, or rename gist files. Files
+    /// from the previous version of the gist that aren't explicitly changed during an edit
+    /// are unchanged.
     /// 
-    /// [GitHub API docs for update](https://docs.github.com/rest/reference/gists/#update-a-gist)
+    /// At least one of `description` or `files` is required.
+    /// 
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.base64+json`**: Returns the base64-encoded contents. This can be useful if your gist contains any invalid UTF-8 sequences.
+    /// 
+    /// [GitHub API docs for update](https://docs.github.com/rest/gists/gists#update-a-gist)
     ///
     /// ---
     pub async fn update_async(&self, gist_id: &str, body: PatchGistsUpdate) -> Result<GistSimple, GistsUpdateError> {
@@ -2381,9 +2458,18 @@ impl<'api> Gists<'api> {
     ///
     /// # Update a gist
     ///
-    /// Allows you to update or delete a gist file and rename gist files. Files from the previous version of the gist that aren't explicitly changed during an edit are unchanged.
+    /// Allows you to update a gist's description and to update, delete, or rename gist files. Files
+    /// from the previous version of the gist that aren't explicitly changed during an edit
+    /// are unchanged.
     /// 
-    /// [GitHub API docs for update](https://docs.github.com/rest/reference/gists/#update-a-gist)
+    /// At least one of `description` or `files` is required.
+    /// 
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.base64+json`**: Returns the base64-encoded contents. This can be useful if your gist contains any invalid UTF-8 sequences.
+    /// 
+    /// [GitHub API docs for update](https://docs.github.com/rest/gists/gists#update-a-gist)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2421,11 +2507,18 @@ impl<'api> Gists<'api> {
     /// ---
     ///
     /// # Update a gist comment
+    ///
+    /// Updates a comment on a gist.
     /// 
-    /// [GitHub API docs for update_comment](https://docs.github.com/rest/reference/gists#update-a-gist-comment)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.base64+json`**: Returns the base64-encoded contents. This can be useful if your gist contains any invalid UTF-8 sequences.
+    /// 
+    /// [GitHub API docs for update_comment](https://docs.github.com/rest/gists/comments#update-a-gist-comment)
     ///
     /// ---
-    pub async fn update_comment_async(&self, gist_id: &str, comment_id: i32, body: PatchGistsUpdateComment) -> Result<GistComment, GistsUpdateCommentError> {
+    pub async fn update_comment_async(&self, gist_id: &str, comment_id: i64, body: PatchGistsUpdateComment) -> Result<GistComment, GistsUpdateCommentError> {
 
         let request_uri = format!("{}/gists/{}/comments/{}", super::GITHUB_BASE_API_URL, gist_id, comment_id);
 
@@ -2458,12 +2551,19 @@ impl<'api> Gists<'api> {
     /// ---
     ///
     /// # Update a gist comment
+    ///
+    /// Updates a comment on a gist.
     /// 
-    /// [GitHub API docs for update_comment](https://docs.github.com/rest/reference/gists#update-a-gist-comment)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.base64+json`**: Returns the base64-encoded contents. This can be useful if your gist contains any invalid UTF-8 sequences.
+    /// 
+    /// [GitHub API docs for update_comment](https://docs.github.com/rest/gists/comments#update-a-gist-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_comment(&self, gist_id: &str, comment_id: i32, body: PatchGistsUpdateComment) -> Result<GistComment, GistsUpdateCommentError> {
+    pub fn update_comment(&self, gist_id: &str, comment_id: i64, body: PatchGistsUpdateComment) -> Result<GistComment, GistsUpdateCommentError> {
 
         let request_uri = format!("{}/gists/{}/comments/{}", super::GITHUB_BASE_API_URL, gist_id, comment_id);
 

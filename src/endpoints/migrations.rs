@@ -44,6 +44,8 @@ pub enum MigrationsCancelImportError {
 
     // -- endpoint errors
 
+    #[error("Unavailable due to service under maintenance.")]
+    Status503(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -153,6 +155,8 @@ pub enum MigrationsGetCommitAuthorsError {
 
     #[error("Resource not found")]
     Status404(BasicError),
+    #[error("Unavailable due to service under maintenance.")]
+    Status503(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -172,6 +176,8 @@ pub enum MigrationsGetImportStatusError {
 
     #[error("Resource not found")]
     Status404(BasicError),
+    #[error("Unavailable due to service under maintenance.")]
+    Status503(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -189,6 +195,8 @@ pub enum MigrationsGetLargeFilesError {
 
     // -- endpoint errors
 
+    #[error("Unavailable due to service under maintenance.")]
+    Status503(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -328,10 +336,12 @@ pub enum MigrationsMapCommitAuthorError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
     Status404(BasicError),
+    #[error("Unavailable due to service under maintenance.")]
+    Status503(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -349,8 +359,10 @@ pub enum MigrationsSetLfsPreferenceError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
+    #[error("Unavailable due to service under maintenance.")]
+    Status503(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -368,7 +380,7 @@ pub enum MigrationsStartForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
     Status304,
@@ -395,7 +407,7 @@ pub enum MigrationsStartForOrgError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -414,10 +426,12 @@ pub enum MigrationsStartImportError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
     Status404(BasicError),
+    #[error("Unavailable due to service under maintenance.")]
+    Status503(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -479,6 +493,8 @@ pub enum MigrationsUpdateImportError {
 
     // -- endpoint errors
 
+    #[error("Unavailable due to service under maintenance.")]
+    Status503(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -547,9 +563,9 @@ impl MigrationsGetStatusForOrgParams {
 /// Query parameters for the [List user migrations](Migrations::list_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct MigrationsListForAuthenticatedUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -558,7 +574,7 @@ impl MigrationsListForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -566,7 +582,7 @@ impl MigrationsListForAuthenticatedUserParams {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             per_page: self.per_page, 
@@ -587,9 +603,9 @@ impl<'enc> From<&'enc PerPage> for MigrationsListForAuthenticatedUserParams {
 /// Query parameters for the [List organization migrations](Migrations::list_for_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct MigrationsListForOrgParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>, 
     /// Exclude attributes from the API response to improve performance
     exclude: Option<Vec<String>>
@@ -600,7 +616,7 @@ impl MigrationsListForOrgParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -609,7 +625,7 @@ impl MigrationsListForOrgParams {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             per_page: self.per_page, 
@@ -640,9 +656,9 @@ impl<'enc> From<&'enc PerPage> for MigrationsListForOrgParams {
 /// Query parameters for the [List repositories for a user migration](Migrations::list_repos_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct MigrationsListReposForAuthenticatedUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -651,7 +667,7 @@ impl MigrationsListReposForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -659,7 +675,7 @@ impl MigrationsListReposForAuthenticatedUserParams {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             per_page: self.per_page, 
@@ -680,9 +696,9 @@ impl<'enc> From<&'enc PerPage> for MigrationsListReposForAuthenticatedUserParams
 /// Query parameters for the [List repositories in an organization migration](Migrations::list_repos_for_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct MigrationsListReposForOrgParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -691,7 +707,7 @@ impl MigrationsListReposForOrgParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             per_page: Some(per_page),
@@ -699,7 +715,7 @@ impl MigrationsListReposForOrgParams {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             per_page: self.per_page, 
@@ -725,7 +741,10 @@ impl<'api> Migrations<'api> {
     ///
     /// Stop an import for a repository.
     /// 
-    /// [GitHub API docs for cancel_import](https://docs.github.com/rest/reference/migrations#cancel-an-import)
+    /// > [!WARNING]
+    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// 
+    /// [GitHub API docs for cancel_import](https://docs.github.com/rest/migrations/source-imports#cancel-an-import)
     ///
     /// ---
     pub async fn cancel_import_async(&self, owner: &str, repo: &str) -> Result<(), MigrationsCancelImportError> {
@@ -752,6 +771,7 @@ impl<'api> Migrations<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                503 => Err(MigrationsCancelImportError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsCancelImportError::Generic { code }),
             }
         }
@@ -763,7 +783,10 @@ impl<'api> Migrations<'api> {
     ///
     /// Stop an import for a repository.
     /// 
-    /// [GitHub API docs for cancel_import](https://docs.github.com/rest/reference/migrations#cancel-an-import)
+    /// > [!WARNING]
+    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// 
+    /// [GitHub API docs for cancel_import](https://docs.github.com/rest/migrations/source-imports#cancel-an-import)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -791,6 +814,7 @@ impl<'api> Migrations<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                503 => Err(MigrationsCancelImportError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsCancelImportError::Generic { code }),
             }
         }
@@ -800,9 +824,9 @@ impl<'api> Migrations<'api> {
     ///
     /// # Delete a user migration archive
     ///
-    /// Deletes a previous migration archive. Downloadable migration archives are automatically deleted after seven days. Migration metadata, which is returned in the [List user migrations](https://docs.github.com/rest/reference/migrations#list-user-migrations) and [Get a user migration status](https://docs.github.com/rest/reference/migrations#get-a-user-migration-status) endpoints, will continue to be available even after an archive is deleted.
+    /// Deletes a previous migration archive. Downloadable migration archives are automatically deleted after seven days. Migration metadata, which is returned in the [List user migrations](https://docs.github.com/rest/migrations/users#list-user-migrations) and [Get a user migration status](https://docs.github.com/rest/migrations/users#get-a-user-migration-status) endpoints, will continue to be available even after an archive is deleted.
     /// 
-    /// [GitHub API docs for delete_archive_for_authenticated_user](https://docs.github.com/rest/reference/migrations#delete-a-user-migration-archive)
+    /// [GitHub API docs for delete_archive_for_authenticated_user](https://docs.github.com/rest/migrations/users#delete-a-user-migration-archive)
     ///
     /// ---
     pub async fn delete_archive_for_authenticated_user_async(&self, migration_id: i32) -> Result<(), MigrationsDeleteArchiveForAuthenticatedUserError> {
@@ -842,9 +866,9 @@ impl<'api> Migrations<'api> {
     ///
     /// # Delete a user migration archive
     ///
-    /// Deletes a previous migration archive. Downloadable migration archives are automatically deleted after seven days. Migration metadata, which is returned in the [List user migrations](https://docs.github.com/rest/reference/migrations#list-user-migrations) and [Get a user migration status](https://docs.github.com/rest/reference/migrations#get-a-user-migration-status) endpoints, will continue to be available even after an archive is deleted.
+    /// Deletes a previous migration archive. Downloadable migration archives are automatically deleted after seven days. Migration metadata, which is returned in the [List user migrations](https://docs.github.com/rest/migrations/users#list-user-migrations) and [Get a user migration status](https://docs.github.com/rest/migrations/users#get-a-user-migration-status) endpoints, will continue to be available even after an archive is deleted.
     /// 
-    /// [GitHub API docs for delete_archive_for_authenticated_user](https://docs.github.com/rest/reference/migrations#delete-a-user-migration-archive)
+    /// [GitHub API docs for delete_archive_for_authenticated_user](https://docs.github.com/rest/migrations/users#delete-a-user-migration-archive)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -887,7 +911,7 @@ impl<'api> Migrations<'api> {
     ///
     /// Deletes a previous migration archive. Migration archives are automatically deleted after seven days.
     /// 
-    /// [GitHub API docs for delete_archive_for_org](https://docs.github.com/rest/reference/migrations#delete-an-organization-migration-archive)
+    /// [GitHub API docs for delete_archive_for_org](https://docs.github.com/rest/migrations/orgs#delete-an-organization-migration-archive)
     ///
     /// ---
     pub async fn delete_archive_for_org_async(&self, org: &str, migration_id: i32) -> Result<(), MigrationsDeleteArchiveForOrgError> {
@@ -926,7 +950,7 @@ impl<'api> Migrations<'api> {
     ///
     /// Deletes a previous migration archive. Migration archives are automatically deleted after seven days.
     /// 
-    /// [GitHub API docs for delete_archive_for_org](https://docs.github.com/rest/reference/migrations#delete-an-organization-migration-archive)
+    /// [GitHub API docs for delete_archive_for_org](https://docs.github.com/rest/migrations/orgs#delete-an-organization-migration-archive)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -966,7 +990,7 @@ impl<'api> Migrations<'api> {
     ///
     /// Fetches the URL to a migration archive.
     /// 
-    /// [GitHub API docs for download_archive_for_org](https://docs.github.com/rest/reference/migrations#download-an-organization-migration-archive)
+    /// [GitHub API docs for download_archive_for_org](https://docs.github.com/rest/migrations/orgs#download-an-organization-migration-archive)
     ///
     /// ---
     pub async fn download_archive_for_org_async(&self, org: &str, migration_id: i32) -> Result<(), MigrationsDownloadArchiveForOrgError> {
@@ -1006,7 +1030,7 @@ impl<'api> Migrations<'api> {
     ///
     /// Fetches the URL to a migration archive.
     /// 
-    /// [GitHub API docs for download_archive_for_org](https://docs.github.com/rest/reference/migrations#download-an-organization-migration-archive)
+    /// [GitHub API docs for download_archive_for_org](https://docs.github.com/rest/migrations/orgs#download-an-organization-migration-archive)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1067,7 +1091,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// The archive will also contain an `attachments` directory that includes all attachment files uploaded to GitHub.com and a `repositories` directory that contains the repository's Git data.
     /// 
-    /// [GitHub API docs for get_archive_for_authenticated_user](https://docs.github.com/rest/reference/migrations#download-a-user-migration-archive)
+    /// [GitHub API docs for get_archive_for_authenticated_user](https://docs.github.com/rest/migrations/users#download-a-user-migration-archive)
     ///
     /// ---
     pub async fn get_archive_for_authenticated_user_async(&self, migration_id: i32) -> Result<(), MigrationsGetArchiveForAuthenticatedUserError> {
@@ -1129,7 +1153,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// The archive will also contain an `attachments` directory that includes all attachment files uploaded to GitHub.com and a `repositories` directory that contains the repository's Git data.
     /// 
-    /// [GitHub API docs for get_archive_for_authenticated_user](https://docs.github.com/rest/reference/migrations#download-a-user-migration-archive)
+    /// [GitHub API docs for get_archive_for_authenticated_user](https://docs.github.com/rest/migrations/users#download-a-user-migration-archive)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1172,9 +1196,12 @@ impl<'api> Migrations<'api> {
     ///
     /// Each type of source control system represents authors in a different way. For example, a Git commit author has a display name and an email address, but a Subversion commit author just has a username. The GitHub Importer will make the author information valid, but the author might not be correct. For example, it will change the bare Subversion username `hubot` into something like `hubot <hubot@12341234-abab-fefe-8787-fedcba987654>`.
     /// 
-    /// This endpoint and the [Map a commit author](https://docs.github.com/rest/reference/migrations#map-a-commit-author) endpoint allow you to provide correct Git author information.
+    /// This endpoint and the [Map a commit author](https://docs.github.com/rest/migrations/source-imports#map-a-commit-author) endpoint allow you to provide correct Git author information.
     /// 
-    /// [GitHub API docs for get_commit_authors](https://docs.github.com/rest/reference/migrations#get-commit-authors)
+    /// > [!WARNING]
+    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// 
+    /// [GitHub API docs for get_commit_authors](https://docs.github.com/rest/migrations/source-imports#get-commit-authors)
     ///
     /// ---
     pub async fn get_commit_authors_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<MigrationsGetCommitAuthorsParams>>) -> Result<Vec<PorterAuthor>, MigrationsGetCommitAuthorsError> {
@@ -1206,6 +1233,7 @@ impl<'api> Migrations<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(MigrationsGetCommitAuthorsError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(MigrationsGetCommitAuthorsError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsGetCommitAuthorsError::Generic { code }),
             }
         }
@@ -1217,9 +1245,12 @@ impl<'api> Migrations<'api> {
     ///
     /// Each type of source control system represents authors in a different way. For example, a Git commit author has a display name and an email address, but a Subversion commit author just has a username. The GitHub Importer will make the author information valid, but the author might not be correct. For example, it will change the bare Subversion username `hubot` into something like `hubot <hubot@12341234-abab-fefe-8787-fedcba987654>`.
     /// 
-    /// This endpoint and the [Map a commit author](https://docs.github.com/rest/reference/migrations#map-a-commit-author) endpoint allow you to provide correct Git author information.
+    /// This endpoint and the [Map a commit author](https://docs.github.com/rest/migrations/source-imports#map-a-commit-author) endpoint allow you to provide correct Git author information.
     /// 
-    /// [GitHub API docs for get_commit_authors](https://docs.github.com/rest/reference/migrations#get-commit-authors)
+    /// > [!WARNING]
+    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// 
+    /// [GitHub API docs for get_commit_authors](https://docs.github.com/rest/migrations/source-imports#get-commit-authors)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1253,6 +1284,7 @@ impl<'api> Migrations<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(MigrationsGetCommitAuthorsError::Status404(crate::adapters::to_json(github_response)?)),
+                503 => Err(MigrationsGetCommitAuthorsError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsGetCommitAuthorsError::Generic { code }),
             }
         }
@@ -1263,6 +1295,9 @@ impl<'api> Migrations<'api> {
     /// # Get an import status
     ///
     /// View the progress of an import.
+    /// 
+    /// > [!WARNING]
+    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
     /// 
     /// **Import status**
     /// 
@@ -1278,11 +1313,11 @@ impl<'api> Migrations<'api> {
     /// 
     /// If there are problems, you will see one of these in the `status` field:
     /// 
-    /// *   `auth_failed` - the import requires authentication in order to connect to the original repository. To update authentication for the import, please see the [Update an import](https://docs.github.com/rest/reference/migrations#update-an-import) section.
+    /// *   `auth_failed` - the import requires authentication in order to connect to the original repository. To update authentication for the import, please see the [Update an import](https://docs.github.com/rest/migrations/source-imports#update-an-import) section.
     /// *   `error` - the import encountered an error. The import progress response will include the `failed_step` and an error message. Contact [GitHub Support](https://support.github.com/contact?tags=dotcom-rest-api) for more information.
-    /// *   `detection_needs_auth` - the importer requires authentication for the originating repository to continue detection. To update authentication for the import, please see the [Update an import](https://docs.github.com/rest/reference/migrations#update-an-import) section.
-    /// *   `detection_found_nothing` - the importer didn't recognize any source control at the URL. To resolve, [Cancel the import](https://docs.github.com/rest/reference/migrations#cancel-an-import) and [retry](https://docs.github.com/rest/reference/migrations#start-an-import) with the correct URL.
-    /// *   `detection_found_multiple` - the importer found several projects or repositories at the provided URL. When this is the case, the Import Progress response will also include a `project_choices` field with the possible project choices as values. To update project choice, please see the [Update an import](https://docs.github.com/rest/reference/migrations#update-an-import) section.
+    /// *   `detection_needs_auth` - the importer requires authentication for the originating repository to continue detection. To update authentication for the import, please see the [Update an import](https://docs.github.com/rest/migrations/source-imports#update-an-import) section.
+    /// *   `detection_found_nothing` - the importer didn't recognize any source control at the URL. To resolve, [Cancel the import](https://docs.github.com/rest/migrations/source-imports#cancel-an-import) and [retry](https://docs.github.com/rest/migrations/source-imports#start-an-import) with the correct URL.
+    /// *   `detection_found_multiple` - the importer found several projects or repositories at the provided URL. When this is the case, the Import Progress response will also include a `project_choices` field with the possible project choices as values. To update project choice, please see the [Update an import](https://docs.github.com/rest/migrations/source-imports#update-an-import) section.
     /// 
     /// **The project_choices field**
     /// 
@@ -1297,7 +1332,7 @@ impl<'api> Migrations<'api> {
     /// *   `large_files_size` - the total size in gigabytes of files larger than 100MB found in the originating repository.
     /// *   `large_files_count` - the total number of files larger than 100MB found in the originating repository. To see a list of these files, make a "Get Large Files" request.
     /// 
-    /// [GitHub API docs for get_import_status](https://docs.github.com/rest/reference/migrations#get-an-import-status)
+    /// [GitHub API docs for get_import_status](https://docs.github.com/rest/migrations/source-imports#get-an-import-status)
     ///
     /// ---
     pub async fn get_import_status_async(&self, owner: &str, repo: &str) -> Result<Import, MigrationsGetImportStatusError> {
@@ -1325,6 +1360,7 @@ impl<'api> Migrations<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(MigrationsGetImportStatusError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(MigrationsGetImportStatusError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsGetImportStatusError::Generic { code }),
             }
         }
@@ -1335,6 +1371,9 @@ impl<'api> Migrations<'api> {
     /// # Get an import status
     ///
     /// View the progress of an import.
+    /// 
+    /// > [!WARNING]
+    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
     /// 
     /// **Import status**
     /// 
@@ -1350,11 +1389,11 @@ impl<'api> Migrations<'api> {
     /// 
     /// If there are problems, you will see one of these in the `status` field:
     /// 
-    /// *   `auth_failed` - the import requires authentication in order to connect to the original repository. To update authentication for the import, please see the [Update an import](https://docs.github.com/rest/reference/migrations#update-an-import) section.
+    /// *   `auth_failed` - the import requires authentication in order to connect to the original repository. To update authentication for the import, please see the [Update an import](https://docs.github.com/rest/migrations/source-imports#update-an-import) section.
     /// *   `error` - the import encountered an error. The import progress response will include the `failed_step` and an error message. Contact [GitHub Support](https://support.github.com/contact?tags=dotcom-rest-api) for more information.
-    /// *   `detection_needs_auth` - the importer requires authentication for the originating repository to continue detection. To update authentication for the import, please see the [Update an import](https://docs.github.com/rest/reference/migrations#update-an-import) section.
-    /// *   `detection_found_nothing` - the importer didn't recognize any source control at the URL. To resolve, [Cancel the import](https://docs.github.com/rest/reference/migrations#cancel-an-import) and [retry](https://docs.github.com/rest/reference/migrations#start-an-import) with the correct URL.
-    /// *   `detection_found_multiple` - the importer found several projects or repositories at the provided URL. When this is the case, the Import Progress response will also include a `project_choices` field with the possible project choices as values. To update project choice, please see the [Update an import](https://docs.github.com/rest/reference/migrations#update-an-import) section.
+    /// *   `detection_needs_auth` - the importer requires authentication for the originating repository to continue detection. To update authentication for the import, please see the [Update an import](https://docs.github.com/rest/migrations/source-imports#update-an-import) section.
+    /// *   `detection_found_nothing` - the importer didn't recognize any source control at the URL. To resolve, [Cancel the import](https://docs.github.com/rest/migrations/source-imports#cancel-an-import) and [retry](https://docs.github.com/rest/migrations/source-imports#start-an-import) with the correct URL.
+    /// *   `detection_found_multiple` - the importer found several projects or repositories at the provided URL. When this is the case, the Import Progress response will also include a `project_choices` field with the possible project choices as values. To update project choice, please see the [Update an import](https://docs.github.com/rest/migrations/source-imports#update-an-import) section.
     /// 
     /// **The project_choices field**
     /// 
@@ -1369,7 +1408,7 @@ impl<'api> Migrations<'api> {
     /// *   `large_files_size` - the total size in gigabytes of files larger than 100MB found in the originating repository.
     /// *   `large_files_count` - the total number of files larger than 100MB found in the originating repository. To see a list of these files, make a "Get Large Files" request.
     /// 
-    /// [GitHub API docs for get_import_status](https://docs.github.com/rest/reference/migrations#get-an-import-status)
+    /// [GitHub API docs for get_import_status](https://docs.github.com/rest/migrations/source-imports#get-an-import-status)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1398,6 +1437,7 @@ impl<'api> Migrations<'api> {
         } else {
             match github_response.status_code() {
                 404 => Err(MigrationsGetImportStatusError::Status404(crate::adapters::to_json(github_response)?)),
+                503 => Err(MigrationsGetImportStatusError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsGetImportStatusError::Generic { code }),
             }
         }
@@ -1409,7 +1449,10 @@ impl<'api> Migrations<'api> {
     ///
     /// List files larger than 100MB found during the import
     /// 
-    /// [GitHub API docs for get_large_files](https://docs.github.com/rest/reference/migrations#get-large-files)
+    /// > [!WARNING]
+    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// 
+    /// [GitHub API docs for get_large_files](https://docs.github.com/rest/migrations/source-imports#get-large-files)
     ///
     /// ---
     pub async fn get_large_files_async(&self, owner: &str, repo: &str) -> Result<Vec<PorterLargeFile>, MigrationsGetLargeFilesError> {
@@ -1436,6 +1479,7 @@ impl<'api> Migrations<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                503 => Err(MigrationsGetLargeFilesError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsGetLargeFilesError::Generic { code }),
             }
         }
@@ -1447,7 +1491,10 @@ impl<'api> Migrations<'api> {
     ///
     /// List files larger than 100MB found during the import
     /// 
-    /// [GitHub API docs for get_large_files](https://docs.github.com/rest/reference/migrations#get-large-files)
+    /// > [!WARNING]
+    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// 
+    /// [GitHub API docs for get_large_files](https://docs.github.com/rest/migrations/source-imports#get-large-files)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1475,6 +1522,7 @@ impl<'api> Migrations<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                503 => Err(MigrationsGetLargeFilesError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsGetLargeFilesError::Generic { code }),
             }
         }
@@ -1491,9 +1539,9 @@ impl<'api> Migrations<'api> {
     /// *   `exported` - the migration finished successfully.
     /// *   `failed` - the migration failed.
     /// 
-    /// Once the migration has been `exported` you can [download the migration archive](https://docs.github.com/rest/reference/migrations#download-a-user-migration-archive).
+    /// Once the migration has been `exported` you can [download the migration archive](https://docs.github.com/rest/migrations/users#download-a-user-migration-archive).
     /// 
-    /// [GitHub API docs for get_status_for_authenticated_user](https://docs.github.com/rest/reference/migrations#get-a-user-migration-status)
+    /// [GitHub API docs for get_status_for_authenticated_user](https://docs.github.com/rest/migrations/users#get-a-user-migration-status)
     ///
     /// ---
     pub async fn get_status_for_authenticated_user_async(&self, migration_id: i32, query_params: Option<impl Into<MigrationsGetStatusForAuthenticatedUserParams>>) -> Result<Migration, MigrationsGetStatusForAuthenticatedUserError> {
@@ -1544,9 +1592,9 @@ impl<'api> Migrations<'api> {
     /// *   `exported` - the migration finished successfully.
     /// *   `failed` - the migration failed.
     /// 
-    /// Once the migration has been `exported` you can [download the migration archive](https://docs.github.com/rest/reference/migrations#download-a-user-migration-archive).
+    /// Once the migration has been `exported` you can [download the migration archive](https://docs.github.com/rest/migrations/users#download-a-user-migration-archive).
     /// 
-    /// [GitHub API docs for get_status_for_authenticated_user](https://docs.github.com/rest/reference/migrations#get-a-user-migration-status)
+    /// [GitHub API docs for get_status_for_authenticated_user](https://docs.github.com/rest/migrations/users#get-a-user-migration-status)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1601,7 +1649,7 @@ impl<'api> Migrations<'api> {
     /// *   `exported`, which means the migration finished successfully.
     /// *   `failed`, which means the migration failed.
     /// 
-    /// [GitHub API docs for get_status_for_org](https://docs.github.com/rest/reference/migrations#get-an-organization-migration-status)
+    /// [GitHub API docs for get_status_for_org](https://docs.github.com/rest/migrations/orgs#get-an-organization-migration-status)
     ///
     /// ---
     pub async fn get_status_for_org_async(&self, org: &str, migration_id: i32, query_params: Option<impl Into<MigrationsGetStatusForOrgParams>>) -> Result<Migration, MigrationsGetStatusForOrgError> {
@@ -1651,7 +1699,7 @@ impl<'api> Migrations<'api> {
     /// *   `exported`, which means the migration finished successfully.
     /// *   `failed`, which means the migration failed.
     /// 
-    /// [GitHub API docs for get_status_for_org](https://docs.github.com/rest/reference/migrations#get-an-organization-migration-status)
+    /// [GitHub API docs for get_status_for_org](https://docs.github.com/rest/migrations/orgs#get-an-organization-migration-status)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1696,7 +1744,7 @@ impl<'api> Migrations<'api> {
     ///
     /// Lists all migrations a user has started.
     /// 
-    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/migrations#list-user-migrations)
+    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/migrations/users#list-user-migrations)
     ///
     /// ---
     pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<MigrationsListForAuthenticatedUserParams>>) -> Result<Vec<Migration>, MigrationsListForAuthenticatedUserError> {
@@ -1741,7 +1789,7 @@ impl<'api> Migrations<'api> {
     ///
     /// Lists all migrations a user has started.
     /// 
-    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/migrations#list-user-migrations)
+    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/migrations/users#list-user-migrations)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1786,9 +1834,11 @@ impl<'api> Migrations<'api> {
     ///
     /// # List organization migrations
     ///
-    /// Lists the most recent migrations.
+    /// Lists the most recent migrations, including both exports (which can be started through the REST API) and imports (which cannot be started using the REST API).
     /// 
-    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/migrations#list-organization-migrations)
+    /// A list of `repositories` is only returned for export migrations.
+    /// 
+    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/migrations/orgs#list-organization-migrations)
     ///
     /// ---
     pub async fn list_for_org_async(&self, org: &str, query_params: Option<impl Into<MigrationsListForOrgParams>>) -> Result<Vec<Migration>, MigrationsListForOrgError> {
@@ -1828,9 +1878,11 @@ impl<'api> Migrations<'api> {
     ///
     /// # List organization migrations
     ///
-    /// Lists the most recent migrations.
+    /// Lists the most recent migrations, including both exports (which can be started through the REST API) and imports (which cannot be started using the REST API).
     /// 
-    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/migrations#list-organization-migrations)
+    /// A list of `repositories` is only returned for export migrations.
+    /// 
+    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/migrations/orgs#list-organization-migrations)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1874,7 +1926,7 @@ impl<'api> Migrations<'api> {
     ///
     /// Lists all the repositories for this user migration.
     /// 
-    /// [GitHub API docs for list_repos_for_authenticated_user](https://docs.github.com/rest/reference/migrations#list-repositories-for-a-user-migration)
+    /// [GitHub API docs for list_repos_for_authenticated_user](https://docs.github.com/rest/migrations/users#list-repositories-for-a-user-migration)
     ///
     /// ---
     pub async fn list_repos_for_authenticated_user_async(&self, migration_id: i32, query_params: Option<impl Into<MigrationsListReposForAuthenticatedUserParams>>) -> Result<Vec<MinimalRepository>, MigrationsListReposForAuthenticatedUserError> {
@@ -1917,7 +1969,7 @@ impl<'api> Migrations<'api> {
     ///
     /// Lists all the repositories for this user migration.
     /// 
-    /// [GitHub API docs for list_repos_for_authenticated_user](https://docs.github.com/rest/reference/migrations#list-repositories-for-a-user-migration)
+    /// [GitHub API docs for list_repos_for_authenticated_user](https://docs.github.com/rest/migrations/users#list-repositories-for-a-user-migration)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1962,7 +2014,7 @@ impl<'api> Migrations<'api> {
     ///
     /// List all the repositories for this organization migration.
     /// 
-    /// [GitHub API docs for list_repos_for_org](https://docs.github.com/rest/reference/migrations#list-repositories-in-an-organization-migration)
+    /// [GitHub API docs for list_repos_for_org](https://docs.github.com/rest/migrations/orgs#list-repositories-in-an-organization-migration)
     ///
     /// ---
     pub async fn list_repos_for_org_async(&self, org: &str, migration_id: i32, query_params: Option<impl Into<MigrationsListReposForOrgParams>>) -> Result<Vec<MinimalRepository>, MigrationsListReposForOrgError> {
@@ -2005,7 +2057,7 @@ impl<'api> Migrations<'api> {
     ///
     /// List all the repositories for this organization migration.
     /// 
-    /// [GitHub API docs for list_repos_for_org](https://docs.github.com/rest/reference/migrations#list-repositories-in-an-organization-migration)
+    /// [GitHub API docs for list_repos_for_org](https://docs.github.com/rest/migrations/orgs#list-repositories-in-an-organization-migration)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2048,9 +2100,13 @@ impl<'api> Migrations<'api> {
     ///
     /// # Map a commit author
     ///
-    /// Update an author's identity for the import. Your application can continue updating authors any time before you push new commits to the repository.
+    /// Update an author's identity for the import. Your application can continue updating authors any time before you push
+    /// new commits to the repository.
     /// 
-    /// [GitHub API docs for map_commit_author](https://docs.github.com/rest/reference/migrations#map-a-commit-author)
+    /// > [!WARNING]
+    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// 
+    /// [GitHub API docs for map_commit_author](https://docs.github.com/rest/migrations/source-imports#map-a-commit-author)
     ///
     /// ---
     pub async fn map_commit_author_async(&self, owner: &str, repo: &str, author_id: i32, body: PatchMigrationsMapCommitAuthor) -> Result<PorterAuthor, MigrationsMapCommitAuthorError> {
@@ -2079,6 +2135,7 @@ impl<'api> Migrations<'api> {
             match github_response.status_code() {
                 422 => Err(MigrationsMapCommitAuthorError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(MigrationsMapCommitAuthorError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(MigrationsMapCommitAuthorError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsMapCommitAuthorError::Generic { code }),
             }
         }
@@ -2088,9 +2145,13 @@ impl<'api> Migrations<'api> {
     ///
     /// # Map a commit author
     ///
-    /// Update an author's identity for the import. Your application can continue updating authors any time before you push new commits to the repository.
+    /// Update an author's identity for the import. Your application can continue updating authors any time before you push
+    /// new commits to the repository.
     /// 
-    /// [GitHub API docs for map_commit_author](https://docs.github.com/rest/reference/migrations#map-a-commit-author)
+    /// > [!WARNING]
+    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// 
+    /// [GitHub API docs for map_commit_author](https://docs.github.com/rest/migrations/source-imports#map-a-commit-author)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2120,6 +2181,7 @@ impl<'api> Migrations<'api> {
             match github_response.status_code() {
                 422 => Err(MigrationsMapCommitAuthorError::Status422(crate::adapters::to_json(github_response)?)),
                 404 => Err(MigrationsMapCommitAuthorError::Status404(crate::adapters::to_json(github_response)?)),
+                503 => Err(MigrationsMapCommitAuthorError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsMapCommitAuthorError::Generic { code }),
             }
         }
@@ -2129,9 +2191,16 @@ impl<'api> Migrations<'api> {
     ///
     /// # Update Git LFS preference
     ///
-    /// You can import repositories from Subversion, Mercurial, and TFS that include files larger than 100MB. This ability is powered by [Git LFS](https://git-lfs.github.com). You can learn more about our LFS feature and working with large files [on our help site](https://help.github.com/articles/versioning-large-files/).
+    /// You can import repositories from Subversion, Mercurial, and TFS that include files larger than 100MB. This ability
+    /// is powered by [Git LFS](https://git-lfs.com).
     /// 
-    /// [GitHub API docs for set_lfs_preference](https://docs.github.com/rest/reference/migrations#update-git-lfs-preference)
+    /// You can learn more about our LFS feature and working with large files [on our help
+    /// site](https://docs.github.com/repositories/working-with-files/managing-large-files).
+    /// 
+    /// > [!WARNING]
+    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// 
+    /// [GitHub API docs for set_lfs_preference](https://docs.github.com/rest/migrations/source-imports#update-git-lfs-preference)
     ///
     /// ---
     pub async fn set_lfs_preference_async(&self, owner: &str, repo: &str, body: PatchMigrationsSetLfsPreference) -> Result<Import, MigrationsSetLfsPreferenceError> {
@@ -2159,6 +2228,7 @@ impl<'api> Migrations<'api> {
         } else {
             match github_response.status_code() {
                 422 => Err(MigrationsSetLfsPreferenceError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(MigrationsSetLfsPreferenceError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsSetLfsPreferenceError::Generic { code }),
             }
         }
@@ -2168,9 +2238,16 @@ impl<'api> Migrations<'api> {
     ///
     /// # Update Git LFS preference
     ///
-    /// You can import repositories from Subversion, Mercurial, and TFS that include files larger than 100MB. This ability is powered by [Git LFS](https://git-lfs.github.com). You can learn more about our LFS feature and working with large files [on our help site](https://help.github.com/articles/versioning-large-files/).
+    /// You can import repositories from Subversion, Mercurial, and TFS that include files larger than 100MB. This ability
+    /// is powered by [Git LFS](https://git-lfs.com).
     /// 
-    /// [GitHub API docs for set_lfs_preference](https://docs.github.com/rest/reference/migrations#update-git-lfs-preference)
+    /// You can learn more about our LFS feature and working with large files [on our help
+    /// site](https://docs.github.com/repositories/working-with-files/managing-large-files).
+    /// 
+    /// > [!WARNING]
+    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// 
+    /// [GitHub API docs for set_lfs_preference](https://docs.github.com/rest/migrations/source-imports#update-git-lfs-preference)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2199,6 +2276,7 @@ impl<'api> Migrations<'api> {
         } else {
             match github_response.status_code() {
                 422 => Err(MigrationsSetLfsPreferenceError::Status422(crate::adapters::to_json(github_response)?)),
+                503 => Err(MigrationsSetLfsPreferenceError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsSetLfsPreferenceError::Generic { code }),
             }
         }
@@ -2210,7 +2288,7 @@ impl<'api> Migrations<'api> {
     ///
     /// Initiates the generation of a user migration archive.
     /// 
-    /// [GitHub API docs for start_for_authenticated_user](https://docs.github.com/rest/reference/migrations#start-a-user-migration)
+    /// [GitHub API docs for start_for_authenticated_user](https://docs.github.com/rest/migrations/users#start-a-user-migration)
     ///
     /// ---
     pub async fn start_for_authenticated_user_async(&self, body: PostMigrationsStartForAuthenticatedUser) -> Result<Migration, MigrationsStartForAuthenticatedUserError> {
@@ -2252,7 +2330,7 @@ impl<'api> Migrations<'api> {
     ///
     /// Initiates the generation of a user migration archive.
     /// 
-    /// [GitHub API docs for start_for_authenticated_user](https://docs.github.com/rest/reference/migrations#start-a-user-migration)
+    /// [GitHub API docs for start_for_authenticated_user](https://docs.github.com/rest/migrations/users#start-a-user-migration)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2295,7 +2373,7 @@ impl<'api> Migrations<'api> {
     ///
     /// Initiates the generation of a migration archive.
     /// 
-    /// [GitHub API docs for start_for_org](https://docs.github.com/rest/reference/migrations#start-an-organization-migration)
+    /// [GitHub API docs for start_for_org](https://docs.github.com/rest/migrations/orgs#start-an-organization-migration)
     ///
     /// ---
     pub async fn start_for_org_async(&self, org: &str, body: PostMigrationsStartForOrg) -> Result<Migration, MigrationsStartForOrgError> {
@@ -2335,7 +2413,7 @@ impl<'api> Migrations<'api> {
     ///
     /// Initiates the generation of a migration archive.
     /// 
-    /// [GitHub API docs for start_for_org](https://docs.github.com/rest/reference/migrations#start-an-organization-migration)
+    /// [GitHub API docs for start_for_org](https://docs.github.com/rest/migrations/orgs#start-an-organization-migration)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2375,8 +2453,13 @@ impl<'api> Migrations<'api> {
     /// # Start an import
     ///
     /// Start a source import to a GitHub repository using GitHub Importer.
+    /// Importing into a GitHub repository with GitHub Actions enabled is not supported and will
+    /// return a status `422 Unprocessable Entity` response.
     /// 
-    /// [GitHub API docs for start_import](https://docs.github.com/rest/reference/migrations#start-an-import)
+    /// > [!WARNING]
+    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// 
+    /// [GitHub API docs for start_import](https://docs.github.com/rest/migrations/source-imports#start-an-import)
     ///
     /// ---
     pub async fn start_import_async(&self, owner: &str, repo: &str, body: PutMigrationsStartImport) -> Result<Import, MigrationsStartImportError> {
@@ -2405,6 +2488,7 @@ impl<'api> Migrations<'api> {
             match github_response.status_code() {
                 422 => Err(MigrationsStartImportError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(MigrationsStartImportError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(MigrationsStartImportError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsStartImportError::Generic { code }),
             }
         }
@@ -2415,8 +2499,13 @@ impl<'api> Migrations<'api> {
     /// # Start an import
     ///
     /// Start a source import to a GitHub repository using GitHub Importer.
+    /// Importing into a GitHub repository with GitHub Actions enabled is not supported and will
+    /// return a status `422 Unprocessable Entity` response.
     /// 
-    /// [GitHub API docs for start_import](https://docs.github.com/rest/reference/migrations#start-an-import)
+    /// > [!WARNING]
+    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// 
+    /// [GitHub API docs for start_import](https://docs.github.com/rest/migrations/source-imports#start-an-import)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2446,6 +2535,7 @@ impl<'api> Migrations<'api> {
             match github_response.status_code() {
                 422 => Err(MigrationsStartImportError::Status422(crate::adapters::to_json(github_response)?)),
                 404 => Err(MigrationsStartImportError::Status404(crate::adapters::to_json(github_response)?)),
+                503 => Err(MigrationsStartImportError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsStartImportError::Generic { code }),
             }
         }
@@ -2455,9 +2545,9 @@ impl<'api> Migrations<'api> {
     ///
     /// # Unlock a user repository
     ///
-    /// Unlocks a repository. You can lock repositories when you [start a user migration](https://docs.github.com/rest/reference/migrations#start-a-user-migration). Once the migration is complete you can unlock each repository to begin using it again or [delete the repository](https://docs.github.com/rest/reference/repos#delete-a-repository) if you no longer need the source data. Returns a status of `404 Not Found` if the repository is not locked.
+    /// Unlocks a repository. You can lock repositories when you [start a user migration](https://docs.github.com/rest/migrations/users#start-a-user-migration). Once the migration is complete you can unlock each repository to begin using it again or [delete the repository](https://docs.github.com/rest/repos/repos#delete-a-repository) if you no longer need the source data. Returns a status of `404 Not Found` if the repository is not locked.
     /// 
-    /// [GitHub API docs for unlock_repo_for_authenticated_user](https://docs.github.com/rest/reference/migrations#unlock-a-user-repository)
+    /// [GitHub API docs for unlock_repo_for_authenticated_user](https://docs.github.com/rest/migrations/users#unlock-a-user-repository)
     ///
     /// ---
     pub async fn unlock_repo_for_authenticated_user_async(&self, migration_id: i32, repo_name: &str) -> Result<(), MigrationsUnlockRepoForAuthenticatedUserError> {
@@ -2497,9 +2587,9 @@ impl<'api> Migrations<'api> {
     ///
     /// # Unlock a user repository
     ///
-    /// Unlocks a repository. You can lock repositories when you [start a user migration](https://docs.github.com/rest/reference/migrations#start-a-user-migration). Once the migration is complete you can unlock each repository to begin using it again or [delete the repository](https://docs.github.com/rest/reference/repos#delete-a-repository) if you no longer need the source data. Returns a status of `404 Not Found` if the repository is not locked.
+    /// Unlocks a repository. You can lock repositories when you [start a user migration](https://docs.github.com/rest/migrations/users#start-a-user-migration). Once the migration is complete you can unlock each repository to begin using it again or [delete the repository](https://docs.github.com/rest/repos/repos#delete-a-repository) if you no longer need the source data. Returns a status of `404 Not Found` if the repository is not locked.
     /// 
-    /// [GitHub API docs for unlock_repo_for_authenticated_user](https://docs.github.com/rest/reference/migrations#unlock-a-user-repository)
+    /// [GitHub API docs for unlock_repo_for_authenticated_user](https://docs.github.com/rest/migrations/users#unlock-a-user-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2540,9 +2630,9 @@ impl<'api> Migrations<'api> {
     ///
     /// # Unlock an organization repository
     ///
-    /// Unlocks a repository that was locked for migration. You should unlock each migrated repository and [delete them](https://docs.github.com/rest/reference/repos#delete-a-repository) when the migration is complete and you no longer need the source data.
+    /// Unlocks a repository that was locked for migration. You should unlock each migrated repository and [delete them](https://docs.github.com/rest/repos/repos#delete-a-repository) when the migration is complete and you no longer need the source data.
     /// 
-    /// [GitHub API docs for unlock_repo_for_org](https://docs.github.com/rest/reference/migrations#unlock-an-organization-repository)
+    /// [GitHub API docs for unlock_repo_for_org](https://docs.github.com/rest/migrations/orgs#unlock-an-organization-repository)
     ///
     /// ---
     pub async fn unlock_repo_for_org_async(&self, org: &str, migration_id: i32, repo_name: &str) -> Result<(), MigrationsUnlockRepoForOrgError> {
@@ -2579,9 +2669,9 @@ impl<'api> Migrations<'api> {
     ///
     /// # Unlock an organization repository
     ///
-    /// Unlocks a repository that was locked for migration. You should unlock each migrated repository and [delete them](https://docs.github.com/rest/reference/repos#delete-a-repository) when the migration is complete and you no longer need the source data.
+    /// Unlocks a repository that was locked for migration. You should unlock each migrated repository and [delete them](https://docs.github.com/rest/repos/repos#delete-a-repository) when the migration is complete and you no longer need the source data.
     /// 
-    /// [GitHub API docs for unlock_repo_for_org](https://docs.github.com/rest/reference/migrations#unlock-an-organization-repository)
+    /// [GitHub API docs for unlock_repo_for_org](https://docs.github.com/rest/migrations/orgs#unlock-an-organization-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2622,7 +2712,14 @@ impl<'api> Migrations<'api> {
     /// An import can be updated with credentials or a project choice by passing in the appropriate parameters in this API
     /// request. If no parameters are provided, the import will be restarted.
     /// 
-    /// [GitHub API docs for update_import](https://docs.github.com/rest/reference/migrations#update-an-import)
+    /// Some servers (e.g. TFS servers) can have several projects at a single URL. In those cases the import progress will
+    /// have the status `detection_found_multiple` and the Import Progress response will include a `project_choices` array.
+    /// You can select the project to import by providing one of the objects in the `project_choices` array in the update request.
+    /// 
+    /// > [!WARNING]
+    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// 
+    /// [GitHub API docs for update_import](https://docs.github.com/rest/migrations/source-imports#update-an-import)
     ///
     /// ---
     pub async fn update_import_async(&self, owner: &str, repo: &str, body: PatchMigrationsUpdateImport) -> Result<Import, MigrationsUpdateImportError> {
@@ -2649,6 +2746,7 @@ impl<'api> Migrations<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                503 => Err(MigrationsUpdateImportError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(MigrationsUpdateImportError::Generic { code }),
             }
         }
@@ -2661,7 +2759,14 @@ impl<'api> Migrations<'api> {
     /// An import can be updated with credentials or a project choice by passing in the appropriate parameters in this API
     /// request. If no parameters are provided, the import will be restarted.
     /// 
-    /// [GitHub API docs for update_import](https://docs.github.com/rest/reference/migrations#update-an-import)
+    /// Some servers (e.g. TFS servers) can have several projects at a single URL. In those cases the import progress will
+    /// have the status `detection_found_multiple` and the Import Progress response will include a `project_choices` array.
+    /// You can select the project to import by providing one of the objects in the `project_choices` array in the update request.
+    /// 
+    /// > [!WARNING]
+    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// 
+    /// [GitHub API docs for update_import](https://docs.github.com/rest/migrations/source-imports#update-an-import)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2689,6 +2794,7 @@ impl<'api> Migrations<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                503 => Err(MigrationsUpdateImportError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(MigrationsUpdateImportError::Generic { code }),
             }
         }

@@ -47,8 +47,8 @@ pub enum SearchCodeError {
     #[error("Not modified")]
     Status304,
     #[error("Service unavailable")]
-    Status503(GetSearchUsersResponse503),
-    #[error("Validation failed")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -89,8 +89,8 @@ pub enum SearchIssuesAndPullRequestsError {
     // -- endpoint errors
 
     #[error("Service unavailable")]
-    Status503(GetSearchUsersResponse503),
-    #[error("Validation failed")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
     Status304,
@@ -119,7 +119,7 @@ pub enum SearchLabelsError {
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -139,8 +139,8 @@ pub enum SearchReposError {
     // -- endpoint errors
 
     #[error("Service unavailable")]
-    Status503(GetSearchUsersResponse503),
-    #[error("Validation failed")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
     Status304,
@@ -183,8 +183,8 @@ pub enum SearchUsersError {
     #[error("Not modified")]
     Status304,
     #[error("Service unavailable")]
-    Status503(GetSearchUsersResponse503),
-    #[error("Validation failed")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -194,15 +194,15 @@ pub enum SearchUsersError {
 /// Query parameters for the [Search code](Search::code_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct SearchCodeParams<'req> {
-    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as GitHub.com. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/reference/search#constructing-a-search-query). See \"[Searching code](https://help.github.com/articles/searching-code/)\" for a detailed list of qualifiers.
+    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as the web interface for GitHub. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/search/search#constructing-a-search-query). See \"[Searching code](https://docs.github.com/search-github/searching-on-github/searching-code)\" for a detailed list of qualifiers.
     q: &'req str, 
-    /// Sorts the results of your query. Can only be `indexed`, which indicates how recently a file has been indexed by the GitHub search infrastructure. Default: [best match](https://docs.github.com/rest/reference/search#ranking-search-results)
+    /// **This field is deprecated.** Sorts the results of your query. Can only be `indexed`, which indicates how recently a file has been indexed by the GitHub search infrastructure. Default: [best match](https://docs.github.com/rest/search/search#ranking-search-results)
     sort: Option<&'req str>, 
-    /// Determines whether the first search result returned is the highest number of matches (`desc`) or lowest number of matches (`asc`). This parameter is ignored unless you provide `sort`.
+    /// **This field is deprecated.** Determines whether the first search result returned is the highest number of matches (`desc`) or lowest number of matches (`asc`). This parameter is ignored unless you provide `sort`. 
     order: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -211,7 +211,7 @@ impl<'req> SearchCodeParams<'req> {
         Self::default()
     }
 
-    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as GitHub.com. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/reference/search#constructing-a-search-query). See \"[Searching code](https://help.github.com/articles/searching-code/)\" for a detailed list of qualifiers.
+    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as the web interface for GitHub. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/search/search#constructing-a-search-query). See \"[Searching code](https://docs.github.com/search-github/searching-on-github/searching-code)\" for a detailed list of qualifiers.
     pub fn q(self, q: &'req str) -> Self {
         Self { 
             q: q,
@@ -222,7 +222,7 @@ impl<'req> SearchCodeParams<'req> {
         }
     }
 
-    /// Sorts the results of your query. Can only be `indexed`, which indicates how recently a file has been indexed by the GitHub search infrastructure. Default: [best match](https://docs.github.com/rest/reference/search#ranking-search-results)
+    /// **This field is deprecated.** Sorts the results of your query. Can only be `indexed`, which indicates how recently a file has been indexed by the GitHub search infrastructure. Default: [best match](https://docs.github.com/rest/search/search#ranking-search-results)
     pub fn sort(self, sort: &'req str) -> Self {
         Self { 
             q: self.q, 
@@ -233,7 +233,7 @@ impl<'req> SearchCodeParams<'req> {
         }
     }
 
-    /// Determines whether the first search result returned is the highest number of matches (`desc`) or lowest number of matches (`asc`). This parameter is ignored unless you provide `sort`.
+    /// **This field is deprecated.** Determines whether the first search result returned is the highest number of matches (`desc`) or lowest number of matches (`asc`). This parameter is ignored unless you provide `sort`. 
     pub fn order(self, order: &'req str) -> Self {
         Self { 
             q: self.q, 
@@ -244,7 +244,7 @@ impl<'req> SearchCodeParams<'req> {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             q: self.q, 
@@ -255,7 +255,7 @@ impl<'req> SearchCodeParams<'req> {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             q: self.q, 
@@ -279,15 +279,15 @@ impl<'enc> From<&'enc PerPage> for SearchCodeParams<'enc> {
 /// Query parameters for the [Search commits](Search::commits_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct SearchCommitsParams<'req> {
-    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as GitHub.com. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/reference/search#constructing-a-search-query). See \"[Searching commits](https://help.github.com/articles/searching-commits/)\" for a detailed list of qualifiers.
+    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as the web interface for GitHub. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/search/search#constructing-a-search-query). See \"[Searching commits](https://docs.github.com/search-github/searching-on-github/searching-commits)\" for a detailed list of qualifiers.
     q: &'req str, 
-    /// Sorts the results of your query by `author-date` or `committer-date`. Default: [best match](https://docs.github.com/rest/reference/search#ranking-search-results)
+    /// Sorts the results of your query by `author-date` or `committer-date`. Default: [best match](https://docs.github.com/rest/search/search#ranking-search-results)
     sort: Option<&'req str>, 
     /// Determines whether the first search result returned is the highest number of matches (`desc`) or lowest number of matches (`asc`). This parameter is ignored unless you provide `sort`.
     order: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -296,7 +296,7 @@ impl<'req> SearchCommitsParams<'req> {
         Self::default()
     }
 
-    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as GitHub.com. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/reference/search#constructing-a-search-query). See \"[Searching commits](https://help.github.com/articles/searching-commits/)\" for a detailed list of qualifiers.
+    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as the web interface for GitHub. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/search/search#constructing-a-search-query). See \"[Searching commits](https://docs.github.com/search-github/searching-on-github/searching-commits)\" for a detailed list of qualifiers.
     pub fn q(self, q: &'req str) -> Self {
         Self { 
             q: q,
@@ -307,7 +307,7 @@ impl<'req> SearchCommitsParams<'req> {
         }
     }
 
-    /// Sorts the results of your query by `author-date` or `committer-date`. Default: [best match](https://docs.github.com/rest/reference/search#ranking-search-results)
+    /// Sorts the results of your query by `author-date` or `committer-date`. Default: [best match](https://docs.github.com/rest/search/search#ranking-search-results)
     pub fn sort(self, sort: &'req str) -> Self {
         Self { 
             q: self.q, 
@@ -329,7 +329,7 @@ impl<'req> SearchCommitsParams<'req> {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             q: self.q, 
@@ -340,7 +340,7 @@ impl<'req> SearchCommitsParams<'req> {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             q: self.q, 
@@ -364,15 +364,15 @@ impl<'enc> From<&'enc PerPage> for SearchCommitsParams<'enc> {
 /// Query parameters for the [Search issues and pull requests](Search::issues_and_pull_requests_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct SearchIssuesAndPullRequestsParams<'req> {
-    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as GitHub.com. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/reference/search#constructing-a-search-query). See \"[Searching issues and pull requests](https://help.github.com/articles/searching-issues-and-pull-requests/)\" for a detailed list of qualifiers.
+    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as the web interface for GitHub. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/search/search#constructing-a-search-query). See \"[Searching issues and pull requests](https://docs.github.com/search-github/searching-on-github/searching-issues-and-pull-requests)\" for a detailed list of qualifiers.
     q: &'req str, 
-    /// Sorts the results of your query by the number of `comments`, `reactions`, `reactions-+1`, `reactions--1`, `reactions-smile`, `reactions-thinking_face`, `reactions-heart`, `reactions-tada`, or `interactions`. You can also sort results by how recently the items were `created` or `updated`, Default: [best match](https://docs.github.com/rest/reference/search#ranking-search-results)
+    /// Sorts the results of your query by the number of `comments`, `reactions`, `reactions-+1`, `reactions--1`, `reactions-smile`, `reactions-thinking_face`, `reactions-heart`, `reactions-tada`, or `interactions`. You can also sort results by how recently the items were `created` or `updated`, Default: [best match](https://docs.github.com/rest/search/search#ranking-search-results)
     sort: Option<&'req str>, 
     /// Determines whether the first search result returned is the highest number of matches (`desc`) or lowest number of matches (`asc`). This parameter is ignored unless you provide `sort`.
     order: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -381,7 +381,7 @@ impl<'req> SearchIssuesAndPullRequestsParams<'req> {
         Self::default()
     }
 
-    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as GitHub.com. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/reference/search#constructing-a-search-query). See \"[Searching issues and pull requests](https://help.github.com/articles/searching-issues-and-pull-requests/)\" for a detailed list of qualifiers.
+    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as the web interface for GitHub. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/search/search#constructing-a-search-query). See \"[Searching issues and pull requests](https://docs.github.com/search-github/searching-on-github/searching-issues-and-pull-requests)\" for a detailed list of qualifiers.
     pub fn q(self, q: &'req str) -> Self {
         Self { 
             q: q,
@@ -392,7 +392,7 @@ impl<'req> SearchIssuesAndPullRequestsParams<'req> {
         }
     }
 
-    /// Sorts the results of your query by the number of `comments`, `reactions`, `reactions-+1`, `reactions--1`, `reactions-smile`, `reactions-thinking_face`, `reactions-heart`, `reactions-tada`, or `interactions`. You can also sort results by how recently the items were `created` or `updated`, Default: [best match](https://docs.github.com/rest/reference/search#ranking-search-results)
+    /// Sorts the results of your query by the number of `comments`, `reactions`, `reactions-+1`, `reactions--1`, `reactions-smile`, `reactions-thinking_face`, `reactions-heart`, `reactions-tada`, or `interactions`. You can also sort results by how recently the items were `created` or `updated`, Default: [best match](https://docs.github.com/rest/search/search#ranking-search-results)
     pub fn sort(self, sort: &'req str) -> Self {
         Self { 
             q: self.q, 
@@ -414,7 +414,7 @@ impl<'req> SearchIssuesAndPullRequestsParams<'req> {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             q: self.q, 
@@ -425,7 +425,7 @@ impl<'req> SearchIssuesAndPullRequestsParams<'req> {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             q: self.q, 
@@ -451,15 +451,15 @@ impl<'enc> From<&'enc PerPage> for SearchIssuesAndPullRequestsParams<'enc> {
 pub struct SearchLabelsParams<'req> {
     /// The id of the repository.
     repository_id: i32, 
-    /// The search keywords. This endpoint does not accept qualifiers in the query. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/reference/search#constructing-a-search-query).
+    /// The search keywords. This endpoint does not accept qualifiers in the query. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/search/search#constructing-a-search-query).
     q: &'req str, 
-    /// Sorts the results of your query by when the label was `created` or `updated`. Default: [best match](https://docs.github.com/rest/reference/search#ranking-search-results)
+    /// Sorts the results of your query by when the label was `created` or `updated`. Default: [best match](https://docs.github.com/rest/search/search#ranking-search-results)
     sort: Option<&'req str>, 
     /// Determines whether the first search result returned is the highest number of matches (`desc`) or lowest number of matches (`asc`). This parameter is ignored unless you provide `sort`.
     order: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -480,7 +480,7 @@ impl<'req> SearchLabelsParams<'req> {
         }
     }
 
-    /// The search keywords. This endpoint does not accept qualifiers in the query. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/reference/search#constructing-a-search-query).
+    /// The search keywords. This endpoint does not accept qualifiers in the query. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/search/search#constructing-a-search-query).
     pub fn q(self, q: &'req str) -> Self {
         Self { 
             repository_id: self.repository_id, 
@@ -492,7 +492,7 @@ impl<'req> SearchLabelsParams<'req> {
         }
     }
 
-    /// Sorts the results of your query by when the label was `created` or `updated`. Default: [best match](https://docs.github.com/rest/reference/search#ranking-search-results)
+    /// Sorts the results of your query by when the label was `created` or `updated`. Default: [best match](https://docs.github.com/rest/search/search#ranking-search-results)
     pub fn sort(self, sort: &'req str) -> Self {
         Self { 
             repository_id: self.repository_id, 
@@ -516,7 +516,7 @@ impl<'req> SearchLabelsParams<'req> {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             repository_id: self.repository_id, 
@@ -528,7 +528,7 @@ impl<'req> SearchLabelsParams<'req> {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             repository_id: self.repository_id, 
@@ -553,15 +553,15 @@ impl<'enc> From<&'enc PerPage> for SearchLabelsParams<'enc> {
 /// Query parameters for the [Search repositories](Search::repos_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct SearchReposParams<'req> {
-    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as GitHub.com. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/reference/search#constructing-a-search-query). See \"[Searching for repositories](https://help.github.com/articles/searching-for-repositories/)\" for a detailed list of qualifiers.
+    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as the web interface for GitHub. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/search/search#constructing-a-search-query). See \"[Searching for repositories](https://docs.github.com/articles/searching-for-repositories/)\" for a detailed list of qualifiers.
     q: &'req str, 
-    /// Sorts the results of your query by number of `stars`, `forks`, or `help-wanted-issues` or how recently the items were `updated`. Default: [best match](https://docs.github.com/rest/reference/search#ranking-search-results)
+    /// Sorts the results of your query by number of `stars`, `forks`, or `help-wanted-issues` or how recently the items were `updated`. Default: [best match](https://docs.github.com/rest/search/search#ranking-search-results)
     sort: Option<&'req str>, 
     /// Determines whether the first search result returned is the highest number of matches (`desc`) or lowest number of matches (`asc`). This parameter is ignored unless you provide `sort`.
     order: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -570,7 +570,7 @@ impl<'req> SearchReposParams<'req> {
         Self::default()
     }
 
-    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as GitHub.com. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/reference/search#constructing-a-search-query). See \"[Searching for repositories](https://help.github.com/articles/searching-for-repositories/)\" for a detailed list of qualifiers.
+    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as the web interface for GitHub. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/search/search#constructing-a-search-query). See \"[Searching for repositories](https://docs.github.com/articles/searching-for-repositories/)\" for a detailed list of qualifiers.
     pub fn q(self, q: &'req str) -> Self {
         Self { 
             q: q,
@@ -581,7 +581,7 @@ impl<'req> SearchReposParams<'req> {
         }
     }
 
-    /// Sorts the results of your query by number of `stars`, `forks`, or `help-wanted-issues` or how recently the items were `updated`. Default: [best match](https://docs.github.com/rest/reference/search#ranking-search-results)
+    /// Sorts the results of your query by number of `stars`, `forks`, or `help-wanted-issues` or how recently the items were `updated`. Default: [best match](https://docs.github.com/rest/search/search#ranking-search-results)
     pub fn sort(self, sort: &'req str) -> Self {
         Self { 
             q: self.q, 
@@ -603,7 +603,7 @@ impl<'req> SearchReposParams<'req> {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             q: self.q, 
@@ -614,7 +614,7 @@ impl<'req> SearchReposParams<'req> {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             q: self.q, 
@@ -638,11 +638,11 @@ impl<'enc> From<&'enc PerPage> for SearchReposParams<'enc> {
 /// Query parameters for the [Search topics](Search::topics_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct SearchTopicsParams<'req> {
-    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as GitHub.com. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/reference/search#constructing-a-search-query).
+    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as the web interface for GitHub. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/search/search#constructing-a-search-query).
     q: &'req str, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -651,7 +651,7 @@ impl<'req> SearchTopicsParams<'req> {
         Self::default()
     }
 
-    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as GitHub.com. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/reference/search#constructing-a-search-query).
+    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as the web interface for GitHub. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/search/search#constructing-a-search-query).
     pub fn q(self, q: &'req str) -> Self {
         Self { 
             q: q,
@@ -660,7 +660,7 @@ impl<'req> SearchTopicsParams<'req> {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             q: self.q, 
@@ -669,7 +669,7 @@ impl<'req> SearchTopicsParams<'req> {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             q: self.q, 
@@ -691,15 +691,15 @@ impl<'enc> From<&'enc PerPage> for SearchTopicsParams<'enc> {
 /// Query parameters for the [Search users](Search::users_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct SearchUsersParams<'req> {
-    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as GitHub.com. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/reference/search#constructing-a-search-query). See \"[Searching users](https://help.github.com/articles/searching-users/)\" for a detailed list of qualifiers.
+    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as the web interface for GitHub. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/search/search#constructing-a-search-query). See \"[Searching users](https://docs.github.com/search-github/searching-on-github/searching-users)\" for a detailed list of qualifiers.
     q: &'req str, 
-    /// Sorts the results of your query by number of `followers` or `repositories`, or when the person `joined` GitHub. Default: [best match](https://docs.github.com/rest/reference/search#ranking-search-results)
+    /// Sorts the results of your query by number of `followers` or `repositories`, or when the person `joined` GitHub. Default: [best match](https://docs.github.com/rest/search/search#ranking-search-results)
     sort: Option<&'req str>, 
     /// Determines whether the first search result returned is the highest number of matches (`desc`) or lowest number of matches (`asc`). This parameter is ignored unless you provide `sort`.
     order: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -708,7 +708,7 @@ impl<'req> SearchUsersParams<'req> {
         Self::default()
     }
 
-    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as GitHub.com. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/reference/search#constructing-a-search-query). See \"[Searching users](https://help.github.com/articles/searching-users/)\" for a detailed list of qualifiers.
+    /// The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as the web interface for GitHub. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/search/search#constructing-a-search-query). See \"[Searching users](https://docs.github.com/search-github/searching-on-github/searching-users)\" for a detailed list of qualifiers.
     pub fn q(self, q: &'req str) -> Self {
         Self { 
             q: q,
@@ -719,7 +719,7 @@ impl<'req> SearchUsersParams<'req> {
         }
     }
 
-    /// Sorts the results of your query by number of `followers` or `repositories`, or when the person `joined` GitHub. Default: [best match](https://docs.github.com/rest/reference/search#ranking-search-results)
+    /// Sorts the results of your query by number of `followers` or `repositories`, or when the person `joined` GitHub. Default: [best match](https://docs.github.com/rest/search/search#ranking-search-results)
     pub fn sort(self, sort: &'req str) -> Self {
         Self { 
             q: self.q, 
@@ -741,7 +741,7 @@ impl<'req> SearchUsersParams<'req> {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             q: self.q, 
@@ -752,7 +752,7 @@ impl<'req> SearchUsersParams<'req> {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             q: self.q, 
@@ -779,9 +779,9 @@ impl<'api> Search<'api> {
     ///
     /// # Search code
     ///
-    /// Searches for query terms inside of a file. This method returns up to 100 results [per page](https://docs.github.com/rest/overview/resources-in-the-rest-api#pagination).
+    /// Searches for query terms inside of a file. This method returns up to 100 results [per page](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api).
     /// 
-    /// When searching for code, you can get text match metadata for the file **content** and file **path** fields when you pass the `text-match` media type. For more details about how to receive highlighted search results, see [Text match metadata](https://docs.github.com/rest/reference/search#text-match-metadata).
+    /// When searching for code, you can get text match metadata for the file **content** and file **path** fields when you pass the `text-match` media type. For more details about how to receive highlighted search results, see [Text match metadata](https://docs.github.com/rest/search/search#text-match-metadata).
     /// 
     /// For example, if you want to find the definition of the `addClass` function inside [jQuery](https://github.com/jquery/jquery) repository, your query would look something like this:
     /// 
@@ -789,7 +789,7 @@ impl<'api> Search<'api> {
     /// 
     /// This query searches for the keyword `addClass` within a file's contents. The query limits the search to files where the language is JavaScript in the `jquery/jquery` repository.
     /// 
-    /// #### Considerations for code search
+    /// Considerations for code search:
     /// 
     /// Due to the complexity of searching code, there are a few restrictions on how searches are performed:
     /// 
@@ -798,7 +798,9 @@ impl<'api> Search<'api> {
     /// *   You must always include at least one search term when searching source code. For example, searching for [`language:go`](https://github.com/search?utf8=%E2%9C%93&q=language%3Ago&type=Code) is not valid, while [`amazing
     /// language:go`](https://github.com/search?utf8=%E2%9C%93&q=amazing+language%3Ago&type=Code) is.
     /// 
-    /// [GitHub API docs for code](https://docs.github.com/rest/reference/search#search-code)
+    /// This endpoint requires you to authenticate and limits you to 10 requests per minute.
+    /// 
+    /// [GitHub API docs for code](https://docs.github.com/rest/search/search#search-code)
     ///
     /// ---
     pub async fn code_async(&self, query_params: impl Into<SearchCodeParams<'api>>) -> Result<GetSearchCodeResponse200, SearchCodeError> {
@@ -840,9 +842,9 @@ impl<'api> Search<'api> {
     ///
     /// # Search code
     ///
-    /// Searches for query terms inside of a file. This method returns up to 100 results [per page](https://docs.github.com/rest/overview/resources-in-the-rest-api#pagination).
+    /// Searches for query terms inside of a file. This method returns up to 100 results [per page](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api).
     /// 
-    /// When searching for code, you can get text match metadata for the file **content** and file **path** fields when you pass the `text-match` media type. For more details about how to receive highlighted search results, see [Text match metadata](https://docs.github.com/rest/reference/search#text-match-metadata).
+    /// When searching for code, you can get text match metadata for the file **content** and file **path** fields when you pass the `text-match` media type. For more details about how to receive highlighted search results, see [Text match metadata](https://docs.github.com/rest/search/search#text-match-metadata).
     /// 
     /// For example, if you want to find the definition of the `addClass` function inside [jQuery](https://github.com/jquery/jquery) repository, your query would look something like this:
     /// 
@@ -850,7 +852,7 @@ impl<'api> Search<'api> {
     /// 
     /// This query searches for the keyword `addClass` within a file's contents. The query limits the search to files where the language is JavaScript in the `jquery/jquery` repository.
     /// 
-    /// #### Considerations for code search
+    /// Considerations for code search:
     /// 
     /// Due to the complexity of searching code, there are a few restrictions on how searches are performed:
     /// 
@@ -859,7 +861,9 @@ impl<'api> Search<'api> {
     /// *   You must always include at least one search term when searching source code. For example, searching for [`language:go`](https://github.com/search?utf8=%E2%9C%93&q=language%3Ago&type=Code) is not valid, while [`amazing
     /// language:go`](https://github.com/search?utf8=%E2%9C%93&q=amazing+language%3Ago&type=Code) is.
     /// 
-    /// [GitHub API docs for code](https://docs.github.com/rest/reference/search#search-code)
+    /// This endpoint requires you to authenticate and limits you to 10 requests per minute.
+    /// 
+    /// [GitHub API docs for code](https://docs.github.com/rest/search/search#search-code)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -903,16 +907,16 @@ impl<'api> Search<'api> {
     ///
     /// # Search commits
     ///
-    /// Find commits via various criteria on the default branch (usually `master`). This method returns up to 100 results [per page](https://docs.github.com/rest/overview/resources-in-the-rest-api#pagination).
+    /// Find commits via various criteria on the default branch (usually `main`). This method returns up to 100 results [per page](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api).
     /// 
     /// When searching for commits, you can get text match metadata for the **message** field when you provide the `text-match` media type. For more details about how to receive highlighted search results, see [Text match
-    /// metadata](https://docs.github.com/rest/reference/search#text-match-metadata).
+    /// metadata](https://docs.github.com/rest/search/search#text-match-metadata).
     /// 
     /// For example, if you want to find commits related to CSS in the [octocat/Spoon-Knife](https://github.com/octocat/Spoon-Knife) repository. Your query would look something like this:
     /// 
     /// `q=repo:octocat/Spoon-Knife+css`
     /// 
-    /// [GitHub API docs for commits](https://docs.github.com/rest/reference/search#search-commits)
+    /// [GitHub API docs for commits](https://docs.github.com/rest/search/search#search-commits)
     ///
     /// ---
     pub async fn commits_async(&self, query_params: impl Into<SearchCommitsParams<'api>>) -> Result<GetSearchCommitsResponse200, SearchCommitsError> {
@@ -951,16 +955,16 @@ impl<'api> Search<'api> {
     ///
     /// # Search commits
     ///
-    /// Find commits via various criteria on the default branch (usually `master`). This method returns up to 100 results [per page](https://docs.github.com/rest/overview/resources-in-the-rest-api#pagination).
+    /// Find commits via various criteria on the default branch (usually `main`). This method returns up to 100 results [per page](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api).
     /// 
     /// When searching for commits, you can get text match metadata for the **message** field when you provide the `text-match` media type. For more details about how to receive highlighted search results, see [Text match
-    /// metadata](https://docs.github.com/rest/reference/search#text-match-metadata).
+    /// metadata](https://docs.github.com/rest/search/search#text-match-metadata).
     /// 
     /// For example, if you want to find commits related to CSS in the [octocat/Spoon-Knife](https://github.com/octocat/Spoon-Knife) repository. Your query would look something like this:
     /// 
     /// `q=repo:octocat/Spoon-Knife+css`
     /// 
-    /// [GitHub API docs for commits](https://docs.github.com/rest/reference/search#search-commits)
+    /// [GitHub API docs for commits](https://docs.github.com/rest/search/search#search-commits)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1001,10 +1005,10 @@ impl<'api> Search<'api> {
     ///
     /// # Search issues and pull requests
     ///
-    /// Find issues by state and keyword. This method returns up to 100 results [per page](https://docs.github.com/rest/overview/resources-in-the-rest-api#pagination).
+    /// Find issues by state and keyword. This method returns up to 100 results [per page](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api).
     /// 
     /// When searching for issues, you can get text match metadata for the issue **title**, issue **body**, and issue **comment body** fields when you pass the `text-match` media type. For more details about how to receive highlighted
-    /// search results, see [Text match metadata](https://docs.github.com/rest/reference/search#text-match-metadata).
+    /// search results, see [Text match metadata](https://docs.github.com/rest/search/search#text-match-metadata).
     /// 
     /// For example, if you want to find the oldest unresolved Python bugs on Windows. Your query might look something like this.
     /// 
@@ -1012,9 +1016,10 @@ impl<'api> Search<'api> {
     /// 
     /// This query searches for the keyword `windows`, within any open issue that is labeled as `bug`. The search runs across repositories whose primary language is Python. The results are sorted by creation date in ascending order, which means the oldest issues appear first in the search results.
     /// 
-    /// **Note:** For [user-to-server](https://docs.github.com/developers/apps/identifying-and-authorizing-users-for-github-apps#user-to-server-requests) GitHub App requests, you can't retrieve a combination of issues and pull requests in a single query. Requests that don't include the `is:issue` or `is:pull-request` qualifier will receive an HTTP `422 Unprocessable Entity` response. To get results for both issues and pull requests, you must send separate queries for issues and pull requests. For more information about the `is` qualifier, see "[Searching only issues or pull requests](https://docs.github.com/github/searching-for-information-on-github/searching-issues-and-pull-requests#search-only-issues-or-pull-requests)."
+    /// > [!NOTE]
+    /// > For requests made by GitHub Apps with a user access token, you can't retrieve a combination of issues and pull requests in a single query. Requests that don't include the `is:issue` or `is:pull-request` qualifier will receive an HTTP `422 Unprocessable Entity` response. To get results for both issues and pull requests, you must send separate queries for issues and pull requests. For more information about the `is` qualifier, see "[Searching only issues or pull requests](https://docs.github.com/github/searching-for-information-on-github/searching-issues-and-pull-requests#search-only-issues-or-pull-requests)."
     /// 
-    /// [GitHub API docs for issues_and_pull_requests](https://docs.github.com/rest/reference/search#search-issues-and-pull-requests)
+    /// [GitHub API docs for issues_and_pull_requests](https://docs.github.com/rest/search/search#search-issues-and-pull-requests)
     ///
     /// ---
     pub async fn issues_and_pull_requests_async(&self, query_params: impl Into<SearchIssuesAndPullRequestsParams<'api>>) -> Result<GetSearchIssuesAndPullRequestsResponse200, SearchIssuesAndPullRequestsError> {
@@ -1056,10 +1061,10 @@ impl<'api> Search<'api> {
     ///
     /// # Search issues and pull requests
     ///
-    /// Find issues by state and keyword. This method returns up to 100 results [per page](https://docs.github.com/rest/overview/resources-in-the-rest-api#pagination).
+    /// Find issues by state and keyword. This method returns up to 100 results [per page](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api).
     /// 
     /// When searching for issues, you can get text match metadata for the issue **title**, issue **body**, and issue **comment body** fields when you pass the `text-match` media type. For more details about how to receive highlighted
-    /// search results, see [Text match metadata](https://docs.github.com/rest/reference/search#text-match-metadata).
+    /// search results, see [Text match metadata](https://docs.github.com/rest/search/search#text-match-metadata).
     /// 
     /// For example, if you want to find the oldest unresolved Python bugs on Windows. Your query might look something like this.
     /// 
@@ -1067,9 +1072,10 @@ impl<'api> Search<'api> {
     /// 
     /// This query searches for the keyword `windows`, within any open issue that is labeled as `bug`. The search runs across repositories whose primary language is Python. The results are sorted by creation date in ascending order, which means the oldest issues appear first in the search results.
     /// 
-    /// **Note:** For [user-to-server](https://docs.github.com/developers/apps/identifying-and-authorizing-users-for-github-apps#user-to-server-requests) GitHub App requests, you can't retrieve a combination of issues and pull requests in a single query. Requests that don't include the `is:issue` or `is:pull-request` qualifier will receive an HTTP `422 Unprocessable Entity` response. To get results for both issues and pull requests, you must send separate queries for issues and pull requests. For more information about the `is` qualifier, see "[Searching only issues or pull requests](https://docs.github.com/github/searching-for-information-on-github/searching-issues-and-pull-requests#search-only-issues-or-pull-requests)."
+    /// > [!NOTE]
+    /// > For requests made by GitHub Apps with a user access token, you can't retrieve a combination of issues and pull requests in a single query. Requests that don't include the `is:issue` or `is:pull-request` qualifier will receive an HTTP `422 Unprocessable Entity` response. To get results for both issues and pull requests, you must send separate queries for issues and pull requests. For more information about the `is` qualifier, see "[Searching only issues or pull requests](https://docs.github.com/github/searching-for-information-on-github/searching-issues-and-pull-requests#search-only-issues-or-pull-requests)."
     /// 
-    /// [GitHub API docs for issues_and_pull_requests](https://docs.github.com/rest/reference/search#search-issues-and-pull-requests)
+    /// [GitHub API docs for issues_and_pull_requests](https://docs.github.com/rest/search/search#search-issues-and-pull-requests)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1113,9 +1119,9 @@ impl<'api> Search<'api> {
     ///
     /// # Search labels
     ///
-    /// Find labels in a repository with names or descriptions that match search keywords. Returns up to 100 results [per page](https://docs.github.com/rest/overview/resources-in-the-rest-api#pagination).
+    /// Find labels in a repository with names or descriptions that match search keywords. Returns up to 100 results [per page](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api).
     /// 
-    /// When searching for labels, you can get text match metadata for the label **name** and **description** fields when you pass the `text-match` media type. For more details about how to receive highlighted search results, see [Text match metadata](https://docs.github.com/rest/reference/search#text-match-metadata).
+    /// When searching for labels, you can get text match metadata for the label **name** and **description** fields when you pass the `text-match` media type. For more details about how to receive highlighted search results, see [Text match metadata](https://docs.github.com/rest/search/search#text-match-metadata).
     /// 
     /// For example, if you want to find labels in the `linguist` repository that match `bug`, `defect`, or `enhancement`. Your query might look like this:
     /// 
@@ -1123,7 +1129,7 @@ impl<'api> Search<'api> {
     /// 
     /// The labels that best match the query appear first in the search results.
     /// 
-    /// [GitHub API docs for labels](https://docs.github.com/rest/reference/search#search-labels)
+    /// [GitHub API docs for labels](https://docs.github.com/rest/search/search#search-labels)
     ///
     /// ---
     pub async fn labels_async(&self, query_params: impl Into<SearchLabelsParams<'api>>) -> Result<GetSearchLabelsResponse200, SearchLabelsError> {
@@ -1165,9 +1171,9 @@ impl<'api> Search<'api> {
     ///
     /// # Search labels
     ///
-    /// Find labels in a repository with names or descriptions that match search keywords. Returns up to 100 results [per page](https://docs.github.com/rest/overview/resources-in-the-rest-api#pagination).
+    /// Find labels in a repository with names or descriptions that match search keywords. Returns up to 100 results [per page](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api).
     /// 
-    /// When searching for labels, you can get text match metadata for the label **name** and **description** fields when you pass the `text-match` media type. For more details about how to receive highlighted search results, see [Text match metadata](https://docs.github.com/rest/reference/search#text-match-metadata).
+    /// When searching for labels, you can get text match metadata for the label **name** and **description** fields when you pass the `text-match` media type. For more details about how to receive highlighted search results, see [Text match metadata](https://docs.github.com/rest/search/search#text-match-metadata).
     /// 
     /// For example, if you want to find labels in the `linguist` repository that match `bug`, `defect`, or `enhancement`. Your query might look like this:
     /// 
@@ -1175,7 +1181,7 @@ impl<'api> Search<'api> {
     /// 
     /// The labels that best match the query appear first in the search results.
     /// 
-    /// [GitHub API docs for labels](https://docs.github.com/rest/reference/search#search-labels)
+    /// [GitHub API docs for labels](https://docs.github.com/rest/search/search#search-labels)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1219,9 +1225,9 @@ impl<'api> Search<'api> {
     ///
     /// # Search repositories
     ///
-    /// Find repositories via various criteria. This method returns up to 100 results [per page](https://docs.github.com/rest/overview/resources-in-the-rest-api#pagination).
+    /// Find repositories via various criteria. This method returns up to 100 results [per page](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api).
     /// 
-    /// When searching for repositories, you can get text match metadata for the **name** and **description** fields when you pass the `text-match` media type. For more details about how to receive highlighted search results, see [Text match metadata](https://docs.github.com/rest/reference/search#text-match-metadata).
+    /// When searching for repositories, you can get text match metadata for the **name** and **description** fields when you pass the `text-match` media type. For more details about how to receive highlighted search results, see [Text match metadata](https://docs.github.com/rest/search/search#text-match-metadata).
     /// 
     /// For example, if you want to search for popular Tetris repositories written in assembly code, your query might look like this:
     /// 
@@ -1229,7 +1235,7 @@ impl<'api> Search<'api> {
     /// 
     /// This query searches for repositories with the word `tetris` in the name, the description, or the README. The results are limited to repositories where the primary language is assembly. The results are sorted by stars in descending order, so that the most popular repositories appear first in the search results.
     /// 
-    /// [GitHub API docs for repos](https://docs.github.com/rest/reference/search#search-repositories)
+    /// [GitHub API docs for repos](https://docs.github.com/rest/search/search#search-repositories)
     ///
     /// ---
     pub async fn repos_async(&self, query_params: impl Into<SearchReposParams<'api>>) -> Result<GetSearchReposResponse200, SearchReposError> {
@@ -1270,9 +1276,9 @@ impl<'api> Search<'api> {
     ///
     /// # Search repositories
     ///
-    /// Find repositories via various criteria. This method returns up to 100 results [per page](https://docs.github.com/rest/overview/resources-in-the-rest-api#pagination).
+    /// Find repositories via various criteria. This method returns up to 100 results [per page](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api).
     /// 
-    /// When searching for repositories, you can get text match metadata for the **name** and **description** fields when you pass the `text-match` media type. For more details about how to receive highlighted search results, see [Text match metadata](https://docs.github.com/rest/reference/search#text-match-metadata).
+    /// When searching for repositories, you can get text match metadata for the **name** and **description** fields when you pass the `text-match` media type. For more details about how to receive highlighted search results, see [Text match metadata](https://docs.github.com/rest/search/search#text-match-metadata).
     /// 
     /// For example, if you want to search for popular Tetris repositories written in assembly code, your query might look like this:
     /// 
@@ -1280,7 +1286,7 @@ impl<'api> Search<'api> {
     /// 
     /// This query searches for repositories with the word `tetris` in the name, the description, or the README. The results are limited to repositories where the primary language is assembly. The results are sorted by stars in descending order, so that the most popular repositories appear first in the search results.
     /// 
-    /// [GitHub API docs for repos](https://docs.github.com/rest/reference/search#search-repositories)
+    /// [GitHub API docs for repos](https://docs.github.com/rest/search/search#search-repositories)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1323,9 +1329,9 @@ impl<'api> Search<'api> {
     ///
     /// # Search topics
     ///
-    /// Find topics via various criteria. Results are sorted by best match. This method returns up to 100 results [per page](https://docs.github.com/rest/overview/resources-in-the-rest-api#pagination). See "[Searching topics](https://help.github.com/articles/searching-topics/)" for a detailed list of qualifiers.
+    /// Find topics via various criteria. Results are sorted by best match. This method returns up to 100 results [per page](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api). See "[Searching topics](https://docs.github.com/articles/searching-topics/)" for a detailed list of qualifiers.
     /// 
-    /// When searching for topics, you can get text match metadata for the topic's **short\_description**, **description**, **name**, or **display\_name** field when you pass the `text-match` media type. For more details about how to receive highlighted search results, see [Text match metadata](https://docs.github.com/rest/reference/search#text-match-metadata).
+    /// When searching for topics, you can get text match metadata for the topic's **short\_description**, **description**, **name**, or **display\_name** field when you pass the `text-match` media type. For more details about how to receive highlighted search results, see [Text match metadata](https://docs.github.com/rest/search/search#text-match-metadata).
     /// 
     /// For example, if you want to search for topics related to Ruby that are featured on https://github.com/topics. Your query might look like this:
     /// 
@@ -1333,7 +1339,7 @@ impl<'api> Search<'api> {
     /// 
     /// This query searches for topics with the keyword `ruby` and limits the results to find only topics that are featured. The topics that are the best match for the query appear first in the search results.
     /// 
-    /// [GitHub API docs for topics](https://docs.github.com/rest/reference/search#search-topics)
+    /// [GitHub API docs for topics](https://docs.github.com/rest/search/search#search-topics)
     ///
     /// ---
     pub async fn topics_async(&self, query_params: impl Into<SearchTopicsParams<'api>>) -> Result<GetSearchTopicsResponse200, SearchTopicsError> {
@@ -1372,9 +1378,9 @@ impl<'api> Search<'api> {
     ///
     /// # Search topics
     ///
-    /// Find topics via various criteria. Results are sorted by best match. This method returns up to 100 results [per page](https://docs.github.com/rest/overview/resources-in-the-rest-api#pagination). See "[Searching topics](https://help.github.com/articles/searching-topics/)" for a detailed list of qualifiers.
+    /// Find topics via various criteria. Results are sorted by best match. This method returns up to 100 results [per page](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api). See "[Searching topics](https://docs.github.com/articles/searching-topics/)" for a detailed list of qualifiers.
     /// 
-    /// When searching for topics, you can get text match metadata for the topic's **short\_description**, **description**, **name**, or **display\_name** field when you pass the `text-match` media type. For more details about how to receive highlighted search results, see [Text match metadata](https://docs.github.com/rest/reference/search#text-match-metadata).
+    /// When searching for topics, you can get text match metadata for the topic's **short\_description**, **description**, **name**, or **display\_name** field when you pass the `text-match` media type. For more details about how to receive highlighted search results, see [Text match metadata](https://docs.github.com/rest/search/search#text-match-metadata).
     /// 
     /// For example, if you want to search for topics related to Ruby that are featured on https://github.com/topics. Your query might look like this:
     /// 
@@ -1382,7 +1388,7 @@ impl<'api> Search<'api> {
     /// 
     /// This query searches for topics with the keyword `ruby` and limits the results to find only topics that are featured. The topics that are the best match for the query appear first in the search results.
     /// 
-    /// [GitHub API docs for topics](https://docs.github.com/rest/reference/search#search-topics)
+    /// [GitHub API docs for topics](https://docs.github.com/rest/search/search#search-topics)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1423,9 +1429,9 @@ impl<'api> Search<'api> {
     ///
     /// # Search users
     ///
-    /// Find users via various criteria. This method returns up to 100 results [per page](https://docs.github.com/rest/overview/resources-in-the-rest-api#pagination).
+    /// Find users via various criteria. This method returns up to 100 results [per page](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api).
     /// 
-    /// When searching for users, you can get text match metadata for the issue **login**, **email**, and **name** fields when you pass the `text-match` media type. For more details about highlighting search results, see [Text match metadata](https://docs.github.com/rest/reference/search#text-match-metadata). For more details about how to receive highlighted search results, see [Text match metadata](https://docs.github.com/rest/reference/search#text-match-metadata).
+    /// When searching for users, you can get text match metadata for the issue **login**, public **email**, and **name** fields when you pass the `text-match` media type. For more details about highlighting search results, see [Text match metadata](https://docs.github.com/rest/search/search#text-match-metadata). For more details about how to receive highlighted search results, see [Text match metadata](https://docs.github.com/rest/search/search#text-match-metadata).
     /// 
     /// For example, if you're looking for a list of popular users, you might try this query:
     /// 
@@ -1433,7 +1439,9 @@ impl<'api> Search<'api> {
     /// 
     /// This query searches for users with the name `tom`. The results are restricted to users with more than 42 repositories and over 1,000 followers.
     /// 
-    /// [GitHub API docs for users](https://docs.github.com/rest/reference/search#search-users)
+    /// This endpoint does not accept authentication and will only include publicly visible users. As an alternative, you can use the GraphQL API. The GraphQL API requires authentication and will return private users, including Enterprise Managed Users (EMUs), that you are authorized to view. For more information, see "[GraphQL Queries](https://docs.github.com/graphql/reference/queries#search)."
+    /// 
+    /// [GitHub API docs for users](https://docs.github.com/rest/search/search#search-users)
     ///
     /// ---
     pub async fn users_async(&self, query_params: impl Into<SearchUsersParams<'api>>) -> Result<GetSearchUsersResponse200, SearchUsersError> {
@@ -1474,9 +1482,9 @@ impl<'api> Search<'api> {
     ///
     /// # Search users
     ///
-    /// Find users via various criteria. This method returns up to 100 results [per page](https://docs.github.com/rest/overview/resources-in-the-rest-api#pagination).
+    /// Find users via various criteria. This method returns up to 100 results [per page](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api).
     /// 
-    /// When searching for users, you can get text match metadata for the issue **login**, **email**, and **name** fields when you pass the `text-match` media type. For more details about highlighting search results, see [Text match metadata](https://docs.github.com/rest/reference/search#text-match-metadata). For more details about how to receive highlighted search results, see [Text match metadata](https://docs.github.com/rest/reference/search#text-match-metadata).
+    /// When searching for users, you can get text match metadata for the issue **login**, public **email**, and **name** fields when you pass the `text-match` media type. For more details about highlighting search results, see [Text match metadata](https://docs.github.com/rest/search/search#text-match-metadata). For more details about how to receive highlighted search results, see [Text match metadata](https://docs.github.com/rest/search/search#text-match-metadata).
     /// 
     /// For example, if you're looking for a list of popular users, you might try this query:
     /// 
@@ -1484,7 +1492,9 @@ impl<'api> Search<'api> {
     /// 
     /// This query searches for users with the name `tom`. The results are restricted to users with more than 42 repositories and over 1,000 followers.
     /// 
-    /// [GitHub API docs for users](https://docs.github.com/rest/reference/search#search-users)
+    /// This endpoint does not accept authentication and will only include publicly visible users. As an alternative, you can use the GraphQL API. The GraphQL API requires authentication and will return private users, including Enterprise Managed Users (EMUs), that you are authorized to view. For more information, see "[GraphQL Queries](https://docs.github.com/graphql/reference/queries#search)."
+    /// 
+    /// [GitHub API docs for users](https://docs.github.com/rest/search/search#search-users)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

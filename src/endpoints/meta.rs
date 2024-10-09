@@ -50,6 +50,25 @@ pub enum MetaGetError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Get all API versions](Meta::get_all_versions_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum MetaGetAllVersionsError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Get Octocat](Meta::get_octocat_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MetaGetOctocatError {
@@ -128,11 +147,16 @@ impl<'api> Meta<'api> {
     ///
     /// # Get GitHub meta information
     ///
-    /// Returns meta information about GitHub, including a list of GitHub's IP addresses. For more information, see "[About GitHub's IP addresses](https://help.github.com/articles/about-github-s-ip-addresses/)."
+    /// Returns meta information about GitHub, including a list of GitHub's IP addresses. For more information, see "[About GitHub's IP addresses](https://docs.github.com/articles/about-github-s-ip-addresses/)."
     /// 
-    /// **Note:** The IP addresses shown in the documentation's response are only example values. You must always query the API directly to get the latest list of IP addresses.
+    /// The API's response also includes a list of GitHub's domain names.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/meta#get-github-meta-information)
+    /// The values shown in the documentation's response are example values. You must always query the API directly to get the latest values.
+    /// 
+    /// > [!NOTE]
+    /// > This endpoint returns both IPv4 and IPv6 addresses. However, not all features support IPv6. You should refer to the specific documentation for each feature to determine if IPv6 is supported.
+    /// 
+    /// [GitHub API docs for get](https://docs.github.com/rest/meta/meta#get-apiname-meta-information)
     ///
     /// ---
     pub async fn get_async(&self) -> Result<ApiOverview, MetaGetError> {
@@ -169,11 +193,16 @@ impl<'api> Meta<'api> {
     ///
     /// # Get GitHub meta information
     ///
-    /// Returns meta information about GitHub, including a list of GitHub's IP addresses. For more information, see "[About GitHub's IP addresses](https://help.github.com/articles/about-github-s-ip-addresses/)."
+    /// Returns meta information about GitHub, including a list of GitHub's IP addresses. For more information, see "[About GitHub's IP addresses](https://docs.github.com/articles/about-github-s-ip-addresses/)."
     /// 
-    /// **Note:** The IP addresses shown in the documentation's response are only example values. You must always query the API directly to get the latest list of IP addresses.
+    /// The API's response also includes a list of GitHub's domain names.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/meta#get-github-meta-information)
+    /// The values shown in the documentation's response are example values. You must always query the API directly to get the latest values.
+    /// 
+    /// > [!NOTE]
+    /// > This endpoint returns both IPv4 and IPv6 addresses. However, not all features support IPv6. You should refer to the specific documentation for each feature to determine if IPv6 is supported.
+    /// 
+    /// [GitHub API docs for get](https://docs.github.com/rest/meta/meta#get-apiname-meta-information)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -209,11 +238,90 @@ impl<'api> Meta<'api> {
 
     /// ---
     ///
+    /// # Get all API versions
+    ///
+    /// Get all supported GitHub API versions.
+    /// 
+    /// [GitHub API docs for get_all_versions](https://docs.github.com/rest/meta/meta#get-all-api-versions)
+    ///
+    /// ---
+    pub async fn get_all_versions_async(&self) -> Result<Vec<chrono::DateTime<chrono::Utc>>, MetaGetAllVersionsError> {
+
+        let request_uri = format!("{}/versions", super::GITHUB_BASE_API_URL);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(MetaGetAllVersionsError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(MetaGetAllVersionsError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get all API versions
+    ///
+    /// Get all supported GitHub API versions.
+    /// 
+    /// [GitHub API docs for get_all_versions](https://docs.github.com/rest/meta/meta#get-all-api-versions)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_all_versions(&self) -> Result<Vec<chrono::DateTime<chrono::Utc>>, MetaGetAllVersionsError> {
+
+        let request_uri = format!("{}/versions", super::GITHUB_BASE_API_URL);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(MetaGetAllVersionsError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(MetaGetAllVersionsError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Get Octocat
     ///
     /// Get the octocat as ASCII art
     /// 
-    /// [GitHub API docs for get_octocat](https://docs.github.com/rest/reference/meta#get-octocat)
+    /// [GitHub API docs for get_octocat](https://docs.github.com/rest/meta/meta#get-octocat)
     ///
     /// ---
     pub async fn get_octocat_async(&self, query_params: Option<impl Into<MetaGetOctocatParams<'api>>>) -> Result<String, MetaGetOctocatError> {
@@ -255,7 +363,7 @@ impl<'api> Meta<'api> {
     ///
     /// Get the octocat as ASCII art
     /// 
-    /// [GitHub API docs for get_octocat](https://docs.github.com/rest/reference/meta#get-octocat)
+    /// [GitHub API docs for get_octocat](https://docs.github.com/rest/meta/meta#get-octocat)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -298,7 +406,8 @@ impl<'api> Meta<'api> {
     /// # Get the Zen of GitHub
     ///
     /// Get a random sentence from the Zen of GitHub
-    
+    /// 
+    /// [GitHub API docs for get_zen](https://docs.github.com/rest/meta/meta#get-the-zen-of-github)
     ///
     /// ---
     pub async fn get_zen_async(&self) -> Result<String, MetaGetZenError> {
@@ -335,7 +444,8 @@ impl<'api> Meta<'api> {
     /// # Get the Zen of GitHub
     ///
     /// Get a random sentence from the Zen of GitHub
-    
+    /// 
+    /// [GitHub API docs for get_zen](https://docs.github.com/rest/meta/meta#get-the-zen-of-github)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -374,10 +484,10 @@ impl<'api> Meta<'api> {
     ///
     /// Get Hypermedia links to resources accessible in GitHub's REST API
     /// 
-    /// [GitHub API docs for root](https://docs.github.com/rest/overview/resources-in-the-rest-api#root-endpoint)
+    /// [GitHub API docs for root](https://docs.github.com/rest/meta/meta#github-api-root)
     ///
     /// ---
-    pub async fn root_async(&self) -> Result<GetMetaRootResponse200, MetaRootError> {
+    pub async fn root_async(&self) -> Result<Root, MetaRootError> {
 
         let request_uri = format!("{}/", super::GITHUB_BASE_API_URL);
 
@@ -412,11 +522,11 @@ impl<'api> Meta<'api> {
     ///
     /// Get Hypermedia links to resources accessible in GitHub's REST API
     /// 
-    /// [GitHub API docs for root](https://docs.github.com/rest/overview/resources-in-the-rest-api#root-endpoint)
+    /// [GitHub API docs for root](https://docs.github.com/rest/meta/meta#github-api-root)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn root(&self) -> Result<GetMetaRootResponse200, MetaRootError> {
+    pub fn root(&self) -> Result<Root, MetaRootError> {
 
         let request_uri = format!("{}/", super::GITHUB_BASE_API_URL);
 

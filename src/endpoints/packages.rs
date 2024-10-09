@@ -169,7 +169,7 @@ pub enum PackagesDeletePackageVersionForUserError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Get all package versions for a package owned by the authenticated user](Packages::get_all_package_versions_for_package_owned_by_authenticated_user_async()) endpoint.
+/// Errors for the [List package versions for a package owned by the authenticated user](Packages::get_all_package_versions_for_package_owned_by_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError {
     #[error(transparent)]
@@ -192,7 +192,7 @@ pub enum PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Get all package versions for a package owned by an organization](Packages::get_all_package_versions_for_package_owned_by_org_async()) endpoint.
+/// Errors for the [List package versions for a package owned by an organization](Packages::get_all_package_versions_for_package_owned_by_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesGetAllPackageVersionsForPackageOwnedByOrgError {
     #[error(transparent)]
@@ -215,7 +215,7 @@ pub enum PackagesGetAllPackageVersionsForPackageOwnedByOrgError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Get all package versions for a package owned by a user](Packages::get_all_package_versions_for_package_owned_by_user_async()) endpoint.
+/// Errors for the [List package versions for a package owned by a user](Packages::get_all_package_versions_for_package_owned_by_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesGetAllPackageVersionsForPackageOwnedByUserError {
     #[error(transparent)]
@@ -340,6 +340,65 @@ pub enum PackagesGetPackageVersionForUserError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Get list of conflicting packages during Docker migration for authenticated-user](Packages::list_docker_migration_conflicting_packages_for_authenticated_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum PackagesListDockerMigrationConflictingPackagesForAuthenticatedUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get list of conflicting packages during Docker migration for organization](Packages::list_docker_migration_conflicting_packages_for_organization_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum PackagesListDockerMigrationConflictingPackagesForOrganizationError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get list of conflicting packages during Docker migration for user](Packages::list_docker_migration_conflicting_packages_for_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum PackagesListDockerMigrationConflictingPackagesForUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [List packages for the authenticated user&#x27;s namespace](Packages::list_packages_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesListPackagesForAuthenticatedUserError {
@@ -353,6 +412,8 @@ pub enum PackagesListPackagesForAuthenticatedUserError {
 
     // -- endpoint errors
 
+    #[error("The value of &#x60;per_page&#x60; multiplied by &#x60;page&#x60; cannot be greater than 10000.")]
+    Status400,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -374,6 +435,8 @@ pub enum PackagesListPackagesForOrganizationError {
     Status403(BasicError),
     #[error("Requires authentication")]
     Status401(BasicError),
+    #[error("The value of &#x60;per_page&#x60; multiplied by &#x60;page&#x60; cannot be greater than 10000.")]
+    Status400,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -395,6 +458,8 @@ pub enum PackagesListPackagesForUserError {
     Status403(BasicError),
     #[error("Requires authentication")]
     Status401(BasicError),
+    #[error("The value of &#x60;per_page&#x60; multiplied by &#x60;page&#x60; cannot be greater than 10000.")]
+    Status400,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -538,12 +603,12 @@ pub enum PackagesRestorePackageVersionForUserError {
 }
 
 
-/// Query parameters for the [Get all package versions for a package owned by the authenticated user](Packages::get_all_package_versions_for_package_owned_by_authenticated_user_async()) endpoint.
+/// Query parameters for the [List package versions for a package owned by the authenticated user](Packages::get_all_package_versions_for_package_owned_by_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserParams<'req> {
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
     /// The state of the package, either active or deleted.
     state: Option<&'req str>
@@ -554,7 +619,7 @@ impl<'req> PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserParams
         Self::default()
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             page: Some(page),
@@ -563,7 +628,7 @@ impl<'req> PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserParams
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             page: self.page, 
@@ -591,12 +656,12 @@ impl<'enc> From<&'enc PerPage> for PackagesGetAllPackageVersionsForPackageOwnedB
         }
     }
 }
-/// Query parameters for the [Get all package versions for a package owned by an organization](Packages::get_all_package_versions_for_package_owned_by_org_async()) endpoint.
+/// Query parameters for the [List package versions for a package owned by an organization](Packages::get_all_package_versions_for_package_owned_by_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct PackagesGetAllPackageVersionsForPackageOwnedByOrgParams<'req> {
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
     /// The state of the package, either active or deleted.
     state: Option<&'req str>
@@ -607,7 +672,7 @@ impl<'req> PackagesGetAllPackageVersionsForPackageOwnedByOrgParams<'req> {
         Self::default()
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
         Self { 
             page: Some(page),
@@ -616,7 +681,7 @@ impl<'req> PackagesGetAllPackageVersionsForPackageOwnedByOrgParams<'req> {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
         Self { 
             page: self.page, 
@@ -647,10 +712,14 @@ impl<'enc> From<&'enc PerPage> for PackagesGetAllPackageVersionsForPackageOwnedB
 /// Query parameters for the [List packages for the authenticated user&#x27;s namespace](Packages::list_packages_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct PackagesListPackagesForAuthenticatedUserParams<'req> {
-    /// The type of supported package. Can be one of `npm`, `maven`, `rubygems`, `nuget`, `docker`, or `container`. Packages in GitHub's Gradle registry have the type `maven`. Docker images pushed to GitHub's Container registry (`ghcr.io`) have the type `container`. You can use the type `docker` to find images that were pushed to GitHub's Docker registry (`docker.pkg.github.com`), even if these have now been migrated to the Container registry.
+    /// The type of supported package. Packages in GitHub's Gradle registry have the type `maven`. Docker images pushed to GitHub's Container registry (`ghcr.io`) have the type `container`. You can use the type `docker` to find images that were pushed to GitHub's Docker registry (`docker.pkg.github.com`), even if these have now been migrated to the Container registry.
     package_type: &'req str, 
-    /// The selected visibility of the packages. Can be one of `public`, `private`, or `internal`. Only `container` package_types currently support `internal` visibility properly. For other ecosystems `internal` is synonymous with `private`. This parameter is optional and only filters an existing result set.
-    visibility: Option<&'req str>
+    /// The selected visibility of the packages.  This parameter is optional and only filters an existing result set.  The `internal` visibility is only supported for GitHub Packages registries that allow for granular permissions. For other ecosystems `internal` is synonymous with `private`. For the list of GitHub Packages registries that support granular permissions, see \"[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages).\"
+    visibility: Option<&'req str>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>, 
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>
 }
 
 impl<'req> PackagesListPackagesForAuthenticatedUserParams<'req> {
@@ -658,30 +727,67 @@ impl<'req> PackagesListPackagesForAuthenticatedUserParams<'req> {
         Self::default()
     }
 
-    /// The type of supported package. Can be one of `npm`, `maven`, `rubygems`, `nuget`, `docker`, or `container`. Packages in GitHub's Gradle registry have the type `maven`. Docker images pushed to GitHub's Container registry (`ghcr.io`) have the type `container`. You can use the type `docker` to find images that were pushed to GitHub's Docker registry (`docker.pkg.github.com`), even if these have now been migrated to the Container registry.
+    /// The type of supported package. Packages in GitHub's Gradle registry have the type `maven`. Docker images pushed to GitHub's Container registry (`ghcr.io`) have the type `container`. You can use the type `docker` to find images that were pushed to GitHub's Docker registry (`docker.pkg.github.com`), even if these have now been migrated to the Container registry.
     pub fn package_type(self, package_type: &'req str) -> Self {
         Self { 
             package_type: package_type,
             visibility: self.visibility, 
+            page: self.page, 
+            per_page: self.per_page, 
         }
     }
 
-    /// The selected visibility of the packages. Can be one of `public`, `private`, or `internal`. Only `container` package_types currently support `internal` visibility properly. For other ecosystems `internal` is synonymous with `private`. This parameter is optional and only filters an existing result set.
+    /// The selected visibility of the packages.  This parameter is optional and only filters an existing result set.  The `internal` visibility is only supported for GitHub Packages registries that allow for granular permissions. For other ecosystems `internal` is synonymous with `private`. For the list of GitHub Packages registries that support granular permissions, see \"[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages).\"
     pub fn visibility(self, visibility: &'req str) -> Self {
         Self { 
             package_type: self.package_type, 
             visibility: Some(visibility),
+            page: self.page, 
+            per_page: self.per_page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self { 
+            package_type: self.package_type, 
+            visibility: self.visibility, 
+            page: Some(page),
+            per_page: self.per_page, 
+        }
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self { 
+            package_type: self.package_type, 
+            visibility: self.visibility, 
+            page: self.page, 
+            per_page: Some(per_page),
         }
     }
 }
 
+impl<'enc> From<&'enc PerPage> for PackagesListPackagesForAuthenticatedUserParams<'enc> {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [List packages for an organization](Packages::list_packages_for_organization_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct PackagesListPackagesForOrganizationParams<'req> {
-    /// The type of supported package. Can be one of `npm`, `maven`, `rubygems`, `nuget`, `docker`, or `container`. Packages in GitHub's Gradle registry have the type `maven`. Docker images pushed to GitHub's Container registry (`ghcr.io`) have the type `container`. You can use the type `docker` to find images that were pushed to GitHub's Docker registry (`docker.pkg.github.com`), even if these have now been migrated to the Container registry.
+    /// The type of supported package. Packages in GitHub's Gradle registry have the type `maven`. Docker images pushed to GitHub's Container registry (`ghcr.io`) have the type `container`. You can use the type `docker` to find images that were pushed to GitHub's Docker registry (`docker.pkg.github.com`), even if these have now been migrated to the Container registry.
     package_type: &'req str, 
-    /// The selected visibility of the packages. Can be one of `public`, `private`, or `internal`. Only `container` package_types currently support `internal` visibility properly. For other ecosystems `internal` is synonymous with `private`. This parameter is optional and only filters an existing result set.
-    visibility: Option<&'req str>
+    /// The selected visibility of the packages.  This parameter is optional and only filters an existing result set.  The `internal` visibility is only supported for GitHub Packages registries that allow for granular permissions. For other ecosystems `internal` is synonymous with `private`. For the list of GitHub Packages registries that support granular permissions, see \"[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages).\"
+    visibility: Option<&'req str>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>, 
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>
 }
 
 impl<'req> PackagesListPackagesForOrganizationParams<'req> {
@@ -689,30 +795,67 @@ impl<'req> PackagesListPackagesForOrganizationParams<'req> {
         Self::default()
     }
 
-    /// The type of supported package. Can be one of `npm`, `maven`, `rubygems`, `nuget`, `docker`, or `container`. Packages in GitHub's Gradle registry have the type `maven`. Docker images pushed to GitHub's Container registry (`ghcr.io`) have the type `container`. You can use the type `docker` to find images that were pushed to GitHub's Docker registry (`docker.pkg.github.com`), even if these have now been migrated to the Container registry.
+    /// The type of supported package. Packages in GitHub's Gradle registry have the type `maven`. Docker images pushed to GitHub's Container registry (`ghcr.io`) have the type `container`. You can use the type `docker` to find images that were pushed to GitHub's Docker registry (`docker.pkg.github.com`), even if these have now been migrated to the Container registry.
     pub fn package_type(self, package_type: &'req str) -> Self {
         Self { 
             package_type: package_type,
             visibility: self.visibility, 
+            page: self.page, 
+            per_page: self.per_page, 
         }
     }
 
-    /// The selected visibility of the packages. Can be one of `public`, `private`, or `internal`. Only `container` package_types currently support `internal` visibility properly. For other ecosystems `internal` is synonymous with `private`. This parameter is optional and only filters an existing result set.
+    /// The selected visibility of the packages.  This parameter is optional and only filters an existing result set.  The `internal` visibility is only supported for GitHub Packages registries that allow for granular permissions. For other ecosystems `internal` is synonymous with `private`. For the list of GitHub Packages registries that support granular permissions, see \"[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages).\"
     pub fn visibility(self, visibility: &'req str) -> Self {
         Self { 
             package_type: self.package_type, 
             visibility: Some(visibility),
+            page: self.page, 
+            per_page: self.per_page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self { 
+            package_type: self.package_type, 
+            visibility: self.visibility, 
+            page: Some(page),
+            per_page: self.per_page, 
+        }
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self { 
+            package_type: self.package_type, 
+            visibility: self.visibility, 
+            page: self.page, 
+            per_page: Some(per_page),
         }
     }
 }
 
+impl<'enc> From<&'enc PerPage> for PackagesListPackagesForOrganizationParams<'enc> {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [List packages for a user](Packages::list_packages_for_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct PackagesListPackagesForUserParams<'req> {
-    /// The type of supported package. Can be one of `npm`, `maven`, `rubygems`, `nuget`, `docker`, or `container`. Packages in GitHub's Gradle registry have the type `maven`. Docker images pushed to GitHub's Container registry (`ghcr.io`) have the type `container`. You can use the type `docker` to find images that were pushed to GitHub's Docker registry (`docker.pkg.github.com`), even if these have now been migrated to the Container registry.
+    /// The type of supported package. Packages in GitHub's Gradle registry have the type `maven`. Docker images pushed to GitHub's Container registry (`ghcr.io`) have the type `container`. You can use the type `docker` to find images that were pushed to GitHub's Docker registry (`docker.pkg.github.com`), even if these have now been migrated to the Container registry.
     package_type: &'req str, 
-    /// The selected visibility of the packages. Can be one of `public`, `private`, or `internal`. Only `container` package_types currently support `internal` visibility properly. For other ecosystems `internal` is synonymous with `private`. This parameter is optional and only filters an existing result set.
-    visibility: Option<&'req str>
+    /// The selected visibility of the packages.  This parameter is optional and only filters an existing result set.  The `internal` visibility is only supported for GitHub Packages registries that allow for granular permissions. For other ecosystems `internal` is synonymous with `private`. For the list of GitHub Packages registries that support granular permissions, see \"[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages).\"
+    visibility: Option<&'req str>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>, 
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>
 }
 
 impl<'req> PackagesListPackagesForUserParams<'req> {
@@ -720,23 +863,56 @@ impl<'req> PackagesListPackagesForUserParams<'req> {
         Self::default()
     }
 
-    /// The type of supported package. Can be one of `npm`, `maven`, `rubygems`, `nuget`, `docker`, or `container`. Packages in GitHub's Gradle registry have the type `maven`. Docker images pushed to GitHub's Container registry (`ghcr.io`) have the type `container`. You can use the type `docker` to find images that were pushed to GitHub's Docker registry (`docker.pkg.github.com`), even if these have now been migrated to the Container registry.
+    /// The type of supported package. Packages in GitHub's Gradle registry have the type `maven`. Docker images pushed to GitHub's Container registry (`ghcr.io`) have the type `container`. You can use the type `docker` to find images that were pushed to GitHub's Docker registry (`docker.pkg.github.com`), even if these have now been migrated to the Container registry.
     pub fn package_type(self, package_type: &'req str) -> Self {
         Self { 
             package_type: package_type,
             visibility: self.visibility, 
+            page: self.page, 
+            per_page: self.per_page, 
         }
     }
 
-    /// The selected visibility of the packages. Can be one of `public`, `private`, or `internal`. Only `container` package_types currently support `internal` visibility properly. For other ecosystems `internal` is synonymous with `private`. This parameter is optional and only filters an existing result set.
+    /// The selected visibility of the packages.  This parameter is optional and only filters an existing result set.  The `internal` visibility is only supported for GitHub Packages registries that allow for granular permissions. For other ecosystems `internal` is synonymous with `private`. For the list of GitHub Packages registries that support granular permissions, see \"[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages).\"
     pub fn visibility(self, visibility: &'req str) -> Self {
         Self { 
             package_type: self.package_type, 
             visibility: Some(visibility),
+            page: self.page, 
+            per_page: self.per_page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self { 
+            package_type: self.package_type, 
+            visibility: self.visibility, 
+            page: Some(page),
+            per_page: self.per_page, 
+        }
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self { 
+            package_type: self.package_type, 
+            visibility: self.visibility, 
+            page: self.page, 
+            per_page: Some(per_page),
         }
     }
 }
 
+impl<'enc> From<&'enc PerPage> for PackagesListPackagesForUserParams<'enc> {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [Restore a package for the authenticated user](Packages::restore_package_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct PackagesRestorePackageForAuthenticatedUserParams<'req> {
@@ -805,10 +981,9 @@ impl<'api> Packages<'api> {
     ///
     /// Deletes a package owned by the authenticated user. You cannot delete a public package if any version of the package has more than 5,000 downloads. In this scenario, contact GitHub support for further assistance.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:delete` scopes.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, `repo` scope is also required. For the list these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for delete_package_for_authenticated_user](https://docs.github.com/rest/reference/packages#delete-a-package-for-the-authenticated-user)
+    /// [GitHub API docs for delete_package_for_authenticated_user](https://docs.github.com/rest/packages/packages#delete-a-package-for-the-authenticated-user)
     ///
     /// ---
     pub async fn delete_package_for_authenticated_user_async(&self, package_type: &str, package_name: &str) -> Result<(), PackagesDeletePackageForAuthenticatedUserError> {
@@ -849,10 +1024,9 @@ impl<'api> Packages<'api> {
     ///
     /// Deletes a package owned by the authenticated user. You cannot delete a public package if any version of the package has more than 5,000 downloads. In this scenario, contact GitHub support for further assistance.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:delete` scopes.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, `repo` scope is also required. For the list these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for delete_package_for_authenticated_user](https://docs.github.com/rest/reference/packages#delete-a-package-for-the-authenticated-user)
+    /// [GitHub API docs for delete_package_for_authenticated_user](https://docs.github.com/rest/packages/packages#delete-a-package-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -894,11 +1068,11 @@ impl<'api> Packages<'api> {
     ///
     /// Deletes an entire package in an organization. You cannot delete a public package if any version of the package has more than 5,000 downloads. In this scenario, contact GitHub support for further assistance.
     /// 
-    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:delete` scopes. In addition:
-    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
-    /// - If `package_type` is `container`, you must also have admin permissions to the container you want to delete.
+    /// The authenticated user must have admin permissions in the organization to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must also have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
-    /// [GitHub API docs for delete_package_for_org](https://docs.github.com/rest/reference/packages#delete-a-package-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
+    /// 
+    /// [GitHub API docs for delete_package_for_org](https://docs.github.com/rest/packages/packages#delete-a-package-for-an-organization)
     ///
     /// ---
     pub async fn delete_package_for_org_async(&self, package_type: &str, package_name: &str, org: &str) -> Result<(), PackagesDeletePackageForOrgError> {
@@ -939,11 +1113,11 @@ impl<'api> Packages<'api> {
     ///
     /// Deletes an entire package in an organization. You cannot delete a public package if any version of the package has more than 5,000 downloads. In this scenario, contact GitHub support for further assistance.
     /// 
-    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:delete` scopes. In addition:
-    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
-    /// - If `package_type` is `container`, you must also have admin permissions to the container you want to delete.
+    /// The authenticated user must have admin permissions in the organization to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must also have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
-    /// [GitHub API docs for delete_package_for_org](https://docs.github.com/rest/reference/packages#delete-a-package-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
+    /// 
+    /// [GitHub API docs for delete_package_for_org](https://docs.github.com/rest/packages/packages#delete-a-package-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -985,11 +1159,11 @@ impl<'api> Packages<'api> {
     ///
     /// Deletes an entire package for a user. You cannot delete a public package if any version of the package has more than 5,000 downloads. In this scenario, contact GitHub support for further assistance.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:delete` scopes. In addition:
-    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
-    /// - If `package_type` is `container`, you must also have admin permissions to the container you want to delete.
+    /// If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
-    /// [GitHub API docs for delete_package_for_user](https://docs.github.com/rest/reference/packages#delete-a-package-for-a-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
+    /// 
+    /// [GitHub API docs for delete_package_for_user](https://docs.github.com/rest/packages/packages#delete-a-package-for-a-user)
     ///
     /// ---
     pub async fn delete_package_for_user_async(&self, package_type: &str, package_name: &str, username: &str) -> Result<(), PackagesDeletePackageForUserError> {
@@ -1030,11 +1204,11 @@ impl<'api> Packages<'api> {
     ///
     /// Deletes an entire package for a user. You cannot delete a public package if any version of the package has more than 5,000 downloads. In this scenario, contact GitHub support for further assistance.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:delete` scopes. In addition:
-    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
-    /// - If `package_type` is `container`, you must also have admin permissions to the container you want to delete.
+    /// If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
-    /// [GitHub API docs for delete_package_for_user](https://docs.github.com/rest/reference/packages#delete-a-package-for-a-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
+    /// 
+    /// [GitHub API docs for delete_package_for_user](https://docs.github.com/rest/packages/packages#delete-a-package-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1076,10 +1250,11 @@ impl<'api> Packages<'api> {
     ///
     /// Deletes a specific package version for a package owned by the authenticated user.  If the package is public and the package version has more than 5,000 downloads, you cannot delete the package version. In this scenario, contact GitHub support for further assistance.
     /// 
-    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:delete` scopes.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// The authenticated user must have admin permissions in the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for delete_package_version_for_authenticated_user](https://docs.github.com/rest/reference/packages#delete-a-package-version-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
+    /// 
+    /// [GitHub API docs for delete_package_version_for_authenticated_user](https://docs.github.com/rest/packages/packages#delete-a-package-version-for-the-authenticated-user)
     ///
     /// ---
     pub async fn delete_package_version_for_authenticated_user_async(&self, package_type: &str, package_name: &str, package_version_id: i32) -> Result<(), PackagesDeletePackageVersionForAuthenticatedUserError> {
@@ -1120,10 +1295,11 @@ impl<'api> Packages<'api> {
     ///
     /// Deletes a specific package version for a package owned by the authenticated user.  If the package is public and the package version has more than 5,000 downloads, you cannot delete the package version. In this scenario, contact GitHub support for further assistance.
     /// 
-    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:delete` scopes.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// The authenticated user must have admin permissions in the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for delete_package_version_for_authenticated_user](https://docs.github.com/rest/reference/packages#delete-a-package-version-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
+    /// 
+    /// [GitHub API docs for delete_package_version_for_authenticated_user](https://docs.github.com/rest/packages/packages#delete-a-package-version-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1165,11 +1341,11 @@ impl<'api> Packages<'api> {
     ///
     /// Deletes a specific package version in an organization. If the package is public and the package version has more than 5,000 downloads, you cannot delete the package version. In this scenario, contact GitHub support for further assistance.
     /// 
-    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:delete` scopes. In addition:
-    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
-    /// - If `package_type` is `container`, you must also have admin permissions to the container you want to delete.
+    /// The authenticated user must have admin permissions in the organization to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must also have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
-    /// [GitHub API docs for delete_package_version_for_org](https://docs.github.com/rest/reference/packages#delete-a-package-version-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
+    /// 
+    /// [GitHub API docs for delete_package_version_for_org](https://docs.github.com/rest/packages/packages#delete-package-version-for-an-organization)
     ///
     /// ---
     pub async fn delete_package_version_for_org_async(&self, package_type: &str, package_name: &str, org: &str, package_version_id: i32) -> Result<(), PackagesDeletePackageVersionForOrgError> {
@@ -1210,11 +1386,11 @@ impl<'api> Packages<'api> {
     ///
     /// Deletes a specific package version in an organization. If the package is public and the package version has more than 5,000 downloads, you cannot delete the package version. In this scenario, contact GitHub support for further assistance.
     /// 
-    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:delete` scopes. In addition:
-    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
-    /// - If `package_type` is `container`, you must also have admin permissions to the container you want to delete.
+    /// The authenticated user must have admin permissions in the organization to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must also have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
-    /// [GitHub API docs for delete_package_version_for_org](https://docs.github.com/rest/reference/packages#delete-a-package-version-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
+    /// 
+    /// [GitHub API docs for delete_package_version_for_org](https://docs.github.com/rest/packages/packages#delete-package-version-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1256,11 +1432,11 @@ impl<'api> Packages<'api> {
     ///
     /// Deletes a specific package version for a user. If the package is public and the package version has more than 5,000 downloads, you cannot delete the package version. In this scenario, contact GitHub support for further assistance.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:delete` scopes. In addition:
-    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
-    /// - If `package_type` is `container`, you must also have admin permissions to the container you want to delete.
+    /// If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
-    /// [GitHub API docs for delete_package_version_for_user](https://docs.github.com/rest/reference/packages#delete-a-package-version-for-a-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
+    /// 
+    /// [GitHub API docs for delete_package_version_for_user](https://docs.github.com/rest/packages/packages#delete-package-version-for-a-user)
     ///
     /// ---
     pub async fn delete_package_version_for_user_async(&self, package_type: &str, package_name: &str, username: &str, package_version_id: i32) -> Result<(), PackagesDeletePackageVersionForUserError> {
@@ -1301,11 +1477,11 @@ impl<'api> Packages<'api> {
     ///
     /// Deletes a specific package version for a user. If the package is public and the package version has more than 5,000 downloads, you cannot delete the package version. In this scenario, contact GitHub support for further assistance.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:delete` scopes. In addition:
-    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
-    /// - If `package_type` is `container`, you must also have admin permissions to the container you want to delete.
+    /// If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
-    /// [GitHub API docs for delete_package_version_for_user](https://docs.github.com/rest/reference/packages#delete-a-package-version-for-a-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
+    /// 
+    /// [GitHub API docs for delete_package_version_for_user](https://docs.github.com/rest/packages/packages#delete-package-version-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1343,14 +1519,13 @@ impl<'api> Packages<'api> {
 
     /// ---
     ///
-    /// # Get all package versions for a package owned by the authenticated user
+    /// # List package versions for a package owned by the authenticated user
     ///
-    /// Returns all package versions for a package owned by the authenticated user.
+    /// Lists package versions for a package owned by the authenticated user.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for get_all_package_versions_for_package_owned_by_authenticated_user](https://docs.github.com/rest/reference/packages#get-all-package-versions-for-a-package-owned-by-the-authenticated-user)
+    /// [GitHub API docs for get_all_package_versions_for_package_owned_by_authenticated_user](https://docs.github.com/rest/packages/packages#list-package-versions-for-a-package-owned-by-the-authenticated-user)
     ///
     /// ---
     pub async fn get_all_package_versions_for_package_owned_by_authenticated_user_async(&self, package_type: &str, package_name: &str, query_params: Option<impl Into<PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserParams<'api>>>) -> Result<Vec<PackageVersion>, PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError> {
@@ -1391,14 +1566,13 @@ impl<'api> Packages<'api> {
 
     /// ---
     ///
-    /// # Get all package versions for a package owned by the authenticated user
+    /// # List package versions for a package owned by the authenticated user
     ///
-    /// Returns all package versions for a package owned by the authenticated user.
+    /// Lists package versions for a package owned by the authenticated user.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for get_all_package_versions_for_package_owned_by_authenticated_user](https://docs.github.com/rest/reference/packages#get-all-package-versions-for-a-package-owned-by-the-authenticated-user)
+    /// [GitHub API docs for get_all_package_versions_for_package_owned_by_authenticated_user](https://docs.github.com/rest/packages/packages#list-package-versions-for-a-package-owned-by-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1441,14 +1615,13 @@ impl<'api> Packages<'api> {
 
     /// ---
     ///
-    /// # Get all package versions for a package owned by an organization
+    /// # List package versions for a package owned by an organization
     ///
-    /// Returns all package versions for a package owned by an organization.
+    /// Lists package versions for a package owned by an organization.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint if the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for get_all_package_versions_for_package_owned_by_org](https://docs.github.com/rest/reference/packages#get-all-package-versions-for-a-package-owned-by-an-organization)
+    /// [GitHub API docs for get_all_package_versions_for_package_owned_by_org](https://docs.github.com/rest/packages/packages#list-package-versions-for-a-package-owned-by-an-organization)
     ///
     /// ---
     pub async fn get_all_package_versions_for_package_owned_by_org_async(&self, package_type: &str, package_name: &str, org: &str, query_params: Option<impl Into<PackagesGetAllPackageVersionsForPackageOwnedByOrgParams<'api>>>) -> Result<Vec<PackageVersion>, PackagesGetAllPackageVersionsForPackageOwnedByOrgError> {
@@ -1489,14 +1662,13 @@ impl<'api> Packages<'api> {
 
     /// ---
     ///
-    /// # Get all package versions for a package owned by an organization
+    /// # List package versions for a package owned by an organization
     ///
-    /// Returns all package versions for a package owned by an organization.
+    /// Lists package versions for a package owned by an organization.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint if the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for get_all_package_versions_for_package_owned_by_org](https://docs.github.com/rest/reference/packages#get-all-package-versions-for-a-package-owned-by-an-organization)
+    /// [GitHub API docs for get_all_package_versions_for_package_owned_by_org](https://docs.github.com/rest/packages/packages#list-package-versions-for-a-package-owned-by-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1539,14 +1711,13 @@ impl<'api> Packages<'api> {
 
     /// ---
     ///
-    /// # Get all package versions for a package owned by a user
+    /// # List package versions for a package owned by a user
     ///
-    /// Returns all package versions for a public package owned by a specified user.
+    /// Lists package versions for a public package owned by a specified user.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for get_all_package_versions_for_package_owned_by_user](https://docs.github.com/rest/reference/packages#get-all-package-versions-for-a-package-owned-by-a-user)
+    /// [GitHub API docs for get_all_package_versions_for_package_owned_by_user](https://docs.github.com/rest/packages/packages#list-package-versions-for-a-package-owned-by-a-user)
     ///
     /// ---
     pub async fn get_all_package_versions_for_package_owned_by_user_async(&self, package_type: &str, package_name: &str, username: &str) -> Result<Vec<PackageVersion>, PackagesGetAllPackageVersionsForPackageOwnedByUserError> {
@@ -1583,14 +1754,13 @@ impl<'api> Packages<'api> {
 
     /// ---
     ///
-    /// # Get all package versions for a package owned by a user
+    /// # List package versions for a package owned by a user
     ///
-    /// Returns all package versions for a public package owned by a specified user.
+    /// Lists package versions for a public package owned by a specified user.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for get_all_package_versions_for_package_owned_by_user](https://docs.github.com/rest/reference/packages#get-all-package-versions-for-a-package-owned-by-a-user)
+    /// [GitHub API docs for get_all_package_versions_for_package_owned_by_user](https://docs.github.com/rest/packages/packages#list-package-versions-for-a-package-owned-by-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1632,10 +1802,9 @@ impl<'api> Packages<'api> {
     ///
     /// Gets a specific package for a package owned by the authenticated user.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for get_package_for_authenticated_user](https://docs.github.com/rest/reference/packages#get-a-package-for-the-authenticated-user)
+    /// [GitHub API docs for get_package_for_authenticated_user](https://docs.github.com/rest/packages/packages#get-a-package-for-the-authenticated-user)
     ///
     /// ---
     pub async fn get_package_for_authenticated_user_async(&self, package_type: &str, package_name: &str) -> Result<Package, PackagesGetPackageForAuthenticatedUserError> {
@@ -1673,10 +1842,9 @@ impl<'api> Packages<'api> {
     ///
     /// Gets a specific package for a package owned by the authenticated user.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for get_package_for_authenticated_user](https://docs.github.com/rest/reference/packages#get-a-package-for-the-authenticated-user)
+    /// [GitHub API docs for get_package_for_authenticated_user](https://docs.github.com/rest/packages/packages#get-a-package-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1715,10 +1883,9 @@ impl<'api> Packages<'api> {
     ///
     /// Gets a specific package in an organization.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for get_package_for_organization](https://docs.github.com/rest/reference/packages#get-a-package-for-an-organization)
+    /// [GitHub API docs for get_package_for_organization](https://docs.github.com/rest/packages/packages#get-a-package-for-an-organization)
     ///
     /// ---
     pub async fn get_package_for_organization_async(&self, package_type: &str, package_name: &str, org: &str) -> Result<Package, PackagesGetPackageForOrganizationError> {
@@ -1756,10 +1923,9 @@ impl<'api> Packages<'api> {
     ///
     /// Gets a specific package in an organization.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for get_package_for_organization](https://docs.github.com/rest/reference/packages#get-a-package-for-an-organization)
+    /// [GitHub API docs for get_package_for_organization](https://docs.github.com/rest/packages/packages#get-a-package-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1798,10 +1964,9 @@ impl<'api> Packages<'api> {
     ///
     /// Gets a specific package metadata for a public package owned by a user.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for get_package_for_user](https://docs.github.com/rest/reference/packages#get-a-package-for-a-user)
+    /// [GitHub API docs for get_package_for_user](https://docs.github.com/rest/packages/packages#get-a-package-for-a-user)
     ///
     /// ---
     pub async fn get_package_for_user_async(&self, package_type: &str, package_name: &str, username: &str) -> Result<Package, PackagesGetPackageForUserError> {
@@ -1839,10 +2004,9 @@ impl<'api> Packages<'api> {
     ///
     /// Gets a specific package metadata for a public package owned by a user.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for get_package_for_user](https://docs.github.com/rest/reference/packages#get-a-package-for-a-user)
+    /// [GitHub API docs for get_package_for_user](https://docs.github.com/rest/packages/packages#get-a-package-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1881,10 +2045,9 @@ impl<'api> Packages<'api> {
     ///
     /// Gets a specific package version for a package owned by the authenticated user.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for get_package_version_for_authenticated_user](https://docs.github.com/rest/reference/packages#get-a-package-version-for-the-authenticated-user)
+    /// [GitHub API docs for get_package_version_for_authenticated_user](https://docs.github.com/rest/packages/packages#get-a-package-version-for-the-authenticated-user)
     ///
     /// ---
     pub async fn get_package_version_for_authenticated_user_async(&self, package_type: &str, package_name: &str, package_version_id: i32) -> Result<PackageVersion, PackagesGetPackageVersionForAuthenticatedUserError> {
@@ -1922,10 +2085,9 @@ impl<'api> Packages<'api> {
     ///
     /// Gets a specific package version for a package owned by the authenticated user.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for get_package_version_for_authenticated_user](https://docs.github.com/rest/reference/packages#get-a-package-version-for-the-authenticated-user)
+    /// [GitHub API docs for get_package_version_for_authenticated_user](https://docs.github.com/rest/packages/packages#get-a-package-version-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1964,10 +2126,9 @@ impl<'api> Packages<'api> {
     ///
     /// Gets a specific package version in an organization.
     /// 
-    /// You must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for get_package_version_for_organization](https://docs.github.com/rest/reference/packages#get-a-package-version-for-an-organization)
+    /// [GitHub API docs for get_package_version_for_organization](https://docs.github.com/rest/packages/packages#get-a-package-version-for-an-organization)
     ///
     /// ---
     pub async fn get_package_version_for_organization_async(&self, package_type: &str, package_name: &str, org: &str, package_version_id: i32) -> Result<PackageVersion, PackagesGetPackageVersionForOrganizationError> {
@@ -2005,10 +2166,9 @@ impl<'api> Packages<'api> {
     ///
     /// Gets a specific package version in an organization.
     /// 
-    /// You must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for get_package_version_for_organization](https://docs.github.com/rest/reference/packages#get-a-package-version-for-an-organization)
+    /// [GitHub API docs for get_package_version_for_organization](https://docs.github.com/rest/packages/packages#get-a-package-version-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2047,10 +2207,9 @@ impl<'api> Packages<'api> {
     ///
     /// Gets a specific package version for a public package owned by a specified user.
     /// 
-    /// At this time, to use this endpoint, you must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for get_package_version_for_user](https://docs.github.com/rest/reference/packages#get-a-package-version-for-a-user)
+    /// [GitHub API docs for get_package_version_for_user](https://docs.github.com/rest/packages/packages#get-a-package-version-for-a-user)
     ///
     /// ---
     pub async fn get_package_version_for_user_async(&self, package_type: &str, package_name: &str, package_version_id: i32, username: &str) -> Result<PackageVersion, PackagesGetPackageVersionForUserError> {
@@ -2088,10 +2247,9 @@ impl<'api> Packages<'api> {
     ///
     /// Gets a specific package version for a public package owned by a specified user.
     /// 
-    /// At this time, to use this endpoint, you must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for get_package_version_for_user](https://docs.github.com/rest/reference/packages#get-a-package-version-for-a-user)
+    /// [GitHub API docs for get_package_version_for_user](https://docs.github.com/rest/packages/packages#get-a-package-version-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2126,14 +2284,264 @@ impl<'api> Packages<'api> {
 
     /// ---
     ///
+    /// # Get list of conflicting packages during Docker migration for authenticated-user
+    ///
+    /// Lists all packages that are owned by the authenticated user within the user's namespace, and that encountered a conflict during a Docker migration.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for list_docker_migration_conflicting_packages_for_authenticated_user](https://docs.github.com/rest/packages/packages#get-list-of-conflicting-packages-during-docker-migration-for-authenticated-user)
+    ///
+    /// ---
+    pub async fn list_docker_migration_conflicting_packages_for_authenticated_user_async(&self) -> Result<Vec<Package>, PackagesListDockerMigrationConflictingPackagesForAuthenticatedUserError> {
+
+        let request_uri = format!("{}/user/docker/conflicts", super::GITHUB_BASE_API_URL);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(PackagesListDockerMigrationConflictingPackagesForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get list of conflicting packages during Docker migration for authenticated-user
+    ///
+    /// Lists all packages that are owned by the authenticated user within the user's namespace, and that encountered a conflict during a Docker migration.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for list_docker_migration_conflicting_packages_for_authenticated_user](https://docs.github.com/rest/packages/packages#get-list-of-conflicting-packages-during-docker-migration-for-authenticated-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_docker_migration_conflicting_packages_for_authenticated_user(&self) -> Result<Vec<Package>, PackagesListDockerMigrationConflictingPackagesForAuthenticatedUserError> {
+
+        let request_uri = format!("{}/user/docker/conflicts", super::GITHUB_BASE_API_URL);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(PackagesListDockerMigrationConflictingPackagesForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get list of conflicting packages during Docker migration for organization
+    ///
+    /// Lists all packages that are in a specific organization, are readable by the requesting user, and that encountered a conflict during a Docker migration.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for list_docker_migration_conflicting_packages_for_organization](https://docs.github.com/rest/packages/packages#get-list-of-conflicting-packages-during-docker-migration-for-organization)
+    ///
+    /// ---
+    pub async fn list_docker_migration_conflicting_packages_for_organization_async(&self, org: &str) -> Result<Vec<Package>, PackagesListDockerMigrationConflictingPackagesForOrganizationError> {
+
+        let request_uri = format!("{}/orgs/{}/docker/conflicts", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(PackagesListDockerMigrationConflictingPackagesForOrganizationError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(PackagesListDockerMigrationConflictingPackagesForOrganizationError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(PackagesListDockerMigrationConflictingPackagesForOrganizationError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get list of conflicting packages during Docker migration for organization
+    ///
+    /// Lists all packages that are in a specific organization, are readable by the requesting user, and that encountered a conflict during a Docker migration.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for list_docker_migration_conflicting_packages_for_organization](https://docs.github.com/rest/packages/packages#get-list-of-conflicting-packages-during-docker-migration-for-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_docker_migration_conflicting_packages_for_organization(&self, org: &str) -> Result<Vec<Package>, PackagesListDockerMigrationConflictingPackagesForOrganizationError> {
+
+        let request_uri = format!("{}/orgs/{}/docker/conflicts", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(PackagesListDockerMigrationConflictingPackagesForOrganizationError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(PackagesListDockerMigrationConflictingPackagesForOrganizationError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(PackagesListDockerMigrationConflictingPackagesForOrganizationError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get list of conflicting packages during Docker migration for user
+    ///
+    /// Lists all packages that are in a specific user's namespace, that the requesting user has access to, and that encountered a conflict during Docker migration.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for list_docker_migration_conflicting_packages_for_user](https://docs.github.com/rest/packages/packages#get-list-of-conflicting-packages-during-docker-migration-for-user)
+    ///
+    /// ---
+    pub async fn list_docker_migration_conflicting_packages_for_user_async(&self, username: &str) -> Result<Vec<Package>, PackagesListDockerMigrationConflictingPackagesForUserError> {
+
+        let request_uri = format!("{}/users/{}/docker/conflicts", super::GITHUB_BASE_API_URL, username);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(PackagesListDockerMigrationConflictingPackagesForUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(PackagesListDockerMigrationConflictingPackagesForUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(PackagesListDockerMigrationConflictingPackagesForUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get list of conflicting packages during Docker migration for user
+    ///
+    /// Lists all packages that are in a specific user's namespace, that the requesting user has access to, and that encountered a conflict during Docker migration.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint.
+    /// 
+    /// [GitHub API docs for list_docker_migration_conflicting_packages_for_user](https://docs.github.com/rest/packages/packages#get-list-of-conflicting-packages-during-docker-migration-for-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_docker_migration_conflicting_packages_for_user(&self, username: &str) -> Result<Vec<Package>, PackagesListDockerMigrationConflictingPackagesForUserError> {
+
+        let request_uri = format!("{}/users/{}/docker/conflicts", super::GITHUB_BASE_API_URL, username);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(PackagesListDockerMigrationConflictingPackagesForUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(PackagesListDockerMigrationConflictingPackagesForUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(PackagesListDockerMigrationConflictingPackagesForUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List packages for the authenticated user&#x27;s namespace
     ///
     /// Lists packages owned by the authenticated user within the user's namespace.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for list_packages_for_authenticated_user](https://docs.github.com/rest/reference/packages#list-packages-for-the-authenticated-user)
+    /// [GitHub API docs for list_packages_for_authenticated_user](https://docs.github.com/rest/packages/packages#list-packages-for-the-authenticated-users-namespace)
     ///
     /// ---
     pub async fn list_packages_for_authenticated_user_async(&self, query_params: impl Into<PackagesListPackagesForAuthenticatedUserParams<'api>>) -> Result<Vec<Package>, PackagesListPackagesForAuthenticatedUserError> {
@@ -2162,6 +2570,7 @@ impl<'api> Packages<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                400 => Err(PackagesListPackagesForAuthenticatedUserError::Status400),
                 code => Err(PackagesListPackagesForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2173,10 +2582,9 @@ impl<'api> Packages<'api> {
     ///
     /// Lists packages owned by the authenticated user within the user's namespace.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for list_packages_for_authenticated_user](https://docs.github.com/rest/reference/packages#list-packages-for-the-authenticated-user)
+    /// [GitHub API docs for list_packages_for_authenticated_user](https://docs.github.com/rest/packages/packages#list-packages-for-the-authenticated-users-namespace)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2207,6 +2615,7 @@ impl<'api> Packages<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                400 => Err(PackagesListPackagesForAuthenticatedUserError::Status400),
                 code => Err(PackagesListPackagesForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2216,12 +2625,11 @@ impl<'api> Packages<'api> {
     ///
     /// # List packages for an organization
     ///
-    /// Lists all packages in an organization readable by the user.
+    /// Lists packages in an organization readable by the user.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for list_packages_for_organization](https://docs.github.com/rest/reference/packages#list-packages-for-an-organization)
+    /// [GitHub API docs for list_packages_for_organization](https://docs.github.com/rest/packages/packages#list-packages-for-an-organization)
     ///
     /// ---
     pub async fn list_packages_for_organization_async(&self, org: &str, query_params: impl Into<PackagesListPackagesForOrganizationParams<'api>>) -> Result<Vec<Package>, PackagesListPackagesForOrganizationError> {
@@ -2252,6 +2660,7 @@ impl<'api> Packages<'api> {
             match github_response.status_code() {
                 403 => Err(PackagesListPackagesForOrganizationError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 401 => Err(PackagesListPackagesForOrganizationError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                400 => Err(PackagesListPackagesForOrganizationError::Status400),
                 code => Err(PackagesListPackagesForOrganizationError::Generic { code }),
             }
         }
@@ -2261,12 +2670,11 @@ impl<'api> Packages<'api> {
     ///
     /// # List packages for an organization
     ///
-    /// Lists all packages in an organization readable by the user.
+    /// Lists packages in an organization readable by the user.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for list_packages_for_organization](https://docs.github.com/rest/reference/packages#list-packages-for-an-organization)
+    /// [GitHub API docs for list_packages_for_organization](https://docs.github.com/rest/packages/packages#list-packages-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2299,6 +2707,7 @@ impl<'api> Packages<'api> {
             match github_response.status_code() {
                 403 => Err(PackagesListPackagesForOrganizationError::Status403(crate::adapters::to_json(github_response)?)),
                 401 => Err(PackagesListPackagesForOrganizationError::Status401(crate::adapters::to_json(github_response)?)),
+                400 => Err(PackagesListPackagesForOrganizationError::Status400),
                 code => Err(PackagesListPackagesForOrganizationError::Generic { code }),
             }
         }
@@ -2310,10 +2719,9 @@ impl<'api> Packages<'api> {
     ///
     /// Lists all packages in a user's namespace for which the requesting user has access.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for list_packages_for_user](https://docs.github.com/rest/reference/packages#list-packages-for-user)
+    /// [GitHub API docs for list_packages_for_user](https://docs.github.com/rest/packages/packages#list-packages-for-a-user)
     ///
     /// ---
     pub async fn list_packages_for_user_async(&self, username: &str, query_params: impl Into<PackagesListPackagesForUserParams<'api>>) -> Result<Vec<Package>, PackagesListPackagesForUserError> {
@@ -2344,6 +2752,7 @@ impl<'api> Packages<'api> {
             match github_response.status_code() {
                 403 => Err(PackagesListPackagesForUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 401 => Err(PackagesListPackagesForUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                400 => Err(PackagesListPackagesForUserError::Status400),
                 code => Err(PackagesListPackagesForUserError::Generic { code }),
             }
         }
@@ -2355,10 +2764,9 @@ impl<'api> Packages<'api> {
     ///
     /// Lists all packages in a user's namespace for which the requesting user has access.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` scope.
-    /// If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for list_packages_for_user](https://docs.github.com/rest/reference/packages#list-packages-for-user)
+    /// [GitHub API docs for list_packages_for_user](https://docs.github.com/rest/packages/packages#list-packages-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2391,6 +2799,7 @@ impl<'api> Packages<'api> {
             match github_response.status_code() {
                 403 => Err(PackagesListPackagesForUserError::Status403(crate::adapters::to_json(github_response)?)),
                 401 => Err(PackagesListPackagesForUserError::Status401(crate::adapters::to_json(github_response)?)),
+                400 => Err(PackagesListPackagesForUserError::Status400),
                 code => Err(PackagesListPackagesForUserError::Generic { code }),
             }
         }
@@ -2406,9 +2815,9 @@ impl<'api> Packages<'api> {
     ///   - The package was deleted within the last 30 days.
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scopes. If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for restore_package_for_authenticated_user](https://docs.github.com/rest/reference/packages#restore-a-package-for-the-authenticated-user)
+    /// [GitHub API docs for restore_package_for_authenticated_user](https://docs.github.com/rest/packages/packages#restore-a-package-for-the-authenticated-user)
     ///
     /// ---
     pub async fn restore_package_for_authenticated_user_async(&self, package_type: &str, package_name: &str, query_params: Option<impl Into<PackagesRestorePackageForAuthenticatedUserParams<'api>>>) -> Result<(), PackagesRestorePackageForAuthenticatedUserError> {
@@ -2457,9 +2866,9 @@ impl<'api> Packages<'api> {
     ///   - The package was deleted within the last 30 days.
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scopes. If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for restore_package_for_authenticated_user](https://docs.github.com/rest/reference/packages#restore-a-package-for-the-authenticated-user)
+    /// [GitHub API docs for restore_package_for_authenticated_user](https://docs.github.com/rest/packages/packages#restore-a-package-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2510,11 +2919,11 @@ impl<'api> Packages<'api> {
     ///   - The package was deleted within the last 30 days.
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
-    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:write` scopes. In addition:
-    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
-    /// - If `package_type` is `container`, you must also have admin permissions to the container that you want to restore.
+    /// The authenticated user must have admin permissions in the organization to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must also have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
-    /// [GitHub API docs for restore_package_for_org](https://docs.github.com/rest/reference/packages#restore-a-package-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
+    /// 
+    /// [GitHub API docs for restore_package_for_org](https://docs.github.com/rest/packages/packages#restore-a-package-for-an-organization)
     ///
     /// ---
     pub async fn restore_package_for_org_async(&self, package_type: &str, package_name: &str, org: &str, query_params: Option<impl Into<PackagesRestorePackageForOrgParams<'api>>>) -> Result<(), PackagesRestorePackageForOrgError> {
@@ -2563,11 +2972,11 @@ impl<'api> Packages<'api> {
     ///   - The package was deleted within the last 30 days.
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
-    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:write` scopes. In addition:
-    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
-    /// - If `package_type` is `container`, you must also have admin permissions to the container that you want to restore.
+    /// The authenticated user must have admin permissions in the organization to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must also have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
-    /// [GitHub API docs for restore_package_for_org](https://docs.github.com/rest/reference/packages#restore-a-package-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
+    /// 
+    /// [GitHub API docs for restore_package_for_org](https://docs.github.com/rest/packages/packages#restore-a-package-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2618,11 +3027,11 @@ impl<'api> Packages<'api> {
     ///   - The package was deleted within the last 30 days.
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scopes. In addition:
-    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
-    /// - If `package_type` is `container`, you must also have admin permissions to the container that you want to restore.
+    /// If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
-    /// [GitHub API docs for restore_package_for_user](https://docs.github.com/rest/reference/packages#restore-a-package-for-a-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
+    /// 
+    /// [GitHub API docs for restore_package_for_user](https://docs.github.com/rest/packages/packages#restore-a-package-for-a-user)
     ///
     /// ---
     pub async fn restore_package_for_user_async(&self, package_type: &str, package_name: &str, username: &str, query_params: Option<impl Into<PackagesRestorePackageForUserParams<'api>>>) -> Result<(), PackagesRestorePackageForUserError> {
@@ -2671,11 +3080,11 @@ impl<'api> Packages<'api> {
     ///   - The package was deleted within the last 30 days.
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scopes. In addition:
-    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
-    /// - If `package_type` is `container`, you must also have admin permissions to the container that you want to restore.
+    /// If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
-    /// [GitHub API docs for restore_package_for_user](https://docs.github.com/rest/reference/packages#restore-a-package-for-a-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
+    /// 
+    /// [GitHub API docs for restore_package_for_user](https://docs.github.com/rest/packages/packages#restore-a-package-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2726,9 +3135,9 @@ impl<'api> Packages<'api> {
     ///   - The package was deleted within the last 30 days.
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scopes. If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for restore_package_version_for_authenticated_user](https://docs.github.com/rest/reference/packages#restore-a-package-version-for-the-authenticated-user)
+    /// [GitHub API docs for restore_package_version_for_authenticated_user](https://docs.github.com/rest/packages/packages#restore-a-package-version-for-the-authenticated-user)
     ///
     /// ---
     pub async fn restore_package_version_for_authenticated_user_async(&self, package_type: &str, package_name: &str, package_version_id: i32) -> Result<(), PackagesRestorePackageVersionForAuthenticatedUserError> {
@@ -2773,9 +3182,9 @@ impl<'api> Packages<'api> {
     ///   - The package was deleted within the last 30 days.
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scopes. If `package_type` is not `container`, your token must also include the `repo` scope.
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
     /// 
-    /// [GitHub API docs for restore_package_version_for_authenticated_user](https://docs.github.com/rest/reference/packages#restore-a-package-version-for-the-authenticated-user)
+    /// [GitHub API docs for restore_package_version_for_authenticated_user](https://docs.github.com/rest/packages/packages#restore-a-package-version-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2821,11 +3230,11 @@ impl<'api> Packages<'api> {
     ///   - The package was deleted within the last 30 days.
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
-    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:write` scopes. In addition:
-    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
-    /// - If `package_type` is `container`, you must also have admin permissions to the container that you want to restore.
+    /// The authenticated user must have admin permissions in the organization to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must also have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
-    /// [GitHub API docs for restore_package_version_for_org](https://docs.github.com/rest/reference/packages#restore-a-package-version-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
+    /// 
+    /// [GitHub API docs for restore_package_version_for_org](https://docs.github.com/rest/packages/packages#restore-package-version-for-an-organization)
     ///
     /// ---
     pub async fn restore_package_version_for_org_async(&self, package_type: &str, package_name: &str, org: &str, package_version_id: i32) -> Result<(), PackagesRestorePackageVersionForOrgError> {
@@ -2870,11 +3279,11 @@ impl<'api> Packages<'api> {
     ///   - The package was deleted within the last 30 days.
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
-    /// To use this endpoint, you must have admin permissions in the organization and authenticate using an access token with the `packages:read` and `packages:write` scopes. In addition:
-    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
-    /// - If `package_type` is `container`, you must also have admin permissions to the container that you want to restore.
+    /// The authenticated user must have admin permissions in the organization to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must also have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
-    /// [GitHub API docs for restore_package_version_for_org](https://docs.github.com/rest/reference/packages#restore-a-package-version-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
+    /// 
+    /// [GitHub API docs for restore_package_version_for_org](https://docs.github.com/rest/packages/packages#restore-package-version-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2920,11 +3329,11 @@ impl<'api> Packages<'api> {
     ///   - The package was deleted within the last 30 days.
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scopes. In addition:
-    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
-    /// - If `package_type` is `container`, you must also have admin permissions to the container that you want to restore.
+    /// If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
-    /// [GitHub API docs for restore_package_version_for_user](https://docs.github.com/rest/reference/packages#restore-a-package-version-for-a-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
+    /// 
+    /// [GitHub API docs for restore_package_version_for_user](https://docs.github.com/rest/packages/packages#restore-package-version-for-a-user)
     ///
     /// ---
     pub async fn restore_package_version_for_user_async(&self, package_type: &str, package_name: &str, username: &str, package_version_id: i32) -> Result<(), PackagesRestorePackageVersionForUserError> {
@@ -2969,11 +3378,11 @@ impl<'api> Packages<'api> {
     ///   - The package was deleted within the last 30 days.
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
-    /// To use this endpoint, you must authenticate using an access token with the `packages:read` and `packages:write` scopes. In addition:
-    /// - If `package_type` is not `container`, your token must also include the `repo` scope.
-    /// - If `package_type` is `container`, you must also have admin permissions to the container that you want to restore.
+    /// If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
-    /// [GitHub API docs for restore_package_version_for_user](https://docs.github.com/rest/reference/packages#restore-a-package-version-for-a-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
+    /// 
+    /// [GitHub API docs for restore_package_version_for_user](https://docs.github.com/rest/packages/packages#restore-package-version-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
