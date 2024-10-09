@@ -11,3 +11,4 @@ target/
 /.project
 /generated-sources
 /.cargo
+/Cargo.lock
