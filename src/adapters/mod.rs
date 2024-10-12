@@ -96,7 +96,9 @@ pub(crate) fn to_json<E: for<'de> Deserialize<'de>>(
     not(feature = "ureq"),
     not(target_arch = "wasm32")
 ))]
-pub(crate) async fn to_json_async<E: for<'de> Deserialize<'de>>(_res: http::Response<Vec<u8>>) -> Result<E, AdapterError> {
+pub(crate) async fn to_json_async<E: for<'de> Deserialize<'de>>(
+    _res: http::Response<Vec<u8>>,
+) -> Result<E, AdapterError> {
     unimplemented!("Use a client adapter feature, or target wasm");
 }
 
