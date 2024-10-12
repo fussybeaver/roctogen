@@ -302,7 +302,7 @@ impl<'req> SecurityAdvisoriesListGlobalAdvisoriesParams<'req> {
 
     /// If specified, only advisories with this GHSA (GitHub Security Advisory) identifier will be returned.
     pub fn ghsa_id(self, ghsa_id: &'req str) -> Self {
-        Self { 
+        Self {
             ghsa_id: Some(ghsa_id),
             _type: self._type, 
             cve_id: self.cve_id, 
@@ -326,7 +326,7 @@ impl<'req> SecurityAdvisoriesListGlobalAdvisoriesParams<'req> {
 
     /// If specified, only advisories of this type will be returned. By default, a request with no other parameters defined will only return reviewed advisories that are not malware.
     pub fn _type(self, _type: &'req str) -> Self {
-        Self { 
+        Self {
             ghsa_id: self.ghsa_id, 
             _type: Some(_type),
             cve_id: self.cve_id, 
@@ -350,7 +350,7 @@ impl<'req> SecurityAdvisoriesListGlobalAdvisoriesParams<'req> {
 
     /// If specified, only advisories with this CVE (Common Vulnerabilities and Exposures) identifier will be returned.
     pub fn cve_id(self, cve_id: &'req str) -> Self {
-        Self { 
+        Self {
             ghsa_id: self.ghsa_id, 
             _type: self._type, 
             cve_id: Some(cve_id),
@@ -374,7 +374,7 @@ impl<'req> SecurityAdvisoriesListGlobalAdvisoriesParams<'req> {
 
     /// If specified, only advisories for these ecosystems will be returned.
     pub fn ecosystem(self, ecosystem: SecurityAdvisoryEcosystems) -> Self {
-        Self { 
+        Self {
             ghsa_id: self.ghsa_id, 
             _type: self._type, 
             cve_id: self.cve_id, 
@@ -398,7 +398,7 @@ impl<'req> SecurityAdvisoriesListGlobalAdvisoriesParams<'req> {
 
     /// If specified, only advisories with these severities will be returned.
     pub fn severity(self, severity: &'req str) -> Self {
-        Self { 
+        Self {
             ghsa_id: self.ghsa_id, 
             _type: self._type, 
             cve_id: self.cve_id, 
@@ -422,7 +422,7 @@ impl<'req> SecurityAdvisoriesListGlobalAdvisoriesParams<'req> {
 
     /// If specified, only advisories with these Common Weakness Enumerations (CWEs) will be returned.  Example: `cwes=79,284,22` or `cwes[]=79&cwes[]=284&cwes[]=22`
     pub fn cwes(self, cwes: Cwes) -> Self {
-        Self { 
+        Self {
             ghsa_id: self.ghsa_id, 
             _type: self._type, 
             cve_id: self.cve_id, 
@@ -446,7 +446,7 @@ impl<'req> SecurityAdvisoriesListGlobalAdvisoriesParams<'req> {
 
     /// Whether to only return advisories that have been withdrawn.
     pub fn is_withdrawn(self, is_withdrawn: bool) -> Self {
-        Self { 
+        Self {
             ghsa_id: self.ghsa_id, 
             _type: self._type, 
             cve_id: self.cve_id, 
@@ -470,7 +470,7 @@ impl<'req> SecurityAdvisoriesListGlobalAdvisoriesParams<'req> {
 
     /// If specified, only return advisories that affect any of `package` or `package@version`. A maximum of 1000 packages can be specified. If the query parameter causes the URL to exceed the maximum URL length supported by your client, you must specify fewer packages.  Example: `affects=package1,package2@1.0.0,package3@^2.0.0` or `affects[]=package1&affects[]=package2@1.0.0`
     pub fn affects(self, affects: Affects) -> Self {
-        Self { 
+        Self {
             ghsa_id: self.ghsa_id, 
             _type: self._type, 
             cve_id: self.cve_id, 
@@ -494,7 +494,7 @@ impl<'req> SecurityAdvisoriesListGlobalAdvisoriesParams<'req> {
 
     /// If specified, only return advisories that were published on a date or date range.  For more information on the syntax of the date range, see \"[Understanding the search syntax](https://docs.github.com/search-github/getting-started-with-searching-on-github/understanding-the-search-syntax#query-for-dates).\"
     pub fn published(self, published: &'req str) -> Self {
-        Self { 
+        Self {
             ghsa_id: self.ghsa_id, 
             _type: self._type, 
             cve_id: self.cve_id, 
@@ -518,7 +518,7 @@ impl<'req> SecurityAdvisoriesListGlobalAdvisoriesParams<'req> {
 
     /// If specified, only return advisories that were updated on a date or date range.  For more information on the syntax of the date range, see \"[Understanding the search syntax](https://docs.github.com/search-github/getting-started-with-searching-on-github/understanding-the-search-syntax#query-for-dates).\"
     pub fn updated(self, updated: &'req str) -> Self {
-        Self { 
+        Self {
             ghsa_id: self.ghsa_id, 
             _type: self._type, 
             cve_id: self.cve_id, 
@@ -542,7 +542,7 @@ impl<'req> SecurityAdvisoriesListGlobalAdvisoriesParams<'req> {
 
     /// If specified, only show advisories that were updated or published on a date or date range.  For more information on the syntax of the date range, see \"[Understanding the search syntax](https://docs.github.com/search-github/getting-started-with-searching-on-github/understanding-the-search-syntax#query-for-dates).\"
     pub fn modified(self, modified: &'req str) -> Self {
-        Self { 
+        Self {
             ghsa_id: self.ghsa_id, 
             _type: self._type, 
             cve_id: self.cve_id, 
@@ -566,7 +566,7 @@ impl<'req> SecurityAdvisoriesListGlobalAdvisoriesParams<'req> {
 
     /// If specified, only return advisories that have an EPSS percentage score that matches the provided value. The EPSS percentage represents the likelihood of a CVE being exploited.
     pub fn epss_percentage(self, epss_percentage: &'req str) -> Self {
-        Self { 
+        Self {
             ghsa_id: self.ghsa_id, 
             _type: self._type, 
             cve_id: self.cve_id, 
@@ -590,7 +590,7 @@ impl<'req> SecurityAdvisoriesListGlobalAdvisoriesParams<'req> {
 
     /// If specified, only return advisories that have an EPSS percentile score that matches the provided value. The EPSS percentile represents the relative rank of the CVE's likelihood of being exploited compared to other CVEs.
     pub fn epss_percentile(self, epss_percentile: &'req str) -> Self {
-        Self { 
+        Self {
             ghsa_id: self.ghsa_id, 
             _type: self._type, 
             cve_id: self.cve_id, 
@@ -614,7 +614,7 @@ impl<'req> SecurityAdvisoriesListGlobalAdvisoriesParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn before(self, before: &'req str) -> Self {
-        Self { 
+        Self {
             ghsa_id: self.ghsa_id, 
             _type: self._type, 
             cve_id: self.cve_id, 
@@ -638,7 +638,7 @@ impl<'req> SecurityAdvisoriesListGlobalAdvisoriesParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn after(self, after: &'req str) -> Self {
-        Self { 
+        Self {
             ghsa_id: self.ghsa_id, 
             _type: self._type, 
             cve_id: self.cve_id, 
@@ -662,7 +662,7 @@ impl<'req> SecurityAdvisoriesListGlobalAdvisoriesParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             ghsa_id: self.ghsa_id, 
             _type: self._type, 
             cve_id: self.cve_id, 
@@ -686,7 +686,7 @@ impl<'req> SecurityAdvisoriesListGlobalAdvisoriesParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             ghsa_id: self.ghsa_id, 
             _type: self._type, 
             cve_id: self.cve_id, 
@@ -710,7 +710,7 @@ impl<'req> SecurityAdvisoriesListGlobalAdvisoriesParams<'req> {
 
     /// The property to sort the results by.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             ghsa_id: self.ghsa_id, 
             _type: self._type, 
             cve_id: self.cve_id, 
@@ -757,7 +757,7 @@ impl<'req> SecurityAdvisoriesListOrgRepositoryAdvisoriesParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             direction: Some(direction),
             sort: self.sort, 
             before: self.before, 
@@ -769,7 +769,7 @@ impl<'req> SecurityAdvisoriesListOrgRepositoryAdvisoriesParams<'req> {
 
     /// The property to sort the results by.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             sort: Some(sort),
             before: self.before, 
@@ -781,7 +781,7 @@ impl<'req> SecurityAdvisoriesListOrgRepositoryAdvisoriesParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn before(self, before: &'req str) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             sort: self.sort, 
             before: Some(before),
@@ -793,7 +793,7 @@ impl<'req> SecurityAdvisoriesListOrgRepositoryAdvisoriesParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn after(self, after: &'req str) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             sort: self.sort, 
             before: self.before, 
@@ -805,7 +805,7 @@ impl<'req> SecurityAdvisoriesListOrgRepositoryAdvisoriesParams<'req> {
 
     /// The number of advisories to return per page. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             sort: self.sort, 
             before: self.before, 
@@ -817,7 +817,7 @@ impl<'req> SecurityAdvisoriesListOrgRepositoryAdvisoriesParams<'req> {
 
     /// Filter by the state of the repository advisories. Only advisories of this state will be returned.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             sort: self.sort, 
             before: self.before, 
@@ -852,7 +852,7 @@ impl<'req> SecurityAdvisoriesListRepositoryAdvisoriesParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             direction: Some(direction),
             sort: self.sort, 
             before: self.before, 
@@ -864,7 +864,7 @@ impl<'req> SecurityAdvisoriesListRepositoryAdvisoriesParams<'req> {
 
     /// The property to sort the results by.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             sort: Some(sort),
             before: self.before, 
@@ -876,7 +876,7 @@ impl<'req> SecurityAdvisoriesListRepositoryAdvisoriesParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn before(self, before: &'req str) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             sort: self.sort, 
             before: Some(before),
@@ -888,7 +888,7 @@ impl<'req> SecurityAdvisoriesListRepositoryAdvisoriesParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn after(self, after: &'req str) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             sort: self.sort, 
             before: self.before, 
@@ -900,7 +900,7 @@ impl<'req> SecurityAdvisoriesListRepositoryAdvisoriesParams<'req> {
 
     /// The number of advisories to return per page. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             sort: self.sort, 
             before: self.before, 
@@ -912,7 +912,7 @@ impl<'req> SecurityAdvisoriesListRepositoryAdvisoriesParams<'req> {
 
     /// Filter by state of the repository advisories. Only advisories of this state will be returned.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             sort: self.sort, 
             before: self.before, 
@@ -933,7 +933,7 @@ impl<'api> SecurityAdvisories<'api> {
     /// 
     /// > [!NOTE]
     /// > Forking a repository happens asynchronously. You may have to wait up to 5 minutes before you can access the fork.
-    /// 
+    ///
     /// [GitHub API docs for create_fork](https://docs.github.com/rest/security-advisories/repository-advisories#create-a-temporary-private-fork)
     ///
     /// ---
@@ -978,7 +978,7 @@ impl<'api> SecurityAdvisories<'api> {
     /// 
     /// > [!NOTE]
     /// > Forking a repository happens asynchronously. You may have to wait up to 5 minutes before you can access the fork.
-    /// 
+    ///
     /// [GitHub API docs for create_fork](https://docs.github.com/rest/security-advisories/repository-advisories#create-a-temporary-private-fork)
     ///
     /// ---
@@ -1022,7 +1022,7 @@ impl<'api> SecurityAdvisories<'api> {
     ///
     /// Report a security vulnerability to the maintainers of the repository.
     /// See "[Privately reporting a security vulnerability](https://docs.github.com/code-security/security-advisories/guidance-on-reporting-and-writing/privately-reporting-a-security-vulnerability)" for more information about private vulnerability reporting.
-    /// 
+    ///
     /// [GitHub API docs for create_private_vulnerability_report](https://docs.github.com/rest/security-advisories/repository-advisories#privately-report-a-security-vulnerability)
     ///
     /// ---
@@ -1064,7 +1064,7 @@ impl<'api> SecurityAdvisories<'api> {
     ///
     /// Report a security vulnerability to the maintainers of the repository.
     /// See "[Privately reporting a security vulnerability](https://docs.github.com/code-security/security-advisories/guidance-on-reporting-and-writing/privately-reporting-a-security-vulnerability)" for more information about private vulnerability reporting.
-    /// 
+    ///
     /// [GitHub API docs for create_private_vulnerability_report](https://docs.github.com/rest/security-advisories/repository-advisories#privately-report-a-security-vulnerability)
     ///
     /// ---
@@ -1110,7 +1110,7 @@ impl<'api> SecurityAdvisories<'api> {
     /// In order to create a draft repository security advisory, the authenticated user must be a security manager or administrator of that repository.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `repository_advisories:write` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_repository_advisory](https://docs.github.com/rest/security-advisories/repository-advisories#create-a-repository-security-advisory)
     ///
     /// ---
@@ -1155,7 +1155,7 @@ impl<'api> SecurityAdvisories<'api> {
     /// In order to create a draft repository security advisory, the authenticated user must be a security manager or administrator of that repository.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `repository_advisories:write` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_repository_advisory](https://docs.github.com/rest/security-advisories/repository-advisories#create-a-repository-security-advisory)
     ///
     /// ---
@@ -1203,7 +1203,7 @@ impl<'api> SecurityAdvisories<'api> {
     /// In order to request a CVE for a repository security advisory, the authenticated user must be a security manager or administrator of that repository.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `repository_advisories:write` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_repository_advisory_cve_request](https://docs.github.com/rest/security-advisories/repository-advisories#request-a-cve-for-a-repository-security-advisory)
     ///
     /// ---
@@ -1251,7 +1251,7 @@ impl<'api> SecurityAdvisories<'api> {
     /// In order to request a CVE for a repository security advisory, the authenticated user must be a security manager or administrator of that repository.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `repository_advisories:write` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_repository_advisory_cve_request](https://docs.github.com/rest/security-advisories/repository-advisories#request-a-cve-for-a-repository-security-advisory)
     ///
     /// ---
@@ -1294,7 +1294,7 @@ impl<'api> SecurityAdvisories<'api> {
     /// # Get a global security advisory
     ///
     /// Gets a global security advisory using its GitHub Security Advisory (GHSA) identifier.
-    /// 
+    ///
     /// [GitHub API docs for get_global_advisory](https://docs.github.com/rest/security-advisories/global-advisories#get-a-global-security-advisory)
     ///
     /// ---
@@ -1333,7 +1333,7 @@ impl<'api> SecurityAdvisories<'api> {
     /// # Get a global security advisory
     ///
     /// Gets a global security advisory using its GitHub Security Advisory (GHSA) identifier.
-    /// 
+    ///
     /// [GitHub API docs for get_global_advisory](https://docs.github.com/rest/security-advisories/global-advisories#get-a-global-security-advisory)
     ///
     /// ---
@@ -1380,7 +1380,7 @@ impl<'api> SecurityAdvisories<'api> {
     /// collaborator on the security advisory.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `repository_advisories:read` scope to to get a published security advisory in a private repository, or any unpublished security advisory that the authenticated user has access to.
-    /// 
+    ///
     /// [GitHub API docs for get_repository_advisory](https://docs.github.com/rest/security-advisories/repository-advisories#get-a-repository-security-advisory)
     ///
     /// ---
@@ -1427,7 +1427,7 @@ impl<'api> SecurityAdvisories<'api> {
     /// collaborator on the security advisory.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `repository_advisories:read` scope to to get a published security advisory in a private repository, or any unpublished security advisory that the authenticated user has access to.
-    /// 
+    ///
     /// [GitHub API docs for get_repository_advisory](https://docs.github.com/rest/security-advisories/repository-advisories#get-a-repository-security-advisory)
     ///
     /// ---
@@ -1470,7 +1470,7 @@ impl<'api> SecurityAdvisories<'api> {
     /// Lists all global security advisories that match the specified parameters. If no other parameters are defined, the request will return only GitHub-reviewed advisories that are not malware.
     /// 
     /// By default, all responses will exclude advisories for malware, because malware are not standard vulnerabilities. To list advisories for malware, you must include the `type` parameter in your request, with the value `malware`. For more information about the different types of security advisories, see "[About the GitHub Advisory database](https://docs.github.com/code-security/security-advisories/global-security-advisories/about-the-github-advisory-database#about-types-of-security-advisories)."
-    /// 
+    ///
     /// [GitHub API docs for list_global_advisories](https://docs.github.com/rest/security-advisories/global-advisories#list-global-security-advisories)
     ///
     /// ---
@@ -1516,7 +1516,7 @@ impl<'api> SecurityAdvisories<'api> {
     /// Lists all global security advisories that match the specified parameters. If no other parameters are defined, the request will return only GitHub-reviewed advisories that are not malware.
     /// 
     /// By default, all responses will exclude advisories for malware, because malware are not standard vulnerabilities. To list advisories for malware, you must include the `type` parameter in your request, with the value `malware`. For more information about the different types of security advisories, see "[About the GitHub Advisory database](https://docs.github.com/code-security/security-advisories/global-security-advisories/about-the-github-advisory-database#about-types-of-security-advisories)."
-    /// 
+    ///
     /// [GitHub API docs for list_global_advisories](https://docs.github.com/rest/security-advisories/global-advisories#list-global-security-advisories)
     ///
     /// ---
@@ -1566,7 +1566,7 @@ impl<'api> SecurityAdvisories<'api> {
     /// The authenticated user must be an owner or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `repository_advisories:write` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_org_repository_advisories](https://docs.github.com/rest/security-advisories/repository-advisories#list-repository-security-advisories-for-an-organization)
     ///
     /// ---
@@ -1614,7 +1614,7 @@ impl<'api> SecurityAdvisories<'api> {
     /// The authenticated user must be an owner or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `repository_advisories:write` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_org_repository_advisories](https://docs.github.com/rest/security-advisories/repository-advisories#list-repository-security-advisories-for-an-organization)
     ///
     /// ---
@@ -1664,7 +1664,7 @@ impl<'api> SecurityAdvisories<'api> {
     /// The authenticated user can access unpublished security advisories from a repository if they are a security manager or administrator of that repository, or if they are a collaborator on any security advisory.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `repository_advisories:read` scope to to get a published security advisory in a private repository, or any unpublished security advisory that the authenticated user has access to.
-    /// 
+    ///
     /// [GitHub API docs for list_repository_advisories](https://docs.github.com/rest/security-advisories/repository-advisories#list-repository-security-advisories)
     ///
     /// ---
@@ -1712,7 +1712,7 @@ impl<'api> SecurityAdvisories<'api> {
     /// The authenticated user can access unpublished security advisories from a repository if they are a security manager or administrator of that repository, or if they are a collaborator on any security advisory.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `repository_advisories:read` scope to to get a published security advisory in a private repository, or any unpublished security advisory that the authenticated user has access to.
-    /// 
+    ///
     /// [GitHub API docs for list_repository_advisories](https://docs.github.com/rest/security-advisories/repository-advisories#list-repository-security-advisories)
     ///
     /// ---
@@ -1763,7 +1763,7 @@ impl<'api> SecurityAdvisories<'api> {
     /// or a collaborator on the repository security advisory.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `repository_advisories:write` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_repository_advisory](https://docs.github.com/rest/security-advisories/repository-advisories#update-a-repository-security-advisory)
     ///
     /// ---
@@ -1809,7 +1809,7 @@ impl<'api> SecurityAdvisories<'api> {
     /// or a collaborator on the repository security advisory.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `repository_advisories:write` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_repository_advisory](https://docs.github.com/rest/security-advisories/repository-advisories#update-a-repository-security-advisory)
     ///
     /// ---

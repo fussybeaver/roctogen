@@ -664,7 +664,7 @@ pub enum AppsRemoveRepoFromInstallationForAuthenticatedUserError {
     Status304,
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Returned when the application is installed on &#x60;all&#x60; repositories in the organization, or if this request would remove the last repository that the application has access to in the organization.")]
+    #[error("Returned when the application is installed on `all` repositories in the organization, or if this request would remove the last repository that the application has access to in the organization.")]
     Status422,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -807,7 +807,7 @@ impl<'req> AppsListAccountsForPlanParams<'req> {
 
     /// The property to sort the results by.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             sort: Some(sort),
             direction: self.direction, 
             per_page: self.per_page, 
@@ -817,7 +817,7 @@ impl<'req> AppsListAccountsForPlanParams<'req> {
 
     /// To return the oldest accounts first, set to `asc`. Ignored without the `sort` parameter.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: Some(direction),
             per_page: self.per_page, 
@@ -827,7 +827,7 @@ impl<'req> AppsListAccountsForPlanParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: self.direction, 
             per_page: Some(per_page),
@@ -837,7 +837,7 @@ impl<'req> AppsListAccountsForPlanParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: self.direction, 
             per_page: self.per_page, 
@@ -875,7 +875,7 @@ impl<'req> AppsListAccountsForPlanStubbedParams<'req> {
 
     /// The property to sort the results by.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             sort: Some(sort),
             direction: self.direction, 
             per_page: self.per_page, 
@@ -885,7 +885,7 @@ impl<'req> AppsListAccountsForPlanStubbedParams<'req> {
 
     /// To return the oldest accounts first, set to `asc`. Ignored without the `sort` parameter.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: Some(direction),
             per_page: self.per_page, 
@@ -895,7 +895,7 @@ impl<'req> AppsListAccountsForPlanStubbedParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: self.direction, 
             per_page: Some(per_page),
@@ -905,7 +905,7 @@ impl<'req> AppsListAccountsForPlanStubbedParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: self.direction, 
             per_page: self.per_page, 
@@ -939,7 +939,7 @@ impl AppsListInstallationReposForAuthenticatedUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -947,7 +947,7 @@ impl AppsListInstallationReposForAuthenticatedUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -979,7 +979,7 @@ impl AppsListInstallationRequestsForAuthenticatedAppParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -987,7 +987,7 @@ impl AppsListInstallationRequestsForAuthenticatedAppParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1023,7 +1023,7 @@ impl<'req> AppsListInstallationsParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
             since: self.since, 
@@ -1033,7 +1033,7 @@ impl<'req> AppsListInstallationsParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
             since: self.since, 
@@ -1043,7 +1043,7 @@ impl<'req> AppsListInstallationsParams<'req> {
 
     /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             since: Some(since),
@@ -1053,7 +1053,7 @@ impl<'req> AppsListInstallationsParams<'req> {
 
     
     pub fn outdated(self, outdated: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             since: self.since, 
@@ -1087,7 +1087,7 @@ impl AppsListInstallationsForAuthenticatedUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1095,7 +1095,7 @@ impl AppsListInstallationsForAuthenticatedUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1127,7 +1127,7 @@ impl AppsListPlansParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1135,7 +1135,7 @@ impl AppsListPlansParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1167,7 +1167,7 @@ impl AppsListPlansStubbedParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1175,7 +1175,7 @@ impl AppsListPlansStubbedParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1207,7 +1207,7 @@ impl AppsListReposAccessibleToInstallationParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1215,7 +1215,7 @@ impl AppsListReposAccessibleToInstallationParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1247,7 +1247,7 @@ impl AppsListSubscriptionsForAuthenticatedUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1255,7 +1255,7 @@ impl AppsListSubscriptionsForAuthenticatedUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1287,7 +1287,7 @@ impl AppsListSubscriptionsForAuthenticatedUserStubbedParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1295,7 +1295,7 @@ impl AppsListSubscriptionsForAuthenticatedUserStubbedParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1329,7 +1329,7 @@ impl<'req> AppsListWebhookDeliveriesParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             cursor: self.cursor, 
             redelivery: self.redelivery, 
@@ -1338,7 +1338,7 @@ impl<'req> AppsListWebhookDeliveriesParams<'req> {
 
     /// Used for pagination: the starting delivery from which the page of deliveries is fetched. Refer to the `link` header for the next and previous page cursors.
     pub fn cursor(self, cursor: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             cursor: Some(cursor),
             redelivery: self.redelivery, 
@@ -1347,7 +1347,7 @@ impl<'req> AppsListWebhookDeliveriesParams<'req> {
 
     
     pub fn redelivery(self, redelivery: bool) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             cursor: self.cursor, 
             redelivery: Some(redelivery),
@@ -1364,7 +1364,7 @@ impl<'api> Apps<'api> {
     /// Add a single repository to an installation. The authenticated user must have admin access to the repository.    
     /// 
     /// This endpoint only works for PATs (classic) with the `repo` scope.
-    /// 
+    ///
     /// [GitHub API docs for add_repo_to_installation_for_authenticated_user](https://docs.github.com/rest/apps/installations#add-a-repository-to-an-app-installation)
     ///
     /// ---
@@ -1407,7 +1407,7 @@ impl<'api> Apps<'api> {
     /// Add a single repository to an installation. The authenticated user must have admin access to the repository.    
     /// 
     /// This endpoint only works for PATs (classic) with the `repo` scope.
-    /// 
+    ///
     /// [GitHub API docs for add_repo_to_installation_for_authenticated_user](https://docs.github.com/rest/apps/installations#add-a-repository-to-an-app-installation)
     ///
     /// ---
@@ -1449,7 +1449,7 @@ impl<'api> Apps<'api> {
     /// # Check a token
     ///
     /// OAuth applications and GitHub applications with OAuth authorizations can use this API method for checking OAuth token validity without exceeding the normal rate limits for failed login attempts. Authentication works differently with this particular endpoint. Invalid tokens will return `404 NOT FOUND`.
-    /// 
+    ///
     /// [GitHub API docs for check_token](https://docs.github.com/rest/apps/oauth-applications#check-a-token)
     ///
     /// ---
@@ -1489,7 +1489,7 @@ impl<'api> Apps<'api> {
     /// # Check a token
     ///
     /// OAuth applications and GitHub applications with OAuth authorizations can use this API method for checking OAuth token validity without exceeding the normal rate limits for failed login attempts. Authentication works differently with this particular endpoint. Invalid tokens will return `404 NOT FOUND`.
-    /// 
+    ///
     /// [GitHub API docs for check_token](https://docs.github.com/rest/apps/oauth-applications#check-a-token)
     ///
     /// ---
@@ -1530,7 +1530,7 @@ impl<'api> Apps<'api> {
     /// # Create a GitHub App from a manifest
     ///
     /// Use this endpoint to complete the handshake necessary when implementing the [GitHub App Manifest flow](https://docs.github.com/apps/building-github-apps/creating-github-apps-from-a-manifest/). When you create a GitHub App with the manifest flow, you receive a temporary `code` used to retrieve the GitHub App's `id`, `pem` (private key), and `webhook_secret`.
-    /// 
+    ///
     /// [GitHub API docs for create_from_manifest](https://docs.github.com/rest/apps/apps#create-a-github-app-from-a-manifest)
     ///
     /// ---
@@ -1570,7 +1570,7 @@ impl<'api> Apps<'api> {
     /// # Create a GitHub App from a manifest
     ///
     /// Use this endpoint to complete the handshake necessary when implementing the [GitHub App Manifest flow](https://docs.github.com/apps/building-github-apps/creating-github-apps-from-a-manifest/). When you create a GitHub App with the manifest flow, you receive a temporary `code` used to retrieve the GitHub App's `id`, `pem` (private key), and `webhook_secret`.
-    /// 
+    ///
     /// [GitHub API docs for create_from_manifest](https://docs.github.com/rest/apps/apps#create-a-github-app-from-a-manifest)
     ///
     /// ---
@@ -1619,7 +1619,7 @@ impl<'api> Apps<'api> {
     /// When using the repository or permission parameters to reduce the access of the token, the complexity of the token is increased due to both the number of permissions in the request and the number of repositories the token will have access to. If the complexity is too large, the token will fail to be issued. If this occurs, the error message will indicate the maximum number of repositories that should be requested. For the average application requesting 8 permissions, this limit is around 5000 repositories. With fewer permissions requested, more repositories are supported.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_installation_access_token](https://docs.github.com/rest/apps/apps#create-an-installation-access-token-for-an-app)
     ///
     /// ---
@@ -1669,7 +1669,7 @@ impl<'api> Apps<'api> {
     /// When using the repository or permission parameters to reduce the access of the token, the complexity of the token is increased due to both the number of permissions in the request and the number of repositories the token will have access to. If the complexity is too large, the token will fail to be issued. If this occurs, the error message will indicate the maximum number of repositories that should be requested. For the average application requesting 8 permissions, this limit is around 5000 repositories. With fewer permissions requested, more repositories are supported.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_installation_access_token](https://docs.github.com/rest/apps/apps#create-an-installation-access-token-for-an-app)
     ///
     /// ---
@@ -1713,7 +1713,7 @@ impl<'api> Apps<'api> {
     ///
     /// OAuth and GitHub application owners can revoke a grant for their application and a specific user. You must provide a valid OAuth `access_token` as an input parameter and the grant for the token's owner will be deleted.
     /// Deleting an application's grant will also delete all OAuth tokens associated with the application for the user. Once deleted, the application will have no access to the user's account and will no longer be listed on [the application authorizations settings screen within GitHub](https://github.com/settings/applications#authorized).
-    /// 
+    ///
     /// [GitHub API docs for delete_authorization](https://docs.github.com/rest/apps/oauth-applications#delete-an-app-authorization)
     ///
     /// ---
@@ -1753,7 +1753,7 @@ impl<'api> Apps<'api> {
     ///
     /// OAuth and GitHub application owners can revoke a grant for their application and a specific user. You must provide a valid OAuth `access_token` as an input parameter and the grant for the token's owner will be deleted.
     /// Deleting an application's grant will also delete all OAuth tokens associated with the application for the user. Once deleted, the application will have no access to the user's account and will no longer be listed on [the application authorizations settings screen within GitHub](https://github.com/settings/applications#authorized).
-    /// 
+    ///
     /// [GitHub API docs for delete_authorization](https://docs.github.com/rest/apps/oauth-applications#delete-an-app-authorization)
     ///
     /// ---
@@ -1795,7 +1795,7 @@ impl<'api> Apps<'api> {
     /// Uninstalls a GitHub App on a user, organization, or business account. If you prefer to temporarily suspend an app's access to your account's resources, then we recommend the "[Suspend an app installation](https://docs.github.com/rest/apps/apps#suspend-an-app-installation)" endpoint.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_installation](https://docs.github.com/rest/apps/apps#delete-an-installation-for-the-authenticated-app)
     ///
     /// ---
@@ -1836,7 +1836,7 @@ impl<'api> Apps<'api> {
     /// Uninstalls a GitHub App on a user, organization, or business account. If you prefer to temporarily suspend an app's access to your account's resources, then we recommend the "[Suspend an app installation](https://docs.github.com/rest/apps/apps#suspend-an-app-installation)" endpoint.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_installation](https://docs.github.com/rest/apps/apps#delete-an-installation-for-the-authenticated-app)
     ///
     /// ---
@@ -1876,7 +1876,7 @@ impl<'api> Apps<'api> {
     /// # Delete an app token
     ///
     /// OAuth  or GitHub application owners can revoke a single token for an OAuth application or a GitHub application with an OAuth authorization.
-    /// 
+    ///
     /// [GitHub API docs for delete_token](https://docs.github.com/rest/apps/oauth-applications#delete-an-app-token)
     ///
     /// ---
@@ -1915,7 +1915,7 @@ impl<'api> Apps<'api> {
     /// # Delete an app token
     ///
     /// OAuth  or GitHub application owners can revoke a single token for an OAuth application or a GitHub application with an OAuth authorization.
-    /// 
+    ///
     /// [GitHub API docs for delete_token](https://docs.github.com/rest/apps/oauth-applications#delete-an-app-token)
     ///
     /// ---
@@ -1957,7 +1957,7 @@ impl<'api> Apps<'api> {
     /// Returns the GitHub App associated with the authentication credentials used. To see how many app installations are associated with this GitHub App, see the `installations_count` in the response. For more details about your app's installations, see the "[List installations for the authenticated app](https://docs.github.com/rest/apps/apps#list-installations-for-the-authenticated-app)" endpoint.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_authenticated](https://docs.github.com/rest/apps/apps#get-the-authenticated-app)
     ///
     /// ---
@@ -1997,7 +1997,7 @@ impl<'api> Apps<'api> {
     /// Returns the GitHub App associated with the authentication credentials used. To see how many app installations are associated with this GitHub App, see the `installations_count` in the response. For more details about your app's installations, see the "[List installations for the authenticated app](https://docs.github.com/rest/apps/apps#list-installations-for-the-authenticated-app)" endpoint.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_authenticated](https://docs.github.com/rest/apps/apps#get-the-authenticated-app)
     ///
     /// ---
@@ -2037,7 +2037,7 @@ impl<'api> Apps<'api> {
     ///
     /// > [!NOTE]
     /// > The `:app_slug` is just the URL-friendly name of your GitHub App. You can find this on the settings page for your GitHub App (e.g., `https://github.com/settings/apps/:app_slug`).
-    /// 
+    ///
     /// [GitHub API docs for get_by_slug](https://docs.github.com/rest/apps/apps#get-an-app)
     ///
     /// ---
@@ -2078,7 +2078,7 @@ impl<'api> Apps<'api> {
     ///
     /// > [!NOTE]
     /// > The `:app_slug` is just the URL-friendly name of your GitHub App. You can find this on the settings page for your GitHub App (e.g., `https://github.com/settings/apps/:app_slug`).
-    /// 
+    ///
     /// [GitHub API docs for get_by_slug](https://docs.github.com/rest/apps/apps#get-an-app)
     ///
     /// ---
@@ -2121,7 +2121,7 @@ impl<'api> Apps<'api> {
     /// Enables an authenticated GitHub App to find an installation's information using the installation id.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_installation](https://docs.github.com/rest/apps/apps#get-an-installation-for-the-authenticated-app)
     ///
     /// ---
@@ -2162,7 +2162,7 @@ impl<'api> Apps<'api> {
     /// Enables an authenticated GitHub App to find an installation's information using the installation id.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_installation](https://docs.github.com/rest/apps/apps#get-an-installation-for-the-authenticated-app)
     ///
     /// ---
@@ -2204,7 +2204,7 @@ impl<'api> Apps<'api> {
     /// Enables an authenticated GitHub App to find the organization's installation information.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_org_installation](https://docs.github.com/rest/apps/apps#get-an-organization-installation-for-the-authenticated-app)
     ///
     /// ---
@@ -2244,7 +2244,7 @@ impl<'api> Apps<'api> {
     /// Enables an authenticated GitHub App to find the organization's installation information.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_org_installation](https://docs.github.com/rest/apps/apps#get-an-organization-installation-for-the-authenticated-app)
     ///
     /// ---
@@ -2285,7 +2285,7 @@ impl<'api> Apps<'api> {
     /// Enables an authenticated GitHub App to find the repository's installation information. The installation's account type will be either an organization or a user account, depending which account the repository belongs to.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_repo_installation](https://docs.github.com/rest/apps/apps#get-a-repository-installation-for-the-authenticated-app)
     ///
     /// ---
@@ -2327,7 +2327,7 @@ impl<'api> Apps<'api> {
     /// Enables an authenticated GitHub App to find the repository's installation information. The installation's account type will be either an organization or a user account, depending which account the repository belongs to.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_repo_installation](https://docs.github.com/rest/apps/apps#get-a-repository-installation-for-the-authenticated-app)
     ///
     /// ---
@@ -2370,7 +2370,7 @@ impl<'api> Apps<'api> {
     /// Shows whether the user or organization account actively subscribes to a plan listed by the authenticated GitHub App. When someone submits a plan change that won't be processed until the end of their billing cycle, you will also see the upcoming pending change.
     /// 
     /// GitHub Apps must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint. OAuth apps must use [basic authentication](https://docs.github.com/rest/authentication/authenticating-to-the-rest-api#using-basic-authentication) with their client ID and client secret to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_subscription_plan_for_account](https://docs.github.com/rest/apps/marketplace#get-a-subscription-plan-for-an-account)
     ///
     /// ---
@@ -2412,7 +2412,7 @@ impl<'api> Apps<'api> {
     /// Shows whether the user or organization account actively subscribes to a plan listed by the authenticated GitHub App. When someone submits a plan change that won't be processed until the end of their billing cycle, you will also see the upcoming pending change.
     /// 
     /// GitHub Apps must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint. OAuth apps must use [basic authentication](https://docs.github.com/rest/authentication/authenticating-to-the-rest-api#using-basic-authentication) with their client ID and client secret to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_subscription_plan_for_account](https://docs.github.com/rest/apps/marketplace#get-a-subscription-plan-for-an-account)
     ///
     /// ---
@@ -2455,7 +2455,7 @@ impl<'api> Apps<'api> {
     /// Shows whether the user or organization account actively subscribes to a plan listed by the authenticated GitHub App. When someone submits a plan change that won't be processed until the end of their billing cycle, you will also see the upcoming pending change.
     /// 
     /// GitHub Apps must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint. OAuth apps must use [basic authentication](https://docs.github.com/rest/authentication/authenticating-to-the-rest-api#using-basic-authentication) with their client ID and client secret to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_subscription_plan_for_account_stubbed](https://docs.github.com/rest/apps/marketplace#get-a-subscription-plan-for-an-account-stubbed)
     ///
     /// ---
@@ -2497,7 +2497,7 @@ impl<'api> Apps<'api> {
     /// Shows whether the user or organization account actively subscribes to a plan listed by the authenticated GitHub App. When someone submits a plan change that won't be processed until the end of their billing cycle, you will also see the upcoming pending change.
     /// 
     /// GitHub Apps must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint. OAuth apps must use [basic authentication](https://docs.github.com/rest/authentication/authenticating-to-the-rest-api#using-basic-authentication) with their client ID and client secret to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_subscription_plan_for_account_stubbed](https://docs.github.com/rest/apps/marketplace#get-a-subscription-plan-for-an-account-stubbed)
     ///
     /// ---
@@ -2540,7 +2540,7 @@ impl<'api> Apps<'api> {
     /// Enables an authenticated GitHub App to find the user’s installation information.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_user_installation](https://docs.github.com/rest/apps/apps#get-a-user-installation-for-the-authenticated-app)
     ///
     /// ---
@@ -2580,7 +2580,7 @@ impl<'api> Apps<'api> {
     /// Enables an authenticated GitHub App to find the user’s installation information.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_user_installation](https://docs.github.com/rest/apps/apps#get-a-user-installation-for-the-authenticated-app)
     ///
     /// ---
@@ -2621,7 +2621,7 @@ impl<'api> Apps<'api> {
     /// Returns the webhook configuration for a GitHub App. For more information about configuring a webhook for your app, see "[Creating a GitHub App](/developers/apps/creating-a-github-app)."
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_webhook_config_for_app](https://docs.github.com/rest/apps/webhooks#get-a-webhook-configuration-for-an-app)
     ///
     /// ---
@@ -2661,7 +2661,7 @@ impl<'api> Apps<'api> {
     /// Returns the webhook configuration for a GitHub App. For more information about configuring a webhook for your app, see "[Creating a GitHub App](/developers/apps/creating-a-github-app)."
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_webhook_config_for_app](https://docs.github.com/rest/apps/webhooks#get-a-webhook-configuration-for-an-app)
     ///
     /// ---
@@ -2702,7 +2702,7 @@ impl<'api> Apps<'api> {
     /// Returns a delivery for the webhook configured for a GitHub App.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_webhook_delivery](https://docs.github.com/rest/apps/webhooks#get-a-delivery-for-an-app-webhook)
     ///
     /// ---
@@ -2744,7 +2744,7 @@ impl<'api> Apps<'api> {
     /// Returns a delivery for the webhook configured for a GitHub App.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_webhook_delivery](https://docs.github.com/rest/apps/webhooks#get-a-delivery-for-an-app-webhook)
     ///
     /// ---
@@ -2787,7 +2787,7 @@ impl<'api> Apps<'api> {
     /// Returns user and organization accounts associated with the specified plan, including free plans. For per-seat pricing, you see the list of accounts that have purchased the plan, including the number of seats purchased. When someone submits a plan change that won't be processed until the end of their billing cycle, you will also see the upcoming pending change.
     /// 
     /// GitHub Apps must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint. OAuth apps must use [basic authentication](https://docs.github.com/rest/authentication/authenticating-to-the-rest-api#using-basic-authentication) with their client ID and client secret to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_accounts_for_plan](https://docs.github.com/rest/apps/marketplace#list-accounts-for-a-plan)
     ///
     /// ---
@@ -2834,7 +2834,7 @@ impl<'api> Apps<'api> {
     /// Returns user and organization accounts associated with the specified plan, including free plans. For per-seat pricing, you see the list of accounts that have purchased the plan, including the number of seats purchased. When someone submits a plan change that won't be processed until the end of their billing cycle, you will also see the upcoming pending change.
     /// 
     /// GitHub Apps must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint. OAuth apps must use [basic authentication](https://docs.github.com/rest/authentication/authenticating-to-the-rest-api#using-basic-authentication) with their client ID and client secret to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_accounts_for_plan](https://docs.github.com/rest/apps/marketplace#list-accounts-for-a-plan)
     ///
     /// ---
@@ -2883,7 +2883,7 @@ impl<'api> Apps<'api> {
     /// Returns repository and organization accounts associated with the specified plan, including free plans. For per-seat pricing, you see the list of accounts that have purchased the plan, including the number of seats purchased. When someone submits a plan change that won't be processed until the end of their billing cycle, you will also see the upcoming pending change.
     /// 
     /// GitHub Apps must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint. OAuth apps must use [basic authentication](https://docs.github.com/rest/authentication/authenticating-to-the-rest-api#using-basic-authentication) with their client ID and client secret to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_accounts_for_plan_stubbed](https://docs.github.com/rest/apps/marketplace#list-accounts-for-a-plan-stubbed)
     ///
     /// ---
@@ -2928,7 +2928,7 @@ impl<'api> Apps<'api> {
     /// Returns repository and organization accounts associated with the specified plan, including free plans. For per-seat pricing, you see the list of accounts that have purchased the plan, including the number of seats purchased. When someone submits a plan change that won't be processed until the end of their billing cycle, you will also see the upcoming pending change.
     /// 
     /// GitHub Apps must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint. OAuth apps must use [basic authentication](https://docs.github.com/rest/authentication/authenticating-to-the-rest-api#using-basic-authentication) with their client ID and client secret to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_accounts_for_plan_stubbed](https://docs.github.com/rest/apps/marketplace#list-accounts-for-a-plan-stubbed)
     ///
     /// ---
@@ -2977,7 +2977,7 @@ impl<'api> Apps<'api> {
     /// The authenticated user has explicit permission to access repositories they own, repositories where they are a collaborator, and repositories that they can access through an organization membership.
     /// 
     /// The access the user has to each repository is included in the hash under the `permissions` key.
-    /// 
+    ///
     /// [GitHub API docs for list_installation_repos_for_authenticated_user](https://docs.github.com/rest/apps/installations#list-repositories-accessible-to-the-user-access-token)
     ///
     /// ---
@@ -3026,7 +3026,7 @@ impl<'api> Apps<'api> {
     /// The authenticated user has explicit permission to access repositories they own, repositories where they are a collaborator, and repositories that they can access through an organization membership.
     /// 
     /// The access the user has to each repository is included in the hash under the `permissions` key.
-    /// 
+    ///
     /// [GitHub API docs for list_installation_repos_for_authenticated_user](https://docs.github.com/rest/apps/installations#list-repositories-accessible-to-the-user-access-token)
     ///
     /// ---
@@ -3073,7 +3073,7 @@ impl<'api> Apps<'api> {
     /// # List installation requests for the authenticated app
     ///
     /// Lists all the pending installation requests for the authenticated GitHub App.
-    /// 
+    ///
     /// [GitHub API docs for list_installation_requests_for_authenticated_app](https://docs.github.com/rest/apps/apps#list-installation-requests-for-the-authenticated-app)
     ///
     /// ---
@@ -3117,7 +3117,7 @@ impl<'api> Apps<'api> {
     /// # List installation requests for the authenticated app
     ///
     /// Lists all the pending installation requests for the authenticated GitHub App.
-    /// 
+    ///
     /// [GitHub API docs for list_installation_requests_for_authenticated_app](https://docs.github.com/rest/apps/apps#list-installation-requests-for-the-authenticated-app)
     ///
     /// ---
@@ -3165,7 +3165,7 @@ impl<'api> Apps<'api> {
     /// The permissions the installation has are included under the `permissions` key.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_installations](https://docs.github.com/rest/apps/apps#list-installations-for-the-authenticated-app)
     ///
     /// ---
@@ -3209,7 +3209,7 @@ impl<'api> Apps<'api> {
     /// The permissions the installation has are included under the `permissions` key.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_installations](https://docs.github.com/rest/apps/apps#list-installations-for-the-authenticated-app)
     ///
     /// ---
@@ -3257,7 +3257,7 @@ impl<'api> Apps<'api> {
     /// The authenticated user has explicit permission to access repositories they own, repositories where they are a collaborator, and repositories that they can access through an organization membership.
     /// 
     /// You can find the permissions for the installation under the `permissions` key.
-    /// 
+    ///
     /// [GitHub API docs for list_installations_for_authenticated_user](https://docs.github.com/rest/apps/installations#list-app-installations-accessible-to-the-user-access-token)
     ///
     /// ---
@@ -3306,7 +3306,7 @@ impl<'api> Apps<'api> {
     /// The authenticated user has explicit permission to access repositories they own, repositories where they are a collaborator, and repositories that they can access through an organization membership.
     /// 
     /// You can find the permissions for the installation under the `permissions` key.
-    /// 
+    ///
     /// [GitHub API docs for list_installations_for_authenticated_user](https://docs.github.com/rest/apps/installations#list-app-installations-accessible-to-the-user-access-token)
     ///
     /// ---
@@ -3355,7 +3355,7 @@ impl<'api> Apps<'api> {
     /// Lists all plans that are part of your GitHub Marketplace listing.
     /// 
     /// GitHub Apps must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint. OAuth apps must use [basic authentication](https://docs.github.com/rest/authentication/authenticating-to-the-rest-api#using-basic-authentication) with their client ID and client secret to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_plans](https://docs.github.com/rest/apps/marketplace#list-plans)
     ///
     /// ---
@@ -3401,7 +3401,7 @@ impl<'api> Apps<'api> {
     /// Lists all plans that are part of your GitHub Marketplace listing.
     /// 
     /// GitHub Apps must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint. OAuth apps must use [basic authentication](https://docs.github.com/rest/authentication/authenticating-to-the-rest-api#using-basic-authentication) with their client ID and client secret to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_plans](https://docs.github.com/rest/apps/marketplace#list-plans)
     ///
     /// ---
@@ -3449,7 +3449,7 @@ impl<'api> Apps<'api> {
     /// Lists all plans that are part of your GitHub Marketplace listing.
     /// 
     /// GitHub Apps must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint. OAuth apps must use [basic authentication](https://docs.github.com/rest/authentication/authenticating-to-the-rest-api#using-basic-authentication) with their client ID and client secret to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_plans_stubbed](https://docs.github.com/rest/apps/marketplace#list-plans-stubbed)
     ///
     /// ---
@@ -3494,7 +3494,7 @@ impl<'api> Apps<'api> {
     /// Lists all plans that are part of your GitHub Marketplace listing.
     /// 
     /// GitHub Apps must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint. OAuth apps must use [basic authentication](https://docs.github.com/rest/authentication/authenticating-to-the-rest-api#using-basic-authentication) with their client ID and client secret to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_plans_stubbed](https://docs.github.com/rest/apps/marketplace#list-plans-stubbed)
     ///
     /// ---
@@ -3539,7 +3539,7 @@ impl<'api> Apps<'api> {
     /// # List repositories accessible to the app installation
     ///
     /// List repositories that an app installation can access.
-    /// 
+    ///
     /// [GitHub API docs for list_repos_accessible_to_installation](https://docs.github.com/rest/apps/installations#list-repositories-accessible-to-the-app-installation)
     ///
     /// ---
@@ -3584,7 +3584,7 @@ impl<'api> Apps<'api> {
     /// # List repositories accessible to the app installation
     ///
     /// List repositories that an app installation can access.
-    /// 
+    ///
     /// [GitHub API docs for list_repos_accessible_to_installation](https://docs.github.com/rest/apps/installations#list-repositories-accessible-to-the-app-installation)
     ///
     /// ---
@@ -3631,7 +3631,7 @@ impl<'api> Apps<'api> {
     /// # List subscriptions for the authenticated user
     ///
     /// Lists the active subscriptions for the authenticated user.
-    /// 
+    ///
     /// [GitHub API docs for list_subscriptions_for_authenticated_user](https://docs.github.com/rest/apps/marketplace#list-subscriptions-for-the-authenticated-user)
     ///
     /// ---
@@ -3676,7 +3676,7 @@ impl<'api> Apps<'api> {
     /// # List subscriptions for the authenticated user
     ///
     /// Lists the active subscriptions for the authenticated user.
-    /// 
+    ///
     /// [GitHub API docs for list_subscriptions_for_authenticated_user](https://docs.github.com/rest/apps/marketplace#list-subscriptions-for-the-authenticated-user)
     ///
     /// ---
@@ -3723,7 +3723,7 @@ impl<'api> Apps<'api> {
     /// # List subscriptions for the authenticated user (stubbed)
     ///
     /// Lists the active subscriptions for the authenticated user.
-    /// 
+    ///
     /// [GitHub API docs for list_subscriptions_for_authenticated_user_stubbed](https://docs.github.com/rest/apps/marketplace#list-subscriptions-for-the-authenticated-user-stubbed)
     ///
     /// ---
@@ -3767,7 +3767,7 @@ impl<'api> Apps<'api> {
     /// # List subscriptions for the authenticated user (stubbed)
     ///
     /// Lists the active subscriptions for the authenticated user.
-    /// 
+    ///
     /// [GitHub API docs for list_subscriptions_for_authenticated_user_stubbed](https://docs.github.com/rest/apps/marketplace#list-subscriptions-for-the-authenticated-user-stubbed)
     ///
     /// ---
@@ -3815,7 +3815,7 @@ impl<'api> Apps<'api> {
     /// Returns a list of webhook deliveries for the webhook configured for a GitHub App.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_webhook_deliveries](https://docs.github.com/rest/apps/webhooks#list-deliveries-for-an-app-webhook)
     ///
     /// ---
@@ -3861,7 +3861,7 @@ impl<'api> Apps<'api> {
     /// Returns a list of webhook deliveries for the webhook configured for a GitHub App.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_webhook_deliveries](https://docs.github.com/rest/apps/webhooks#list-deliveries-for-an-app-webhook)
     ///
     /// ---
@@ -3909,7 +3909,7 @@ impl<'api> Apps<'api> {
     /// Redeliver a delivery for the webhook configured for a GitHub App.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for redeliver_webhook_delivery](https://docs.github.com/rest/apps/webhooks#redeliver-a-delivery-for-an-app-webhook)
     ///
     /// ---
@@ -3951,7 +3951,7 @@ impl<'api> Apps<'api> {
     /// Redeliver a delivery for the webhook configured for a GitHub App.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for redeliver_webhook_delivery](https://docs.github.com/rest/apps/webhooks#redeliver-a-delivery-for-an-app-webhook)
     ///
     /// ---
@@ -3994,7 +3994,7 @@ impl<'api> Apps<'api> {
     /// Remove a single repository from an installation. The authenticated user must have admin access to the repository. The installation must have the `repository_selection` of `selected`. 
     /// 
     /// This endpoint only works for PATs (classic) with the `repo` scope.
-    /// 
+    ///
     /// [GitHub API docs for remove_repo_from_installation_for_authenticated_user](https://docs.github.com/rest/apps/installations#remove-a-repository-from-an-app-installation)
     ///
     /// ---
@@ -4038,7 +4038,7 @@ impl<'api> Apps<'api> {
     /// Remove a single repository from an installation. The authenticated user must have admin access to the repository. The installation must have the `repository_selection` of `selected`. 
     /// 
     /// This endpoint only works for PATs (classic) with the `repo` scope.
-    /// 
+    ///
     /// [GitHub API docs for remove_repo_from_installation_for_authenticated_user](https://docs.github.com/rest/apps/installations#remove-a-repository-from-an-app-installation)
     ///
     /// ---
@@ -4081,7 +4081,7 @@ impl<'api> Apps<'api> {
     /// # Reset a token
     ///
     /// OAuth applications and GitHub applications with OAuth authorizations can use this API method to reset a valid OAuth token without end-user involvement. Applications must save the "token" property in the response because changes take effect immediately. Invalid tokens will return `404 NOT FOUND`.
-    /// 
+    ///
     /// [GitHub API docs for reset_token](https://docs.github.com/rest/apps/oauth-applications#reset-a-token)
     ///
     /// ---
@@ -4120,7 +4120,7 @@ impl<'api> Apps<'api> {
     /// # Reset a token
     ///
     /// OAuth applications and GitHub applications with OAuth authorizations can use this API method to reset a valid OAuth token without end-user involvement. Applications must save the "token" property in the response because changes take effect immediately. Invalid tokens will return `404 NOT FOUND`.
-    /// 
+    ///
     /// [GitHub API docs for reset_token](https://docs.github.com/rest/apps/oauth-applications#reset-a-token)
     ///
     /// ---
@@ -4162,7 +4162,7 @@ impl<'api> Apps<'api> {
     /// Revokes the installation token you're using to authenticate as an installation and access this endpoint.
     /// 
     /// Once an installation token is revoked, the token is invalidated and cannot be used. Other endpoints that require the revoked installation token must have a new installation token to work. You can create a new token using the "[Create an installation access token for an app](https://docs.github.com/rest/apps/apps#create-an-installation-access-token-for-an-app)" endpoint.
-    /// 
+    ///
     /// [GitHub API docs for revoke_installation_access_token](https://docs.github.com/rest/apps/installations#revoke-an-installation-access-token)
     ///
     /// ---
@@ -4202,7 +4202,7 @@ impl<'api> Apps<'api> {
     /// Revokes the installation token you're using to authenticate as an installation and access this endpoint.
     /// 
     /// Once an installation token is revoked, the token is invalidated and cannot be used. Other endpoints that require the revoked installation token must have a new installation token to work. You can create a new token using the "[Create an installation access token for an app](https://docs.github.com/rest/apps/apps#create-an-installation-access-token-for-an-app)" endpoint.
-    /// 
+    ///
     /// [GitHub API docs for revoke_installation_access_token](https://docs.github.com/rest/apps/installations#revoke-an-installation-access-token)
     ///
     /// ---
@@ -4245,7 +4245,7 @@ impl<'api> Apps<'api> {
     /// token.
     /// 
     /// Invalid tokens will return `404 NOT FOUND`.
-    /// 
+    ///
     /// [GitHub API docs for scope_token](https://docs.github.com/rest/apps/apps#create-a-scoped-access-token)
     ///
     /// ---
@@ -4291,7 +4291,7 @@ impl<'api> Apps<'api> {
     /// token.
     /// 
     /// Invalid tokens will return `404 NOT FOUND`.
-    /// 
+    ///
     /// [GitHub API docs for scope_token](https://docs.github.com/rest/apps/apps#create-a-scoped-access-token)
     ///
     /// ---
@@ -4336,7 +4336,7 @@ impl<'api> Apps<'api> {
     /// Suspends a GitHub App on a user, organization, or business account, which blocks the app from accessing the account's resources. When a GitHub App is suspended, the app's access to the GitHub API or webhook events is blocked for that account.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for suspend_installation](https://docs.github.com/rest/apps/apps#suspend-an-app-installation)
     ///
     /// ---
@@ -4377,7 +4377,7 @@ impl<'api> Apps<'api> {
     /// Suspends a GitHub App on a user, organization, or business account, which blocks the app from accessing the account's resources. When a GitHub App is suspended, the app's access to the GitHub API or webhook events is blocked for that account.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for suspend_installation](https://docs.github.com/rest/apps/apps#suspend-an-app-installation)
     ///
     /// ---
@@ -4419,7 +4419,7 @@ impl<'api> Apps<'api> {
     /// Removes a GitHub App installation suspension.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for unsuspend_installation](https://docs.github.com/rest/apps/apps#unsuspend-an-app-installation)
     ///
     /// ---
@@ -4460,7 +4460,7 @@ impl<'api> Apps<'api> {
     /// Removes a GitHub App installation suspension.
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for unsuspend_installation](https://docs.github.com/rest/apps/apps#unsuspend-an-app-installation)
     ///
     /// ---
@@ -4502,7 +4502,7 @@ impl<'api> Apps<'api> {
     /// Updates the webhook configuration for a GitHub App. For more information about configuring a webhook for your app, see "[Creating a GitHub App](/developers/apps/creating-a-github-app)."
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_webhook_config_for_app](https://docs.github.com/rest/apps/webhooks#update-a-webhook-configuration-for-an-app)
     ///
     /// ---
@@ -4542,7 +4542,7 @@ impl<'api> Apps<'api> {
     /// Updates the webhook configuration for a GitHub App. For more information about configuring a webhook for your app, see "[Creating a GitHub App](/developers/apps/creating-a-github-app)."
     /// 
     /// You must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_webhook_config_for_app](https://docs.github.com/rest/apps/webhooks#update-a-webhook-configuration-for-an-app)
     ///
     /// ---

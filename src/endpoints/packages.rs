@@ -412,7 +412,7 @@ pub enum PackagesListPackagesForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("The value of &#x60;per_page&#x60; multiplied by &#x60;page&#x60; cannot be greater than 10000.")]
+    #[error("The value of `per_page` multiplied by `page` cannot be greater than 10000.")]
     Status400,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -435,7 +435,7 @@ pub enum PackagesListPackagesForOrganizationError {
     Status403(BasicError),
     #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("The value of &#x60;per_page&#x60; multiplied by &#x60;page&#x60; cannot be greater than 10000.")]
+    #[error("The value of `per_page` multiplied by `page` cannot be greater than 10000.")]
     Status400,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -458,7 +458,7 @@ pub enum PackagesListPackagesForUserError {
     Status403(BasicError),
     #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("The value of &#x60;per_page&#x60; multiplied by &#x60;page&#x60; cannot be greater than 10000.")]
+    #[error("The value of `per_page` multiplied by `page` cannot be greater than 10000.")]
     Status400,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -621,7 +621,7 @@ impl<'req> PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserParams
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             page: Some(page),
             per_page: self.per_page, 
             state: self.state, 
@@ -630,7 +630,7 @@ impl<'req> PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserParams
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             page: self.page, 
             per_page: Some(per_page),
             state: self.state, 
@@ -639,7 +639,7 @@ impl<'req> PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserParams
 
     /// The state of the package, either active or deleted.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             page: self.page, 
             per_page: self.per_page, 
             state: Some(state),
@@ -674,7 +674,7 @@ impl<'req> PackagesGetAllPackageVersionsForPackageOwnedByOrgParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             page: Some(page),
             per_page: self.per_page, 
             state: self.state, 
@@ -683,7 +683,7 @@ impl<'req> PackagesGetAllPackageVersionsForPackageOwnedByOrgParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             page: self.page, 
             per_page: Some(per_page),
             state: self.state, 
@@ -692,7 +692,7 @@ impl<'req> PackagesGetAllPackageVersionsForPackageOwnedByOrgParams<'req> {
 
     /// The state of the package, either active or deleted.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             page: self.page, 
             per_page: self.per_page, 
             state: Some(state),
@@ -729,7 +729,7 @@ impl<'req> PackagesListPackagesForAuthenticatedUserParams<'req> {
 
     /// The type of supported package. Packages in GitHub's Gradle registry have the type `maven`. Docker images pushed to GitHub's Container registry (`ghcr.io`) have the type `container`. You can use the type `docker` to find images that were pushed to GitHub's Docker registry (`docker.pkg.github.com`), even if these have now been migrated to the Container registry.
     pub fn package_type(self, package_type: &'req str) -> Self {
-        Self { 
+        Self {
             package_type: package_type,
             visibility: self.visibility, 
             page: self.page, 
@@ -739,7 +739,7 @@ impl<'req> PackagesListPackagesForAuthenticatedUserParams<'req> {
 
     /// The selected visibility of the packages.  This parameter is optional and only filters an existing result set.  The `internal` visibility is only supported for GitHub Packages registries that allow for granular permissions. For other ecosystems `internal` is synonymous with `private`. For the list of GitHub Packages registries that support granular permissions, see \"[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages).\"
     pub fn visibility(self, visibility: &'req str) -> Self {
-        Self { 
+        Self {
             package_type: self.package_type, 
             visibility: Some(visibility),
             page: self.page, 
@@ -749,7 +749,7 @@ impl<'req> PackagesListPackagesForAuthenticatedUserParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             package_type: self.package_type, 
             visibility: self.visibility, 
             page: Some(page),
@@ -759,7 +759,7 @@ impl<'req> PackagesListPackagesForAuthenticatedUserParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             package_type: self.package_type, 
             visibility: self.visibility, 
             page: self.page, 
@@ -797,7 +797,7 @@ impl<'req> PackagesListPackagesForOrganizationParams<'req> {
 
     /// The type of supported package. Packages in GitHub's Gradle registry have the type `maven`. Docker images pushed to GitHub's Container registry (`ghcr.io`) have the type `container`. You can use the type `docker` to find images that were pushed to GitHub's Docker registry (`docker.pkg.github.com`), even if these have now been migrated to the Container registry.
     pub fn package_type(self, package_type: &'req str) -> Self {
-        Self { 
+        Self {
             package_type: package_type,
             visibility: self.visibility, 
             page: self.page, 
@@ -807,7 +807,7 @@ impl<'req> PackagesListPackagesForOrganizationParams<'req> {
 
     /// The selected visibility of the packages.  This parameter is optional and only filters an existing result set.  The `internal` visibility is only supported for GitHub Packages registries that allow for granular permissions. For other ecosystems `internal` is synonymous with `private`. For the list of GitHub Packages registries that support granular permissions, see \"[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages).\"
     pub fn visibility(self, visibility: &'req str) -> Self {
-        Self { 
+        Self {
             package_type: self.package_type, 
             visibility: Some(visibility),
             page: self.page, 
@@ -817,7 +817,7 @@ impl<'req> PackagesListPackagesForOrganizationParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             package_type: self.package_type, 
             visibility: self.visibility, 
             page: Some(page),
@@ -827,7 +827,7 @@ impl<'req> PackagesListPackagesForOrganizationParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             package_type: self.package_type, 
             visibility: self.visibility, 
             page: self.page, 
@@ -865,7 +865,7 @@ impl<'req> PackagesListPackagesForUserParams<'req> {
 
     /// The type of supported package. Packages in GitHub's Gradle registry have the type `maven`. Docker images pushed to GitHub's Container registry (`ghcr.io`) have the type `container`. You can use the type `docker` to find images that were pushed to GitHub's Docker registry (`docker.pkg.github.com`), even if these have now been migrated to the Container registry.
     pub fn package_type(self, package_type: &'req str) -> Self {
-        Self { 
+        Self {
             package_type: package_type,
             visibility: self.visibility, 
             page: self.page, 
@@ -875,7 +875,7 @@ impl<'req> PackagesListPackagesForUserParams<'req> {
 
     /// The selected visibility of the packages.  This parameter is optional and only filters an existing result set.  The `internal` visibility is only supported for GitHub Packages registries that allow for granular permissions. For other ecosystems `internal` is synonymous with `private`. For the list of GitHub Packages registries that support granular permissions, see \"[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages).\"
     pub fn visibility(self, visibility: &'req str) -> Self {
-        Self { 
+        Self {
             package_type: self.package_type, 
             visibility: Some(visibility),
             page: self.page, 
@@ -885,7 +885,7 @@ impl<'req> PackagesListPackagesForUserParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             package_type: self.package_type, 
             visibility: self.visibility, 
             page: Some(page),
@@ -895,7 +895,7 @@ impl<'req> PackagesListPackagesForUserParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             package_type: self.package_type, 
             visibility: self.visibility, 
             page: self.page, 
@@ -927,7 +927,7 @@ impl<'req> PackagesRestorePackageForAuthenticatedUserParams<'req> {
 
     /// package token
     pub fn token(self, token: &'req str) -> Self {
-        Self { 
+        Self {
             token: Some(token),
         }
     }
@@ -947,7 +947,7 @@ impl<'req> PackagesRestorePackageForOrgParams<'req> {
 
     /// package token
     pub fn token(self, token: &'req str) -> Self {
-        Self { 
+        Self {
             token: Some(token),
         }
     }
@@ -967,7 +967,7 @@ impl<'req> PackagesRestorePackageForUserParams<'req> {
 
     /// package token
     pub fn token(self, token: &'req str) -> Self {
-        Self { 
+        Self {
             token: Some(token),
         }
     }
@@ -982,7 +982,7 @@ impl<'api> Packages<'api> {
     /// Deletes a package owned by the authenticated user. You cannot delete a public package if any version of the package has more than 5,000 downloads. In this scenario, contact GitHub support for further assistance.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, `repo` scope is also required. For the list these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for delete_package_for_authenticated_user](https://docs.github.com/rest/packages/packages#delete-a-package-for-the-authenticated-user)
     ///
     /// ---
@@ -1025,7 +1025,7 @@ impl<'api> Packages<'api> {
     /// Deletes a package owned by the authenticated user. You cannot delete a public package if any version of the package has more than 5,000 downloads. In this scenario, contact GitHub support for further assistance.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, `repo` scope is also required. For the list these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for delete_package_for_authenticated_user](https://docs.github.com/rest/packages/packages#delete-a-package-for-the-authenticated-user)
     ///
     /// ---
@@ -1071,7 +1071,7 @@ impl<'api> Packages<'api> {
     /// The authenticated user must have admin permissions in the organization to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must also have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for delete_package_for_org](https://docs.github.com/rest/packages/packages#delete-a-package-for-an-organization)
     ///
     /// ---
@@ -1116,7 +1116,7 @@ impl<'api> Packages<'api> {
     /// The authenticated user must have admin permissions in the organization to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must also have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for delete_package_for_org](https://docs.github.com/rest/packages/packages#delete-a-package-for-an-organization)
     ///
     /// ---
@@ -1162,7 +1162,7 @@ impl<'api> Packages<'api> {
     /// If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for delete_package_for_user](https://docs.github.com/rest/packages/packages#delete-a-package-for-a-user)
     ///
     /// ---
@@ -1207,7 +1207,7 @@ impl<'api> Packages<'api> {
     /// If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for delete_package_for_user](https://docs.github.com/rest/packages/packages#delete-a-package-for-a-user)
     ///
     /// ---
@@ -1253,7 +1253,7 @@ impl<'api> Packages<'api> {
     /// The authenticated user must have admin permissions in the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for delete_package_version_for_authenticated_user](https://docs.github.com/rest/packages/packages#delete-a-package-version-for-the-authenticated-user)
     ///
     /// ---
@@ -1298,7 +1298,7 @@ impl<'api> Packages<'api> {
     /// The authenticated user must have admin permissions in the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for delete_package_version_for_authenticated_user](https://docs.github.com/rest/packages/packages#delete-a-package-version-for-the-authenticated-user)
     ///
     /// ---
@@ -1344,7 +1344,7 @@ impl<'api> Packages<'api> {
     /// The authenticated user must have admin permissions in the organization to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must also have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for delete_package_version_for_org](https://docs.github.com/rest/packages/packages#delete-package-version-for-an-organization)
     ///
     /// ---
@@ -1389,7 +1389,7 @@ impl<'api> Packages<'api> {
     /// The authenticated user must have admin permissions in the organization to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must also have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for delete_package_version_for_org](https://docs.github.com/rest/packages/packages#delete-package-version-for-an-organization)
     ///
     /// ---
@@ -1435,7 +1435,7 @@ impl<'api> Packages<'api> {
     /// If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for delete_package_version_for_user](https://docs.github.com/rest/packages/packages#delete-package-version-for-a-user)
     ///
     /// ---
@@ -1480,7 +1480,7 @@ impl<'api> Packages<'api> {
     /// If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `delete:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for delete_package_version_for_user](https://docs.github.com/rest/packages/packages#delete-package-version-for-a-user)
     ///
     /// ---
@@ -1524,7 +1524,7 @@ impl<'api> Packages<'api> {
     /// Lists package versions for a package owned by the authenticated user.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for get_all_package_versions_for_package_owned_by_authenticated_user](https://docs.github.com/rest/packages/packages#list-package-versions-for-a-package-owned-by-the-authenticated-user)
     ///
     /// ---
@@ -1571,7 +1571,7 @@ impl<'api> Packages<'api> {
     /// Lists package versions for a package owned by the authenticated user.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for get_all_package_versions_for_package_owned_by_authenticated_user](https://docs.github.com/rest/packages/packages#list-package-versions-for-a-package-owned-by-the-authenticated-user)
     ///
     /// ---
@@ -1620,7 +1620,7 @@ impl<'api> Packages<'api> {
     /// Lists package versions for a package owned by an organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint if the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for get_all_package_versions_for_package_owned_by_org](https://docs.github.com/rest/packages/packages#list-package-versions-for-a-package-owned-by-an-organization)
     ///
     /// ---
@@ -1667,7 +1667,7 @@ impl<'api> Packages<'api> {
     /// Lists package versions for a package owned by an organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint if the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for get_all_package_versions_for_package_owned_by_org](https://docs.github.com/rest/packages/packages#list-package-versions-for-a-package-owned-by-an-organization)
     ///
     /// ---
@@ -1716,7 +1716,7 @@ impl<'api> Packages<'api> {
     /// Lists package versions for a public package owned by a specified user.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for get_all_package_versions_for_package_owned_by_user](https://docs.github.com/rest/packages/packages#list-package-versions-for-a-package-owned-by-a-user)
     ///
     /// ---
@@ -1759,7 +1759,7 @@ impl<'api> Packages<'api> {
     /// Lists package versions for a public package owned by a specified user.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for get_all_package_versions_for_package_owned_by_user](https://docs.github.com/rest/packages/packages#list-package-versions-for-a-package-owned-by-a-user)
     ///
     /// ---
@@ -1803,7 +1803,7 @@ impl<'api> Packages<'api> {
     /// Gets a specific package for a package owned by the authenticated user.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for get_package_for_authenticated_user](https://docs.github.com/rest/packages/packages#get-a-package-for-the-authenticated-user)
     ///
     /// ---
@@ -1843,7 +1843,7 @@ impl<'api> Packages<'api> {
     /// Gets a specific package for a package owned by the authenticated user.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for get_package_for_authenticated_user](https://docs.github.com/rest/packages/packages#get-a-package-for-the-authenticated-user)
     ///
     /// ---
@@ -1884,7 +1884,7 @@ impl<'api> Packages<'api> {
     /// Gets a specific package in an organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for get_package_for_organization](https://docs.github.com/rest/packages/packages#get-a-package-for-an-organization)
     ///
     /// ---
@@ -1924,7 +1924,7 @@ impl<'api> Packages<'api> {
     /// Gets a specific package in an organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for get_package_for_organization](https://docs.github.com/rest/packages/packages#get-a-package-for-an-organization)
     ///
     /// ---
@@ -1965,7 +1965,7 @@ impl<'api> Packages<'api> {
     /// Gets a specific package metadata for a public package owned by a user.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for get_package_for_user](https://docs.github.com/rest/packages/packages#get-a-package-for-a-user)
     ///
     /// ---
@@ -2005,7 +2005,7 @@ impl<'api> Packages<'api> {
     /// Gets a specific package metadata for a public package owned by a user.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for get_package_for_user](https://docs.github.com/rest/packages/packages#get-a-package-for-a-user)
     ///
     /// ---
@@ -2046,7 +2046,7 @@ impl<'api> Packages<'api> {
     /// Gets a specific package version for a package owned by the authenticated user.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for get_package_version_for_authenticated_user](https://docs.github.com/rest/packages/packages#get-a-package-version-for-the-authenticated-user)
     ///
     /// ---
@@ -2086,7 +2086,7 @@ impl<'api> Packages<'api> {
     /// Gets a specific package version for a package owned by the authenticated user.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for get_package_version_for_authenticated_user](https://docs.github.com/rest/packages/packages#get-a-package-version-for-the-authenticated-user)
     ///
     /// ---
@@ -2127,7 +2127,7 @@ impl<'api> Packages<'api> {
     /// Gets a specific package version in an organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for get_package_version_for_organization](https://docs.github.com/rest/packages/packages#get-a-package-version-for-an-organization)
     ///
     /// ---
@@ -2167,7 +2167,7 @@ impl<'api> Packages<'api> {
     /// Gets a specific package version in an organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for get_package_version_for_organization](https://docs.github.com/rest/packages/packages#get-a-package-version-for-an-organization)
     ///
     /// ---
@@ -2208,7 +2208,7 @@ impl<'api> Packages<'api> {
     /// Gets a specific package version for a public package owned by a specified user.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for get_package_version_for_user](https://docs.github.com/rest/packages/packages#get-a-package-version-for-a-user)
     ///
     /// ---
@@ -2248,7 +2248,7 @@ impl<'api> Packages<'api> {
     /// Gets a specific package version for a public package owned by a specified user.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for get_package_version_for_user](https://docs.github.com/rest/packages/packages#get-a-package-version-for-a-user)
     ///
     /// ---
@@ -2289,7 +2289,7 @@ impl<'api> Packages<'api> {
     /// Lists all packages that are owned by the authenticated user within the user's namespace, and that encountered a conflict during a Docker migration.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_docker_migration_conflicting_packages_for_authenticated_user](https://docs.github.com/rest/packages/packages#get-list-of-conflicting-packages-during-docker-migration-for-authenticated-user)
     ///
     /// ---
@@ -2329,7 +2329,7 @@ impl<'api> Packages<'api> {
     /// Lists all packages that are owned by the authenticated user within the user's namespace, and that encountered a conflict during a Docker migration.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_docker_migration_conflicting_packages_for_authenticated_user](https://docs.github.com/rest/packages/packages#get-list-of-conflicting-packages-during-docker-migration-for-authenticated-user)
     ///
     /// ---
@@ -2370,7 +2370,7 @@ impl<'api> Packages<'api> {
     /// Lists all packages that are in a specific organization, are readable by the requesting user, and that encountered a conflict during a Docker migration.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_docker_migration_conflicting_packages_for_organization](https://docs.github.com/rest/packages/packages#get-list-of-conflicting-packages-during-docker-migration-for-organization)
     ///
     /// ---
@@ -2412,7 +2412,7 @@ impl<'api> Packages<'api> {
     /// Lists all packages that are in a specific organization, are readable by the requesting user, and that encountered a conflict during a Docker migration.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_docker_migration_conflicting_packages_for_organization](https://docs.github.com/rest/packages/packages#get-list-of-conflicting-packages-during-docker-migration-for-organization)
     ///
     /// ---
@@ -2455,7 +2455,7 @@ impl<'api> Packages<'api> {
     /// Lists all packages that are in a specific user's namespace, that the requesting user has access to, and that encountered a conflict during Docker migration.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_docker_migration_conflicting_packages_for_user](https://docs.github.com/rest/packages/packages#get-list-of-conflicting-packages-during-docker-migration-for-user)
     ///
     /// ---
@@ -2497,7 +2497,7 @@ impl<'api> Packages<'api> {
     /// Lists all packages that are in a specific user's namespace, that the requesting user has access to, and that encountered a conflict during Docker migration.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_docker_migration_conflicting_packages_for_user](https://docs.github.com/rest/packages/packages#get-list-of-conflicting-packages-during-docker-migration-for-user)
     ///
     /// ---
@@ -2540,7 +2540,7 @@ impl<'api> Packages<'api> {
     /// Lists packages owned by the authenticated user within the user's namespace.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for list_packages_for_authenticated_user](https://docs.github.com/rest/packages/packages#list-packages-for-the-authenticated-users-namespace)
     ///
     /// ---
@@ -2583,7 +2583,7 @@ impl<'api> Packages<'api> {
     /// Lists packages owned by the authenticated user within the user's namespace.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for list_packages_for_authenticated_user](https://docs.github.com/rest/packages/packages#list-packages-for-the-authenticated-users-namespace)
     ///
     /// ---
@@ -2628,7 +2628,7 @@ impl<'api> Packages<'api> {
     /// Lists packages in an organization readable by the user.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for list_packages_for_organization](https://docs.github.com/rest/packages/packages#list-packages-for-an-organization)
     ///
     /// ---
@@ -2673,7 +2673,7 @@ impl<'api> Packages<'api> {
     /// Lists packages in an organization readable by the user.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for list_packages_for_organization](https://docs.github.com/rest/packages/packages#list-packages-for-an-organization)
     ///
     /// ---
@@ -2720,7 +2720,7 @@ impl<'api> Packages<'api> {
     /// Lists all packages in a user's namespace for which the requesting user has access.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for list_packages_for_user](https://docs.github.com/rest/packages/packages#list-packages-for-a-user)
     ///
     /// ---
@@ -2765,7 +2765,7 @@ impl<'api> Packages<'api> {
     /// Lists all packages in a user's namespace for which the requesting user has access.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` scope to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for list_packages_for_user](https://docs.github.com/rest/packages/packages#list-packages-for-a-user)
     ///
     /// ---
@@ -2816,7 +2816,7 @@ impl<'api> Packages<'api> {
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for restore_package_for_authenticated_user](https://docs.github.com/rest/packages/packages#restore-a-package-for-the-authenticated-user)
     ///
     /// ---
@@ -2867,7 +2867,7 @@ impl<'api> Packages<'api> {
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for restore_package_for_authenticated_user](https://docs.github.com/rest/packages/packages#restore-a-package-for-the-authenticated-user)
     ///
     /// ---
@@ -2922,7 +2922,7 @@ impl<'api> Packages<'api> {
     /// The authenticated user must have admin permissions in the organization to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must also have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for restore_package_for_org](https://docs.github.com/rest/packages/packages#restore-a-package-for-an-organization)
     ///
     /// ---
@@ -2975,7 +2975,7 @@ impl<'api> Packages<'api> {
     /// The authenticated user must have admin permissions in the organization to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must also have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for restore_package_for_org](https://docs.github.com/rest/packages/packages#restore-a-package-for-an-organization)
     ///
     /// ---
@@ -3030,7 +3030,7 @@ impl<'api> Packages<'api> {
     /// If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for restore_package_for_user](https://docs.github.com/rest/packages/packages#restore-a-package-for-a-user)
     ///
     /// ---
@@ -3083,7 +3083,7 @@ impl<'api> Packages<'api> {
     /// If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for restore_package_for_user](https://docs.github.com/rest/packages/packages#restore-a-package-for-a-user)
     ///
     /// ---
@@ -3136,7 +3136,7 @@ impl<'api> Packages<'api> {
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for restore_package_version_for_authenticated_user](https://docs.github.com/rest/packages/packages#restore-a-package-version-for-the-authenticated-user)
     ///
     /// ---
@@ -3183,7 +3183,7 @@ impl<'api> Packages<'api> {
     ///   - The same package namespace and version is still available and not reused for a new package. If the same package namespace is not available, you will not be able to restore your package. In this scenario, to restore the deleted package, you must delete the new package that uses the deleted package's namespace first.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for restore_package_version_for_authenticated_user](https://docs.github.com/rest/packages/packages#restore-a-package-version-for-the-authenticated-user)
     ///
     /// ---
@@ -3233,7 +3233,7 @@ impl<'api> Packages<'api> {
     /// The authenticated user must have admin permissions in the organization to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must also have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for restore_package_version_for_org](https://docs.github.com/rest/packages/packages#restore-package-version-for-an-organization)
     ///
     /// ---
@@ -3282,7 +3282,7 @@ impl<'api> Packages<'api> {
     /// The authenticated user must have admin permissions in the organization to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must also have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for restore_package_version_for_org](https://docs.github.com/rest/packages/packages#restore-package-version-for-an-organization)
     ///
     /// ---
@@ -3332,7 +3332,7 @@ impl<'api> Packages<'api> {
     /// If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for restore_package_version_for_user](https://docs.github.com/rest/packages/packages#restore-package-version-for-a-user)
     ///
     /// ---
@@ -3381,7 +3381,7 @@ impl<'api> Packages<'api> {
     /// If the `package_type` belongs to a GitHub Packages registry that supports granular permissions, the authenticated user must have admin permissions to the package. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#granular-permissions-for-userorganization-scoped-packages)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:packages` and `write:packages` scopes to use this endpoint. If the `package_type` belongs to a GitHub Packages registry that only supports repository-scoped permissions, the `repo` scope is also required. For the list of these registries, see "[About permissions for GitHub Packages](https://docs.github.com/packages/learn-github-packages/about-permissions-for-github-packages#permissions-for-repository-scoped-packages)."
-    /// 
+    ///
     /// [GitHub API docs for restore_package_version_for_user](https://docs.github.com/rest/packages/packages#restore-package-version-for-a-user)
     ///
     /// ---

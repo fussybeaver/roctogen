@@ -77,7 +77,7 @@ impl<'api> Gitignore<'api> {
     /// # Get all gitignore templates
     ///
     /// List all templates available to pass as an option when [creating a repository](https://docs.github.com/rest/repos/repos#create-a-repository-for-the-authenticated-user).
-    /// 
+    ///
     /// [GitHub API docs for get_all_templates](https://docs.github.com/rest/gitignore/gitignore#get-all-gitignore-templates)
     ///
     /// ---
@@ -116,7 +116,7 @@ impl<'api> Gitignore<'api> {
     /// # Get all gitignore templates
     ///
     /// List all templates available to pass as an option when [creating a repository](https://docs.github.com/rest/repos/repos#create-a-repository-for-the-authenticated-user).
-    /// 
+    ///
     /// [GitHub API docs for get_all_templates](https://docs.github.com/rest/gitignore/gitignore#get-all-gitignore-templates)
     ///
     /// ---
@@ -160,7 +160,7 @@ impl<'api> Gitignore<'api> {
     /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
     /// 
     /// - **`application/vnd.github.raw+json`**: Returns the raw .gitignore contents.
-    /// 
+    ///
     /// [GitHub API docs for get_template](https://docs.github.com/rest/gitignore/gitignore#get-a-gitignore-template)
     ///
     /// ---
@@ -203,7 +203,7 @@ impl<'api> Gitignore<'api> {
     /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
     /// 
     /// - **`application/vnd.github.raw+json`**: Returns the raw .gitignore contents.
-    /// 
+    ///
     /// [GitHub API docs for get_template](https://docs.github.com/rest/gitignore/gitignore#get-a-gitignore-template)
     ///
     /// ---

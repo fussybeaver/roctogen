@@ -289,7 +289,7 @@ impl<'req> CodeSecurityGetConfigurationsForOrgParams<'req> {
 
     /// The target type of the code security configuration
     pub fn target_type(self, target_type: &'req str) -> Self {
-        Self { 
+        Self {
             target_type: Some(target_type),
             per_page: self.per_page, 
             before: self.before, 
@@ -299,7 +299,7 @@ impl<'req> CodeSecurityGetConfigurationsForOrgParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             target_type: self.target_type, 
             per_page: Some(per_page),
             before: self.before, 
@@ -309,7 +309,7 @@ impl<'req> CodeSecurityGetConfigurationsForOrgParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn before(self, before: &'req str) -> Self {
-        Self { 
+        Self {
             target_type: self.target_type, 
             per_page: self.per_page, 
             before: Some(before),
@@ -319,7 +319,7 @@ impl<'req> CodeSecurityGetConfigurationsForOrgParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn after(self, after: &'req str) -> Self {
-        Self { 
+        Self {
             target_type: self.target_type, 
             per_page: self.per_page, 
             before: self.before, 
@@ -348,7 +348,7 @@ impl<'req> CodeSecurityGetRepositoriesForConfigurationParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             before: self.before, 
             after: self.after, 
@@ -358,7 +358,7 @@ impl<'req> CodeSecurityGetRepositoriesForConfigurationParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn before(self, before: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             before: Some(before),
             after: self.after, 
@@ -368,7 +368,7 @@ impl<'req> CodeSecurityGetRepositoriesForConfigurationParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn after(self, after: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             before: self.before, 
             after: Some(after),
@@ -378,7 +378,7 @@ impl<'req> CodeSecurityGetRepositoriesForConfigurationParams<'req> {
 
     /// A comma-separated list of statuses. If specified, only repositories with these attachment statuses will be returned.  Can be: `all`, `attached`, `attaching`, `detached`, `removed`, `enforced`, `failed`, `updating`, `removed_by_enterprise`
     pub fn status(self, status: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             before: self.before, 
             after: self.after, 
@@ -400,7 +400,7 @@ impl<'api> CodeSecurity<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for attach_configuration](https://docs.github.com/rest/code-security/configurations#attach-a-configuration-to-repositories)
     ///
     /// ---
@@ -444,7 +444,7 @@ impl<'api> CodeSecurity<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for attach_configuration](https://docs.github.com/rest/code-security/configurations#attach-a-configuration-to-repositories)
     ///
     /// ---
@@ -487,7 +487,7 @@ impl<'api> CodeSecurity<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_configuration](https://docs.github.com/rest/code-security/configurations#create-a-code-security-configuration)
     ///
     /// ---
@@ -529,7 +529,7 @@ impl<'api> CodeSecurity<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_configuration](https://docs.github.com/rest/code-security/configurations#create-a-code-security-configuration)
     ///
     /// ---
@@ -574,7 +574,7 @@ impl<'api> CodeSecurity<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_configuration](https://docs.github.com/rest/code-security/configurations#delete-a-code-security-configuration)
     ///
     /// ---
@@ -622,7 +622,7 @@ impl<'api> CodeSecurity<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_configuration](https://docs.github.com/rest/code-security/configurations#delete-a-code-security-configuration)
     ///
     /// ---
@@ -670,7 +670,7 @@ impl<'api> CodeSecurity<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for detach_configuration](https://docs.github.com/rest/code-security/configurations#detach-configurations-from-repositories)
     ///
     /// ---
@@ -717,7 +717,7 @@ impl<'api> CodeSecurity<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for detach_configuration](https://docs.github.com/rest/code-security/configurations#detach-configurations-from-repositories)
     ///
     /// ---
@@ -764,7 +764,7 @@ impl<'api> CodeSecurity<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_configuration](https://docs.github.com/rest/code-security/configurations#get-a-code-security-configuration)
     ///
     /// ---
@@ -809,7 +809,7 @@ impl<'api> CodeSecurity<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_configuration](https://docs.github.com/rest/code-security/configurations#get-a-code-security-configuration)
     ///
     /// ---
@@ -855,7 +855,7 @@ impl<'api> CodeSecurity<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_configuration_for_repository](https://docs.github.com/rest/code-security/configurations#get-the-code-security-configuration-associated-with-a-repository)
     ///
     /// ---
@@ -901,7 +901,7 @@ impl<'api> CodeSecurity<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_configuration_for_repository](https://docs.github.com/rest/code-security/configurations#get-the-code-security-configuration-associated-with-a-repository)
     ///
     /// ---
@@ -948,7 +948,7 @@ impl<'api> CodeSecurity<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_configurations_for_org](https://docs.github.com/rest/code-security/configurations#get-code-security-configurations-for-an-organization)
     ///
     /// ---
@@ -996,7 +996,7 @@ impl<'api> CodeSecurity<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_configurations_for_org](https://docs.github.com/rest/code-security/configurations#get-code-security-configurations-for-an-organization)
     ///
     /// ---
@@ -1046,7 +1046,7 @@ impl<'api> CodeSecurity<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_default_configurations](https://docs.github.com/rest/code-security/configurations#get-default-code-security-configurations)
     ///
     /// ---
@@ -1091,7 +1091,7 @@ impl<'api> CodeSecurity<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_default_configurations](https://docs.github.com/rest/code-security/configurations#get-default-code-security-configurations)
     ///
     /// ---
@@ -1137,7 +1137,7 @@ impl<'api> CodeSecurity<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_repositories_for_configuration](https://docs.github.com/rest/code-security/configurations#get-repositories-associated-with-a-code-security-configuration)
     ///
     /// ---
@@ -1185,7 +1185,7 @@ impl<'api> CodeSecurity<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_repositories_for_configuration](https://docs.github.com/rest/code-security/configurations#get-repositories-associated-with-a-code-security-configuration)
     ///
     /// ---
@@ -1237,7 +1237,7 @@ impl<'api> CodeSecurity<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_configuration_as_default](https://docs.github.com/rest/code-security/configurations#set-a-code-security-configuration-as-a-default-for-an-organization)
     ///
     /// ---
@@ -1283,7 +1283,7 @@ impl<'api> CodeSecurity<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_configuration_as_default](https://docs.github.com/rest/code-security/configurations#set-a-code-security-configuration-as-a-default-for-an-organization)
     ///
     /// ---
@@ -1328,7 +1328,7 @@ impl<'api> CodeSecurity<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_configuration](https://docs.github.com/rest/code-security/configurations#update-a-code-security-configuration)
     ///
     /// ---
@@ -1371,7 +1371,7 @@ impl<'api> CodeSecurity<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_configuration](https://docs.github.com/rest/code-security/configurations#update-a-code-security-configuration)
     ///
     /// ---

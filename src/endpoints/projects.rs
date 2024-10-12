@@ -679,7 +679,7 @@ impl<'req> ProjectsListCardsParams<'req> {
 
     /// Filters the project cards that are returned by the card's state.
     pub fn archived_state(self, archived_state: &'req str) -> Self {
-        Self { 
+        Self {
             archived_state: Some(archived_state),
             per_page: self.per_page, 
             page: self.page, 
@@ -688,7 +688,7 @@ impl<'req> ProjectsListCardsParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             archived_state: self.archived_state, 
             per_page: Some(per_page),
             page: self.page, 
@@ -697,7 +697,7 @@ impl<'req> ProjectsListCardsParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             archived_state: self.archived_state, 
             per_page: self.per_page, 
             page: Some(page),
@@ -732,7 +732,7 @@ impl<'req> ProjectsListCollaboratorsParams<'req> {
 
     /// Filters the collaborators by their affiliation. `outside` means outside collaborators of a project that are not a member of the project's organization. `direct` means collaborators with permissions to a project, regardless of organization membership status. `all` means all collaborators the authenticated user can see.
     pub fn affiliation(self, affiliation: &'req str) -> Self {
-        Self { 
+        Self {
             affiliation: Some(affiliation),
             per_page: self.per_page, 
             page: self.page, 
@@ -741,7 +741,7 @@ impl<'req> ProjectsListCollaboratorsParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             affiliation: self.affiliation, 
             per_page: Some(per_page),
             page: self.page, 
@@ -750,7 +750,7 @@ impl<'req> ProjectsListCollaboratorsParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             affiliation: self.affiliation, 
             per_page: self.per_page, 
             page: Some(page),
@@ -783,7 +783,7 @@ impl ProjectsListColumnsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -791,7 +791,7 @@ impl ProjectsListColumnsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -825,7 +825,7 @@ impl<'req> ProjectsListForOrgParams<'req> {
 
     /// Indicates the state of the projects to return.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             state: Some(state),
             per_page: self.per_page, 
             page: self.page, 
@@ -834,7 +834,7 @@ impl<'req> ProjectsListForOrgParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             per_page: Some(per_page),
             page: self.page, 
@@ -843,7 +843,7 @@ impl<'req> ProjectsListForOrgParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             per_page: self.per_page, 
             page: Some(page),
@@ -878,7 +878,7 @@ impl<'req> ProjectsListForRepoParams<'req> {
 
     /// Indicates the state of the projects to return.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             state: Some(state),
             per_page: self.per_page, 
             page: self.page, 
@@ -887,7 +887,7 @@ impl<'req> ProjectsListForRepoParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             per_page: Some(per_page),
             page: self.page, 
@@ -896,7 +896,7 @@ impl<'req> ProjectsListForRepoParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             per_page: self.per_page, 
             page: Some(page),
@@ -931,7 +931,7 @@ impl<'req> ProjectsListForUserParams<'req> {
 
     /// Indicates the state of the projects to return.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             state: Some(state),
             per_page: self.per_page, 
             page: self.page, 
@@ -940,7 +940,7 @@ impl<'req> ProjectsListForUserParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             per_page: Some(per_page),
             page: self.page, 
@@ -949,7 +949,7 @@ impl<'req> ProjectsListForUserParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             per_page: self.per_page, 
             page: Some(page),
@@ -973,7 +973,7 @@ impl<'api> Projects<'api> {
     /// # Add project collaborator
     ///
     /// Adds a collaborator to an organization project and sets their permission level. You must be an organization owner or a project `admin` to add a collaborator.
-    /// 
+    ///
     /// [GitHub API docs for add_collaborator](https://docs.github.com/rest/projects/collaborators#add-project-collaborator)
     ///
     /// ---
@@ -1016,7 +1016,7 @@ impl<'api> Projects<'api> {
     /// # Add project collaborator
     ///
     /// Adds a collaborator to an organization project and sets their permission level. You must be an organization owner or a project `admin` to add a collaborator.
-    /// 
+    ///
     /// [GitHub API docs for add_collaborator](https://docs.github.com/rest/projects/collaborators#add-project-collaborator)
     ///
     /// ---
@@ -1058,7 +1058,7 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Create a project card
-    /// 
+    ///
     /// [GitHub API docs for create_card](https://docs.github.com/rest/projects/cards#create-a-project-card)
     ///
     /// ---
@@ -1099,7 +1099,7 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Create a project card
-    /// 
+    ///
     /// [GitHub API docs for create_card](https://docs.github.com/rest/projects/cards#create-a-project-card)
     ///
     /// ---
@@ -1143,7 +1143,7 @@ impl<'api> Projects<'api> {
     /// # Create a project column
     ///
     /// Creates a new project column.
-    /// 
+    ///
     /// [GitHub API docs for create_column](https://docs.github.com/rest/projects/columns#create-a-project-column)
     ///
     /// ---
@@ -1185,7 +1185,7 @@ impl<'api> Projects<'api> {
     /// # Create a project column
     ///
     /// Creates a new project column.
-    /// 
+    ///
     /// [GitHub API docs for create_column](https://docs.github.com/rest/projects/columns#create-a-project-column)
     ///
     /// ---
@@ -1228,7 +1228,7 @@ impl<'api> Projects<'api> {
     /// # Create a user project
     ///
     /// Creates a user project board. Returns a `410 Gone` status if the user does not have existing classic projects. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
+    ///
     /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/projects/projects#create-a-user-project)
     ///
     /// ---
@@ -1270,7 +1270,7 @@ impl<'api> Projects<'api> {
     /// # Create a user project
     ///
     /// Creates a user project board. Returns a `410 Gone` status if the user does not have existing classic projects. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
+    ///
     /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/projects/projects#create-a-user-project)
     ///
     /// ---
@@ -1313,7 +1313,7 @@ impl<'api> Projects<'api> {
     /// # Create an organization project
     ///
     /// Creates an organization project board. Returns a `410 Gone` status if projects are disabled in the organization or if the organization does not have existing classic projects. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
+    ///
     /// [GitHub API docs for create_for_org](https://docs.github.com/rest/projects/projects#create-an-organization-project)
     ///
     /// ---
@@ -1356,7 +1356,7 @@ impl<'api> Projects<'api> {
     /// # Create an organization project
     ///
     /// Creates an organization project board. Returns a `410 Gone` status if projects are disabled in the organization or if the organization does not have existing classic projects. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
+    ///
     /// [GitHub API docs for create_for_org](https://docs.github.com/rest/projects/projects#create-an-organization-project)
     ///
     /// ---
@@ -1400,7 +1400,7 @@ impl<'api> Projects<'api> {
     /// # Create a repository project
     ///
     /// Creates a repository project board. Returns a `410 Gone` status if projects are disabled in the repository or if the repository does not have existing classic projects. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
+    ///
     /// [GitHub API docs for create_for_repo](https://docs.github.com/rest/projects/projects#create-a-repository-project)
     ///
     /// ---
@@ -1443,7 +1443,7 @@ impl<'api> Projects<'api> {
     /// # Create a repository project
     ///
     /// Creates a repository project board. Returns a `410 Gone` status if projects are disabled in the repository or if the repository does not have existing classic projects. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
+    ///
     /// [GitHub API docs for create_for_repo](https://docs.github.com/rest/projects/projects#create-a-repository-project)
     ///
     /// ---
@@ -1487,7 +1487,7 @@ impl<'api> Projects<'api> {
     /// # Delete a project
     ///
     /// Deletes a project board. Returns a `404 Not Found` status if projects are disabled.
-    /// 
+    ///
     /// [GitHub API docs for delete](https://docs.github.com/rest/projects/projects#delete-a-project)
     ///
     /// ---
@@ -1530,7 +1530,7 @@ impl<'api> Projects<'api> {
     /// # Delete a project
     ///
     /// Deletes a project board. Returns a `404 Not Found` status if projects are disabled.
-    /// 
+    ///
     /// [GitHub API docs for delete](https://docs.github.com/rest/projects/projects#delete-a-project)
     ///
     /// ---
@@ -1574,7 +1574,7 @@ impl<'api> Projects<'api> {
     /// # Delete a project card
     ///
     /// Deletes a project card
-    /// 
+    ///
     /// [GitHub API docs for delete_card](https://docs.github.com/rest/projects/cards#delete-a-project-card)
     ///
     /// ---
@@ -1616,7 +1616,7 @@ impl<'api> Projects<'api> {
     /// # Delete a project card
     ///
     /// Deletes a project card
-    /// 
+    ///
     /// [GitHub API docs for delete_card](https://docs.github.com/rest/projects/cards#delete-a-project-card)
     ///
     /// ---
@@ -1659,7 +1659,7 @@ impl<'api> Projects<'api> {
     /// # Delete a project column
     ///
     /// Deletes a project column.
-    /// 
+    ///
     /// [GitHub API docs for delete_column](https://docs.github.com/rest/projects/columns#delete-a-project-column)
     ///
     /// ---
@@ -1700,7 +1700,7 @@ impl<'api> Projects<'api> {
     /// # Delete a project column
     ///
     /// Deletes a project column.
-    /// 
+    ///
     /// [GitHub API docs for delete_column](https://docs.github.com/rest/projects/columns#delete-a-project-column)
     ///
     /// ---
@@ -1742,7 +1742,7 @@ impl<'api> Projects<'api> {
     /// # Get a project
     ///
     /// Gets a project by its `id`. Returns a `404 Not Found` status if projects are disabled. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
+    ///
     /// [GitHub API docs for get](https://docs.github.com/rest/projects/projects#get-a-project)
     ///
     /// ---
@@ -1783,7 +1783,7 @@ impl<'api> Projects<'api> {
     /// # Get a project
     ///
     /// Gets a project by its `id`. Returns a `404 Not Found` status if projects are disabled. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
+    ///
     /// [GitHub API docs for get](https://docs.github.com/rest/projects/projects#get-a-project)
     ///
     /// ---
@@ -1825,7 +1825,7 @@ impl<'api> Projects<'api> {
     /// # Get a project card
     ///
     /// Gets information about a project card.
-    /// 
+    ///
     /// [GitHub API docs for get_card](https://docs.github.com/rest/projects/cards#get-a-project-card)
     ///
     /// ---
@@ -1867,7 +1867,7 @@ impl<'api> Projects<'api> {
     /// # Get a project card
     ///
     /// Gets information about a project card.
-    /// 
+    ///
     /// [GitHub API docs for get_card](https://docs.github.com/rest/projects/cards#get-a-project-card)
     ///
     /// ---
@@ -1910,7 +1910,7 @@ impl<'api> Projects<'api> {
     /// # Get a project column
     ///
     /// Gets information about a project column.
-    /// 
+    ///
     /// [GitHub API docs for get_column](https://docs.github.com/rest/projects/columns#get-a-project-column)
     ///
     /// ---
@@ -1952,7 +1952,7 @@ impl<'api> Projects<'api> {
     /// # Get a project column
     ///
     /// Gets information about a project column.
-    /// 
+    ///
     /// [GitHub API docs for get_column](https://docs.github.com/rest/projects/columns#get-a-project-column)
     ///
     /// ---
@@ -1995,7 +1995,7 @@ impl<'api> Projects<'api> {
     /// # Get project permission for a user
     ///
     /// Returns the collaborator's permission level for an organization project. Possible values for the `permission` key: `admin`, `write`, `read`, `none`. You must be an organization owner or a project `admin` to review a user's permission level.
-    /// 
+    ///
     /// [GitHub API docs for get_permission_for_user](https://docs.github.com/rest/projects/collaborators#get-project-permission-for-a-user)
     ///
     /// ---
@@ -2038,7 +2038,7 @@ impl<'api> Projects<'api> {
     /// # Get project permission for a user
     ///
     /// Returns the collaborator's permission level for an organization project. Possible values for the `permission` key: `admin`, `write`, `read`, `none`. You must be an organization owner or a project `admin` to review a user's permission level.
-    /// 
+    ///
     /// [GitHub API docs for get_permission_for_user](https://docs.github.com/rest/projects/collaborators#get-project-permission-for-a-user)
     ///
     /// ---
@@ -2082,7 +2082,7 @@ impl<'api> Projects<'api> {
     /// # List project cards
     ///
     /// Lists the project cards in a project.
-    /// 
+    ///
     /// [GitHub API docs for list_cards](https://docs.github.com/rest/projects/cards#list-project-cards)
     ///
     /// ---
@@ -2127,7 +2127,7 @@ impl<'api> Projects<'api> {
     /// # List project cards
     ///
     /// Lists the project cards in a project.
-    /// 
+    ///
     /// [GitHub API docs for list_cards](https://docs.github.com/rest/projects/cards#list-project-cards)
     ///
     /// ---
@@ -2174,7 +2174,7 @@ impl<'api> Projects<'api> {
     /// # List project collaborators
     ///
     /// Lists the collaborators for an organization project. For a project, the list of collaborators includes outside collaborators, organization members that are direct collaborators, organization members with access through team memberships, organization members with access through default organization permissions, and organization owners. You must be an organization owner or a project `admin` to list collaborators.
-    /// 
+    ///
     /// [GitHub API docs for list_collaborators](https://docs.github.com/rest/projects/collaborators#list-project-collaborators)
     ///
     /// ---
@@ -2221,7 +2221,7 @@ impl<'api> Projects<'api> {
     /// # List project collaborators
     ///
     /// Lists the collaborators for an organization project. For a project, the list of collaborators includes outside collaborators, organization members that are direct collaborators, organization members with access through team memberships, organization members with access through default organization permissions, and organization owners. You must be an organization owner or a project `admin` to list collaborators.
-    /// 
+    ///
     /// [GitHub API docs for list_collaborators](https://docs.github.com/rest/projects/collaborators#list-project-collaborators)
     ///
     /// ---
@@ -2270,7 +2270,7 @@ impl<'api> Projects<'api> {
     /// # List project columns
     ///
     /// Lists the project columns in a project.
-    /// 
+    ///
     /// [GitHub API docs for list_columns](https://docs.github.com/rest/projects/columns#list-project-columns)
     ///
     /// ---
@@ -2315,7 +2315,7 @@ impl<'api> Projects<'api> {
     /// # List project columns
     ///
     /// Lists the project columns in a project.
-    /// 
+    ///
     /// [GitHub API docs for list_columns](https://docs.github.com/rest/projects/columns#list-project-columns)
     ///
     /// ---
@@ -2362,7 +2362,7 @@ impl<'api> Projects<'api> {
     /// # List organization projects
     ///
     /// Lists the projects in an organization. Returns a `404 Not Found` status if projects are disabled in the organization. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
+    ///
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/projects/projects#list-organization-projects)
     ///
     /// ---
@@ -2405,7 +2405,7 @@ impl<'api> Projects<'api> {
     /// # List organization projects
     ///
     /// Lists the projects in an organization. Returns a `404 Not Found` status if projects are disabled in the organization. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
+    ///
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/projects/projects#list-organization-projects)
     ///
     /// ---
@@ -2450,7 +2450,7 @@ impl<'api> Projects<'api> {
     /// # List repository projects
     ///
     /// Lists the projects in a repository. Returns a `404 Not Found` status if projects are disabled in the repository. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
+    ///
     /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/projects/projects#list-repository-projects)
     ///
     /// ---
@@ -2497,7 +2497,7 @@ impl<'api> Projects<'api> {
     /// # List repository projects
     ///
     /// Lists the projects in a repository. Returns a `404 Not Found` status if projects are disabled in the repository. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
+    ///
     /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/projects/projects#list-repository-projects)
     ///
     /// ---
@@ -2546,7 +2546,7 @@ impl<'api> Projects<'api> {
     /// # List user projects
     ///
     /// Lists projects for a user.
-    /// 
+    ///
     /// [GitHub API docs for list_for_user](https://docs.github.com/rest/projects/projects#list-user-projects)
     ///
     /// ---
@@ -2589,7 +2589,7 @@ impl<'api> Projects<'api> {
     /// # List user projects
     ///
     /// Lists projects for a user.
-    /// 
+    ///
     /// [GitHub API docs for list_for_user](https://docs.github.com/rest/projects/projects#list-user-projects)
     ///
     /// ---
@@ -2632,7 +2632,7 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Move a project card
-    /// 
+    ///
     /// [GitHub API docs for move_card](https://docs.github.com/rest/projects/cards#move-a-project-card)
     ///
     /// ---
@@ -2673,7 +2673,7 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Move a project card
-    /// 
+    ///
     /// [GitHub API docs for move_card](https://docs.github.com/rest/projects/cards#move-a-project-card)
     ///
     /// ---
@@ -2715,7 +2715,7 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Move a project column
-    /// 
+    ///
     /// [GitHub API docs for move_column](https://docs.github.com/rest/projects/columns#move-a-project-column)
     ///
     /// ---
@@ -2755,7 +2755,7 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Move a project column
-    /// 
+    ///
     /// [GitHub API docs for move_column](https://docs.github.com/rest/projects/columns#move-a-project-column)
     ///
     /// ---
@@ -2798,7 +2798,7 @@ impl<'api> Projects<'api> {
     /// # Remove user as a collaborator
     ///
     /// Removes a collaborator from an organization project. You must be an organization owner or a project `admin` to remove a collaborator.
-    /// 
+    ///
     /// [GitHub API docs for remove_collaborator](https://docs.github.com/rest/projects/collaborators#remove-user-as-a-collaborator)
     ///
     /// ---
@@ -2841,7 +2841,7 @@ impl<'api> Projects<'api> {
     /// # Remove user as a collaborator
     ///
     /// Removes a collaborator from an organization project. You must be an organization owner or a project `admin` to remove a collaborator.
-    /// 
+    ///
     /// [GitHub API docs for remove_collaborator](https://docs.github.com/rest/projects/collaborators#remove-user-as-a-collaborator)
     ///
     /// ---
@@ -2885,7 +2885,7 @@ impl<'api> Projects<'api> {
     /// # Update a project
     ///
     /// Updates a project board's information. Returns a `404 Not Found` status if projects are disabled. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
+    ///
     /// [GitHub API docs for update](https://docs.github.com/rest/projects/projects#update-a-project)
     ///
     /// ---
@@ -2929,7 +2929,7 @@ impl<'api> Projects<'api> {
     /// # Update a project
     ///
     /// Updates a project board's information. Returns a `404 Not Found` status if projects are disabled. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
+    ///
     /// [GitHub API docs for update](https://docs.github.com/rest/projects/projects#update-a-project)
     ///
     /// ---
@@ -2972,7 +2972,7 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Update an existing project card
-    /// 
+    ///
     /// [GitHub API docs for update_card](https://docs.github.com/rest/projects/cards#update-an-existing-project-card)
     ///
     /// ---
@@ -3013,7 +3013,7 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Update an existing project card
-    /// 
+    ///
     /// [GitHub API docs for update_card](https://docs.github.com/rest/projects/cards#update-an-existing-project-card)
     ///
     /// ---
@@ -3055,7 +3055,7 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Update an existing project column
-    /// 
+    ///
     /// [GitHub API docs for update_column](https://docs.github.com/rest/projects/columns#update-an-existing-project-column)
     ///
     /// ---
@@ -3094,7 +3094,7 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Update an existing project column
-    /// 
+    ///
     /// [GitHub API docs for update_column](https://docs.github.com/rest/projects/columns#update-an-existing-project-column)
     ///
     /// ---

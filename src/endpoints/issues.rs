@@ -86,7 +86,7 @@ pub enum IssuesCheckUserCanBeAssignedError {
 
     // -- endpoint errors
 
-    #[error("Otherwise a &#x60;404&#x60; status code is returned.")]
+    #[error("Otherwise a `404` status code is returned.")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -105,7 +105,7 @@ pub enum IssuesCheckUserCanBeAssignedToIssueError {
 
     // -- endpoint errors
 
-    #[error("Response if &#x60;assignee&#x60; can not be assigned to &#x60;issue_number&#x60;")]
+    #[error("Response if `assignee` can not be assigned to `issue_number`")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -902,7 +902,7 @@ impl<'req> IssuesListParams<'req> {
 
     /// Indicates which sorts of issues to return. `assigned` means issues assigned to you. `created` means issues created by you. `mentioned` means issues mentioning you. `subscribed` means issues you're subscribed to updates for. `all` or `repos` means all issues you can see, regardless of participation or creation.
     pub fn filter(self, filter: &'req str) -> Self {
-        Self { 
+        Self {
             filter: Some(filter),
             state: self.state, 
             labels: self.labels, 
@@ -920,7 +920,7 @@ impl<'req> IssuesListParams<'req> {
 
     /// Indicates the state of the issues to return.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: Some(state),
             labels: self.labels, 
@@ -938,7 +938,7 @@ impl<'req> IssuesListParams<'req> {
 
     /// A list of comma separated label names. Example: `bug,ui,@high`
     pub fn labels(self, labels: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: Some(labels),
@@ -956,7 +956,7 @@ impl<'req> IssuesListParams<'req> {
 
     /// What to sort results by.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -974,7 +974,7 @@ impl<'req> IssuesListParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -992,7 +992,7 @@ impl<'req> IssuesListParams<'req> {
 
     /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1010,7 +1010,7 @@ impl<'req> IssuesListParams<'req> {
 
     
     pub fn collab(self, collab: bool) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1028,7 +1028,7 @@ impl<'req> IssuesListParams<'req> {
 
     
     pub fn orgs(self, orgs: bool) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1046,7 +1046,7 @@ impl<'req> IssuesListParams<'req> {
 
     
     pub fn owned(self, owned: bool) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1064,7 +1064,7 @@ impl<'req> IssuesListParams<'req> {
 
     
     pub fn pulls(self, pulls: bool) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1082,7 +1082,7 @@ impl<'req> IssuesListParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1100,7 +1100,7 @@ impl<'req> IssuesListParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1142,7 +1142,7 @@ impl IssuesListAssigneesParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1150,7 +1150,7 @@ impl IssuesListAssigneesParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1184,7 +1184,7 @@ impl IssuesListCommentsParams {
 
     /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             since: Some(since),
             per_page: self.per_page, 
             page: self.page, 
@@ -1193,7 +1193,7 @@ impl IssuesListCommentsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             since: self.since, 
             per_page: Some(per_page),
             page: self.page, 
@@ -1202,7 +1202,7 @@ impl IssuesListCommentsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             since: self.since, 
             per_page: self.per_page, 
             page: Some(page),
@@ -1241,7 +1241,7 @@ impl<'req> IssuesListCommentsForRepoParams<'req> {
 
     /// The property to sort the results by.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             sort: Some(sort),
             direction: self.direction, 
             since: self.since, 
@@ -1252,7 +1252,7 @@ impl<'req> IssuesListCommentsForRepoParams<'req> {
 
     /// Either `asc` or `desc`. Ignored without the `sort` parameter.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: Some(direction),
             since: self.since, 
@@ -1263,7 +1263,7 @@ impl<'req> IssuesListCommentsForRepoParams<'req> {
 
     /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: self.direction, 
             since: Some(since),
@@ -1274,7 +1274,7 @@ impl<'req> IssuesListCommentsForRepoParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: self.direction, 
             since: self.since, 
@@ -1285,7 +1285,7 @@ impl<'req> IssuesListCommentsForRepoParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: self.direction, 
             since: self.since, 
@@ -1320,7 +1320,7 @@ impl IssuesListEventsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1328,7 +1328,7 @@ impl IssuesListEventsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1360,7 +1360,7 @@ impl IssuesListEventsForRepoParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1368,7 +1368,7 @@ impl IssuesListEventsForRepoParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1400,7 +1400,7 @@ impl IssuesListEventsForTimelineParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1408,7 +1408,7 @@ impl IssuesListEventsForTimelineParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1452,7 +1452,7 @@ impl<'req> IssuesListForAuthenticatedUserParams<'req> {
 
     /// Indicates which sorts of issues to return. `assigned` means issues assigned to you. `created` means issues created by you. `mentioned` means issues mentioning you. `subscribed` means issues you're subscribed to updates for. `all` or `repos` means all issues you can see, regardless of participation or creation.
     pub fn filter(self, filter: &'req str) -> Self {
-        Self { 
+        Self {
             filter: Some(filter),
             state: self.state, 
             labels: self.labels, 
@@ -1466,7 +1466,7 @@ impl<'req> IssuesListForAuthenticatedUserParams<'req> {
 
     /// Indicates the state of the issues to return.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: Some(state),
             labels: self.labels, 
@@ -1480,7 +1480,7 @@ impl<'req> IssuesListForAuthenticatedUserParams<'req> {
 
     /// A list of comma separated label names. Example: `bug,ui,@high`
     pub fn labels(self, labels: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: Some(labels),
@@ -1494,7 +1494,7 @@ impl<'req> IssuesListForAuthenticatedUserParams<'req> {
 
     /// What to sort results by.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1508,7 +1508,7 @@ impl<'req> IssuesListForAuthenticatedUserParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1522,7 +1522,7 @@ impl<'req> IssuesListForAuthenticatedUserParams<'req> {
 
     /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1536,7 +1536,7 @@ impl<'req> IssuesListForAuthenticatedUserParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1550,7 +1550,7 @@ impl<'req> IssuesListForAuthenticatedUserParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1600,7 +1600,7 @@ impl<'req> IssuesListForOrgParams<'req> {
 
     /// Indicates which sorts of issues to return. `assigned` means issues assigned to you. `created` means issues created by you. `mentioned` means issues mentioning you. `subscribed` means issues you're subscribed to updates for. `all` or `repos` means all issues you can see, regardless of participation or creation.
     pub fn filter(self, filter: &'req str) -> Self {
-        Self { 
+        Self {
             filter: Some(filter),
             state: self.state, 
             labels: self.labels, 
@@ -1614,7 +1614,7 @@ impl<'req> IssuesListForOrgParams<'req> {
 
     /// Indicates the state of the issues to return.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: Some(state),
             labels: self.labels, 
@@ -1628,7 +1628,7 @@ impl<'req> IssuesListForOrgParams<'req> {
 
     /// A list of comma separated label names. Example: `bug,ui,@high`
     pub fn labels(self, labels: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: Some(labels),
@@ -1642,7 +1642,7 @@ impl<'req> IssuesListForOrgParams<'req> {
 
     /// What to sort results by.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1656,7 +1656,7 @@ impl<'req> IssuesListForOrgParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1670,7 +1670,7 @@ impl<'req> IssuesListForOrgParams<'req> {
 
     /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1684,7 +1684,7 @@ impl<'req> IssuesListForOrgParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1698,7 +1698,7 @@ impl<'req> IssuesListForOrgParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1754,7 +1754,7 @@ impl<'req> IssuesListForRepoParams<'req> {
 
     /// If an `integer` is passed, it should refer to a milestone by its `number` field. If the string `*` is passed, issues with any milestone are accepted. If the string `none` is passed, issues without milestones are returned.
     pub fn milestone(self, milestone: &'req str) -> Self {
-        Self { 
+        Self {
             milestone: Some(milestone),
             state: self.state, 
             assignee: self.assignee, 
@@ -1771,7 +1771,7 @@ impl<'req> IssuesListForRepoParams<'req> {
 
     /// Indicates the state of the issues to return.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             milestone: self.milestone, 
             state: Some(state),
             assignee: self.assignee, 
@@ -1788,7 +1788,7 @@ impl<'req> IssuesListForRepoParams<'req> {
 
     /// Can be the name of a user. Pass in `none` for issues with no assigned user, and `*` for issues assigned to any user.
     pub fn assignee(self, assignee: &'req str) -> Self {
-        Self { 
+        Self {
             milestone: self.milestone, 
             state: self.state, 
             assignee: Some(assignee),
@@ -1805,7 +1805,7 @@ impl<'req> IssuesListForRepoParams<'req> {
 
     /// The user that created the issue.
     pub fn creator(self, creator: &'req str) -> Self {
-        Self { 
+        Self {
             milestone: self.milestone, 
             state: self.state, 
             assignee: self.assignee, 
@@ -1822,7 +1822,7 @@ impl<'req> IssuesListForRepoParams<'req> {
 
     /// A user that's mentioned in the issue.
     pub fn mentioned(self, mentioned: &'req str) -> Self {
-        Self { 
+        Self {
             milestone: self.milestone, 
             state: self.state, 
             assignee: self.assignee, 
@@ -1839,7 +1839,7 @@ impl<'req> IssuesListForRepoParams<'req> {
 
     /// A list of comma separated label names. Example: `bug,ui,@high`
     pub fn labels(self, labels: &'req str) -> Self {
-        Self { 
+        Self {
             milestone: self.milestone, 
             state: self.state, 
             assignee: self.assignee, 
@@ -1856,7 +1856,7 @@ impl<'req> IssuesListForRepoParams<'req> {
 
     /// What to sort results by.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             milestone: self.milestone, 
             state: self.state, 
             assignee: self.assignee, 
@@ -1873,7 +1873,7 @@ impl<'req> IssuesListForRepoParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             milestone: self.milestone, 
             state: self.state, 
             assignee: self.assignee, 
@@ -1890,7 +1890,7 @@ impl<'req> IssuesListForRepoParams<'req> {
 
     /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             milestone: self.milestone, 
             state: self.state, 
             assignee: self.assignee, 
@@ -1907,7 +1907,7 @@ impl<'req> IssuesListForRepoParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             milestone: self.milestone, 
             state: self.state, 
             assignee: self.assignee, 
@@ -1924,7 +1924,7 @@ impl<'req> IssuesListForRepoParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             milestone: self.milestone, 
             state: self.state, 
             assignee: self.assignee, 
@@ -1965,7 +1965,7 @@ impl IssuesListLabelsForMilestoneParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1973,7 +1973,7 @@ impl IssuesListLabelsForMilestoneParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2005,7 +2005,7 @@ impl IssuesListLabelsForRepoParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -2013,7 +2013,7 @@ impl IssuesListLabelsForRepoParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2045,7 +2045,7 @@ impl IssuesListLabelsOnIssueParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -2053,7 +2053,7 @@ impl IssuesListLabelsOnIssueParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2091,7 +2091,7 @@ impl<'req> IssuesListMilestonesParams<'req> {
 
     /// The state of the milestone. Either `open`, `closed`, or `all`.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             state: Some(state),
             sort: self.sort, 
             direction: self.direction, 
@@ -2102,7 +2102,7 @@ impl<'req> IssuesListMilestonesParams<'req> {
 
     /// What to sort results by. Either `due_on` or `completeness`.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             sort: Some(sort),
             direction: self.direction, 
@@ -2113,7 +2113,7 @@ impl<'req> IssuesListMilestonesParams<'req> {
 
     /// The direction of the sort. Either `asc` or `desc`.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             sort: self.sort, 
             direction: Some(direction),
@@ -2124,7 +2124,7 @@ impl<'req> IssuesListMilestonesParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             sort: self.sort, 
             direction: self.direction, 
@@ -2135,7 +2135,7 @@ impl<'req> IssuesListMilestonesParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             sort: self.sort, 
             direction: self.direction, 
@@ -2161,7 +2161,7 @@ impl<'api> Issues<'api> {
     /// # Add assignees to an issue
     ///
     /// Adds up to 10 assignees to an issue. Users already assigned to an issue are not replaced.
-    /// 
+    ///
     /// [GitHub API docs for add_assignees](https://docs.github.com/rest/issues/assignees#add-assignees-to-an-issue)
     ///
     /// ---
@@ -2199,7 +2199,7 @@ impl<'api> Issues<'api> {
     /// # Add assignees to an issue
     ///
     /// Adds up to 10 assignees to an issue. Users already assigned to an issue are not replaced.
-    /// 
+    ///
     /// [GitHub API docs for add_assignees](https://docs.github.com/rest/issues/assignees#add-assignees-to-an-issue)
     ///
     /// ---
@@ -2238,7 +2238,7 @@ impl<'api> Issues<'api> {
     /// # Add labels to an issue
     ///
     /// Adds labels to an issue. If you provide an empty array of labels, all labels are removed from the issue. 
-    /// 
+    ///
     /// [GitHub API docs for add_labels](https://docs.github.com/rest/issues/labels#add-labels-to-an-issue)
     ///
     /// ---
@@ -2280,7 +2280,7 @@ impl<'api> Issues<'api> {
     /// # Add labels to an issue
     ///
     /// Adds labels to an issue. If you provide an empty array of labels, all labels are removed from the issue. 
-    /// 
+    ///
     /// [GitHub API docs for add_labels](https://docs.github.com/rest/issues/labels#add-labels-to-an-issue)
     ///
     /// ---
@@ -2327,7 +2327,7 @@ impl<'api> Issues<'api> {
     /// If the `assignee` can be assigned to issues in the repository, a `204` header with no content is returned.
     /// 
     /// Otherwise a `404` status code is returned.
-    /// 
+    ///
     /// [GitHub API docs for check_user_can_be_assigned](https://docs.github.com/rest/issues/assignees#check-if-a-user-can-be-assigned)
     ///
     /// ---
@@ -2370,7 +2370,7 @@ impl<'api> Issues<'api> {
     /// If the `assignee` can be assigned to issues in the repository, a `204` header with no content is returned.
     /// 
     /// Otherwise a `404` status code is returned.
-    /// 
+    ///
     /// [GitHub API docs for check_user_can_be_assigned](https://docs.github.com/rest/issues/assignees#check-if-a-user-can-be-assigned)
     ///
     /// ---
@@ -2414,7 +2414,7 @@ impl<'api> Issues<'api> {
     /// If the `assignee` can be assigned to this issue, a `204` status code with no content is returned.
     /// 
     /// Otherwise a `404` status code is returned.
-    /// 
+    ///
     /// [GitHub API docs for check_user_can_be_assigned_to_issue](https://docs.github.com/rest/issues/assignees#check-if-a-user-can-be-assigned-to-a-issue)
     ///
     /// ---
@@ -2457,7 +2457,7 @@ impl<'api> Issues<'api> {
     /// If the `assignee` can be assigned to this issue, a `204` status code with no content is returned.
     /// 
     /// Otherwise a `404` status code is returned.
-    /// 
+    ///
     /// [GitHub API docs for check_user_can_be_assigned_to_issue](https://docs.github.com/rest/issues/assignees#check-if-a-user-can-be-assigned-to-a-issue)
     ///
     /// ---
@@ -2507,7 +2507,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for create](https://docs.github.com/rest/issues/issues#create-an-issue)
     ///
     /// ---
@@ -2561,7 +2561,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for create](https://docs.github.com/rest/issues/issues#create-an-issue)
     ///
     /// ---
@@ -2618,7 +2618,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for create_comment](https://docs.github.com/rest/issues/comments#create-an-issue-comment)
     ///
     /// ---
@@ -2672,7 +2672,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for create_comment](https://docs.github.com/rest/issues/comments#create-an-issue-comment)
     ///
     /// ---
@@ -2715,7 +2715,7 @@ impl<'api> Issues<'api> {
     /// # Create a label
     ///
     /// Creates a label for the specified repository with the given name and color. The name and color parameters are required. The color must be a valid [hexadecimal color code](http://www.color-hex.com/).
-    /// 
+    ///
     /// [GitHub API docs for create_label](https://docs.github.com/rest/issues/labels#create-a-label)
     ///
     /// ---
@@ -2755,7 +2755,7 @@ impl<'api> Issues<'api> {
     /// # Create a label
     ///
     /// Creates a label for the specified repository with the given name and color. The name and color parameters are required. The color must be a valid [hexadecimal color code](http://www.color-hex.com/).
-    /// 
+    ///
     /// [GitHub API docs for create_label](https://docs.github.com/rest/issues/labels#create-a-label)
     ///
     /// ---
@@ -2796,7 +2796,7 @@ impl<'api> Issues<'api> {
     /// # Create a milestone
     ///
     /// Creates a milestone.
-    /// 
+    ///
     /// [GitHub API docs for create_milestone](https://docs.github.com/rest/issues/milestones#create-a-milestone)
     ///
     /// ---
@@ -2836,7 +2836,7 @@ impl<'api> Issues<'api> {
     /// # Create a milestone
     ///
     /// Creates a milestone.
-    /// 
+    ///
     /// [GitHub API docs for create_milestone](https://docs.github.com/rest/issues/milestones#create-a-milestone)
     ///
     /// ---
@@ -2877,7 +2877,7 @@ impl<'api> Issues<'api> {
     /// # Delete an issue comment
     ///
     /// You can use the REST API to delete comments on issues and pull requests. Every pull request is an issue, but not every issue is a pull request.
-    /// 
+    ///
     /// [GitHub API docs for delete_comment](https://docs.github.com/rest/issues/comments#delete-an-issue-comment)
     ///
     /// ---
@@ -2915,7 +2915,7 @@ impl<'api> Issues<'api> {
     /// # Delete an issue comment
     ///
     /// You can use the REST API to delete comments on issues and pull requests. Every pull request is an issue, but not every issue is a pull request.
-    /// 
+    ///
     /// [GitHub API docs for delete_comment](https://docs.github.com/rest/issues/comments#delete-an-issue-comment)
     ///
     /// ---
@@ -2954,7 +2954,7 @@ impl<'api> Issues<'api> {
     /// # Delete a label
     ///
     /// Deletes a label using the given label name.
-    /// 
+    ///
     /// [GitHub API docs for delete_label](https://docs.github.com/rest/issues/labels#delete-a-label)
     ///
     /// ---
@@ -2992,7 +2992,7 @@ impl<'api> Issues<'api> {
     /// # Delete a label
     ///
     /// Deletes a label using the given label name.
-    /// 
+    ///
     /// [GitHub API docs for delete_label](https://docs.github.com/rest/issues/labels#delete-a-label)
     ///
     /// ---
@@ -3031,7 +3031,7 @@ impl<'api> Issues<'api> {
     /// # Delete a milestone
     ///
     /// Deletes a milestone using the given milestone number.
-    /// 
+    ///
     /// [GitHub API docs for delete_milestone](https://docs.github.com/rest/issues/milestones#delete-a-milestone)
     ///
     /// ---
@@ -3070,7 +3070,7 @@ impl<'api> Issues<'api> {
     /// # Delete a milestone
     ///
     /// Deletes a milestone using the given milestone number.
-    /// 
+    ///
     /// [GitHub API docs for delete_milestone](https://docs.github.com/rest/issues/milestones#delete-a-milestone)
     ///
     /// ---
@@ -3125,7 +3125,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for get](https://docs.github.com/rest/issues/issues#get-an-issue)
     ///
     /// ---
@@ -3182,7 +3182,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for get](https://docs.github.com/rest/issues/issues#get-an-issue)
     ///
     /// ---
@@ -3232,7 +3232,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for get_comment](https://docs.github.com/rest/issues/comments#get-an-issue-comment)
     ///
     /// ---
@@ -3278,7 +3278,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for get_comment](https://docs.github.com/rest/issues/comments#get-an-issue-comment)
     ///
     /// ---
@@ -3318,7 +3318,7 @@ impl<'api> Issues<'api> {
     /// # Get an issue event
     ///
     /// Gets a single event by the event id.
-    /// 
+    ///
     /// [GitHub API docs for get_event](https://docs.github.com/rest/issues/events#get-an-issue-event)
     ///
     /// ---
@@ -3359,7 +3359,7 @@ impl<'api> Issues<'api> {
     /// # Get an issue event
     ///
     /// Gets a single event by the event id.
-    /// 
+    ///
     /// [GitHub API docs for get_event](https://docs.github.com/rest/issues/events#get-an-issue-event)
     ///
     /// ---
@@ -3401,7 +3401,7 @@ impl<'api> Issues<'api> {
     /// # Get a label
     ///
     /// Gets a label using the given name.
-    /// 
+    ///
     /// [GitHub API docs for get_label](https://docs.github.com/rest/issues/labels#get-a-label)
     ///
     /// ---
@@ -3440,7 +3440,7 @@ impl<'api> Issues<'api> {
     /// # Get a label
     ///
     /// Gets a label using the given name.
-    /// 
+    ///
     /// [GitHub API docs for get_label](https://docs.github.com/rest/issues/labels#get-a-label)
     ///
     /// ---
@@ -3480,7 +3480,7 @@ impl<'api> Issues<'api> {
     /// # Get a milestone
     ///
     /// Gets a milestone using the given milestone number.
-    /// 
+    ///
     /// [GitHub API docs for get_milestone](https://docs.github.com/rest/issues/milestones#get-a-milestone)
     ///
     /// ---
@@ -3519,7 +3519,7 @@ impl<'api> Issues<'api> {
     /// # Get a milestone
     ///
     /// Gets a milestone using the given milestone number.
-    /// 
+    ///
     /// [GitHub API docs for get_milestone](https://docs.github.com/rest/issues/milestones#get-a-milestone)
     ///
     /// ---
@@ -3571,7 +3571,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list](https://docs.github.com/rest/issues/issues#list-issues-assigned-to-the-authenticated-user)
     ///
     /// ---
@@ -3628,7 +3628,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list](https://docs.github.com/rest/issues/issues#list-issues-assigned-to-the-authenticated-user)
     ///
     /// ---
@@ -3675,7 +3675,7 @@ impl<'api> Issues<'api> {
     /// # List assignees
     ///
     /// Lists the [available assignees](https://docs.github.com/articles/assigning-issues-and-pull-requests-to-other-github-users/) for issues in a repository.
-    /// 
+    ///
     /// [GitHub API docs for list_assignees](https://docs.github.com/rest/issues/assignees#list-assignees)
     ///
     /// ---
@@ -3718,7 +3718,7 @@ impl<'api> Issues<'api> {
     /// # List assignees
     ///
     /// Lists the [available assignees](https://docs.github.com/articles/assigning-issues-and-pull-requests-to-other-github-users/) for issues in a repository.
-    /// 
+    ///
     /// [GitHub API docs for list_assignees](https://docs.github.com/rest/issues/assignees#list-assignees)
     ///
     /// ---
@@ -3772,7 +3772,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_comments](https://docs.github.com/rest/issues/comments#list-issue-comments)
     ///
     /// ---
@@ -3825,7 +3825,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_comments](https://docs.github.com/rest/issues/comments#list-issue-comments)
     ///
     /// ---
@@ -3880,7 +3880,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_comments_for_repo](https://docs.github.com/rest/issues/comments#list-issue-comments-for-a-repository)
     ///
     /// ---
@@ -3933,7 +3933,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_comments_for_repo](https://docs.github.com/rest/issues/comments#list-issue-comments-for-a-repository)
     ///
     /// ---
@@ -3979,7 +3979,7 @@ impl<'api> Issues<'api> {
     /// # List issue events
     ///
     /// Lists all events for an issue.
-    /// 
+    ///
     /// [GitHub API docs for list_events](https://docs.github.com/rest/issues/events#list-issue-events)
     ///
     /// ---
@@ -4022,7 +4022,7 @@ impl<'api> Issues<'api> {
     /// # List issue events
     ///
     /// Lists all events for an issue.
-    /// 
+    ///
     /// [GitHub API docs for list_events](https://docs.github.com/rest/issues/events#list-issue-events)
     ///
     /// ---
@@ -4067,7 +4067,7 @@ impl<'api> Issues<'api> {
     /// # List issue events for a repository
     ///
     /// Lists events for a repository.
-    /// 
+    ///
     /// [GitHub API docs for list_events_for_repo](https://docs.github.com/rest/issues/events#list-issue-events-for-a-repository)
     ///
     /// ---
@@ -4110,7 +4110,7 @@ impl<'api> Issues<'api> {
     /// # List issue events for a repository
     ///
     /// Lists events for a repository.
-    /// 
+    ///
     /// [GitHub API docs for list_events_for_repo](https://docs.github.com/rest/issues/events#list-issue-events-for-a-repository)
     ///
     /// ---
@@ -4155,7 +4155,7 @@ impl<'api> Issues<'api> {
     /// # List timeline events for an issue
     ///
     /// List all timeline events for an issue.
-    /// 
+    ///
     /// [GitHub API docs for list_events_for_timeline](https://docs.github.com/rest/issues/timeline#list-timeline-events-for-an-issue)
     ///
     /// ---
@@ -4199,7 +4199,7 @@ impl<'api> Issues<'api> {
     /// # List timeline events for an issue
     ///
     /// List all timeline events for an issue.
-    /// 
+    ///
     /// [GitHub API docs for list_events_for_timeline](https://docs.github.com/rest/issues/timeline#list-timeline-events-for-an-issue)
     ///
     /// ---
@@ -4255,7 +4255,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/issues/issues#list-user-account-issues-assigned-to-the-authenticated-user)
     ///
     /// ---
@@ -4309,7 +4309,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/issues/issues#list-user-account-issues-assigned-to-the-authenticated-user)
     ///
     /// ---
@@ -4365,7 +4365,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/issues/issues#list-organization-issues-assigned-to-the-authenticated-user)
     ///
     /// ---
@@ -4418,7 +4418,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/issues/issues#list-organization-issues-assigned-to-the-authenticated-user)
     ///
     /// ---
@@ -4473,7 +4473,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/issues/issues#list-repository-issues)
     ///
     /// ---
@@ -4528,7 +4528,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/issues/issues#list-repository-issues)
     ///
     /// ---
@@ -4575,7 +4575,7 @@ impl<'api> Issues<'api> {
     /// # List labels for issues in a milestone
     ///
     /// Lists labels for issues in a milestone.
-    /// 
+    ///
     /// [GitHub API docs for list_labels_for_milestone](https://docs.github.com/rest/issues/labels#list-labels-for-issues-in-a-milestone)
     ///
     /// ---
@@ -4617,7 +4617,7 @@ impl<'api> Issues<'api> {
     /// # List labels for issues in a milestone
     ///
     /// Lists labels for issues in a milestone.
-    /// 
+    ///
     /// [GitHub API docs for list_labels_for_milestone](https://docs.github.com/rest/issues/labels#list-labels-for-issues-in-a-milestone)
     ///
     /// ---
@@ -4661,7 +4661,7 @@ impl<'api> Issues<'api> {
     /// # List labels for a repository
     ///
     /// Lists all labels for a repository.
-    /// 
+    ///
     /// [GitHub API docs for list_labels_for_repo](https://docs.github.com/rest/issues/labels#list-labels-for-a-repository)
     ///
     /// ---
@@ -4704,7 +4704,7 @@ impl<'api> Issues<'api> {
     /// # List labels for a repository
     ///
     /// Lists all labels for a repository.
-    /// 
+    ///
     /// [GitHub API docs for list_labels_for_repo](https://docs.github.com/rest/issues/labels#list-labels-for-a-repository)
     ///
     /// ---
@@ -4749,7 +4749,7 @@ impl<'api> Issues<'api> {
     /// # List labels for an issue
     ///
     /// Lists all labels for an issue.
-    /// 
+    ///
     /// [GitHub API docs for list_labels_on_issue](https://docs.github.com/rest/issues/labels#list-labels-for-an-issue)
     ///
     /// ---
@@ -4794,7 +4794,7 @@ impl<'api> Issues<'api> {
     /// # List labels for an issue
     ///
     /// Lists all labels for an issue.
-    /// 
+    ///
     /// [GitHub API docs for list_labels_on_issue](https://docs.github.com/rest/issues/labels#list-labels-for-an-issue)
     ///
     /// ---
@@ -4841,7 +4841,7 @@ impl<'api> Issues<'api> {
     /// # List milestones
     ///
     /// Lists milestones for a repository.
-    /// 
+    ///
     /// [GitHub API docs for list_milestones](https://docs.github.com/rest/issues/milestones#list-milestones)
     ///
     /// ---
@@ -4884,7 +4884,7 @@ impl<'api> Issues<'api> {
     /// # List milestones
     ///
     /// Lists milestones for a repository.
-    /// 
+    ///
     /// [GitHub API docs for list_milestones](https://docs.github.com/rest/issues/milestones#list-milestones)
     ///
     /// ---
@@ -4931,7 +4931,7 @@ impl<'api> Issues<'api> {
     /// Users with push access can lock an issue or pull request's conversation.
     /// 
     /// Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP method](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
-    /// 
+    ///
     /// [GitHub API docs for lock](https://docs.github.com/rest/issues/issues#lock-an-issue)
     ///
     /// ---
@@ -4975,7 +4975,7 @@ impl<'api> Issues<'api> {
     /// Users with push access can lock an issue or pull request's conversation.
     /// 
     /// Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP method](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
-    /// 
+    ///
     /// [GitHub API docs for lock](https://docs.github.com/rest/issues/issues#lock-an-issue)
     ///
     /// ---
@@ -5018,7 +5018,7 @@ impl<'api> Issues<'api> {
     /// # Remove all labels from an issue
     ///
     /// Removes all labels from an issue.
-    /// 
+    ///
     /// [GitHub API docs for remove_all_labels](https://docs.github.com/rest/issues/labels#remove-all-labels-from-an-issue)
     ///
     /// ---
@@ -5059,7 +5059,7 @@ impl<'api> Issues<'api> {
     /// # Remove all labels from an issue
     ///
     /// Removes all labels from an issue.
-    /// 
+    ///
     /// [GitHub API docs for remove_all_labels](https://docs.github.com/rest/issues/labels#remove-all-labels-from-an-issue)
     ///
     /// ---
@@ -5101,7 +5101,7 @@ impl<'api> Issues<'api> {
     /// # Remove assignees from an issue
     ///
     /// Removes one or more assignees from an issue.
-    /// 
+    ///
     /// [GitHub API docs for remove_assignees](https://docs.github.com/rest/issues/assignees#remove-assignees-from-an-issue)
     ///
     /// ---
@@ -5139,7 +5139,7 @@ impl<'api> Issues<'api> {
     /// # Remove assignees from an issue
     ///
     /// Removes one or more assignees from an issue.
-    /// 
+    ///
     /// [GitHub API docs for remove_assignees](https://docs.github.com/rest/issues/assignees#remove-assignees-from-an-issue)
     ///
     /// ---
@@ -5178,7 +5178,7 @@ impl<'api> Issues<'api> {
     /// # Remove a label from an issue
     ///
     /// Removes the specified label from the issue, and returns the remaining labels on the issue. This endpoint returns a `404 Not Found` status if the label does not exist.
-    /// 
+    ///
     /// [GitHub API docs for remove_label](https://docs.github.com/rest/issues/labels#remove-a-label-from-an-issue)
     ///
     /// ---
@@ -5219,7 +5219,7 @@ impl<'api> Issues<'api> {
     /// # Remove a label from an issue
     ///
     /// Removes the specified label from the issue, and returns the remaining labels on the issue. This endpoint returns a `404 Not Found` status if the label does not exist.
-    /// 
+    ///
     /// [GitHub API docs for remove_label](https://docs.github.com/rest/issues/labels#remove-a-label-from-an-issue)
     ///
     /// ---
@@ -5261,7 +5261,7 @@ impl<'api> Issues<'api> {
     /// # Set labels for an issue
     ///
     /// Removes any previous labels and sets the new labels for an issue.
-    /// 
+    ///
     /// [GitHub API docs for set_labels](https://docs.github.com/rest/issues/labels#set-labels-for-an-issue)
     ///
     /// ---
@@ -5303,7 +5303,7 @@ impl<'api> Issues<'api> {
     /// # Set labels for an issue
     ///
     /// Removes any previous labels and sets the new labels for an issue.
-    /// 
+    ///
     /// [GitHub API docs for set_labels](https://docs.github.com/rest/issues/labels#set-labels-for-an-issue)
     ///
     /// ---
@@ -5346,7 +5346,7 @@ impl<'api> Issues<'api> {
     /// # Unlock an issue
     ///
     /// Users with push access can unlock an issue's conversation.
-    /// 
+    ///
     /// [GitHub API docs for unlock](https://docs.github.com/rest/issues/issues#unlock-an-issue)
     ///
     /// ---
@@ -5386,7 +5386,7 @@ impl<'api> Issues<'api> {
     /// # Unlock an issue
     ///
     /// Users with push access can unlock an issue's conversation.
-    /// 
+    ///
     /// [GitHub API docs for unlock](https://docs.github.com/rest/issues/issues#unlock-an-issue)
     ///
     /// ---
@@ -5434,7 +5434,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for update](https://docs.github.com/rest/issues/issues#update-an-issue)
     ///
     /// ---
@@ -5485,7 +5485,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for update](https://docs.github.com/rest/issues/issues#update-an-issue)
     ///
     /// ---
@@ -5537,7 +5537,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for update_comment](https://docs.github.com/rest/issues/comments#update-an-issue-comment)
     ///
     /// ---
@@ -5583,7 +5583,7 @@ impl<'api> Issues<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for update_comment](https://docs.github.com/rest/issues/comments#update-an-issue-comment)
     ///
     /// ---
@@ -5623,7 +5623,7 @@ impl<'api> Issues<'api> {
     /// # Update a label
     ///
     /// Updates a label using the given label name.
-    /// 
+    ///
     /// [GitHub API docs for update_label](https://docs.github.com/rest/issues/labels#update-a-label)
     ///
     /// ---
@@ -5661,7 +5661,7 @@ impl<'api> Issues<'api> {
     /// # Update a label
     ///
     /// Updates a label using the given label name.
-    /// 
+    ///
     /// [GitHub API docs for update_label](https://docs.github.com/rest/issues/labels#update-a-label)
     ///
     /// ---
@@ -5698,7 +5698,7 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Update a milestone
-    /// 
+    ///
     /// [GitHub API docs for update_milestone](https://docs.github.com/rest/issues/milestones#update-a-milestone)
     ///
     /// ---
@@ -5734,7 +5734,7 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Update a milestone
-    /// 
+    ///
     /// [GitHub API docs for update_milestone](https://docs.github.com/rest/issues/milestones#update-a-milestone)
     ///
     /// ---

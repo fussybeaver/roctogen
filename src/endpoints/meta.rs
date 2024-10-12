@@ -135,7 +135,7 @@ impl<'req> MetaGetOctocatParams<'req> {
 
     /// The words to show in Octocat's speech bubble
     pub fn s(self, s: &'req str) -> Self {
-        Self { 
+        Self {
             s: Some(s),
         }
     }
@@ -155,7 +155,7 @@ impl<'api> Meta<'api> {
     /// 
     /// > [!NOTE]
     /// > This endpoint returns both IPv4 and IPv6 addresses. However, not all features support IPv6. You should refer to the specific documentation for each feature to determine if IPv6 is supported.
-    /// 
+    ///
     /// [GitHub API docs for get](https://docs.github.com/rest/meta/meta#get-apiname-meta-information)
     ///
     /// ---
@@ -201,7 +201,7 @@ impl<'api> Meta<'api> {
     /// 
     /// > [!NOTE]
     /// > This endpoint returns both IPv4 and IPv6 addresses. However, not all features support IPv6. You should refer to the specific documentation for each feature to determine if IPv6 is supported.
-    /// 
+    ///
     /// [GitHub API docs for get](https://docs.github.com/rest/meta/meta#get-apiname-meta-information)
     ///
     /// ---
@@ -241,7 +241,7 @@ impl<'api> Meta<'api> {
     /// # Get all API versions
     ///
     /// Get all supported GitHub API versions.
-    /// 
+    ///
     /// [GitHub API docs for get_all_versions](https://docs.github.com/rest/meta/meta#get-all-api-versions)
     ///
     /// ---
@@ -280,7 +280,7 @@ impl<'api> Meta<'api> {
     /// # Get all API versions
     ///
     /// Get all supported GitHub API versions.
-    /// 
+    ///
     /// [GitHub API docs for get_all_versions](https://docs.github.com/rest/meta/meta#get-all-api-versions)
     ///
     /// ---
@@ -320,7 +320,7 @@ impl<'api> Meta<'api> {
     /// # Get Octocat
     ///
     /// Get the octocat as ASCII art
-    /// 
+    ///
     /// [GitHub API docs for get_octocat](https://docs.github.com/rest/meta/meta#get-octocat)
     ///
     /// ---
@@ -362,7 +362,7 @@ impl<'api> Meta<'api> {
     /// # Get Octocat
     ///
     /// Get the octocat as ASCII art
-    /// 
+    ///
     /// [GitHub API docs for get_octocat](https://docs.github.com/rest/meta/meta#get-octocat)
     ///
     /// ---
@@ -406,7 +406,7 @@ impl<'api> Meta<'api> {
     /// # Get the Zen of GitHub
     ///
     /// Get a random sentence from the Zen of GitHub
-    /// 
+    ///
     /// [GitHub API docs for get_zen](https://docs.github.com/rest/meta/meta#get-the-zen-of-github)
     ///
     /// ---
@@ -444,7 +444,7 @@ impl<'api> Meta<'api> {
     /// # Get the Zen of GitHub
     ///
     /// Get a random sentence from the Zen of GitHub
-    /// 
+    ///
     /// [GitHub API docs for get_zen](https://docs.github.com/rest/meta/meta#get-the-zen-of-github)
     ///
     /// ---
@@ -483,7 +483,7 @@ impl<'api> Meta<'api> {
     /// # GitHub API Root
     ///
     /// Get Hypermedia links to resources accessible in GitHub's REST API
-    /// 
+    ///
     /// [GitHub API docs for root](https://docs.github.com/rest/meta/meta#github-api-root)
     ///
     /// ---
@@ -521,7 +521,7 @@ impl<'api> Meta<'api> {
     /// # GitHub API Root
     ///
     /// Get Hypermedia links to resources accessible in GitHub's REST API
-    /// 
+    ///
     /// [GitHub API docs for root](https://docs.github.com/rest/meta/meta#github-api-root)
     ///
     /// ---

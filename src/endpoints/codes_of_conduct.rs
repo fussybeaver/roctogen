@@ -79,7 +79,7 @@ impl<'api> CodesOfConduct<'api> {
     /// # Get all codes of conduct
     ///
     /// Returns array of all GitHub's codes of conduct.
-    /// 
+    ///
     /// [GitHub API docs for get_all_codes_of_conduct](https://docs.github.com/rest/codes-of-conduct/codes-of-conduct#get-all-codes-of-conduct)
     ///
     /// ---
@@ -118,7 +118,7 @@ impl<'api> CodesOfConduct<'api> {
     /// # Get all codes of conduct
     ///
     /// Returns array of all GitHub's codes of conduct.
-    /// 
+    ///
     /// [GitHub API docs for get_all_codes_of_conduct](https://docs.github.com/rest/codes-of-conduct/codes-of-conduct#get-all-codes-of-conduct)
     ///
     /// ---
@@ -158,7 +158,7 @@ impl<'api> CodesOfConduct<'api> {
     /// # Get a code of conduct
     ///
     /// Returns information about the specified GitHub code of conduct.
-    /// 
+    ///
     /// [GitHub API docs for get_conduct_code](https://docs.github.com/rest/codes-of-conduct/codes-of-conduct#get-a-code-of-conduct)
     ///
     /// ---
@@ -198,7 +198,7 @@ impl<'api> CodesOfConduct<'api> {
     /// # Get a code of conduct
     ///
     /// Returns information about the specified GitHub code of conduct.
-    /// 
+    ///
     /// [GitHub API docs for get_conduct_code](https://docs.github.com/rest/codes-of-conduct/codes-of-conduct#get-a-code-of-conduct)
     ///
     /// ---

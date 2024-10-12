@@ -58,7 +58,7 @@ impl<'api> Emojis<'api> {
     /// # Get emojis
     ///
     /// Lists all the emojis available to use on GitHub.
-    /// 
+    ///
     /// [GitHub API docs for get](https://docs.github.com/rest/emojis/emojis#get-emojis)
     ///
     /// ---
@@ -97,7 +97,7 @@ impl<'api> Emojis<'api> {
     /// # Get emojis
     ///
     /// Lists all the emojis available to use on GitHub.
-    /// 
+    ///
     /// [GitHub API docs for get](https://docs.github.com/rest/emojis/emojis#get-emojis)
     ///
     /// ---

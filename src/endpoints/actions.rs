@@ -105,7 +105,7 @@ pub enum ActionsAddSelectedRepoToOrgVariableError {
 
     // -- endpoint errors
 
-    #[error("Response when the visibility of the variable is not set to &#x60;selected&#x60;")]
+    #[error("Response when the visibility of the variable is not set to `selected`")]
     Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1632,7 +1632,7 @@ pub enum ActionsListSelectedReposForOrgVariableError {
 
     // -- endpoint errors
 
-    #[error("Response when the visibility of the variable is not set to &#x60;selected&#x60;")]
+    #[error("Response when the visibility of the variable is not set to `selected`")]
     Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1905,7 +1905,7 @@ pub enum ActionsRemoveSelectedRepoFromOrgVariableError {
 
     // -- endpoint errors
 
-    #[error("Response when the visibility of the variable is not set to &#x60;selected&#x60;")]
+    #[error("Response when the visibility of the variable is not set to `selected`")]
     Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2144,7 +2144,7 @@ pub enum ActionsSetSelectedReposForOrgVariableError {
 
     // -- endpoint errors
 
-    #[error("Response when the visibility of the variable is not set to &#x60;selected&#x60;")]
+    #[error("Response when the visibility of the variable is not set to `selected`")]
     Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2252,7 +2252,7 @@ impl<'req> ActionsDeleteActionsCacheByKeyParams<'req> {
 
     /// A key for identifying the cache.
     pub fn key(self, key: &'req str) -> Self {
-        Self { 
+        Self {
             key: key,
             git_ref: self.git_ref, 
         }
@@ -2260,7 +2260,7 @@ impl<'req> ActionsDeleteActionsCacheByKeyParams<'req> {
 
     /// The full Git reference for narrowing down the cache. The `ref` for a branch should be formatted as `refs/heads/<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
     pub fn git_ref(self, git_ref: &'req str) -> Self {
-        Self { 
+        Self {
             key: self.key, 
             git_ref: Some(git_ref),
         }
@@ -2291,7 +2291,7 @@ impl<'req> ActionsGetActionsCacheListParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
             git_ref: self.git_ref, 
@@ -2303,7 +2303,7 @@ impl<'req> ActionsGetActionsCacheListParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
             git_ref: self.git_ref, 
@@ -2315,7 +2315,7 @@ impl<'req> ActionsGetActionsCacheListParams<'req> {
 
     /// The full Git reference for narrowing down the cache. The `ref` for a branch should be formatted as `refs/heads/<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
     pub fn git_ref(self, git_ref: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             git_ref: Some(git_ref),
@@ -2327,7 +2327,7 @@ impl<'req> ActionsGetActionsCacheListParams<'req> {
 
     /// An explicit key or prefix for identifying the cache
     pub fn key(self, key: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             git_ref: self.git_ref, 
@@ -2339,7 +2339,7 @@ impl<'req> ActionsGetActionsCacheListParams<'req> {
 
     /// The property to sort the results by. `created_at` means when the cache was created. `last_accessed_at` means when the cache was last accessed. `size_in_bytes` is the size of the cache in bytes.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             git_ref: self.git_ref, 
@@ -2351,7 +2351,7 @@ impl<'req> ActionsGetActionsCacheListParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             git_ref: self.git_ref, 
@@ -2387,7 +2387,7 @@ impl ActionsGetActionsCacheUsageByRepoForOrgParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -2395,7 +2395,7 @@ impl ActionsGetActionsCacheUsageByRepoForOrgParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2425,7 +2425,7 @@ impl ActionsGetWorkflowRunParams {
 
     /// If `true` pull requests are omitted from the response (empty array).
     pub fn exclude_pull_requests(self, exclude_pull_requests: bool) -> Self {
-        Self { 
+        Self {
             exclude_pull_requests: Some(exclude_pull_requests),
         }
     }
@@ -2445,7 +2445,7 @@ impl ActionsGetWorkflowRunAttemptParams {
 
     /// If `true` pull requests are omitted from the response (empty array).
     pub fn exclude_pull_requests(self, exclude_pull_requests: bool) -> Self {
-        Self { 
+        Self {
             exclude_pull_requests: Some(exclude_pull_requests),
         }
     }
@@ -2469,7 +2469,7 @@ impl<'req> ActionsListArtifactsForRepoParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
             name: self.name, 
@@ -2478,7 +2478,7 @@ impl<'req> ActionsListArtifactsForRepoParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
             name: self.name, 
@@ -2487,7 +2487,7 @@ impl<'req> ActionsListArtifactsForRepoParams<'req> {
 
     /// The name field of an artifact. When specified, only artifacts with this name will be returned.
     pub fn name(self, name: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             name: Some(name),
@@ -2520,7 +2520,7 @@ impl ActionsListEnvironmentSecretsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -2528,7 +2528,7 @@ impl ActionsListEnvironmentSecretsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2560,7 +2560,7 @@ impl ActionsListEnvironmentVariablesParams {
 
     /// The number of results per page (max 30). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -2568,7 +2568,7 @@ impl ActionsListEnvironmentVariablesParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2602,7 +2602,7 @@ impl<'req> ActionsListJobsForWorkflowRunParams<'req> {
 
     /// Filters jobs by their `completed_at` timestamp. `latest` returns jobs from the most recent execution of the workflow run. `all` returns all jobs for a workflow run, including from old executions of the workflow run.
     pub fn filter(self, filter: &'req str) -> Self {
-        Self { 
+        Self {
             filter: Some(filter),
             per_page: self.per_page, 
             page: self.page, 
@@ -2611,7 +2611,7 @@ impl<'req> ActionsListJobsForWorkflowRunParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             per_page: Some(per_page),
             page: self.page, 
@@ -2620,7 +2620,7 @@ impl<'req> ActionsListJobsForWorkflowRunParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             per_page: self.per_page, 
             page: Some(page),
@@ -2653,7 +2653,7 @@ impl ActionsListJobsForWorkflowRunAttemptParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -2661,7 +2661,7 @@ impl ActionsListJobsForWorkflowRunAttemptParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2693,7 +2693,7 @@ impl ActionsListOrgSecretsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -2701,7 +2701,7 @@ impl ActionsListOrgSecretsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2733,7 +2733,7 @@ impl ActionsListOrgVariablesParams {
 
     /// The number of results per page (max 30). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -2741,7 +2741,7 @@ impl ActionsListOrgVariablesParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2773,7 +2773,7 @@ impl ActionsListRepoOrganizationSecretsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -2781,7 +2781,7 @@ impl ActionsListRepoOrganizationSecretsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2813,7 +2813,7 @@ impl ActionsListRepoOrganizationVariablesParams {
 
     /// The number of results per page (max 30). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -2821,7 +2821,7 @@ impl ActionsListRepoOrganizationVariablesParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2853,7 +2853,7 @@ impl ActionsListRepoSecretsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -2861,7 +2861,7 @@ impl ActionsListRepoSecretsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2893,7 +2893,7 @@ impl ActionsListRepoVariablesParams {
 
     /// The number of results per page (max 30). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -2901,7 +2901,7 @@ impl ActionsListRepoVariablesParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2933,7 +2933,7 @@ impl ActionsListRepoWorkflowsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -2941,7 +2941,7 @@ impl ActionsListRepoWorkflowsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2973,7 +2973,7 @@ impl ActionsListSelectedReposForOrgSecretParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             page: Some(page),
             per_page: self.per_page, 
         }
@@ -2981,7 +2981,7 @@ impl ActionsListSelectedReposForOrgSecretParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             page: self.page, 
             per_page: Some(per_page),
         }
@@ -3013,7 +3013,7 @@ impl ActionsListSelectedReposForOrgVariableParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             page: Some(page),
             per_page: self.per_page, 
         }
@@ -3021,7 +3021,7 @@ impl ActionsListSelectedReposForOrgVariableParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             page: self.page, 
             per_page: Some(per_page),
         }
@@ -3053,7 +3053,7 @@ impl ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -3061,7 +3061,7 @@ impl ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -3095,7 +3095,7 @@ impl<'req> ActionsListSelfHostedRunnersForOrgParams<'req> {
 
     /// The name of a self-hosted runner.
     pub fn name(self, name: &'req str) -> Self {
-        Self { 
+        Self {
             name: Some(name),
             per_page: self.per_page, 
             page: self.page, 
@@ -3104,7 +3104,7 @@ impl<'req> ActionsListSelfHostedRunnersForOrgParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             name: self.name, 
             per_page: Some(per_page),
             page: self.page, 
@@ -3113,7 +3113,7 @@ impl<'req> ActionsListSelfHostedRunnersForOrgParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             name: self.name, 
             per_page: self.per_page, 
             page: Some(page),
@@ -3148,7 +3148,7 @@ impl<'req> ActionsListSelfHostedRunnersForRepoParams<'req> {
 
     /// The name of a self-hosted runner.
     pub fn name(self, name: &'req str) -> Self {
-        Self { 
+        Self {
             name: Some(name),
             per_page: self.per_page, 
             page: self.page, 
@@ -3157,7 +3157,7 @@ impl<'req> ActionsListSelfHostedRunnersForRepoParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             name: self.name, 
             per_page: Some(per_page),
             page: self.page, 
@@ -3166,7 +3166,7 @@ impl<'req> ActionsListSelfHostedRunnersForRepoParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             name: self.name, 
             per_page: self.per_page, 
             page: Some(page),
@@ -3201,7 +3201,7 @@ impl<'req> ActionsListWorkflowRunArtifactsParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
             name: self.name, 
@@ -3210,7 +3210,7 @@ impl<'req> ActionsListWorkflowRunArtifactsParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
             name: self.name, 
@@ -3219,7 +3219,7 @@ impl<'req> ActionsListWorkflowRunArtifactsParams<'req> {
 
     /// The name field of an artifact. When specified, only artifacts with this name will be returned.
     pub fn name(self, name: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             name: Some(name),
@@ -3268,7 +3268,7 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
 
     /// Returns someone's workflow runs. Use the login for the user who created the `push` associated with the check suite or workflow run.
     pub fn actor(self, actor: &'req str) -> Self {
-        Self { 
+        Self {
             actor: Some(actor),
             branch: self.branch, 
             event: self.event, 
@@ -3284,7 +3284,7 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
 
     /// Returns workflow runs associated with a branch. Use the name of the branch of the `push`.
     pub fn branch(self, branch: &'req str) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: Some(branch),
             event: self.event, 
@@ -3300,7 +3300,7 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
 
     /// Returns workflow run triggered by the event you specify. For example, `push`, `pull_request` or `issue`. For more information, see \"[Events that trigger workflows](https://docs.github.com/actions/automating-your-workflow-with-github-actions/events-that-trigger-workflows).\"
     pub fn event(self, event: &'req str) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: Some(event),
@@ -3316,7 +3316,7 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
 
     /// Returns workflow runs with the check run `status` or `conclusion` that you specify. For example, a conclusion can be `success` or a status can be `in_progress`. Only GitHub Actions can set a status of `waiting`, `pending`, or `requested`.
     pub fn status(self, status: &'req str) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -3332,7 +3332,7 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -3348,7 +3348,7 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -3364,7 +3364,7 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
 
     /// Returns workflow runs created within the given date-time range. For more information on the syntax, see \"[Understanding the search syntax](https://docs.github.com/search-github/getting-started-with-searching-on-github/understanding-the-search-syntax#query-for-dates).\"
     pub fn created(self, created: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -3380,7 +3380,7 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
 
     /// If `true` pull requests are omitted from the response (empty array).
     pub fn exclude_pull_requests(self, exclude_pull_requests: bool) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -3396,7 +3396,7 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
 
     /// Returns workflow runs with the `check_suite_id` that you specify.
     pub fn check_suite_id(self, check_suite_id: i32) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -3412,7 +3412,7 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
 
     /// Only returns workflow runs that are associated with the specified `head_sha`.
     pub fn head_sha(self, head_sha: &'req str) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -3468,7 +3468,7 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
 
     /// Returns someone's workflow runs. Use the login for the user who created the `push` associated with the check suite or workflow run.
     pub fn actor(self, actor: &'req str) -> Self {
-        Self { 
+        Self {
             actor: Some(actor),
             branch: self.branch, 
             event: self.event, 
@@ -3484,7 +3484,7 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
 
     /// Returns workflow runs associated with a branch. Use the name of the branch of the `push`.
     pub fn branch(self, branch: &'req str) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: Some(branch),
             event: self.event, 
@@ -3500,7 +3500,7 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
 
     /// Returns workflow run triggered by the event you specify. For example, `push`, `pull_request` or `issue`. For more information, see \"[Events that trigger workflows](https://docs.github.com/actions/automating-your-workflow-with-github-actions/events-that-trigger-workflows).\"
     pub fn event(self, event: &'req str) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: Some(event),
@@ -3516,7 +3516,7 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
 
     /// Returns workflow runs with the check run `status` or `conclusion` that you specify. For example, a conclusion can be `success` or a status can be `in_progress`. Only GitHub Actions can set a status of `waiting`, `pending`, or `requested`.
     pub fn status(self, status: &'req str) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -3532,7 +3532,7 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -3548,7 +3548,7 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -3564,7 +3564,7 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
 
     /// Returns workflow runs created within the given date-time range. For more information on the syntax, see \"[Understanding the search syntax](https://docs.github.com/search-github/getting-started-with-searching-on-github/understanding-the-search-syntax#query-for-dates).\"
     pub fn created(self, created: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -3580,7 +3580,7 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
 
     /// If `true` pull requests are omitted from the response (empty array).
     pub fn exclude_pull_requests(self, exclude_pull_requests: bool) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -3596,7 +3596,7 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
 
     /// Returns workflow runs with the `check_suite_id` that you specify.
     pub fn check_suite_id(self, check_suite_id: i32) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -3612,7 +3612,7 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
 
     /// Only returns workflow runs that are associated with the specified `head_sha`.
     pub fn head_sha(self, head_sha: &'req str) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -3647,7 +3647,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_custom_labels_to_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#add-custom-labels-to-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
@@ -3691,7 +3691,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_custom_labels_to_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#add-custom-labels-to-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
@@ -3736,7 +3736,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_custom_labels_to_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#add-custom-labels-to-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
@@ -3780,7 +3780,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_custom_labels_to_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#add-custom-labels-to-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
@@ -3827,7 +3827,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_selected_repo_to_org_secret](https://docs.github.com/rest/actions/secrets#add-selected-repository-to-an-organization-secret)
     ///
     /// ---
@@ -3872,7 +3872,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_selected_repo_to_org_secret](https://docs.github.com/rest/actions/secrets#add-selected-repository-to-an-organization-secret)
     ///
     /// ---
@@ -3917,7 +3917,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_selected_repo_to_org_variable](https://docs.github.com/rest/actions/variables#add-selected-repository-to-an-organization-variable)
     ///
     /// ---
@@ -3961,7 +3961,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_selected_repo_to_org_variable](https://docs.github.com/rest/actions/variables#add-selected-repository-to-an-organization-variable)
     ///
     /// ---
@@ -4003,7 +4003,7 @@ impl<'api> Actions<'api> {
     /// Approves a workflow run for a pull request from a public fork of a first time contributor. For more information, see ["Approving workflow runs from public forks](https://docs.github.com/actions/managing-workflow-runs/approving-workflow-runs-from-public-forks)."
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for approve_workflow_run](https://docs.github.com/rest/actions/workflow-runs#approve-a-workflow-run-for-a-fork-pull-request)
     ///
     /// ---
@@ -4045,7 +4045,7 @@ impl<'api> Actions<'api> {
     /// Approves a workflow run for a pull request from a public fork of a first time contributor. For more information, see ["Approving workflow runs from public forks](https://docs.github.com/actions/managing-workflow-runs/approving-workflow-runs-from-public-forks)."
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for approve_workflow_run](https://docs.github.com/rest/actions/workflow-runs#approve-a-workflow-run-for-a-fork-pull-request)
     ///
     /// ---
@@ -4088,7 +4088,7 @@ impl<'api> Actions<'api> {
     /// Cancels a workflow run using its `id`.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for cancel_workflow_run](https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run)
     ///
     /// ---
@@ -4129,7 +4129,7 @@ impl<'api> Actions<'api> {
     /// Cancels a workflow run using its `id`.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for cancel_workflow_run](https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run)
     ///
     /// ---
@@ -4173,7 +4173,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_environment_variable](https://docs.github.com/rest/actions/variables#create-an-environment-variable)
     ///
     /// ---
@@ -4215,7 +4215,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_environment_variable](https://docs.github.com/rest/actions/variables#create-an-environment-variable)
     ///
     /// ---
@@ -4259,7 +4259,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_environment_secret](https://docs.github.com/rest/actions/secrets#create-or-update-an-environment-secret)
     ///
     /// ---
@@ -4303,7 +4303,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_environment_secret](https://docs.github.com/rest/actions/secrets#create-or-update-an-environment-secret)
     ///
     /// ---
@@ -4348,7 +4348,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_org_secret](https://docs.github.com/rest/actions/secrets#create-or-update-an-organization-secret)
     ///
     /// ---
@@ -4392,7 +4392,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_org_secret](https://docs.github.com/rest/actions/secrets#create-or-update-an-organization-secret)
     ///
     /// ---
@@ -4437,7 +4437,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_repo_secret](https://docs.github.com/rest/actions/secrets#create-or-update-a-repository-secret)
     ///
     /// ---
@@ -4481,7 +4481,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_repo_secret](https://docs.github.com/rest/actions/secrets#create-or-update-a-repository-secret)
     ///
     /// ---
@@ -4525,7 +4525,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_org_variable](https://docs.github.com/rest/actions/variables#create-an-organization-variable)
     ///
     /// ---
@@ -4567,7 +4567,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_org_variable](https://docs.github.com/rest/actions/variables#create-an-organization-variable)
     ///
     /// ---
@@ -4616,7 +4616,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_registration_token_for_org](https://docs.github.com/rest/actions/self-hosted-runners#create-a-registration-token-for-an-organization)
     ///
     /// ---
@@ -4664,7 +4664,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_registration_token_for_org](https://docs.github.com/rest/actions/self-hosted-runners#create-a-registration-token-for-an-organization)
     ///
     /// ---
@@ -4713,7 +4713,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_registration_token_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#create-a-registration-token-for-a-repository)
     ///
     /// ---
@@ -4761,7 +4761,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_registration_token_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#create-a-registration-token-for-a-repository)
     ///
     /// ---
@@ -4810,7 +4810,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_remove_token_for_org](https://docs.github.com/rest/actions/self-hosted-runners#create-a-remove-token-for-an-organization)
     ///
     /// ---
@@ -4858,7 +4858,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_remove_token_for_org](https://docs.github.com/rest/actions/self-hosted-runners#create-a-remove-token-for-an-organization)
     ///
     /// ---
@@ -4907,7 +4907,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_remove_token_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#create-a-remove-token-for-a-repository)
     ///
     /// ---
@@ -4955,7 +4955,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_remove_token_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#create-a-remove-token-for-a-repository)
     ///
     /// ---
@@ -4998,7 +4998,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_repo_variable](https://docs.github.com/rest/actions/variables#create-a-repository-variable)
     ///
     /// ---
@@ -5040,7 +5040,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_repo_variable](https://docs.github.com/rest/actions/variables#create-a-repository-variable)
     ///
     /// ---
@@ -5083,7 +5083,7 @@ impl<'api> Actions<'api> {
     /// You must configure your GitHub Actions workflow to run when the [`workflow_dispatch` webhook](/developers/webhooks-and-events/webhook-events-and-payloads#workflow_dispatch) event occurs. The `inputs` are configured in the workflow file. For more information about how to configure the `workflow_dispatch` event in the workflow file, see "[Events that trigger workflows](/actions/reference/events-that-trigger-workflows#workflow_dispatch)."
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_workflow_dispatch](https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event)
     ///
     /// ---
@@ -5125,7 +5125,7 @@ impl<'api> Actions<'api> {
     /// You must configure your GitHub Actions workflow to run when the [`workflow_dispatch` webhook](/developers/webhooks-and-events/webhook-events-and-payloads#workflow_dispatch) event occurs. The `inputs` are configured in the workflow file. For more information about how to configure the `workflow_dispatch` event in the workflow file, see "[Events that trigger workflows](/actions/reference/events-that-trigger-workflows#workflow_dispatch)."
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_workflow_dispatch](https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event)
     ///
     /// ---
@@ -5166,7 +5166,7 @@ impl<'api> Actions<'api> {
     /// Deletes a GitHub Actions cache for a repository, using a cache ID.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_actions_cache_by_id](https://docs.github.com/rest/actions/cache#delete-a-github-actions-cache-for-a-repository-using-a-cache-id)
     ///
     /// ---
@@ -5206,7 +5206,7 @@ impl<'api> Actions<'api> {
     /// Deletes a GitHub Actions cache for a repository, using a cache ID.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_actions_cache_by_id](https://docs.github.com/rest/actions/cache#delete-a-github-actions-cache-for-a-repository-using-a-cache-id)
     ///
     /// ---
@@ -5247,7 +5247,7 @@ impl<'api> Actions<'api> {
     /// Deletes one or more GitHub Actions caches for a repository, using a complete cache key. By default, all caches that match the provided key are deleted, but you can optionally provide a Git ref to restrict deletions to caches that match both the provided key and the Git ref.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_actions_cache_by_key](https://docs.github.com/rest/actions/cache#delete-github-actions-caches-for-a-repository-using-a-cache-key)
     ///
     /// ---
@@ -5289,7 +5289,7 @@ impl<'api> Actions<'api> {
     /// Deletes one or more GitHub Actions caches for a repository, using a complete cache key. By default, all caches that match the provided key are deleted, but you can optionally provide a Git ref to restrict deletions to caches that match both the provided key and the Git ref.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_actions_cache_by_key](https://docs.github.com/rest/actions/cache#delete-github-actions-caches-for-a-repository-using-a-cache-key)
     ///
     /// ---
@@ -5332,7 +5332,7 @@ impl<'api> Actions<'api> {
     ///
     /// Deletes an artifact for a workflow run.
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_artifact](https://docs.github.com/rest/actions/artifacts#delete-an-artifact)
     ///
     /// ---
@@ -5371,7 +5371,7 @@ impl<'api> Actions<'api> {
     ///
     /// Deletes an artifact for a workflow run.
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_artifact](https://docs.github.com/rest/actions/artifacts#delete-an-artifact)
     ///
     /// ---
@@ -5414,7 +5414,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_environment_secret](https://docs.github.com/rest/actions/secrets#delete-an-environment-secret)
     ///
     /// ---
@@ -5456,7 +5456,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_environment_secret](https://docs.github.com/rest/actions/secrets#delete-an-environment-secret)
     ///
     /// ---
@@ -5499,7 +5499,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_environment_variable](https://docs.github.com/rest/actions/variables#delete-an-environment-variable)
     ///
     /// ---
@@ -5541,7 +5541,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_environment_variable](https://docs.github.com/rest/actions/variables#delete-an-environment-variable)
     ///
     /// ---
@@ -5584,7 +5584,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_org_secret](https://docs.github.com/rest/actions/secrets#delete-an-organization-secret)
     ///
     /// ---
@@ -5626,7 +5626,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_org_secret](https://docs.github.com/rest/actions/secrets#delete-an-organization-secret)
     ///
     /// ---
@@ -5669,7 +5669,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_org_variable](https://docs.github.com/rest/actions/variables#delete-an-organization-variable)
     ///
     /// ---
@@ -5711,7 +5711,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_org_variable](https://docs.github.com/rest/actions/variables#delete-an-organization-variable)
     ///
     /// ---
@@ -5754,7 +5754,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_repo_secret](https://docs.github.com/rest/actions/secrets#delete-a-repository-secret)
     ///
     /// ---
@@ -5796,7 +5796,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_repo_secret](https://docs.github.com/rest/actions/secrets#delete-a-repository-secret)
     ///
     /// ---
@@ -5839,7 +5839,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_repo_variable](https://docs.github.com/rest/actions/variables#delete-a-repository-variable)
     ///
     /// ---
@@ -5881,7 +5881,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_repo_variable](https://docs.github.com/rest/actions/variables#delete-a-repository-variable)
     ///
     /// ---
@@ -5924,7 +5924,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_self_hosted_runner_from_org](https://docs.github.com/rest/actions/self-hosted-runners#delete-a-self-hosted-runner-from-an-organization)
     ///
     /// ---
@@ -5966,7 +5966,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_self_hosted_runner_from_org](https://docs.github.com/rest/actions/self-hosted-runners#delete-a-self-hosted-runner-from-an-organization)
     ///
     /// ---
@@ -6009,7 +6009,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_self_hosted_runner_from_repo](https://docs.github.com/rest/actions/self-hosted-runners#delete-a-self-hosted-runner-from-a-repository)
     ///
     /// ---
@@ -6051,7 +6051,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_self_hosted_runner_from_repo](https://docs.github.com/rest/actions/self-hosted-runners#delete-a-self-hosted-runner-from-a-repository)
     ///
     /// ---
@@ -6094,7 +6094,7 @@ impl<'api> Actions<'api> {
     /// Anyone with write access to the repository can use this endpoint.
     /// 
     /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_workflow_run](https://docs.github.com/rest/actions/workflow-runs#delete-a-workflow-run)
     ///
     /// ---
@@ -6136,7 +6136,7 @@ impl<'api> Actions<'api> {
     /// Anyone with write access to the repository can use this endpoint.
     /// 
     /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_workflow_run](https://docs.github.com/rest/actions/workflow-runs#delete-a-workflow-run)
     ///
     /// ---
@@ -6177,7 +6177,7 @@ impl<'api> Actions<'api> {
     /// Deletes all logs for a workflow run.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_workflow_run_logs](https://docs.github.com/rest/actions/workflow-runs#delete-workflow-run-logs)
     ///
     /// ---
@@ -6219,7 +6219,7 @@ impl<'api> Actions<'api> {
     /// Deletes all logs for a workflow run.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_workflow_run_logs](https://docs.github.com/rest/actions/workflow-runs#delete-workflow-run-logs)
     ///
     /// ---
@@ -6262,7 +6262,7 @@ impl<'api> Actions<'api> {
     /// Removes a repository from the list of selected repositories that are enabled for GitHub Actions in an organization. To use this endpoint, the organization permission policy for `enabled_repositories` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for disable_selected_repository_github_actions_organization](https://docs.github.com/rest/actions/permissions#disable-a-selected-repository-for-github-actions-in-an-organization)
     ///
     /// ---
@@ -6302,7 +6302,7 @@ impl<'api> Actions<'api> {
     /// Removes a repository from the list of selected repositories that are enabled for GitHub Actions in an organization. To use this endpoint, the organization permission policy for `enabled_repositories` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for disable_selected_repository_github_actions_organization](https://docs.github.com/rest/actions/permissions#disable-a-selected-repository-for-github-actions-in-an-organization)
     ///
     /// ---
@@ -6343,7 +6343,7 @@ impl<'api> Actions<'api> {
     /// Disables a workflow and sets the `state` of the workflow to `disabled_manually`. You can replace `workflow_id` with the workflow file name. For example, you could use `main.yaml`.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for disable_workflow](https://docs.github.com/rest/actions/workflows#disable-a-workflow)
     ///
     /// ---
@@ -6383,7 +6383,7 @@ impl<'api> Actions<'api> {
     /// Disables a workflow and sets the `state` of the workflow to `disabled_manually`. You can replace `workflow_id` with the workflow file name. For example, you could use `main.yaml`.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for disable_workflow](https://docs.github.com/rest/actions/workflows#disable-a-workflow)
     ///
     /// ---
@@ -6425,7 +6425,7 @@ impl<'api> Actions<'api> {
     /// the response header to find the URL for the download. The `:archive_format` must be `zip`.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for download_artifact](https://docs.github.com/rest/actions/artifacts#download-an-artifact)
     ///
     /// ---
@@ -6468,7 +6468,7 @@ impl<'api> Actions<'api> {
     /// the response header to find the URL for the download. The `:archive_format` must be `zip`.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for download_artifact](https://docs.github.com/rest/actions/artifacts#download-an-artifact)
     ///
     /// ---
@@ -6514,7 +6514,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for download_job_logs_for_workflow_run](https://docs.github.com/rest/actions/workflow-jobs#download-job-logs-for-a-workflow-run)
     ///
     /// ---
@@ -6558,7 +6558,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for download_job_logs_for_workflow_run](https://docs.github.com/rest/actions/workflow-jobs#download-job-logs-for-a-workflow-run)
     ///
     /// ---
@@ -6603,7 +6603,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for download_workflow_run_attempt_logs](https://docs.github.com/rest/actions/workflow-runs#download-workflow-run-attempt-logs)
     ///
     /// ---
@@ -6647,7 +6647,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for download_workflow_run_attempt_logs](https://docs.github.com/rest/actions/workflow-runs#download-workflow-run-attempt-logs)
     ///
     /// ---
@@ -6692,7 +6692,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for download_workflow_run_logs](https://docs.github.com/rest/actions/workflow-runs#download-workflow-run-logs)
     ///
     /// ---
@@ -6736,7 +6736,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for download_workflow_run_logs](https://docs.github.com/rest/actions/workflow-runs#download-workflow-run-logs)
     ///
     /// ---
@@ -6778,7 +6778,7 @@ impl<'api> Actions<'api> {
     /// Adds a repository to the list of selected repositories that are enabled for GitHub Actions in an organization. To use this endpoint, the organization permission policy for `enabled_repositories` must be must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for enable_selected_repository_github_actions_organization](https://docs.github.com/rest/actions/permissions#enable-a-selected-repository-for-github-actions-in-an-organization)
     ///
     /// ---
@@ -6818,7 +6818,7 @@ impl<'api> Actions<'api> {
     /// Adds a repository to the list of selected repositories that are enabled for GitHub Actions in an organization. To use this endpoint, the organization permission policy for `enabled_repositories` must be must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for enable_selected_repository_github_actions_organization](https://docs.github.com/rest/actions/permissions#enable-a-selected-repository-for-github-actions-in-an-organization)
     ///
     /// ---
@@ -6859,7 +6859,7 @@ impl<'api> Actions<'api> {
     /// Enables a workflow and sets the `state` of the workflow to `active`. You can replace `workflow_id` with the workflow file name. For example, you could use `main.yaml`.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for enable_workflow](https://docs.github.com/rest/actions/workflows#enable-a-workflow)
     ///
     /// ---
@@ -6899,7 +6899,7 @@ impl<'api> Actions<'api> {
     /// Enables a workflow and sets the `state` of the workflow to `active`. You can replace `workflow_id` with the workflow file name. For example, you could use `main.yaml`.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for enable_workflow](https://docs.github.com/rest/actions/workflows#enable-a-workflow)
     ///
     /// ---
@@ -6941,7 +6941,7 @@ impl<'api> Actions<'api> {
     /// You should only use this endpoint to cancel a workflow run when the workflow run is not responding to [`POST /repos/{owner}/{repo}/actions/runs/{run_id}/cancel`](/rest/actions/workflow-runs#cancel-a-workflow-run).
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for force_cancel_workflow_run](https://docs.github.com/rest/actions/workflow-runs#force-cancel-a-workflow-run)
     ///
     /// ---
@@ -6983,7 +6983,7 @@ impl<'api> Actions<'api> {
     /// You should only use this endpoint to cancel a workflow run when the workflow run is not responding to [`POST /repos/{owner}/{repo}/actions/runs/{run_id}/cancel`](/rest/actions/workflow-runs#cancel-a-workflow-run).
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for force_cancel_workflow_run](https://docs.github.com/rest/actions/workflow-runs#force-cancel-a-workflow-run)
     ///
     /// ---
@@ -7027,7 +7027,7 @@ impl<'api> Actions<'api> {
     /// The authenticated user must have admin access to the organization.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for generate_runner_jitconfig_for_org](https://docs.github.com/rest/actions/self-hosted-runners#create-configuration-for-a-just-in-time-runner-for-an-organization)
     ///
     /// ---
@@ -7071,7 +7071,7 @@ impl<'api> Actions<'api> {
     /// The authenticated user must have admin access to the organization.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for generate_runner_jitconfig_for_org](https://docs.github.com/rest/actions/self-hosted-runners#create-configuration-for-a-just-in-time-runner-for-an-organization)
     ///
     /// ---
@@ -7116,7 +7116,7 @@ impl<'api> Actions<'api> {
     /// The authenticated user must have admin access to the repository.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for generate_runner_jitconfig_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#create-configuration-for-a-just-in-time-runner-for-a-repository)
     ///
     /// ---
@@ -7160,7 +7160,7 @@ impl<'api> Actions<'api> {
     /// The authenticated user must have admin access to the repository.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for generate_runner_jitconfig_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#create-configuration-for-a-just-in-time-runner-for-a-repository)
     ///
     /// ---
@@ -7203,7 +7203,7 @@ impl<'api> Actions<'api> {
     /// Lists the GitHub Actions caches for a repository.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_actions_cache_list](https://docs.github.com/rest/actions/cache#list-github-actions-caches-for-a-repository)
     ///
     /// ---
@@ -7247,7 +7247,7 @@ impl<'api> Actions<'api> {
     /// Lists the GitHub Actions caches for a repository.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_actions_cache_list](https://docs.github.com/rest/actions/cache#list-github-actions-caches-for-a-repository)
     ///
     /// ---
@@ -7296,7 +7296,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_actions_cache_usage](https://docs.github.com/rest/actions/cache#get-github-actions-cache-usage-for-a-repository)
     ///
     /// ---
@@ -7339,7 +7339,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_actions_cache_usage](https://docs.github.com/rest/actions/cache#get-github-actions-cache-usage-for-a-repository)
     ///
     /// ---
@@ -7381,7 +7381,7 @@ impl<'api> Actions<'api> {
     /// The data fetched using this API is refreshed approximately every 5 minutes, so values returned from this endpoint may take at least 5 minutes to get updated.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `read:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_actions_cache_usage_by_repo_for_org](https://docs.github.com/rest/actions/cache#list-repositories-with-github-actions-cache-usage-for-an-organization)
     ///
     /// ---
@@ -7426,7 +7426,7 @@ impl<'api> Actions<'api> {
     /// The data fetched using this API is refreshed approximately every 5 minutes, so values returned from this endpoint may take at least 5 minutes to get updated.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `read:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_actions_cache_usage_by_repo_for_org](https://docs.github.com/rest/actions/cache#list-repositories-with-github-actions-cache-usage-for-an-organization)
     ///
     /// ---
@@ -7473,7 +7473,7 @@ impl<'api> Actions<'api> {
     /// The data fetched using this API is refreshed approximately every 5 minutes, so values returned from this endpoint may take at least 5 minutes to get updated.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `read:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_actions_cache_usage_for_org](https://docs.github.com/rest/actions/cache#get-github-actions-cache-usage-for-an-organization)
     ///
     /// ---
@@ -7514,7 +7514,7 @@ impl<'api> Actions<'api> {
     /// The data fetched using this API is refreshed approximately every 5 minutes, so values returned from this endpoint may take at least 5 minutes to get updated.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `read:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_actions_cache_usage_for_org](https://docs.github.com/rest/actions/cache#get-github-actions-cache-usage-for-an-organization)
     ///
     /// ---
@@ -7555,7 +7555,7 @@ impl<'api> Actions<'api> {
     /// Gets the selected actions and reusable workflows that are allowed in an organization. To use this endpoint, the organization permission policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_allowed_actions_organization](https://docs.github.com/rest/actions/permissions#get-allowed-actions-and-reusable-workflows-for-an-organization)
     ///
     /// ---
@@ -7595,7 +7595,7 @@ impl<'api> Actions<'api> {
     /// Gets the selected actions and reusable workflows that are allowed in an organization. To use this endpoint, the organization permission policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_allowed_actions_organization](https://docs.github.com/rest/actions/permissions#get-allowed-actions-and-reusable-workflows-for-an-organization)
     ///
     /// ---
@@ -7636,7 +7636,7 @@ impl<'api> Actions<'api> {
     /// Gets the settings for selected actions and reusable workflows that are allowed in a repository. To use this endpoint, the repository policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for a repository](#set-github-actions-permissions-for-a-repository)."
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_allowed_actions_repository](https://docs.github.com/rest/actions/permissions#get-allowed-actions-and-reusable-workflows-for-a-repository)
     ///
     /// ---
@@ -7676,7 +7676,7 @@ impl<'api> Actions<'api> {
     /// Gets the settings for selected actions and reusable workflows that are allowed in a repository. To use this endpoint, the repository policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for a repository](#set-github-actions-permissions-for-a-repository)."
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_allowed_actions_repository](https://docs.github.com/rest/actions/permissions#get-allowed-actions-and-reusable-workflows-for-a-repository)
     ///
     /// ---
@@ -7719,7 +7719,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_artifact](https://docs.github.com/rest/actions/artifacts#get-an-artifact)
     ///
     /// ---
@@ -7761,7 +7761,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_artifact](https://docs.github.com/rest/actions/artifacts#get-an-artifact)
     ///
     /// ---
@@ -7802,7 +7802,7 @@ impl<'api> Actions<'api> {
     /// Gets the customization template for an OpenID Connect (OIDC) subject claim.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_custom_oidc_sub_claim_for_repo](https://docs.github.com/rest/actions/oidc#get-the-customization-template-for-an-oidc-subject-claim-for-a-repository)
     ///
     /// ---
@@ -7844,7 +7844,7 @@ impl<'api> Actions<'api> {
     /// Gets the customization template for an OpenID Connect (OIDC) subject claim.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_custom_oidc_sub_claim_for_repo](https://docs.github.com/rest/actions/oidc#get-the-customization-template-for-an-oidc-subject-claim-for-a-repository)
     ///
     /// ---
@@ -7890,7 +7890,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_environment_public_key](https://docs.github.com/rest/actions/secrets#get-an-environment-public-key)
     ///
     /// ---
@@ -7933,7 +7933,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_environment_public_key](https://docs.github.com/rest/actions/secrets#get-an-environment-public-key)
     ///
     /// ---
@@ -7976,7 +7976,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_environment_secret](https://docs.github.com/rest/actions/secrets#get-an-environment-secret)
     ///
     /// ---
@@ -8018,7 +8018,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_environment_secret](https://docs.github.com/rest/actions/secrets#get-an-environment-secret)
     ///
     /// ---
@@ -8061,7 +8061,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_environment_variable](https://docs.github.com/rest/actions/variables#get-an-environment-variable)
     ///
     /// ---
@@ -8103,7 +8103,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_environment_variable](https://docs.github.com/rest/actions/variables#get-an-environment-variable)
     ///
     /// ---
@@ -8146,7 +8146,7 @@ impl<'api> Actions<'api> {
     /// "[Setting the permissions of the GITHUB_TOKEN for your organization](https://docs.github.com/organizations/managing-organization-settings/disabling-or-limiting-github-actions-for-your-organization#setting-the-permissions-of-the-github_token-for-your-organization)."
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_github_actions_default_workflow_permissions_organization](https://docs.github.com/rest/actions/permissions#get-default-workflow-permissions-for-an-organization)
     ///
     /// ---
@@ -8188,7 +8188,7 @@ impl<'api> Actions<'api> {
     /// "[Setting the permissions of the GITHUB_TOKEN for your organization](https://docs.github.com/organizations/managing-organization-settings/disabling-or-limiting-github-actions-for-your-organization#setting-the-permissions-of-the-github_token-for-your-organization)."
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_github_actions_default_workflow_permissions_organization](https://docs.github.com/rest/actions/permissions#get-default-workflow-permissions-for-an-organization)
     ///
     /// ---
@@ -8231,7 +8231,7 @@ impl<'api> Actions<'api> {
     /// For more information, see "[Setting the permissions of the GITHUB_TOKEN for your repository](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#setting-the-permissions-of-the-github_token-for-your-repository)."
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_github_actions_default_workflow_permissions_repository](https://docs.github.com/rest/actions/permissions#get-default-workflow-permissions-for-a-repository)
     ///
     /// ---
@@ -8273,7 +8273,7 @@ impl<'api> Actions<'api> {
     /// For more information, see "[Setting the permissions of the GITHUB_TOKEN for your repository](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#setting-the-permissions-of-the-github_token-for-your-repository)."
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_github_actions_default_workflow_permissions_repository](https://docs.github.com/rest/actions/permissions#get-default-workflow-permissions-for-a-repository)
     ///
     /// ---
@@ -8314,7 +8314,7 @@ impl<'api> Actions<'api> {
     /// Gets the GitHub Actions permissions policy for repositories and allowed actions and reusable workflows in an organization.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_github_actions_permissions_organization](https://docs.github.com/rest/actions/permissions#get-github-actions-permissions-for-an-organization)
     ///
     /// ---
@@ -8354,7 +8354,7 @@ impl<'api> Actions<'api> {
     /// Gets the GitHub Actions permissions policy for repositories and allowed actions and reusable workflows in an organization.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_github_actions_permissions_organization](https://docs.github.com/rest/actions/permissions#get-github-actions-permissions-for-an-organization)
     ///
     /// ---
@@ -8395,7 +8395,7 @@ impl<'api> Actions<'api> {
     /// Gets the GitHub Actions permissions policy for a repository, including whether GitHub Actions is enabled and the actions and reusable workflows allowed to run in the repository.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_github_actions_permissions_repository](https://docs.github.com/rest/actions/permissions#get-github-actions-permissions-for-a-repository)
     ///
     /// ---
@@ -8435,7 +8435,7 @@ impl<'api> Actions<'api> {
     /// Gets the GitHub Actions permissions policy for a repository, including whether GitHub Actions is enabled and the actions and reusable workflows allowed to run in the repository.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_github_actions_permissions_repository](https://docs.github.com/rest/actions/permissions#get-github-actions-permissions-for-a-repository)
     ///
     /// ---
@@ -8478,7 +8478,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_job_for_workflow_run](https://docs.github.com/rest/actions/workflow-jobs#get-a-job-for-a-workflow-run)
     ///
     /// ---
@@ -8520,7 +8520,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_job_for_workflow_run](https://docs.github.com/rest/actions/workflow-jobs#get-a-job-for-a-workflow-run)
     ///
     /// ---
@@ -8564,7 +8564,7 @@ impl<'api> Actions<'api> {
     /// The authenticated user must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_org_public_key](https://docs.github.com/rest/actions/secrets#get-an-organization-public-key)
     ///
     /// ---
@@ -8607,7 +8607,7 @@ impl<'api> Actions<'api> {
     /// The authenticated user must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_org_public_key](https://docs.github.com/rest/actions/secrets#get-an-organization-public-key)
     ///
     /// ---
@@ -8650,7 +8650,7 @@ impl<'api> Actions<'api> {
     /// The authenticated user must have collaborator access to a repository to create, update, or read secrets
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_org_secret](https://docs.github.com/rest/actions/secrets#get-an-organization-secret)
     ///
     /// ---
@@ -8692,7 +8692,7 @@ impl<'api> Actions<'api> {
     /// The authenticated user must have collaborator access to a repository to create, update, or read secrets
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_org_secret](https://docs.github.com/rest/actions/secrets#get-an-organization-secret)
     ///
     /// ---
@@ -8735,7 +8735,7 @@ impl<'api> Actions<'api> {
     /// The authenticated user must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_org_variable](https://docs.github.com/rest/actions/variables#get-an-organization-variable)
     ///
     /// ---
@@ -8777,7 +8777,7 @@ impl<'api> Actions<'api> {
     /// The authenticated user must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_org_variable](https://docs.github.com/rest/actions/variables#get-an-organization-variable)
     ///
     /// ---
@@ -8820,7 +8820,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_pending_deployments_for_run](https://docs.github.com/rest/actions/workflow-runs#get-pending-deployments-for-a-workflow-run)
     ///
     /// ---
@@ -8862,7 +8862,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_pending_deployments_for_run](https://docs.github.com/rest/actions/workflow-runs#get-pending-deployments-for-a-workflow-run)
     ///
     /// ---
@@ -8906,7 +8906,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_repo_public_key](https://docs.github.com/rest/actions/secrets#get-a-repository-public-key)
     ///
     /// ---
@@ -8949,7 +8949,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_repo_public_key](https://docs.github.com/rest/actions/secrets#get-a-repository-public-key)
     ///
     /// ---
@@ -8992,7 +8992,7 @@ impl<'api> Actions<'api> {
     /// The authenticated user must have collaborator access to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_repo_secret](https://docs.github.com/rest/actions/secrets#get-a-repository-secret)
     ///
     /// ---
@@ -9034,7 +9034,7 @@ impl<'api> Actions<'api> {
     /// The authenticated user must have collaborator access to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_repo_secret](https://docs.github.com/rest/actions/secrets#get-a-repository-secret)
     ///
     /// ---
@@ -9077,7 +9077,7 @@ impl<'api> Actions<'api> {
     /// The authenticated user must have collaborator access to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_repo_variable](https://docs.github.com/rest/actions/variables#get-a-repository-variable)
     ///
     /// ---
@@ -9119,7 +9119,7 @@ impl<'api> Actions<'api> {
     /// The authenticated user must have collaborator access to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_repo_variable](https://docs.github.com/rest/actions/variables#get-a-repository-variable)
     ///
     /// ---
@@ -9160,7 +9160,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_reviews_for_run](https://docs.github.com/rest/actions/workflow-runs#get-the-review-history-for-a-workflow-run)
     ///
     /// ---
@@ -9200,7 +9200,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_reviews_for_run](https://docs.github.com/rest/actions/workflow-runs#get-the-review-history-for-a-workflow-run)
     ///
     /// ---
@@ -9243,7 +9243,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for get_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#get-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
@@ -9285,7 +9285,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for get_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#get-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
@@ -9328,7 +9328,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#get-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
@@ -9370,7 +9370,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#get-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
@@ -9414,7 +9414,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_workflow](https://docs.github.com/rest/actions/workflows#get-a-workflow)
     ///
     /// ---
@@ -9457,7 +9457,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_workflow](https://docs.github.com/rest/actions/workflows#get-a-workflow)
     ///
     /// ---
@@ -9500,7 +9500,7 @@ impl<'api> Actions<'api> {
     /// For more information, see "[Allowing access to components in a private repository](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#allowing-access-to-components-in-a-private-repository)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_workflow_access_to_repository](https://docs.github.com/rest/actions/permissions#get-the-level-of-access-for-workflows-outside-of-the-repository)
     ///
     /// ---
@@ -9542,7 +9542,7 @@ impl<'api> Actions<'api> {
     /// For more information, see "[Allowing access to components in a private repository](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#allowing-access-to-components-in-a-private-repository)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_workflow_access_to_repository](https://docs.github.com/rest/actions/permissions#get-the-level-of-access-for-workflows-outside-of-the-repository)
     ///
     /// ---
@@ -9585,7 +9585,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_workflow_run](https://docs.github.com/rest/actions/workflow-runs#get-a-workflow-run)
     ///
     /// ---
@@ -9631,7 +9631,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_workflow_run](https://docs.github.com/rest/actions/workflow-runs#get-a-workflow-run)
     ///
     /// ---
@@ -9679,7 +9679,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_workflow_run_attempt](https://docs.github.com/rest/actions/workflow-runs#get-a-workflow-run-attempt)
     ///
     /// ---
@@ -9725,7 +9725,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_workflow_run_attempt](https://docs.github.com/rest/actions/workflow-runs#get-a-workflow-run-attempt)
     ///
     /// ---
@@ -9773,7 +9773,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_workflow_run_usage](https://docs.github.com/rest/actions/workflow-runs#get-workflow-run-usage)
     ///
     /// ---
@@ -9815,7 +9815,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_workflow_run_usage](https://docs.github.com/rest/actions/workflow-runs#get-workflow-run-usage)
     ///
     /// ---
@@ -9860,7 +9860,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_workflow_usage](https://docs.github.com/rest/actions/workflows#get-workflow-usage)
     ///
     /// ---
@@ -9904,7 +9904,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_workflow_usage](https://docs.github.com/rest/actions/workflows#get-workflow-usage)
     ///
     /// ---
@@ -9947,7 +9947,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_artifacts_for_repo](https://docs.github.com/rest/actions/artifacts#list-artifacts-for-a-repository)
     ///
     /// ---
@@ -9993,7 +9993,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_artifacts_for_repo](https://docs.github.com/rest/actions/artifacts#list-artifacts-for-a-repository)
     ///
     /// ---
@@ -10042,7 +10042,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_environment_secrets](https://docs.github.com/rest/actions/secrets#list-environment-secrets)
     ///
     /// ---
@@ -10089,7 +10089,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_environment_secrets](https://docs.github.com/rest/actions/secrets#list-environment-secrets)
     ///
     /// ---
@@ -10137,7 +10137,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_environment_variables](https://docs.github.com/rest/actions/variables#list-environment-variables)
     ///
     /// ---
@@ -10183,7 +10183,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_environment_variables](https://docs.github.com/rest/actions/variables#list-environment-variables)
     ///
     /// ---
@@ -10232,7 +10232,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_jobs_for_workflow_run](https://docs.github.com/rest/actions/workflow-jobs#list-jobs-for-a-workflow-run)
     ///
     /// ---
@@ -10279,7 +10279,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_jobs_for_workflow_run](https://docs.github.com/rest/actions/workflow-jobs#list-jobs-for-a-workflow-run)
     ///
     /// ---
@@ -10328,7 +10328,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint  with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_jobs_for_workflow_run_attempt](https://docs.github.com/rest/actions/workflow-jobs#list-jobs-for-a-workflow-run-attempt)
     ///
     /// ---
@@ -10376,7 +10376,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint  with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_jobs_for_workflow_run_attempt](https://docs.github.com/rest/actions/workflow-jobs#list-jobs-for-a-workflow-run-attempt)
     ///
     /// ---
@@ -10425,7 +10425,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for list_labels_for_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#list-labels-for-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
@@ -10468,7 +10468,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for list_labels_for_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#list-labels-for-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
@@ -10512,7 +10512,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_labels_for_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#list-labels-for-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
@@ -10555,7 +10555,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_labels_for_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#list-labels-for-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
@@ -10600,7 +10600,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for list_org_secrets](https://docs.github.com/rest/actions/secrets#list-organization-secrets)
     ///
     /// ---
@@ -10647,7 +10647,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for list_org_secrets](https://docs.github.com/rest/actions/secrets#list-organization-secrets)
     ///
     /// ---
@@ -10695,7 +10695,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for list_org_variables](https://docs.github.com/rest/actions/variables#list-organization-variables)
     ///
     /// ---
@@ -10741,7 +10741,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for list_org_variables](https://docs.github.com/rest/actions/variables#list-organization-variables)
     ///
     /// ---
@@ -10790,7 +10790,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_repo_organization_secrets](https://docs.github.com/rest/actions/secrets#list-repository-organization-secrets)
     ///
     /// ---
@@ -10837,7 +10837,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_repo_organization_secrets](https://docs.github.com/rest/actions/secrets#list-repository-organization-secrets)
     ///
     /// ---
@@ -10885,7 +10885,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_repo_organization_variables](https://docs.github.com/rest/actions/variables#list-repository-organization-variables)
     ///
     /// ---
@@ -10931,7 +10931,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_repo_organization_variables](https://docs.github.com/rest/actions/variables#list-repository-organization-variables)
     ///
     /// ---
@@ -10980,7 +10980,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_repo_secrets](https://docs.github.com/rest/actions/secrets#list-repository-secrets)
     ///
     /// ---
@@ -11027,7 +11027,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_repo_secrets](https://docs.github.com/rest/actions/secrets#list-repository-secrets)
     ///
     /// ---
@@ -11075,7 +11075,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_repo_variables](https://docs.github.com/rest/actions/variables#list-repository-variables)
     ///
     /// ---
@@ -11121,7 +11121,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_repo_variables](https://docs.github.com/rest/actions/variables#list-repository-variables)
     ///
     /// ---
@@ -11169,7 +11169,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_repo_workflows](https://docs.github.com/rest/actions/workflows#list-repository-workflows)
     ///
     /// ---
@@ -11215,7 +11215,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_repo_workflows](https://docs.github.com/rest/actions/workflows#list-repository-workflows)
     ///
     /// ---
@@ -11263,7 +11263,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.  If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for list_runner_applications_for_org](https://docs.github.com/rest/actions/self-hosted-runners#list-runner-applications-for-an-organization)
     ///
     /// ---
@@ -11305,7 +11305,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.  If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for list_runner_applications_for_org](https://docs.github.com/rest/actions/self-hosted-runners#list-runner-applications-for-an-organization)
     ///
     /// ---
@@ -11348,7 +11348,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_runner_applications_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#list-runner-applications-for-a-repository)
     ///
     /// ---
@@ -11390,7 +11390,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_runner_applications_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#list-runner-applications-for-a-repository)
     ///
     /// ---
@@ -11434,7 +11434,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for list_selected_repos_for_org_secret](https://docs.github.com/rest/actions/secrets#list-selected-repositories-for-an-organization-secret)
     ///
     /// ---
@@ -11481,7 +11481,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for list_selected_repos_for_org_secret](https://docs.github.com/rest/actions/secrets#list-selected-repositories-for-an-organization-secret)
     ///
     /// ---
@@ -11530,7 +11530,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for list_selected_repos_for_org_variable](https://docs.github.com/rest/actions/variables#list-selected-repositories-for-an-organization-variable)
     ///
     /// ---
@@ -11578,7 +11578,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for list_selected_repos_for_org_variable](https://docs.github.com/rest/actions/variables#list-selected-repositories-for-an-organization-variable)
     ///
     /// ---
@@ -11625,7 +11625,7 @@ impl<'api> Actions<'api> {
     /// Lists the selected repositories that are enabled for GitHub Actions in an organization. To use this endpoint, the organization permission policy for `enabled_repositories` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_selected_repositories_enabled_github_actions_organization](https://docs.github.com/rest/actions/permissions#list-selected-repositories-enabled-for-github-actions-in-an-organization)
     ///
     /// ---
@@ -11669,7 +11669,7 @@ impl<'api> Actions<'api> {
     /// Lists the selected repositories that are enabled for GitHub Actions in an organization. To use this endpoint, the organization permission policy for `enabled_repositories` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_selected_repositories_enabled_github_actions_organization](https://docs.github.com/rest/actions/permissions#list-selected-repositories-enabled-for-github-actions-in-an-organization)
     ///
     /// ---
@@ -11717,7 +11717,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for list_self_hosted_runners_for_org](https://docs.github.com/rest/actions/self-hosted-runners#list-self-hosted-runners-for-an-organization)
     ///
     /// ---
@@ -11763,7 +11763,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for list_self_hosted_runners_for_org](https://docs.github.com/rest/actions/self-hosted-runners#list-self-hosted-runners-for-an-organization)
     ///
     /// ---
@@ -11811,7 +11811,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_self_hosted_runners_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#list-self-hosted-runners-for-a-repository)
     ///
     /// ---
@@ -11857,7 +11857,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_self_hosted_runners_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#list-self-hosted-runners-for-a-repository)
     ///
     /// ---
@@ -11905,7 +11905,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_workflow_run_artifacts](https://docs.github.com/rest/actions/artifacts#list-workflow-run-artifacts)
     ///
     /// ---
@@ -11951,7 +11951,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_workflow_run_artifacts](https://docs.github.com/rest/actions/artifacts#list-workflow-run-artifacts)
     ///
     /// ---
@@ -11999,7 +11999,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_workflow_runs](https://docs.github.com/rest/actions/workflow-runs#list-workflow-runs-for-a-workflow)
     ///
     /// ---
@@ -12045,7 +12045,7 @@ impl<'api> Actions<'api> {
     /// Anyone with read access to the repository can use this endpoint
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_workflow_runs](https://docs.github.com/rest/actions/workflow-runs#list-workflow-runs-for-a-workflow)
     ///
     /// ---
@@ -12095,7 +12095,7 @@ impl<'api> Actions<'api> {
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
     /// 
     /// This API will return up to 1,000 results for each search when using the following parameters: `actor`, `branch`, `check_suite_id`, `created`, `event`, `head_sha`, `status`.
-    /// 
+    ///
     /// [GitHub API docs for list_workflow_runs_for_repo](https://docs.github.com/rest/actions/workflow-runs#list-workflow-runs-for-a-repository)
     ///
     /// ---
@@ -12143,7 +12143,7 @@ impl<'api> Actions<'api> {
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
     /// 
     /// This API will return up to 1,000 results for each search when using the following parameters: `actor`, `branch`, `check_suite_id`, `created`, `event`, `head_sha`, `status`.
-    /// 
+    ///
     /// [GitHub API docs for list_workflow_runs_for_repo](https://docs.github.com/rest/actions/workflow-runs#list-workflow-runs-for-a-repository)
     ///
     /// ---
@@ -12189,7 +12189,7 @@ impl<'api> Actions<'api> {
     /// Re-run a job and its dependent jobs in a workflow run.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for re_run_job_for_workflow_run](https://docs.github.com/rest/actions/workflow-runs#re-run-a-job-from-a-workflow-run)
     ///
     /// ---
@@ -12230,7 +12230,7 @@ impl<'api> Actions<'api> {
     /// Re-run a job and its dependent jobs in a workflow run.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for re_run_job_for_workflow_run](https://docs.github.com/rest/actions/workflow-runs#re-run-a-job-from-a-workflow-run)
     ///
     /// ---
@@ -12272,7 +12272,7 @@ impl<'api> Actions<'api> {
     /// Re-runs your workflow run using its `id`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for re_run_workflow](https://docs.github.com/rest/actions/workflow-runs#re-run-a-workflow)
     ///
     /// ---
@@ -12312,7 +12312,7 @@ impl<'api> Actions<'api> {
     /// Re-runs your workflow run using its `id`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for re_run_workflow](https://docs.github.com/rest/actions/workflow-runs#re-run-a-workflow)
     ///
     /// ---
@@ -12353,7 +12353,7 @@ impl<'api> Actions<'api> {
     /// Re-run all of the failed jobs and their dependent jobs in a workflow run using the `id` of the workflow run.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for re_run_workflow_failed_jobs](https://docs.github.com/rest/actions/workflow-runs#re-run-failed-jobs-from-a-workflow-run)
     ///
     /// ---
@@ -12393,7 +12393,7 @@ impl<'api> Actions<'api> {
     /// Re-run all of the failed jobs and their dependent jobs in a workflow run using the `id` of the workflow run.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for re_run_workflow_failed_jobs](https://docs.github.com/rest/actions/workflow-runs#re-run-failed-jobs-from-a-workflow-run)
     ///
     /// ---
@@ -12437,7 +12437,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for remove_all_custom_labels_from_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#remove-all-custom-labels-from-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
@@ -12481,7 +12481,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for remove_all_custom_labels_from_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#remove-all-custom-labels-from-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
@@ -12526,7 +12526,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for remove_all_custom_labels_from_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#remove-all-custom-labels-from-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
@@ -12570,7 +12570,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for remove_all_custom_labels_from_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#remove-all-custom-labels-from-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
@@ -12618,7 +12618,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for remove_custom_label_from_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#remove-a-custom-label-from-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
@@ -12666,7 +12666,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for remove_custom_label_from_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#remove-a-custom-label-from-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
@@ -12715,7 +12715,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for remove_custom_label_from_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#remove-a-custom-label-from-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
@@ -12763,7 +12763,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for remove_custom_label_from_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#remove-a-custom-label-from-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
@@ -12810,7 +12810,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for remove_selected_repo_from_org_secret](https://docs.github.com/rest/actions/secrets#remove-selected-repository-from-an-organization-secret)
     ///
     /// ---
@@ -12855,7 +12855,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for remove_selected_repo_from_org_secret](https://docs.github.com/rest/actions/secrets#remove-selected-repository-from-an-organization-secret)
     ///
     /// ---
@@ -12901,7 +12901,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for remove_selected_repo_from_org_variable](https://docs.github.com/rest/actions/variables#remove-selected-repository-from-an-organization-variable)
     ///
     /// ---
@@ -12946,7 +12946,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for remove_selected_repo_from_org_variable](https://docs.github.com/rest/actions/variables#remove-selected-repository-from-an-organization-variable)
     ///
     /// ---
@@ -12991,7 +12991,7 @@ impl<'api> Actions<'api> {
     /// > GitHub Apps can only review their own custom deployment protection rules. To approve or reject pending deployments that are waiting for review from a specific person or team, see [`POST /repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments`](/rest/actions/workflow-runs#review-pending-deployments-for-a-workflow-run).
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for review_custom_gates_for_run](https://docs.github.com/rest/actions/workflow-runs#review-custom-deployment-protection-rules-for-a-workflow-run)
     ///
     /// ---
@@ -13034,7 +13034,7 @@ impl<'api> Actions<'api> {
     /// > GitHub Apps can only review their own custom deployment protection rules. To approve or reject pending deployments that are waiting for review from a specific person or team, see [`POST /repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments`](/rest/actions/workflow-runs#review-pending-deployments-for-a-workflow-run).
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for review_custom_gates_for_run](https://docs.github.com/rest/actions/workflow-runs#review-custom-deployment-protection-rules-for-a-workflow-run)
     ///
     /// ---
@@ -13077,7 +13077,7 @@ impl<'api> Actions<'api> {
     /// Required reviewers with read access to the repository contents and deployments can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for review_pending_deployments_for_run](https://docs.github.com/rest/actions/workflow-runs#review-pending-deployments-for-a-workflow-run)
     ///
     /// ---
@@ -13119,7 +13119,7 @@ impl<'api> Actions<'api> {
     /// Required reviewers with read access to the repository contents and deployments can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for review_pending_deployments_for_run](https://docs.github.com/rest/actions/workflow-runs#review-pending-deployments-for-a-workflow-run)
     ///
     /// ---
@@ -13160,7 +13160,7 @@ impl<'api> Actions<'api> {
     /// Sets the actions and reusable workflows that are allowed in an organization. To use this endpoint, the organization permission policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_allowed_actions_organization](https://docs.github.com/rest/actions/permissions#set-allowed-actions-and-reusable-workflows-for-an-organization)
     ///
     /// ---
@@ -13200,7 +13200,7 @@ impl<'api> Actions<'api> {
     /// Sets the actions and reusable workflows that are allowed in an organization. To use this endpoint, the organization permission policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_allowed_actions_organization](https://docs.github.com/rest/actions/permissions#set-allowed-actions-and-reusable-workflows-for-an-organization)
     ///
     /// ---
@@ -13241,7 +13241,7 @@ impl<'api> Actions<'api> {
     /// Sets the actions and reusable workflows that are allowed in a repository. To use this endpoint, the repository permission policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for a repository](#set-github-actions-permissions-for-a-repository)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_allowed_actions_repository](https://docs.github.com/rest/actions/permissions#set-allowed-actions-and-reusable-workflows-for-a-repository)
     ///
     /// ---
@@ -13281,7 +13281,7 @@ impl<'api> Actions<'api> {
     /// Sets the actions and reusable workflows that are allowed in a repository. To use this endpoint, the repository permission policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for a repository](#set-github-actions-permissions-for-a-repository)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_allowed_actions_repository](https://docs.github.com/rest/actions/permissions#set-allowed-actions-and-reusable-workflows-for-a-repository)
     ///
     /// ---
@@ -13325,7 +13325,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for set_custom_labels_for_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#set-custom-labels-for-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
@@ -13370,7 +13370,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for set_custom_labels_for_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#set-custom-labels-for-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
@@ -13416,7 +13416,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_custom_labels_for_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#set-custom-labels-for-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
@@ -13461,7 +13461,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_custom_labels_for_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#set-custom-labels-for-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
@@ -13504,7 +13504,7 @@ impl<'api> Actions<'api> {
     /// Sets the customization template and `opt-in` or `opt-out` flag for an OpenID Connect (OIDC) subject claim for a repository.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_custom_oidc_sub_claim_for_repo](https://docs.github.com/rest/actions/oidc#set-the-customization-template-for-an-oidc-subject-claim-for-a-repository)
     ///
     /// ---
@@ -13547,7 +13547,7 @@ impl<'api> Actions<'api> {
     /// Sets the customization template and `opt-in` or `opt-out` flag for an OpenID Connect (OIDC) subject claim for a repository.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_custom_oidc_sub_claim_for_repo](https://docs.github.com/rest/actions/oidc#set-the-customization-template-for-an-oidc-subject-claim-for-a-repository)
     ///
     /// ---
@@ -13593,7 +13593,7 @@ impl<'api> Actions<'api> {
     /// "[Setting the permissions of the GITHUB_TOKEN for your organization](https://docs.github.com/organizations/managing-organization-settings/disabling-or-limiting-github-actions-for-your-organization#setting-the-permissions-of-the-github_token-for-your-organization)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_github_actions_default_workflow_permissions_organization](https://docs.github.com/rest/actions/permissions#set-default-workflow-permissions-for-an-organization)
     ///
     /// ---
@@ -13635,7 +13635,7 @@ impl<'api> Actions<'api> {
     /// "[Setting the permissions of the GITHUB_TOKEN for your organization](https://docs.github.com/organizations/managing-organization-settings/disabling-or-limiting-github-actions-for-your-organization#setting-the-permissions-of-the-github_token-for-your-organization)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_github_actions_default_workflow_permissions_organization](https://docs.github.com/rest/actions/permissions#set-default-workflow-permissions-for-an-organization)
     ///
     /// ---
@@ -13678,7 +13678,7 @@ impl<'api> Actions<'api> {
     /// For more information, see "[Setting the permissions of the GITHUB_TOKEN for your repository](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#setting-the-permissions-of-the-github_token-for-your-repository)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_github_actions_default_workflow_permissions_repository](https://docs.github.com/rest/actions/permissions#set-default-workflow-permissions-for-a-repository)
     ///
     /// ---
@@ -13721,7 +13721,7 @@ impl<'api> Actions<'api> {
     /// For more information, see "[Setting the permissions of the GITHUB_TOKEN for your repository](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#setting-the-permissions-of-the-github_token-for-your-repository)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_github_actions_default_workflow_permissions_repository](https://docs.github.com/rest/actions/permissions#set-default-workflow-permissions-for-a-repository)
     ///
     /// ---
@@ -13763,7 +13763,7 @@ impl<'api> Actions<'api> {
     /// Sets the GitHub Actions permissions policy for repositories and allowed actions and reusable workflows in an organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_github_actions_permissions_organization](https://docs.github.com/rest/actions/permissions#set-github-actions-permissions-for-an-organization)
     ///
     /// ---
@@ -13803,7 +13803,7 @@ impl<'api> Actions<'api> {
     /// Sets the GitHub Actions permissions policy for repositories and allowed actions and reusable workflows in an organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_github_actions_permissions_organization](https://docs.github.com/rest/actions/permissions#set-github-actions-permissions-for-an-organization)
     ///
     /// ---
@@ -13844,7 +13844,7 @@ impl<'api> Actions<'api> {
     /// Sets the GitHub Actions permissions policy for enabling GitHub Actions and allowed actions and reusable workflows in the repository.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_github_actions_permissions_repository](https://docs.github.com/rest/actions/permissions#set-github-actions-permissions-for-a-repository)
     ///
     /// ---
@@ -13884,7 +13884,7 @@ impl<'api> Actions<'api> {
     /// Sets the GitHub Actions permissions policy for enabling GitHub Actions and allowed actions and reusable workflows in the repository.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_github_actions_permissions_repository](https://docs.github.com/rest/actions/permissions#set-github-actions-permissions-for-a-repository)
     ///
     /// ---
@@ -13929,7 +13929,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for set_selected_repos_for_org_secret](https://docs.github.com/rest/actions/secrets#set-selected-repositories-for-an-organization-secret)
     ///
     /// ---
@@ -13973,7 +13973,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for set_selected_repos_for_org_secret](https://docs.github.com/rest/actions/secrets#set-selected-repositories-for-an-organization-secret)
     ///
     /// ---
@@ -14018,7 +14018,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for set_selected_repos_for_org_variable](https://docs.github.com/rest/actions/variables#set-selected-repositories-for-an-organization-variable)
     ///
     /// ---
@@ -14063,7 +14063,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for set_selected_repos_for_org_variable](https://docs.github.com/rest/actions/variables#set-selected-repositories-for-an-organization-variable)
     ///
     /// ---
@@ -14106,7 +14106,7 @@ impl<'api> Actions<'api> {
     /// 
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_selected_repositories_enabled_github_actions_organization](https://docs.github.com/rest/actions/permissions#set-selected-repositories-enabled-for-github-actions-in-an-organization)
     ///
     /// ---
@@ -14147,7 +14147,7 @@ impl<'api> Actions<'api> {
     /// 
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_selected_repositories_enabled_github_actions_organization](https://docs.github.com/rest/actions/permissions#set-selected-repositories-enabled-for-github-actions-in-an-organization)
     ///
     /// ---
@@ -14190,18 +14190,18 @@ impl<'api> Actions<'api> {
     /// For more information, see "[Allowing access to components in a private repository](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#allowing-access-to-components-in-a-private-repository)".
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_workflow_access_to_repository](https://docs.github.com/rest/actions/permissions#set-the-level-of-access-for-workflows-outside-of-the-repository)
     ///
     /// ---
-    pub async fn set_workflow_access_to_repository_async(&self, owner: &str, repo: &str, body: PutActionsSetWorkflowAccessToRepository) -> Result<(), ActionsSetWorkflowAccessToRepositoryError> {
+    pub async fn set_workflow_access_to_repository_async(&self, owner: &str, repo: &str, body: ActionsWorkflowAccessToRepository) -> Result<(), ActionsSetWorkflowAccessToRepositoryError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/permissions/access", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetWorkflowAccessToRepository::from_json(body)?),
+            body: Some(ActionsWorkflowAccessToRepository::from_json(body)?),
             method: "PUT",
             headers: vec![]
         };
@@ -14232,19 +14232,19 @@ impl<'api> Actions<'api> {
     /// For more information, see "[Allowing access to components in a private repository](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#allowing-access-to-components-in-a-private-repository)".
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_workflow_access_to_repository](https://docs.github.com/rest/actions/permissions#set-the-level-of-access-for-workflows-outside-of-the-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_workflow_access_to_repository(&self, owner: &str, repo: &str, body: PutActionsSetWorkflowAccessToRepository) -> Result<(), ActionsSetWorkflowAccessToRepositoryError> {
+    pub fn set_workflow_access_to_repository(&self, owner: &str, repo: &str, body: ActionsWorkflowAccessToRepository) -> Result<(), ActionsSetWorkflowAccessToRepositoryError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/permissions/access", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetWorkflowAccessToRepository::from_json(body)?),
+            body: Some(ActionsWorkflowAccessToRepository::from_json(body)?),
             method: "PUT",
             headers: vec![]
         };
@@ -14275,7 +14275,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_environment_variable](https://docs.github.com/rest/actions/variables#update-an-environment-variable)
     ///
     /// ---
@@ -14317,7 +14317,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_environment_variable](https://docs.github.com/rest/actions/variables#update-an-environment-variable)
     ///
     /// ---
@@ -14360,7 +14360,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for update_org_variable](https://docs.github.com/rest/actions/variables#update-an-organization-variable)
     ///
     /// ---
@@ -14402,7 +14402,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
-    /// 
+    ///
     /// [GitHub API docs for update_org_variable](https://docs.github.com/rest/actions/variables#update-an-organization-variable)
     ///
     /// ---
@@ -14445,7 +14445,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_repo_variable](https://docs.github.com/rest/actions/variables#update-a-repository-variable)
     ///
     /// ---
@@ -14487,7 +14487,7 @@ impl<'api> Actions<'api> {
     /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_repo_variable](https://docs.github.com/rest/actions/variables#update-a-repository-variable)
     ///
     /// ---

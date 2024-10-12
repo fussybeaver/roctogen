@@ -52,7 +52,7 @@ pub enum CopilotAddCopilotSeatsForTeamsError {
     Status403(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Copilot Business or Enterprise is not enabled for this organization, billing has not been set up for this organization, a public code suggestions policy has not been set for this organization, or the organization&#x27;s Copilot access setting is set to enable Copilot for all users or is unconfigured.")]
+    #[error("Copilot Business or Enterprise is not enabled for this organization, billing has not been set up for this organization, a public code suggestions policy has not been set for this organization, or the organization's Copilot access setting is set to enable Copilot for all users or is unconfigured.")]
     Status422,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -79,7 +79,7 @@ pub enum CopilotAddCopilotSeatsForUsersError {
     Status403(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Copilot Business or Enterprise is not enabled for this organization, billing has not been set up for this organization, a public code suggestions policy has not been set for this organization, or the organization&#x27;s Copilot access setting is set to enable Copilot for all users or is unconfigured.")]
+    #[error("Copilot Business or Enterprise is not enabled for this organization, billing has not been set up for this organization, a public code suggestions policy has not been set for this organization, or the organization's Copilot access setting is set to enable Copilot for all users or is unconfigured.")]
     Status422,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -106,7 +106,7 @@ pub enum CopilotCancelCopilotSeatAssignmentForTeamsError {
     Status403(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Copilot Business or Enterprise is not enabled for this organization, billing has not been set up for this organization, a public code suggestions policy has not been set for this organization, or the organization&#x27;s Copilot access setting is set to enable Copilot for all users or is unconfigured.")]
+    #[error("Copilot Business or Enterprise is not enabled for this organization, billing has not been set up for this organization, a public code suggestions policy has not been set for this organization, or the organization's Copilot access setting is set to enable Copilot for all users or is unconfigured.")]
     Status422,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -133,7 +133,7 @@ pub enum CopilotCancelCopilotSeatAssignmentForUsersError {
     Status403(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Copilot Business or Enterprise is not enabled for this organization, billing has not been set up for this organization, a public code suggestions policy has not been set for this organization, the seat management setting is set to enable Copilot for all users or is unconfigured, or a user&#x27;s seat cannot be cancelled because it was assigned to them via a team.")]
+    #[error("Copilot Business or Enterprise is not enabled for this organization, billing has not been set up for this organization, a public code suggestions policy has not been set for this organization, the seat management setting is set to enable Copilot for all users or is unconfigured, or a user's seat cannot be cancelled because it was assigned to them via a team.")]
     Status422,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -160,7 +160,7 @@ pub enum CopilotGetCopilotOrganizationDetailsError {
     Status403(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("There is a problem with your account&#x27;s associated payment method.")]
+    #[error("There is a problem with your account's associated payment method.")]
     Status422,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -360,7 +360,7 @@ impl CopilotListCopilotSeatsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             page: Some(page),
             per_page: self.per_page, 
         }
@@ -368,7 +368,7 @@ impl CopilotListCopilotSeatsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             page: self.page, 
             per_page: Some(per_page),
         }
@@ -400,7 +400,7 @@ impl CopilotListCopilotSeatsForEnterpriseParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             page: Some(page),
             per_page: self.per_page, 
         }
@@ -408,7 +408,7 @@ impl CopilotListCopilotSeatsForEnterpriseParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             page: self.page, 
             per_page: Some(per_page),
         }
@@ -444,7 +444,7 @@ impl<'req> CopilotUsageMetricsForEnterpriseParams<'req> {
 
     /// Show usage metrics since this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`). Maximum value is 28 days ago.
     pub fn since(self, since: &'req str) -> Self {
-        Self { 
+        Self {
             since: Some(since),
             until: self.until, 
             page: self.page, 
@@ -454,7 +454,7 @@ impl<'req> CopilotUsageMetricsForEnterpriseParams<'req> {
 
     /// Show usage metrics until this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`) and should not preceed the `since` date if it is passed.
     pub fn until(self, until: &'req str) -> Self {
-        Self { 
+        Self {
             since: self.since, 
             until: Some(until),
             page: self.page, 
@@ -464,7 +464,7 @@ impl<'req> CopilotUsageMetricsForEnterpriseParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             since: self.since, 
             until: self.until, 
             page: Some(page),
@@ -474,7 +474,7 @@ impl<'req> CopilotUsageMetricsForEnterpriseParams<'req> {
 
     /// The number of days of metrics to display per page (max 28). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             since: self.since, 
             until: self.until, 
             page: self.page, 
@@ -512,7 +512,7 @@ impl<'req> CopilotUsageMetricsForEnterpriseTeamParams<'req> {
 
     /// Show usage metrics since this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`). Maximum value is 28 days ago.
     pub fn since(self, since: &'req str) -> Self {
-        Self { 
+        Self {
             since: Some(since),
             until: self.until, 
             page: self.page, 
@@ -522,7 +522,7 @@ impl<'req> CopilotUsageMetricsForEnterpriseTeamParams<'req> {
 
     /// Show usage metrics until this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`) and should not preceed the `since` date if it is passed.
     pub fn until(self, until: &'req str) -> Self {
-        Self { 
+        Self {
             since: self.since, 
             until: Some(until),
             page: self.page, 
@@ -532,7 +532,7 @@ impl<'req> CopilotUsageMetricsForEnterpriseTeamParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             since: self.since, 
             until: self.until, 
             page: Some(page),
@@ -542,7 +542,7 @@ impl<'req> CopilotUsageMetricsForEnterpriseTeamParams<'req> {
 
     /// The number of days of metrics to display per page (max 28). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             since: self.since, 
             until: self.until, 
             page: self.page, 
@@ -580,7 +580,7 @@ impl<'req> CopilotUsageMetricsForOrgParams<'req> {
 
     /// Show usage metrics since this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`). Maximum value is 28 days ago.
     pub fn since(self, since: &'req str) -> Self {
-        Self { 
+        Self {
             since: Some(since),
             until: self.until, 
             page: self.page, 
@@ -590,7 +590,7 @@ impl<'req> CopilotUsageMetricsForOrgParams<'req> {
 
     /// Show usage metrics until this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`) and should not preceed the `since` date if it is passed.
     pub fn until(self, until: &'req str) -> Self {
-        Self { 
+        Self {
             since: self.since, 
             until: Some(until),
             page: self.page, 
@@ -600,7 +600,7 @@ impl<'req> CopilotUsageMetricsForOrgParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             since: self.since, 
             until: self.until, 
             page: Some(page),
@@ -610,7 +610,7 @@ impl<'req> CopilotUsageMetricsForOrgParams<'req> {
 
     /// The number of days of metrics to display per page (max 28). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             since: self.since, 
             until: self.until, 
             page: self.page, 
@@ -648,7 +648,7 @@ impl<'req> CopilotUsageMetricsForTeamParams<'req> {
 
     /// Show usage metrics since this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`). Maximum value is 28 days ago.
     pub fn since(self, since: &'req str) -> Self {
-        Self { 
+        Self {
             since: Some(since),
             until: self.until, 
             page: self.page, 
@@ -658,7 +658,7 @@ impl<'req> CopilotUsageMetricsForTeamParams<'req> {
 
     /// Show usage metrics until this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`) and should not preceed the `since` date if it is passed.
     pub fn until(self, until: &'req str) -> Self {
-        Self { 
+        Self {
             since: self.since, 
             until: Some(until),
             page: self.page, 
@@ -668,7 +668,7 @@ impl<'req> CopilotUsageMetricsForTeamParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             since: self.since, 
             until: self.until, 
             page: Some(page),
@@ -678,7 +678,7 @@ impl<'req> CopilotUsageMetricsForTeamParams<'req> {
 
     /// The number of days of metrics to display per page (max 28). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             since: self.since, 
             until: self.until, 
             page: self.page, 
@@ -717,7 +717,7 @@ impl<'api> Copilot<'api> {
     /// The response will contain the total number of new seats that were created and existing seats that were refreshed.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `admin:org` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_copilot_seats_for_teams](https://docs.github.com/rest/copilot/copilot-user-management#add-teams-to-the-copilot-subscription-for-an-organization)
     ///
     /// ---
@@ -774,7 +774,7 @@ impl<'api> Copilot<'api> {
     /// The response will contain the total number of new seats that were created and existing seats that were refreshed.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `admin:org` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_copilot_seats_for_teams](https://docs.github.com/rest/copilot/copilot-user-management#add-teams-to-the-copilot-subscription-for-an-organization)
     ///
     /// ---
@@ -832,7 +832,7 @@ impl<'api> Copilot<'api> {
     /// The response will contain the total number of new seats that were created and existing seats that were refreshed.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `admin:org` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_copilot_seats_for_users](https://docs.github.com/rest/copilot/copilot-user-management#add-users-to-the-copilot-subscription-for-an-organization)
     ///
     /// ---
@@ -889,7 +889,7 @@ impl<'api> Copilot<'api> {
     /// The response will contain the total number of new seats that were created and existing seats that were refreshed.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `admin:org` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_copilot_seats_for_users](https://docs.github.com/rest/copilot/copilot-user-management#add-users-to-the-copilot-subscription-for-an-organization)
     ///
     /// ---
@@ -945,7 +945,7 @@ impl<'api> Copilot<'api> {
     /// Only organization owners can cancel Copilot seats for their organization members.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `admin:org` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for cancel_copilot_seat_assignment_for_teams](https://docs.github.com/rest/copilot/copilot-user-management#remove-teams-from-the-copilot-subscription-for-an-organization)
     ///
     /// ---
@@ -1000,7 +1000,7 @@ impl<'api> Copilot<'api> {
     /// Only organization owners can cancel Copilot seats for their organization members.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `admin:org` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for cancel_copilot_seat_assignment_for_teams](https://docs.github.com/rest/copilot/copilot-user-management#remove-teams-from-the-copilot-subscription-for-an-organization)
     ///
     /// ---
@@ -1056,7 +1056,7 @@ impl<'api> Copilot<'api> {
     /// Only organization owners can cancel Copilot seats for their organization members.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `admin:org` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for cancel_copilot_seat_assignment_for_users](https://docs.github.com/rest/copilot/copilot-user-management#remove-users-from-the-copilot-subscription-for-an-organization)
     ///
     /// ---
@@ -1111,7 +1111,7 @@ impl<'api> Copilot<'api> {
     /// Only organization owners can cancel Copilot seats for their organization members.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `admin:org` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for cancel_copilot_seat_assignment_for_users](https://docs.github.com/rest/copilot/copilot-user-management#remove-users-from-the-copilot-subscription-for-an-organization)
     ///
     /// ---
@@ -1164,7 +1164,7 @@ impl<'api> Copilot<'api> {
     /// Only organization owners can view details about the organization's Copilot Business or Copilot Enterprise subscription.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `read:org` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_copilot_organization_details](https://docs.github.com/rest/copilot/copilot-user-management#get-copilot-seat-information-and-settings-for-an-organization)
     ///
     /// ---
@@ -1216,7 +1216,7 @@ impl<'api> Copilot<'api> {
     /// Only organization owners can view details about the organization's Copilot Business or Copilot Enterprise subscription.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `read:org` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_copilot_organization_details](https://docs.github.com/rest/copilot/copilot-user-management#get-copilot-seat-information-and-settings-for-an-organization)
     ///
     /// ---
@@ -1267,7 +1267,7 @@ impl<'api> Copilot<'api> {
     /// Only organization owners can view Copilot seat assignment details for members of their organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `read:org` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_copilot_seat_details_for_user](https://docs.github.com/rest/copilot/copilot-user-management#get-copilot-seat-assignment-details-for-a-user)
     ///
     /// ---
@@ -1317,7 +1317,7 @@ impl<'api> Copilot<'api> {
     /// Only organization owners can view Copilot seat assignment details for members of their organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `read:org` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_copilot_seat_details_for_user](https://docs.github.com/rest/copilot/copilot-user-management#get-copilot-seat-assignment-details-for-a-user)
     ///
     /// ---
@@ -1367,7 +1367,7 @@ impl<'api> Copilot<'api> {
     /// Only organization owners can view assigned seats.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `read:org` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_copilot_seats](https://docs.github.com/rest/copilot/copilot-user-management#list-all-copilot-seat-assignments-for-an-organization)
     ///
     /// ---
@@ -1419,7 +1419,7 @@ impl<'api> Copilot<'api> {
     /// Only organization owners can view assigned seats.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `read:org` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_copilot_seats](https://docs.github.com/rest/copilot/copilot-user-management#list-all-copilot-seat-assignments-for-an-organization)
     ///
     /// ---
@@ -1478,7 +1478,7 @@ impl<'api> Copilot<'api> {
     /// Only enterprise owners and billing managers can view assigned Copilot seats across their child organizations or enterprise teams.
     /// 
     /// Personal access tokens (classic) need either the `manage_billing:copilot` or `read:enterprise` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_copilot_seats_for_enterprise](https://docs.github.com/rest/copilot/copilot-user-management#list-all-copilot-seat-assignments-for-an-enterprise)
     ///
     /// ---
@@ -1535,7 +1535,7 @@ impl<'api> Copilot<'api> {
     /// Only enterprise owners and billing managers can view assigned Copilot seats across their child organizations or enterprise teams.
     /// 
     /// Personal access tokens (classic) need either the `manage_billing:copilot` or `read:enterprise` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_copilot_seats_for_enterprise](https://docs.github.com/rest/copilot/copilot-user-management#list-all-copilot-seat-assignments-for-an-enterprise)
     ///
     /// ---
@@ -1596,7 +1596,7 @@ impl<'api> Copilot<'api> {
     /// Only owners and billing managers can view Copilot usage metrics for the enterprise.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `read:enterprise` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for usage_metrics_for_enterprise](https://docs.github.com/rest/copilot/copilot-usage#get-a-summary-of-copilot-usage-for-enterprise-members)
     ///
     /// ---
@@ -1655,7 +1655,7 @@ impl<'api> Copilot<'api> {
     /// Only owners and billing managers can view Copilot usage metrics for the enterprise.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `read:enterprise` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for usage_metrics_for_enterprise](https://docs.github.com/rest/copilot/copilot-usage#get-a-summary-of-copilot-usage-for-enterprise-members)
     ///
     /// ---
@@ -1719,7 +1719,7 @@ impl<'api> Copilot<'api> {
     /// Owners and billing managers for the enterprise that contains the enterprise team can view Copilot usage metrics for the enterprise team.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `read:enterprise` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for usage_metrics_for_enterprise_team](https://docs.github.com/rest/copilot/copilot-usage#get-a-summary-of-copilot-usage-for-an-enterprise-team)
     ///
     /// ---
@@ -1781,7 +1781,7 @@ impl<'api> Copilot<'api> {
     /// Owners and billing managers for the enterprise that contains the enterprise team can view Copilot usage metrics for the enterprise team.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `read:enterprise` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for usage_metrics_for_enterprise_team](https://docs.github.com/rest/copilot/copilot-usage#get-a-summary-of-copilot-usage-for-an-enterprise-team)
     ///
     /// ---
@@ -1842,7 +1842,7 @@ impl<'api> Copilot<'api> {
     /// Organization owners, and owners and billing managers of the parent enterprise, can view Copilot usage metrics.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot`, `read:org`, or `read:enterprise` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for usage_metrics_for_org](https://docs.github.com/rest/copilot/copilot-usage#get-a-summary-of-copilot-usage-for-organization-members)
     ///
     /// ---
@@ -1901,7 +1901,7 @@ impl<'api> Copilot<'api> {
     /// Organization owners, and owners and billing managers of the parent enterprise, can view Copilot usage metrics.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot`, `read:org`, or `read:enterprise` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for usage_metrics_for_org](https://docs.github.com/rest/copilot/copilot-usage#get-a-summary-of-copilot-usage-for-organization-members)
     ///
     /// ---
@@ -1965,7 +1965,7 @@ impl<'api> Copilot<'api> {
     /// Organization owners for the organization that contains this team, and owners and billing managers of the parent enterprise can view Copilot usage metrics for a team.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot`, `read:org`, or `read:enterprise` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for usage_metrics_for_team](https://docs.github.com/rest/copilot/copilot-usage#get-a-summary-of-copilot-usage-for-a-team)
     ///
     /// ---
@@ -2027,7 +2027,7 @@ impl<'api> Copilot<'api> {
     /// Organization owners for the organization that contains this team, and owners and billing managers of the parent enterprise can view Copilot usage metrics for a team.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot`, `read:org`, or `read:enterprise` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for usage_metrics_for_team](https://docs.github.com/rest/copilot/copilot-usage#get-a-summary-of-copilot-usage-for-a-team)
     ///
     /// ---

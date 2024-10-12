@@ -447,7 +447,7 @@ impl<'req> CodeScanningDeleteAnalysisParams<'req> {
 
     /// Allow deletion if the specified analysis is the last in a set. If you attempt to delete the final analysis in a set without setting this parameter to `true`, you'll get a 400 response with the message: `Analysis is last of its type and deletion may result in the loss of historical alert data. Please specify confirm_delete.`
     pub fn confirm_delete(self, confirm_delete: &'req str) -> Self {
-        Self { 
+        Self {
             confirm_delete: Some(confirm_delete),
         }
     }
@@ -473,7 +473,7 @@ impl CodeScanningListAlertInstancesParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             page: Some(page),
             per_page: self.per_page, 
             git_ref: self.git_ref, 
@@ -483,7 +483,7 @@ impl CodeScanningListAlertInstancesParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             page: self.page, 
             per_page: Some(per_page),
             git_ref: self.git_ref, 
@@ -493,7 +493,7 @@ impl CodeScanningListAlertInstancesParams {
 
     /// The Git reference for the results you want to list. The `ref` for a branch can be formatted either as `refs/heads/<branch name>` or simply `<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
     pub fn git_ref(self, git_ref: CodeScanningRef) -> Self {
-        Self { 
+        Self {
             page: self.page, 
             per_page: self.per_page, 
             git_ref: Some(git_ref),
@@ -503,7 +503,7 @@ impl CodeScanningListAlertInstancesParams {
 
     /// The number of the pull request for the results you want to list.
     pub fn pr(self, pr: i32) -> Self {
-        Self { 
+        Self {
             page: self.page, 
             per_page: self.per_page, 
             git_ref: self.git_ref, 
@@ -553,7 +553,7 @@ impl<'req> CodeScanningListAlertsForOrgParams<'req> {
 
     /// The name of a code scanning tool. Only results by this tool will be listed. You can specify the tool by using either `tool_name` or `tool_guid`, but not both.
     pub fn tool_name(self, tool_name: CodeScanningAnalysisToolName) -> Self {
-        Self { 
+        Self {
             tool_name: Some(tool_name),
             tool_guid: self.tool_guid, 
             before: self.before, 
@@ -569,7 +569,7 @@ impl<'req> CodeScanningListAlertsForOrgParams<'req> {
 
     /// The GUID of a code scanning tool. Only results by this tool will be listed. Note that some code scanning tools may not include a GUID in their analysis data. You can specify the tool by using either `tool_guid` or `tool_name`, but not both.
     pub fn tool_guid(self, tool_guid: CodeScanningAnalysisToolGuid) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: Some(tool_guid),
             before: self.before, 
@@ -585,7 +585,7 @@ impl<'req> CodeScanningListAlertsForOrgParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn before(self, before: &'req str) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             before: Some(before),
@@ -601,7 +601,7 @@ impl<'req> CodeScanningListAlertsForOrgParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn after(self, after: &'req str) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             before: self.before, 
@@ -617,7 +617,7 @@ impl<'req> CodeScanningListAlertsForOrgParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             before: self.before, 
@@ -633,7 +633,7 @@ impl<'req> CodeScanningListAlertsForOrgParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             before: self.before, 
@@ -649,7 +649,7 @@ impl<'req> CodeScanningListAlertsForOrgParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             before: self.before, 
@@ -665,7 +665,7 @@ impl<'req> CodeScanningListAlertsForOrgParams<'req> {
 
     /// If specified, only code scanning alerts with this state will be returned.
     pub fn state(self, state: CodeScanningAlertStateQuery) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             before: self.before, 
@@ -681,7 +681,7 @@ impl<'req> CodeScanningListAlertsForOrgParams<'req> {
 
     /// The property by which to sort the results.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             before: self.before, 
@@ -697,7 +697,7 @@ impl<'req> CodeScanningListAlertsForOrgParams<'req> {
 
     /// If specified, only code scanning alerts with this severity will be returned.
     pub fn severity(self, severity: CodeScanningAlertSeverity) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             before: self.before, 
@@ -753,7 +753,7 @@ impl<'req> CodeScanningListAlertsForRepoParams<'req> {
 
     /// The name of a code scanning tool. Only results by this tool will be listed. You can specify the tool by using either `tool_name` or `tool_guid`, but not both.
     pub fn tool_name(self, tool_name: CodeScanningAnalysisToolName) -> Self {
-        Self { 
+        Self {
             tool_name: Some(tool_name),
             tool_guid: self.tool_guid, 
             page: self.page, 
@@ -769,7 +769,7 @@ impl<'req> CodeScanningListAlertsForRepoParams<'req> {
 
     /// The GUID of a code scanning tool. Only results by this tool will be listed. Note that some code scanning tools may not include a GUID in their analysis data. You can specify the tool by using either `tool_guid` or `tool_name`, but not both.
     pub fn tool_guid(self, tool_guid: CodeScanningAnalysisToolGuid) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: Some(tool_guid),
             page: self.page, 
@@ -785,7 +785,7 @@ impl<'req> CodeScanningListAlertsForRepoParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: Some(page),
@@ -801,7 +801,7 @@ impl<'req> CodeScanningListAlertsForRepoParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: self.page, 
@@ -817,7 +817,7 @@ impl<'req> CodeScanningListAlertsForRepoParams<'req> {
 
     /// The Git reference for the results you want to list. The `ref` for a branch can be formatted either as `refs/heads/<branch name>` or simply `<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
     pub fn git_ref(self, git_ref: CodeScanningRef) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: self.page, 
@@ -833,7 +833,7 @@ impl<'req> CodeScanningListAlertsForRepoParams<'req> {
 
     /// The number of the pull request for the results you want to list.
     pub fn pr(self, pr: i32) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: self.page, 
@@ -849,7 +849,7 @@ impl<'req> CodeScanningListAlertsForRepoParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: self.page, 
@@ -865,7 +865,7 @@ impl<'req> CodeScanningListAlertsForRepoParams<'req> {
 
     /// The property by which to sort the results.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: self.page, 
@@ -881,7 +881,7 @@ impl<'req> CodeScanningListAlertsForRepoParams<'req> {
 
     /// If specified, only code scanning alerts with this state will be returned.
     pub fn state(self, state: CodeScanningAlertStateQuery) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: self.page, 
@@ -897,7 +897,7 @@ impl<'req> CodeScanningListAlertsForRepoParams<'req> {
 
     /// If specified, only code scanning alerts with this severity will be returned.
     pub fn severity(self, severity: CodeScanningAlertSeverity) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: self.page, 
@@ -951,7 +951,7 @@ impl<'req> CodeScanningListRecentAnalysesParams<'req> {
 
     /// The name of a code scanning tool. Only results by this tool will be listed. You can specify the tool by using either `tool_name` or `tool_guid`, but not both.
     pub fn tool_name(self, tool_name: CodeScanningAnalysisToolName) -> Self {
-        Self { 
+        Self {
             tool_name: Some(tool_name),
             tool_guid: self.tool_guid, 
             page: self.page, 
@@ -966,7 +966,7 @@ impl<'req> CodeScanningListRecentAnalysesParams<'req> {
 
     /// The GUID of a code scanning tool. Only results by this tool will be listed. Note that some code scanning tools may not include a GUID in their analysis data. You can specify the tool by using either `tool_guid` or `tool_name`, but not both.
     pub fn tool_guid(self, tool_guid: CodeScanningAnalysisToolGuid) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: Some(tool_guid),
             page: self.page, 
@@ -981,7 +981,7 @@ impl<'req> CodeScanningListRecentAnalysesParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: Some(page),
@@ -996,7 +996,7 @@ impl<'req> CodeScanningListRecentAnalysesParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: self.page, 
@@ -1011,7 +1011,7 @@ impl<'req> CodeScanningListRecentAnalysesParams<'req> {
 
     /// The number of the pull request for the results you want to list.
     pub fn pr(self, pr: i32) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: self.page, 
@@ -1026,7 +1026,7 @@ impl<'req> CodeScanningListRecentAnalysesParams<'req> {
 
     /// The Git reference for the analyses you want to list. The `ref` for a branch can be formatted either as `refs/heads/<branch name>` or simply `<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
     pub fn git_ref(self, git_ref: CodeScanningRef) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: self.page, 
@@ -1041,7 +1041,7 @@ impl<'req> CodeScanningListRecentAnalysesParams<'req> {
 
     /// Filter analyses belonging to the same SARIF upload.
     pub fn sarif_id(self, sarif_id: CodeScanningAnalysisSarifId) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: self.page, 
@@ -1056,7 +1056,7 @@ impl<'req> CodeScanningListRecentAnalysesParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: self.page, 
@@ -1071,7 +1071,7 @@ impl<'req> CodeScanningListRecentAnalysesParams<'req> {
 
     /// The property by which to sort the results.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: self.page, 
@@ -1108,7 +1108,7 @@ impl<'api> CodeScanning<'api> {
     /// will be used for running GitHub Actions workflows and storing the results of the CodeQL variant analysis.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_variant_analysis](https://docs.github.com/rest/code-scanning/code-scanning#create-a-codeql-variant-analysis)
     ///
     /// ---
@@ -1156,7 +1156,7 @@ impl<'api> CodeScanning<'api> {
     /// will be used for running GitHub Actions workflows and storing the results of the CodeQL variant analysis.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_variant_analysis](https://docs.github.com/rest/code-scanning/code-scanning#create-a-codeql-variant-analysis)
     ///
     /// ---
@@ -1261,7 +1261,7 @@ impl<'api> CodeScanning<'api> {
     /// The above process assumes that you want to remove all trace of the tool's analyses from the GitHub user interface, for the specified repository, and it therefore uses the `confirm_delete_url` value. Alternatively, you could use the `next_analysis_url` value, which would leave the last analysis in each set undeleted to avoid removing a tool's analysis entirely.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for delete_analysis](https://docs.github.com/rest/code-scanning/code-scanning#delete-a-code-scanning-analysis-from-a-repository)
     ///
     /// ---
@@ -1370,7 +1370,7 @@ impl<'api> CodeScanning<'api> {
     /// The above process assumes that you want to remove all trace of the tool's analyses from the GitHub user interface, for the specified repository, and it therefore uses the `confirm_delete_url` value. Alternatively, you could use the `next_analysis_url` value, which would leave the last analysis in each set undeleted to avoid removing a tool's analysis entirely.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for delete_analysis](https://docs.github.com/rest/code-scanning/code-scanning#delete-a-code-scanning-analysis-from-a-repository)
     ///
     /// ---
@@ -1420,7 +1420,7 @@ impl<'api> CodeScanning<'api> {
     /// Gets a single code scanning alert.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for get_alert](https://docs.github.com/rest/code-scanning/code-scanning#get-a-code-scanning-alert)
     ///
     /// ---
@@ -1464,7 +1464,7 @@ impl<'api> CodeScanning<'api> {
     /// Gets a single code scanning alert.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for get_alert](https://docs.github.com/rest/code-scanning/code-scanning#get-a-code-scanning-alert)
     ///
     /// ---
@@ -1523,7 +1523,7 @@ impl<'api> CodeScanning<'api> {
     /// - **`application/sarif+json`**: Instead of returning a summary of the analysis, this endpoint returns a subset of the analysis data that was uploaded. The data is formatted as [SARIF version 2.1.0](https://docs.oasis-open.org/sarif/sarif/v2.1.0/cs01/sarif-v2.1.0-cs01.html). It also returns additional data such as the `github/alertNumber` and `github/alertUrl` properties.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for get_analysis](https://docs.github.com/rest/code-scanning/code-scanning#get-a-code-scanning-analysis-for-a-repository)
     ///
     /// ---
@@ -1580,7 +1580,7 @@ impl<'api> CodeScanning<'api> {
     /// - **`application/sarif+json`**: Instead of returning a summary of the analysis, this endpoint returns a subset of the analysis data that was uploaded. The data is formatted as [SARIF version 2.1.0](https://docs.oasis-open.org/sarif/sarif/v2.1.0/cs01/sarif-v2.1.0-cs01.html). It also returns additional data such as the `github/alertNumber` and `github/alertUrl` properties.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for get_analysis](https://docs.github.com/rest/code-scanning/code-scanning#get-a-code-scanning-analysis-for-a-repository)
     ///
     /// ---
@@ -1630,7 +1630,7 @@ impl<'api> CodeScanning<'api> {
     /// to make a second request to get the redirect URL.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for get_codeql_database](https://docs.github.com/rest/code-scanning/code-scanning#get-a-codeql-database-for-a-repository)
     ///
     /// ---
@@ -1680,7 +1680,7 @@ impl<'api> CodeScanning<'api> {
     /// to make a second request to get the redirect URL.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for get_codeql_database](https://docs.github.com/rest/code-scanning/code-scanning#get-a-codeql-database-for-a-repository)
     ///
     /// ---
@@ -1725,7 +1725,7 @@ impl<'api> CodeScanning<'api> {
     /// Gets a code scanning default setup configuration.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for get_default_setup](https://docs.github.com/rest/code-scanning/code-scanning#get-a-code-scanning-default-setup-configuration)
     ///
     /// ---
@@ -1768,7 +1768,7 @@ impl<'api> CodeScanning<'api> {
     /// Gets a code scanning default setup configuration.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for get_default_setup](https://docs.github.com/rest/code-scanning/code-scanning#get-a-code-scanning-default-setup-configuration)
     ///
     /// ---
@@ -1811,7 +1811,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// Gets information about a SARIF upload, including the status and the URL of the analysis that was uploaded so that you can retrieve details of the analysis. For more information, see "[Get a code scanning analysis for a repository](/rest/code-scanning/code-scanning#get-a-code-scanning-analysis-for-a-repository)."
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for get_sarif](https://docs.github.com/rest/code-scanning/code-scanning#get-information-about-a-sarif-upload)
     ///
     /// ---
@@ -1853,7 +1853,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// Gets information about a SARIF upload, including the status and the URL of the analysis that was uploaded so that you can retrieve details of the analysis. For more information, see "[Get a code scanning analysis for a repository](/rest/code-scanning/code-scanning#get-a-code-scanning-analysis-for-a-repository)."
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for get_sarif](https://docs.github.com/rest/code-scanning/code-scanning#get-information-about-a-sarif-upload)
     ///
     /// ---
@@ -1897,7 +1897,7 @@ impl<'api> CodeScanning<'api> {
     /// Gets the summary of a CodeQL variant analysis.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for get_variant_analysis](https://docs.github.com/rest/code-scanning/code-scanning#get-the-summary-of-a-codeql-variant-analysis)
     ///
     /// ---
@@ -1939,7 +1939,7 @@ impl<'api> CodeScanning<'api> {
     /// Gets the summary of a CodeQL variant analysis.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for get_variant_analysis](https://docs.github.com/rest/code-scanning/code-scanning#get-the-summary-of-a-codeql-variant-analysis)
     ///
     /// ---
@@ -1982,7 +1982,7 @@ impl<'api> CodeScanning<'api> {
     /// Gets the analysis status of a repository in a CodeQL variant analysis.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for get_variant_analysis_repo_task](https://docs.github.com/rest/code-scanning/code-scanning#get-the-analysis-status-of-a-repository-in-a-codeql-variant-analysis)
     ///
     /// ---
@@ -2024,7 +2024,7 @@ impl<'api> CodeScanning<'api> {
     /// Gets the analysis status of a repository in a CodeQL variant analysis.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for get_variant_analysis_repo_task](https://docs.github.com/rest/code-scanning/code-scanning#get-the-analysis-status-of-a-repository-in-a-codeql-variant-analysis)
     ///
     /// ---
@@ -2067,7 +2067,7 @@ impl<'api> CodeScanning<'api> {
     /// Lists all instances of the specified code scanning alert.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for list_alert_instances](https://docs.github.com/rest/code-scanning/code-scanning#list-instances-of-a-code-scanning-alert)
     ///
     /// ---
@@ -2114,7 +2114,7 @@ impl<'api> CodeScanning<'api> {
     /// Lists all instances of the specified code scanning alert.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for list_alert_instances](https://docs.github.com/rest/code-scanning/code-scanning#list-instances-of-a-code-scanning-alert)
     ///
     /// ---
@@ -2165,7 +2165,7 @@ impl<'api> CodeScanning<'api> {
     /// The authenticated user must be an owner or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` or `repo`s cope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for list_alerts_for_org](https://docs.github.com/rest/code-scanning/code-scanning#list-code-scanning-alerts-for-an-organization)
     ///
     /// ---
@@ -2213,7 +2213,7 @@ impl<'api> CodeScanning<'api> {
     /// The authenticated user must be an owner or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` or `repo`s cope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for list_alerts_for_org](https://docs.github.com/rest/code-scanning/code-scanning#list-code-scanning-alerts-for-an-organization)
     ///
     /// ---
@@ -2265,7 +2265,7 @@ impl<'api> CodeScanning<'api> {
     /// for the default branch (or for the specified Git reference if you used `ref` in the request).
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/code-scanning/code-scanning#list-code-scanning-alerts-for-a-repository)
     ///
     /// ---
@@ -2317,7 +2317,7 @@ impl<'api> CodeScanning<'api> {
     /// for the default branch (or for the specified Git reference if you used `ref` in the request).
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/code-scanning/code-scanning#list-code-scanning-alerts-for-a-repository)
     ///
     /// ---
@@ -2367,7 +2367,7 @@ impl<'api> CodeScanning<'api> {
     /// Lists the CodeQL databases that are available in a repository.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for list_codeql_databases](https://docs.github.com/rest/code-scanning/code-scanning#list-codeql-databases-for-a-repository)
     ///
     /// ---
@@ -2410,7 +2410,7 @@ impl<'api> CodeScanning<'api> {
     /// Lists the CodeQL databases that are available in a repository.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for list_codeql_databases](https://docs.github.com/rest/code-scanning/code-scanning#list-codeql-databases-for-a-repository)
     ///
     /// ---
@@ -2466,7 +2466,7 @@ impl<'api> CodeScanning<'api> {
     /// > **Deprecation notice:** The `tool_name` field is deprecated and will, in future, not be included in the response for this endpoint. The example response reflects this change. The tool name can now be found inside the `tool` field.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for list_recent_analyses](https://docs.github.com/rest/code-scanning/code-scanning#list-code-scanning-analyses-for-a-repository)
     ///
     /// ---
@@ -2525,7 +2525,7 @@ impl<'api> CodeScanning<'api> {
     /// > **Deprecation notice:** The `tool_name` field is deprecated and will, in future, not be included in the response for this endpoint. The example response reflects this change. The tool name can now be found inside the `tool` field.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for list_recent_analyses](https://docs.github.com/rest/code-scanning/code-scanning#list-code-scanning-analyses-for-a-repository)
     ///
     /// ---
@@ -2573,7 +2573,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// Updates the status of a single code scanning alert.
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for update_alert](https://docs.github.com/rest/code-scanning/code-scanning#update-a-code-scanning-alert)
     ///
     /// ---
@@ -2615,7 +2615,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// Updates the status of a single code scanning alert.
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for update_alert](https://docs.github.com/rest/code-scanning/code-scanning#update-a-code-scanning-alert)
     ///
     /// ---
@@ -2659,7 +2659,7 @@ impl<'api> CodeScanning<'api> {
     /// Updates a code scanning default setup configuration.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for update_default_setup](https://docs.github.com/rest/code-scanning/code-scanning#update-a-code-scanning-default-setup-configuration)
     ///
     /// ---
@@ -2704,7 +2704,7 @@ impl<'api> CodeScanning<'api> {
     /// Updates a code scanning default setup configuration.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
-    /// 
+    ///
     /// [GitHub API docs for update_default_setup](https://docs.github.com/rest/code-scanning/code-scanning#update-a-code-scanning-default-setup-configuration)
     ///
     /// ---
@@ -2781,7 +2781,7 @@ impl<'api> CodeScanning<'api> {
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
     /// 
     /// This endpoint is limited to 1,000 requests per hour for each user or app installation calling it.
-    /// 
+    ///
     /// [GitHub API docs for upload_sarif](https://docs.github.com/rest/code-scanning/code-scanning#upload-an-analysis-as-sarif-data)
     ///
     /// ---
@@ -2857,7 +2857,7 @@ impl<'api> CodeScanning<'api> {
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
     /// 
     /// This endpoint is limited to 1,000 requests per hour for each user or app installation calling it.
-    /// 
+    ///
     /// [GitHub API docs for upload_sarif](https://docs.github.com/rest/code-scanning/code-scanning#upload-an-analysis-as-sarif-data)
     ///
     /// ---

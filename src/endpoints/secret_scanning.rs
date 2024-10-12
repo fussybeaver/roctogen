@@ -219,7 +219,7 @@ impl<'req> SecretScanningListAlertsForEnterpriseParams<'req> {
 
     /// Set to `open` or `resolved` to only list secret scanning alerts in a specific state.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             state: Some(state),
             secret_type: self.secret_type, 
             resolution: self.resolution, 
@@ -234,7 +234,7 @@ impl<'req> SecretScanningListAlertsForEnterpriseParams<'req> {
 
     /// A comma-separated list of secret types to return. By default all secret types are returned. See \"[Supported secret scanning patterns](https://docs.github.com/code-security/secret-scanning/introduction/supported-secret-scanning-patterns#supported-secrets)\" for a complete list of secret types.
     pub fn secret_type(self, secret_type: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: Some(secret_type),
             resolution: self.resolution, 
@@ -249,7 +249,7 @@ impl<'req> SecretScanningListAlertsForEnterpriseParams<'req> {
 
     /// A comma-separated list of resolutions. Only secret scanning alerts with one of these resolutions are listed. Valid resolutions are `false_positive`, `wont_fix`, `revoked`, `pattern_edited`, `pattern_deleted` or `used_in_tests`.
     pub fn resolution(self, resolution: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: Some(resolution),
@@ -264,7 +264,7 @@ impl<'req> SecretScanningListAlertsForEnterpriseParams<'req> {
 
     /// The property to sort the results by. `created` means when the alert was created. `updated` means when the alert was updated or resolved.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
@@ -279,7 +279,7 @@ impl<'req> SecretScanningListAlertsForEnterpriseParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
@@ -294,7 +294,7 @@ impl<'req> SecretScanningListAlertsForEnterpriseParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
@@ -309,7 +309,7 @@ impl<'req> SecretScanningListAlertsForEnterpriseParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn before(self, before: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
@@ -324,7 +324,7 @@ impl<'req> SecretScanningListAlertsForEnterpriseParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn after(self, after: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
@@ -339,7 +339,7 @@ impl<'req> SecretScanningListAlertsForEnterpriseParams<'req> {
 
     /// A comma-separated list of validities that, when present, will return alerts that match the validities in this list. Valid options are `active`, `inactive`, and `unknown`.
     pub fn validity(self, validity: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
@@ -385,7 +385,7 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
 
     /// Set to `open` or `resolved` to only list secret scanning alerts in a specific state.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             state: Some(state),
             secret_type: self.secret_type, 
             resolution: self.resolution, 
@@ -401,7 +401,7 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
 
     /// A comma-separated list of secret types to return. By default all secret types are returned. See \"[Supported secret scanning patterns](https://docs.github.com/code-security/secret-scanning/introduction/supported-secret-scanning-patterns#supported-secrets)\" for a complete list of secret types.
     pub fn secret_type(self, secret_type: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: Some(secret_type),
             resolution: self.resolution, 
@@ -417,7 +417,7 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
 
     /// A comma-separated list of resolutions. Only secret scanning alerts with one of these resolutions are listed. Valid resolutions are `false_positive`, `wont_fix`, `revoked`, `pattern_edited`, `pattern_deleted` or `used_in_tests`.
     pub fn resolution(self, resolution: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: Some(resolution),
@@ -433,7 +433,7 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
 
     /// The property to sort the results by. `created` means when the alert was created. `updated` means when the alert was updated or resolved.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
@@ -449,7 +449,7 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
@@ -465,7 +465,7 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
@@ -481,7 +481,7 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
@@ -497,7 +497,7 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for events before this cursor. To receive an initial cursor on your first request, include an empty \"before\" query string.
     pub fn before(self, before: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
@@ -513,7 +513,7 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for events after this cursor.  To receive an initial cursor on your first request, include an empty \"after\" query string.
     pub fn after(self, after: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
@@ -529,7 +529,7 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
 
     /// A comma-separated list of validities that, when present, will return alerts that match the validities in this list. Valid options are `active`, `inactive`, and `unknown`.
     pub fn validity(self, validity: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
@@ -585,7 +585,7 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
 
     /// Set to `open` or `resolved` to only list secret scanning alerts in a specific state.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             state: Some(state),
             secret_type: self.secret_type, 
             resolution: self.resolution, 
@@ -601,7 +601,7 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
 
     /// A comma-separated list of secret types to return. By default all secret types are returned. See \"[Supported secret scanning patterns](https://docs.github.com/code-security/secret-scanning/introduction/supported-secret-scanning-patterns#supported-secrets)\" for a complete list of secret types.
     pub fn secret_type(self, secret_type: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: Some(secret_type),
             resolution: self.resolution, 
@@ -617,7 +617,7 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
 
     /// A comma-separated list of resolutions. Only secret scanning alerts with one of these resolutions are listed. Valid resolutions are `false_positive`, `wont_fix`, `revoked`, `pattern_edited`, `pattern_deleted` or `used_in_tests`.
     pub fn resolution(self, resolution: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: Some(resolution),
@@ -633,7 +633,7 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
 
     /// The property to sort the results by. `created` means when the alert was created. `updated` means when the alert was updated or resolved.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
@@ -649,7 +649,7 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
@@ -665,7 +665,7 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
@@ -681,7 +681,7 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
@@ -697,7 +697,7 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for events before this cursor. To receive an initial cursor on your first request, include an empty \"before\" query string.
     pub fn before(self, before: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
@@ -713,7 +713,7 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for events after this cursor.  To receive an initial cursor on your first request, include an empty \"after\" query string.
     pub fn after(self, after: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
@@ -729,7 +729,7 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
 
     /// A comma-separated list of validities that, when present, will return alerts that match the validities in this list. Valid options are `active`, `inactive`, and `unknown`.
     pub fn validity(self, validity: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             secret_type: self.secret_type, 
             resolution: self.resolution, 
@@ -769,7 +769,7 @@ impl SecretScanningListLocationsForAlertParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             page: Some(page),
             per_page: self.per_page, 
         }
@@ -777,7 +777,7 @@ impl SecretScanningListLocationsForAlertParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             page: self.page, 
             per_page: Some(per_page),
         }
@@ -804,7 +804,7 @@ impl<'api> SecretScanning<'api> {
     /// The authenticated user must be the original author of the committed secret.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_push_protection_bypass](https://docs.github.com/rest/secret-scanning/secret-scanning#create-a-push-protection-bypass)
     ///
     /// ---
@@ -850,7 +850,7 @@ impl<'api> SecretScanning<'api> {
     /// The authenticated user must be the original author of the committed secret.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_push_protection_bypass](https://docs.github.com/rest/secret-scanning/secret-scanning#create-a-push-protection-bypass)
     ///
     /// ---
@@ -897,7 +897,7 @@ impl<'api> SecretScanning<'api> {
     /// The authenticated user must be an administrator for the repository or for the organization that owns the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
-    /// 
+    ///
     /// [GitHub API docs for get_alert](https://docs.github.com/rest/secret-scanning/secret-scanning#get-a-secret-scanning-alert)
     ///
     /// ---
@@ -942,7 +942,7 @@ impl<'api> SecretScanning<'api> {
     /// The authenticated user must be an administrator for the repository or for the organization that owns the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
-    /// 
+    ///
     /// [GitHub API docs for get_alert](https://docs.github.com/rest/secret-scanning/secret-scanning#get-a-secret-scanning-alert)
     ///
     /// ---
@@ -990,7 +990,7 @@ impl<'api> SecretScanning<'api> {
     /// The authenticated user must be a member of the enterprise in order to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope or `security_events` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_alerts_for_enterprise](https://docs.github.com/rest/secret-scanning/secret-scanning#list-secret-scanning-alerts-for-an-enterprise)
     ///
     /// ---
@@ -1040,7 +1040,7 @@ impl<'api> SecretScanning<'api> {
     /// The authenticated user must be a member of the enterprise in order to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope or `security_events` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_alerts_for_enterprise](https://docs.github.com/rest/secret-scanning/secret-scanning#list-secret-scanning-alerts-for-an-enterprise)
     ///
     /// ---
@@ -1090,7 +1090,7 @@ impl<'api> SecretScanning<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
-    /// 
+    ///
     /// [GitHub API docs for list_alerts_for_org](https://docs.github.com/rest/secret-scanning/secret-scanning#list-secret-scanning-alerts-for-an-organization)
     ///
     /// ---
@@ -1138,7 +1138,7 @@ impl<'api> SecretScanning<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
-    /// 
+    ///
     /// [GitHub API docs for list_alerts_for_org](https://docs.github.com/rest/secret-scanning/secret-scanning#list-secret-scanning-alerts-for-an-organization)
     ///
     /// ---
@@ -1188,7 +1188,7 @@ impl<'api> SecretScanning<'api> {
     /// The authenticated user must be an administrator for the repository or for the organization that owns the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
-    /// 
+    ///
     /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/secret-scanning/secret-scanning#list-secret-scanning-alerts-for-a-repository)
     ///
     /// ---
@@ -1236,7 +1236,7 @@ impl<'api> SecretScanning<'api> {
     /// The authenticated user must be an administrator for the repository or for the organization that owns the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
-    /// 
+    ///
     /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/secret-scanning/secret-scanning#list-secret-scanning-alerts-for-a-repository)
     ///
     /// ---
@@ -1286,7 +1286,7 @@ impl<'api> SecretScanning<'api> {
     /// The authenticated user must be an administrator for the repository or for the organization that owns the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
-    /// 
+    ///
     /// [GitHub API docs for list_locations_for_alert](https://docs.github.com/rest/secret-scanning/secret-scanning#list-locations-for-a-secret-scanning-alert)
     ///
     /// ---
@@ -1334,7 +1334,7 @@ impl<'api> SecretScanning<'api> {
     /// The authenticated user must be an administrator for the repository or for the organization that owns the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
-    /// 
+    ///
     /// [GitHub API docs for list_locations_for_alert](https://docs.github.com/rest/secret-scanning/secret-scanning#list-locations-for-a-secret-scanning-alert)
     ///
     /// ---
@@ -1384,7 +1384,7 @@ impl<'api> SecretScanning<'api> {
     /// The authenticated user must be an administrator for the repository or for the organization that owns the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
-    /// 
+    ///
     /// [GitHub API docs for update_alert](https://docs.github.com/rest/secret-scanning/secret-scanning#update-a-secret-scanning-alert)
     ///
     /// ---
@@ -1430,7 +1430,7 @@ impl<'api> SecretScanning<'api> {
     /// The authenticated user must be an administrator for the repository or for the organization that owns the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
-    /// 
+    ///
     /// [GitHub API docs for update_alert](https://docs.github.com/rest/secret-scanning/secret-scanning#update-a-secret-scanning-alert)
     ///
     /// ---

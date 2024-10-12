@@ -111,7 +111,7 @@ impl LicensesGetAllCommonlyUsedParams {
 
     
     pub fn featured(self, featured: bool) -> Self {
-        Self { 
+        Self {
             featured: Some(featured),
             per_page: self.per_page, 
             page: self.page, 
@@ -120,7 +120,7 @@ impl LicensesGetAllCommonlyUsedParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             featured: self.featured, 
             per_page: Some(per_page),
             page: self.page, 
@@ -129,7 +129,7 @@ impl LicensesGetAllCommonlyUsedParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             featured: self.featured, 
             per_page: self.per_page, 
             page: Some(page),
@@ -160,7 +160,7 @@ impl LicensesGetForRepoParams {
 
     /// The Git reference for the results you want to list. The `ref` for a branch can be formatted either as `refs/heads/<branch name>` or simply `<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
     pub fn git_ref(self, git_ref: CodeScanningRef) -> Self {
-        Self { 
+        Self {
             git_ref: Some(git_ref),
         }
     }
@@ -173,7 +173,7 @@ impl<'api> Licenses<'api> {
     /// # Get a license
     ///
     /// Gets information about a specific license. For more information, see "[Licensing a repository ](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository)."
-    /// 
+    ///
     /// [GitHub API docs for get](https://docs.github.com/rest/licenses/licenses#get-a-license)
     ///
     /// ---
@@ -214,7 +214,7 @@ impl<'api> Licenses<'api> {
     /// # Get a license
     ///
     /// Gets information about a specific license. For more information, see "[Licensing a repository ](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository)."
-    /// 
+    ///
     /// [GitHub API docs for get](https://docs.github.com/rest/licenses/licenses#get-a-license)
     ///
     /// ---
@@ -256,7 +256,7 @@ impl<'api> Licenses<'api> {
     /// # Get all commonly used licenses
     ///
     /// Lists the most commonly used licenses on GitHub. For more information, see "[Licensing a repository ](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository)."
-    /// 
+    ///
     /// [GitHub API docs for get_all_commonly_used](https://docs.github.com/rest/licenses/licenses#get-all-commonly-used-licenses)
     ///
     /// ---
@@ -299,7 +299,7 @@ impl<'api> Licenses<'api> {
     /// # Get all commonly used licenses
     ///
     /// Lists the most commonly used licenses on GitHub. For more information, see "[Licensing a repository ](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository)."
-    /// 
+    ///
     /// [GitHub API docs for get_all_commonly_used](https://docs.github.com/rest/licenses/licenses#get-all-commonly-used-licenses)
     ///
     /// ---
@@ -349,7 +349,7 @@ impl<'api> Licenses<'api> {
     /// 
     /// - **`application/vnd.github.raw+json`**: Returns the raw contents of the license.
     /// - **`application/vnd.github.html+json`**: Returns the license contents in HTML. Markup languages are rendered to HTML using GitHub's open-source [Markup library](https://github.com/github/markup).
-    /// 
+    ///
     /// [GitHub API docs for get_for_repo](https://docs.github.com/rest/licenses/licenses#get-the-license-for-a-repository)
     ///
     /// ---
@@ -397,7 +397,7 @@ impl<'api> Licenses<'api> {
     /// 
     /// - **`application/vnd.github.raw+json`**: Returns the raw contents of the license.
     /// - **`application/vnd.github.html+json`**: Returns the license contents in HTML. Markup languages are rendered to HTML using GitHub's open-source [Markup library](https://github.com/github/markup).
-    /// 
+    ///
     /// [GitHub API docs for get_for_repo](https://docs.github.com/rest/licenses/licenses#get-the-license-for-a-repository)
     ///
     /// ---

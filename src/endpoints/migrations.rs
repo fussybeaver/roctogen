@@ -514,7 +514,7 @@ impl MigrationsGetCommitAuthorsParams {
 
     /// A user ID. Only return users with an ID greater than this ID.
     pub fn since(self, since: i32) -> Self {
-        Self { 
+        Self {
             since: Some(since),
         }
     }
@@ -534,7 +534,7 @@ impl MigrationsGetStatusForAuthenticatedUserParams {
 
     
     pub fn exclude(self, exclude: Vec<String>) -> Self {
-        Self { 
+        Self {
             exclude: Some(exclude),
         }
     }
@@ -554,7 +554,7 @@ impl MigrationsGetStatusForOrgParams {
 
     /// Exclude attributes from the API response to improve performance
     pub fn exclude(self, exclude: Vec<String>) -> Self {
-        Self { 
+        Self {
             exclude: Some(exclude),
         }
     }
@@ -576,7 +576,7 @@ impl MigrationsListForAuthenticatedUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -584,7 +584,7 @@ impl MigrationsListForAuthenticatedUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -618,7 +618,7 @@ impl MigrationsListForOrgParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
             exclude: self.exclude, 
@@ -627,7 +627,7 @@ impl MigrationsListForOrgParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
             exclude: self.exclude, 
@@ -636,7 +636,7 @@ impl MigrationsListForOrgParams {
 
     /// Exclude attributes from the API response to improve performance
     pub fn exclude(self, exclude: Vec<String>) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             exclude: Some(exclude),
@@ -669,7 +669,7 @@ impl MigrationsListReposForAuthenticatedUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -677,7 +677,7 @@ impl MigrationsListReposForAuthenticatedUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -709,7 +709,7 @@ impl MigrationsListReposForOrgParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -717,7 +717,7 @@ impl MigrationsListReposForOrgParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -743,7 +743,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// > [!WARNING]
     /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
-    /// 
+    ///
     /// [GitHub API docs for cancel_import](https://docs.github.com/rest/migrations/source-imports#cancel-an-import)
     ///
     /// ---
@@ -785,7 +785,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// > [!WARNING]
     /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
-    /// 
+    ///
     /// [GitHub API docs for cancel_import](https://docs.github.com/rest/migrations/source-imports#cancel-an-import)
     ///
     /// ---
@@ -825,7 +825,7 @@ impl<'api> Migrations<'api> {
     /// # Delete a user migration archive
     ///
     /// Deletes a previous migration archive. Downloadable migration archives are automatically deleted after seven days. Migration metadata, which is returned in the [List user migrations](https://docs.github.com/rest/migrations/users#list-user-migrations) and [Get a user migration status](https://docs.github.com/rest/migrations/users#get-a-user-migration-status) endpoints, will continue to be available even after an archive is deleted.
-    /// 
+    ///
     /// [GitHub API docs for delete_archive_for_authenticated_user](https://docs.github.com/rest/migrations/users#delete-a-user-migration-archive)
     ///
     /// ---
@@ -867,7 +867,7 @@ impl<'api> Migrations<'api> {
     /// # Delete a user migration archive
     ///
     /// Deletes a previous migration archive. Downloadable migration archives are automatically deleted after seven days. Migration metadata, which is returned in the [List user migrations](https://docs.github.com/rest/migrations/users#list-user-migrations) and [Get a user migration status](https://docs.github.com/rest/migrations/users#get-a-user-migration-status) endpoints, will continue to be available even after an archive is deleted.
-    /// 
+    ///
     /// [GitHub API docs for delete_archive_for_authenticated_user](https://docs.github.com/rest/migrations/users#delete-a-user-migration-archive)
     ///
     /// ---
@@ -910,7 +910,7 @@ impl<'api> Migrations<'api> {
     /// # Delete an organization migration archive
     ///
     /// Deletes a previous migration archive. Migration archives are automatically deleted after seven days.
-    /// 
+    ///
     /// [GitHub API docs for delete_archive_for_org](https://docs.github.com/rest/migrations/orgs#delete-an-organization-migration-archive)
     ///
     /// ---
@@ -949,7 +949,7 @@ impl<'api> Migrations<'api> {
     /// # Delete an organization migration archive
     ///
     /// Deletes a previous migration archive. Migration archives are automatically deleted after seven days.
-    /// 
+    ///
     /// [GitHub API docs for delete_archive_for_org](https://docs.github.com/rest/migrations/orgs#delete-an-organization-migration-archive)
     ///
     /// ---
@@ -989,7 +989,7 @@ impl<'api> Migrations<'api> {
     /// # Download an organization migration archive
     ///
     /// Fetches the URL to a migration archive.
-    /// 
+    ///
     /// [GitHub API docs for download_archive_for_org](https://docs.github.com/rest/migrations/orgs#download-an-organization-migration-archive)
     ///
     /// ---
@@ -1029,7 +1029,7 @@ impl<'api> Migrations<'api> {
     /// # Download an organization migration archive
     ///
     /// Fetches the URL to a migration archive.
-    /// 
+    ///
     /// [GitHub API docs for download_archive_for_org](https://docs.github.com/rest/migrations/orgs#download-an-organization-migration-archive)
     ///
     /// ---
@@ -1090,7 +1090,7 @@ impl<'api> Migrations<'api> {
     /// *   users
     /// 
     /// The archive will also contain an `attachments` directory that includes all attachment files uploaded to GitHub.com and a `repositories` directory that contains the repository's Git data.
-    /// 
+    ///
     /// [GitHub API docs for get_archive_for_authenticated_user](https://docs.github.com/rest/migrations/users#download-a-user-migration-archive)
     ///
     /// ---
@@ -1152,7 +1152,7 @@ impl<'api> Migrations<'api> {
     /// *   users
     /// 
     /// The archive will also contain an `attachments` directory that includes all attachment files uploaded to GitHub.com and a `repositories` directory that contains the repository's Git data.
-    /// 
+    ///
     /// [GitHub API docs for get_archive_for_authenticated_user](https://docs.github.com/rest/migrations/users#download-a-user-migration-archive)
     ///
     /// ---
@@ -1200,7 +1200,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// > [!WARNING]
     /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
-    /// 
+    ///
     /// [GitHub API docs for get_commit_authors](https://docs.github.com/rest/migrations/source-imports#get-commit-authors)
     ///
     /// ---
@@ -1249,7 +1249,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// > [!WARNING]
     /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
-    /// 
+    ///
     /// [GitHub API docs for get_commit_authors](https://docs.github.com/rest/migrations/source-imports#get-commit-authors)
     ///
     /// ---
@@ -1331,7 +1331,7 @@ impl<'api> Migrations<'api> {
     /// *   `has_large_files` - the boolean value describing whether files larger than 100MB were found during the `importing` step.
     /// *   `large_files_size` - the total size in gigabytes of files larger than 100MB found in the originating repository.
     /// *   `large_files_count` - the total number of files larger than 100MB found in the originating repository. To see a list of these files, make a "Get Large Files" request.
-    /// 
+    ///
     /// [GitHub API docs for get_import_status](https://docs.github.com/rest/migrations/source-imports#get-an-import-status)
     ///
     /// ---
@@ -1407,7 +1407,7 @@ impl<'api> Migrations<'api> {
     /// *   `has_large_files` - the boolean value describing whether files larger than 100MB were found during the `importing` step.
     /// *   `large_files_size` - the total size in gigabytes of files larger than 100MB found in the originating repository.
     /// *   `large_files_count` - the total number of files larger than 100MB found in the originating repository. To see a list of these files, make a "Get Large Files" request.
-    /// 
+    ///
     /// [GitHub API docs for get_import_status](https://docs.github.com/rest/migrations/source-imports#get-an-import-status)
     ///
     /// ---
@@ -1451,7 +1451,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// > [!WARNING]
     /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
-    /// 
+    ///
     /// [GitHub API docs for get_large_files](https://docs.github.com/rest/migrations/source-imports#get-large-files)
     ///
     /// ---
@@ -1493,7 +1493,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// > [!WARNING]
     /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
-    /// 
+    ///
     /// [GitHub API docs for get_large_files](https://docs.github.com/rest/migrations/source-imports#get-large-files)
     ///
     /// ---
@@ -1540,7 +1540,7 @@ impl<'api> Migrations<'api> {
     /// *   `failed` - the migration failed.
     /// 
     /// Once the migration has been `exported` you can [download the migration archive](https://docs.github.com/rest/migrations/users#download-a-user-migration-archive).
-    /// 
+    ///
     /// [GitHub API docs for get_status_for_authenticated_user](https://docs.github.com/rest/migrations/users#get-a-user-migration-status)
     ///
     /// ---
@@ -1593,7 +1593,7 @@ impl<'api> Migrations<'api> {
     /// *   `failed` - the migration failed.
     /// 
     /// Once the migration has been `exported` you can [download the migration archive](https://docs.github.com/rest/migrations/users#download-a-user-migration-archive).
-    /// 
+    ///
     /// [GitHub API docs for get_status_for_authenticated_user](https://docs.github.com/rest/migrations/users#get-a-user-migration-status)
     ///
     /// ---
@@ -1648,7 +1648,7 @@ impl<'api> Migrations<'api> {
     /// *   `exporting`, which means the migration is in progress.
     /// *   `exported`, which means the migration finished successfully.
     /// *   `failed`, which means the migration failed.
-    /// 
+    ///
     /// [GitHub API docs for get_status_for_org](https://docs.github.com/rest/migrations/orgs#get-an-organization-migration-status)
     ///
     /// ---
@@ -1698,7 +1698,7 @@ impl<'api> Migrations<'api> {
     /// *   `exporting`, which means the migration is in progress.
     /// *   `exported`, which means the migration finished successfully.
     /// *   `failed`, which means the migration failed.
-    /// 
+    ///
     /// [GitHub API docs for get_status_for_org](https://docs.github.com/rest/migrations/orgs#get-an-organization-migration-status)
     ///
     /// ---
@@ -1743,7 +1743,7 @@ impl<'api> Migrations<'api> {
     /// # List user migrations
     ///
     /// Lists all migrations a user has started.
-    /// 
+    ///
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/migrations/users#list-user-migrations)
     ///
     /// ---
@@ -1788,7 +1788,7 @@ impl<'api> Migrations<'api> {
     /// # List user migrations
     ///
     /// Lists all migrations a user has started.
-    /// 
+    ///
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/migrations/users#list-user-migrations)
     ///
     /// ---
@@ -1837,7 +1837,7 @@ impl<'api> Migrations<'api> {
     /// Lists the most recent migrations, including both exports (which can be started through the REST API) and imports (which cannot be started using the REST API).
     /// 
     /// A list of `repositories` is only returned for export migrations.
-    /// 
+    ///
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/migrations/orgs#list-organization-migrations)
     ///
     /// ---
@@ -1881,7 +1881,7 @@ impl<'api> Migrations<'api> {
     /// Lists the most recent migrations, including both exports (which can be started through the REST API) and imports (which cannot be started using the REST API).
     /// 
     /// A list of `repositories` is only returned for export migrations.
-    /// 
+    ///
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/migrations/orgs#list-organization-migrations)
     ///
     /// ---
@@ -1925,7 +1925,7 @@ impl<'api> Migrations<'api> {
     /// # List repositories for a user migration
     ///
     /// Lists all the repositories for this user migration.
-    /// 
+    ///
     /// [GitHub API docs for list_repos_for_authenticated_user](https://docs.github.com/rest/migrations/users#list-repositories-for-a-user-migration)
     ///
     /// ---
@@ -1968,7 +1968,7 @@ impl<'api> Migrations<'api> {
     /// # List repositories for a user migration
     ///
     /// Lists all the repositories for this user migration.
-    /// 
+    ///
     /// [GitHub API docs for list_repos_for_authenticated_user](https://docs.github.com/rest/migrations/users#list-repositories-for-a-user-migration)
     ///
     /// ---
@@ -2013,7 +2013,7 @@ impl<'api> Migrations<'api> {
     /// # List repositories in an organization migration
     ///
     /// List all the repositories for this organization migration.
-    /// 
+    ///
     /// [GitHub API docs for list_repos_for_org](https://docs.github.com/rest/migrations/orgs#list-repositories-in-an-organization-migration)
     ///
     /// ---
@@ -2056,7 +2056,7 @@ impl<'api> Migrations<'api> {
     /// # List repositories in an organization migration
     ///
     /// List all the repositories for this organization migration.
-    /// 
+    ///
     /// [GitHub API docs for list_repos_for_org](https://docs.github.com/rest/migrations/orgs#list-repositories-in-an-organization-migration)
     ///
     /// ---
@@ -2105,7 +2105,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// > [!WARNING]
     /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
-    /// 
+    ///
     /// [GitHub API docs for map_commit_author](https://docs.github.com/rest/migrations/source-imports#map-a-commit-author)
     ///
     /// ---
@@ -2150,7 +2150,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// > [!WARNING]
     /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
-    /// 
+    ///
     /// [GitHub API docs for map_commit_author](https://docs.github.com/rest/migrations/source-imports#map-a-commit-author)
     ///
     /// ---
@@ -2199,7 +2199,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// > [!WARNING]
     /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
-    /// 
+    ///
     /// [GitHub API docs for set_lfs_preference](https://docs.github.com/rest/migrations/source-imports#update-git-lfs-preference)
     ///
     /// ---
@@ -2246,7 +2246,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// > [!WARNING]
     /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
-    /// 
+    ///
     /// [GitHub API docs for set_lfs_preference](https://docs.github.com/rest/migrations/source-imports#update-git-lfs-preference)
     ///
     /// ---
@@ -2287,7 +2287,7 @@ impl<'api> Migrations<'api> {
     /// # Start a user migration
     ///
     /// Initiates the generation of a user migration archive.
-    /// 
+    ///
     /// [GitHub API docs for start_for_authenticated_user](https://docs.github.com/rest/migrations/users#start-a-user-migration)
     ///
     /// ---
@@ -2329,7 +2329,7 @@ impl<'api> Migrations<'api> {
     /// # Start a user migration
     ///
     /// Initiates the generation of a user migration archive.
-    /// 
+    ///
     /// [GitHub API docs for start_for_authenticated_user](https://docs.github.com/rest/migrations/users#start-a-user-migration)
     ///
     /// ---
@@ -2372,7 +2372,7 @@ impl<'api> Migrations<'api> {
     /// # Start an organization migration
     ///
     /// Initiates the generation of a migration archive.
-    /// 
+    ///
     /// [GitHub API docs for start_for_org](https://docs.github.com/rest/migrations/orgs#start-an-organization-migration)
     ///
     /// ---
@@ -2412,7 +2412,7 @@ impl<'api> Migrations<'api> {
     /// # Start an organization migration
     ///
     /// Initiates the generation of a migration archive.
-    /// 
+    ///
     /// [GitHub API docs for start_for_org](https://docs.github.com/rest/migrations/orgs#start-an-organization-migration)
     ///
     /// ---
@@ -2458,7 +2458,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// > [!WARNING]
     /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
-    /// 
+    ///
     /// [GitHub API docs for start_import](https://docs.github.com/rest/migrations/source-imports#start-an-import)
     ///
     /// ---
@@ -2504,7 +2504,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// > [!WARNING]
     /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
-    /// 
+    ///
     /// [GitHub API docs for start_import](https://docs.github.com/rest/migrations/source-imports#start-an-import)
     ///
     /// ---
@@ -2546,7 +2546,7 @@ impl<'api> Migrations<'api> {
     /// # Unlock a user repository
     ///
     /// Unlocks a repository. You can lock repositories when you [start a user migration](https://docs.github.com/rest/migrations/users#start-a-user-migration). Once the migration is complete you can unlock each repository to begin using it again or [delete the repository](https://docs.github.com/rest/repos/repos#delete-a-repository) if you no longer need the source data. Returns a status of `404 Not Found` if the repository is not locked.
-    /// 
+    ///
     /// [GitHub API docs for unlock_repo_for_authenticated_user](https://docs.github.com/rest/migrations/users#unlock-a-user-repository)
     ///
     /// ---
@@ -2588,7 +2588,7 @@ impl<'api> Migrations<'api> {
     /// # Unlock a user repository
     ///
     /// Unlocks a repository. You can lock repositories when you [start a user migration](https://docs.github.com/rest/migrations/users#start-a-user-migration). Once the migration is complete you can unlock each repository to begin using it again or [delete the repository](https://docs.github.com/rest/repos/repos#delete-a-repository) if you no longer need the source data. Returns a status of `404 Not Found` if the repository is not locked.
-    /// 
+    ///
     /// [GitHub API docs for unlock_repo_for_authenticated_user](https://docs.github.com/rest/migrations/users#unlock-a-user-repository)
     ///
     /// ---
@@ -2631,7 +2631,7 @@ impl<'api> Migrations<'api> {
     /// # Unlock an organization repository
     ///
     /// Unlocks a repository that was locked for migration. You should unlock each migrated repository and [delete them](https://docs.github.com/rest/repos/repos#delete-a-repository) when the migration is complete and you no longer need the source data.
-    /// 
+    ///
     /// [GitHub API docs for unlock_repo_for_org](https://docs.github.com/rest/migrations/orgs#unlock-an-organization-repository)
     ///
     /// ---
@@ -2670,7 +2670,7 @@ impl<'api> Migrations<'api> {
     /// # Unlock an organization repository
     ///
     /// Unlocks a repository that was locked for migration. You should unlock each migrated repository and [delete them](https://docs.github.com/rest/repos/repos#delete-a-repository) when the migration is complete and you no longer need the source data.
-    /// 
+    ///
     /// [GitHub API docs for unlock_repo_for_org](https://docs.github.com/rest/migrations/orgs#unlock-an-organization-repository)
     ///
     /// ---
@@ -2718,7 +2718,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// > [!WARNING]
     /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
-    /// 
+    ///
     /// [GitHub API docs for update_import](https://docs.github.com/rest/migrations/source-imports#update-an-import)
     ///
     /// ---
@@ -2765,7 +2765,7 @@ impl<'api> Migrations<'api> {
     /// 
     /// > [!WARNING]
     /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
-    /// 
+    ///
     /// [GitHub API docs for update_import](https://docs.github.com/rest/migrations/source-imports#update-an-import)
     ///
     /// ---

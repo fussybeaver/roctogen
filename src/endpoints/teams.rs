@@ -229,7 +229,7 @@ pub enum TeamsCheckPermissionsForRepoInOrgError {
 
     // -- endpoint errors
 
-    #[error("Response if team has permission for the repository. This is the response when the repository media type hasn&#x27;t been provded in the Accept header.")]
+    #[error("Response if team has permission for the repository. This is the response when the repository media type hasn't been provded in the Accept header.")]
     Status204,
     #[error("Not Found if team does not have permission for the repository")]
     Status404,
@@ -1172,7 +1172,7 @@ impl TeamsListParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1180,7 +1180,7 @@ impl TeamsListParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1212,7 +1212,7 @@ impl TeamsListChildInOrgParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1220,7 +1220,7 @@ impl TeamsListChildInOrgParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1252,7 +1252,7 @@ impl TeamsListChildLegacyParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1260,7 +1260,7 @@ impl TeamsListChildLegacyParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1294,7 +1294,7 @@ impl<'req> TeamsListDiscussionCommentsInOrgParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             direction: Some(direction),
             per_page: self.per_page, 
             page: self.page, 
@@ -1303,7 +1303,7 @@ impl<'req> TeamsListDiscussionCommentsInOrgParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             per_page: Some(per_page),
             page: self.page, 
@@ -1312,7 +1312,7 @@ impl<'req> TeamsListDiscussionCommentsInOrgParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             per_page: self.per_page, 
             page: Some(page),
@@ -1347,7 +1347,7 @@ impl<'req> TeamsListDiscussionCommentsLegacyParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             direction: Some(direction),
             per_page: self.per_page, 
             page: self.page, 
@@ -1356,7 +1356,7 @@ impl<'req> TeamsListDiscussionCommentsLegacyParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             per_page: Some(per_page),
             page: self.page, 
@@ -1365,7 +1365,7 @@ impl<'req> TeamsListDiscussionCommentsLegacyParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             per_page: self.per_page, 
             page: Some(page),
@@ -1402,7 +1402,7 @@ impl<'req> TeamsListDiscussionsInOrgParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             direction: Some(direction),
             per_page: self.per_page, 
             page: self.page, 
@@ -1412,7 +1412,7 @@ impl<'req> TeamsListDiscussionsInOrgParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             per_page: Some(per_page),
             page: self.page, 
@@ -1422,7 +1422,7 @@ impl<'req> TeamsListDiscussionsInOrgParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             per_page: self.per_page, 
             page: Some(page),
@@ -1432,7 +1432,7 @@ impl<'req> TeamsListDiscussionsInOrgParams<'req> {
 
     /// Pinned discussions only filter
     pub fn pinned(self, pinned: &'req str) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             per_page: self.per_page, 
             page: self.page, 
@@ -1468,7 +1468,7 @@ impl<'req> TeamsListDiscussionsLegacyParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             direction: Some(direction),
             per_page: self.per_page, 
             page: self.page, 
@@ -1477,7 +1477,7 @@ impl<'req> TeamsListDiscussionsLegacyParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             per_page: Some(per_page),
             page: self.page, 
@@ -1486,7 +1486,7 @@ impl<'req> TeamsListDiscussionsLegacyParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             per_page: self.per_page, 
             page: Some(page),
@@ -1519,7 +1519,7 @@ impl TeamsListForAuthenticatedUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1527,7 +1527,7 @@ impl TeamsListForAuthenticatedUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1561,7 +1561,7 @@ impl<'req> TeamsListMembersInOrgParams<'req> {
 
     /// Filters members returned by their role in the team.
     pub fn role(self, role: &'req str) -> Self {
-        Self { 
+        Self {
             role: Some(role),
             per_page: self.per_page, 
             page: self.page, 
@@ -1570,7 +1570,7 @@ impl<'req> TeamsListMembersInOrgParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             role: self.role, 
             per_page: Some(per_page),
             page: self.page, 
@@ -1579,7 +1579,7 @@ impl<'req> TeamsListMembersInOrgParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             role: self.role, 
             per_page: self.per_page, 
             page: Some(page),
@@ -1614,7 +1614,7 @@ impl<'req> TeamsListMembersLegacyParams<'req> {
 
     /// Filters members returned by their role in the team.
     pub fn role(self, role: &'req str) -> Self {
-        Self { 
+        Self {
             role: Some(role),
             per_page: self.per_page, 
             page: self.page, 
@@ -1623,7 +1623,7 @@ impl<'req> TeamsListMembersLegacyParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             role: self.role, 
             per_page: Some(per_page),
             page: self.page, 
@@ -1632,7 +1632,7 @@ impl<'req> TeamsListMembersLegacyParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             role: self.role, 
             per_page: self.per_page, 
             page: Some(page),
@@ -1665,7 +1665,7 @@ impl TeamsListPendingInvitationsInOrgParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1673,7 +1673,7 @@ impl TeamsListPendingInvitationsInOrgParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1705,7 +1705,7 @@ impl TeamsListPendingInvitationsLegacyParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1713,7 +1713,7 @@ impl TeamsListPendingInvitationsLegacyParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1745,7 +1745,7 @@ impl TeamsListProjectsInOrgParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1753,7 +1753,7 @@ impl TeamsListProjectsInOrgParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1785,7 +1785,7 @@ impl TeamsListProjectsLegacyParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1793,7 +1793,7 @@ impl TeamsListProjectsLegacyParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1825,7 +1825,7 @@ impl TeamsListReposInOrgParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1833,7 +1833,7 @@ impl TeamsListReposInOrgParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1865,7 +1865,7 @@ impl TeamsListReposLegacyParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1873,7 +1873,7 @@ impl TeamsListReposLegacyParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1907,7 +1907,7 @@ impl<'api> Teams<'api> {
     /// > When you have team synchronization set up for a team with your organization's identity provider (IdP), you will see an error if you attempt to use the API for making changes to the team's membership. If you have access to manage group membership in your IdP, you can manage GitHub team membership through your identity provider, which automatically adds and removes team members in an organization. For more information, see "[Synchronizing teams between your identity provider and GitHub](https://docs.github.com/articles/synchronizing-teams-between-your-identity-provider-and-github/)."
     /// 
     /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP method](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
-    /// 
+    ///
     /// [GitHub API docs for add_member_legacy](https://docs.github.com/rest/teams/members#add-team-member-legacy)
     ///
     /// ---
@@ -1959,7 +1959,7 @@ impl<'api> Teams<'api> {
     /// > When you have team synchronization set up for a team with your organization's identity provider (IdP), you will see an error if you attempt to use the API for making changes to the team's membership. If you have access to manage group membership in your IdP, you can manage GitHub team membership through your identity provider, which automatically adds and removes team members in an organization. For more information, see "[Synchronizing teams between your identity provider and GitHub](https://docs.github.com/articles/synchronizing-teams-between-your-identity-provider-and-github/)."
     /// 
     /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP method](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
-    /// 
+    ///
     /// [GitHub API docs for add_member_legacy](https://docs.github.com/rest/teams/members#add-team-member-legacy)
     ///
     /// ---
@@ -2013,7 +2013,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `PUT /organizations/{org_id}/team/{team_id}/memberships/{username}`.
-    /// 
+    ///
     /// [GitHub API docs for add_or_update_membership_for_user_in_org](https://docs.github.com/rest/teams/members#add-or-update-team-membership-for-a-user)
     ///
     /// ---
@@ -2065,7 +2065,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `PUT /organizations/{org_id}/team/{team_id}/memberships/{username}`.
-    /// 
+    ///
     /// [GitHub API docs for add_or_update_membership_for_user_in_org](https://docs.github.com/rest/teams/members#add-or-update-team-membership-for-a-user)
     ///
     /// ---
@@ -2118,7 +2118,7 @@ impl<'api> Teams<'api> {
     /// If the user is unaffiliated with the team's organization, this endpoint will send an invitation to the user via email. This newly-created membership will be in the "pending" state until the user accepts the invitation, at which point the membership will transition to the "active" state and the user will be added as a member of the team. To add a membership between an unaffiliated user and a team, the authenticated user must be an organization owner.
     /// 
     /// If the user is already a member of the team, this endpoint will update the role of the team member's role. To update the membership of a team member, the authenticated user must be an organization owner or a team maintainer.
-    /// 
+    ///
     /// [GitHub API docs for add_or_update_membership_for_user_legacy](https://docs.github.com/rest/teams/members#add-or-update-team-membership-for-a-user-legacy)
     ///
     /// ---
@@ -2171,7 +2171,7 @@ impl<'api> Teams<'api> {
     /// If the user is unaffiliated with the team's organization, this endpoint will send an invitation to the user via email. This newly-created membership will be in the "pending" state until the user accepts the invitation, at which point the membership will transition to the "active" state and the user will be added as a member of the team. To add a membership between an unaffiliated user and a team, the authenticated user must be an organization owner.
     /// 
     /// If the user is already a member of the team, this endpoint will update the role of the team member's role. To update the membership of a team member, the authenticated user must be an organization owner or a team maintainer.
-    /// 
+    ///
     /// [GitHub API docs for add_or_update_membership_for_user_legacy](https://docs.github.com/rest/teams/members#add-or-update-team-membership-for-a-user-legacy)
     ///
     /// ---
@@ -2216,7 +2216,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `PUT /organizations/{org_id}/team/{team_id}/projects/{project_id}`.
-    /// 
+    ///
     /// [GitHub API docs for add_or_update_project_permissions_in_org](https://docs.github.com/rest/teams/teams#add-or-update-team-project-permissions)
     ///
     /// ---
@@ -2258,7 +2258,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `PUT /organizations/{org_id}/team/{team_id}/projects/{project_id}`.
-    /// 
+    ///
     /// [GitHub API docs for add_or_update_project_permissions_in_org](https://docs.github.com/rest/teams/teams#add-or-update-team-project-permissions)
     ///
     /// ---
@@ -2301,7 +2301,7 @@ impl<'api> Teams<'api> {
     /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Add or update team project permissions](https://docs.github.com/rest/teams/teams#add-or-update-team-project-permissions) endpoint.
     /// 
     /// Adds an organization project to a team. To add a project to a team or update the team's permission on a project, the authenticated user must have `admin` permissions for the project. The project and team must be part of the same organization.
-    /// 
+    ///
     /// [GitHub API docs for add_or_update_project_permissions_legacy](https://docs.github.com/rest/teams/teams#add-or-update-team-project-permissions-legacy)
     ///
     /// ---
@@ -2345,7 +2345,7 @@ impl<'api> Teams<'api> {
     /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Add or update team project permissions](https://docs.github.com/rest/teams/teams#add-or-update-team-project-permissions) endpoint.
     /// 
     /// Adds an organization project to a team. To add a project to a team or update the team's permission on a project, the authenticated user must have `admin` permissions for the project. The project and team must be part of the same organization.
-    /// 
+    ///
     /// [GitHub API docs for add_or_update_project_permissions_legacy](https://docs.github.com/rest/teams/teams#add-or-update-team-project-permissions-legacy)
     ///
     /// ---
@@ -2392,7 +2392,7 @@ impl<'api> Teams<'api> {
     /// > You can also specify a team by `org_id` and `team_id` using the route `PUT /organizations/{org_id}/team/{team_id}/repos/{owner}/{repo}`.
     /// 
     /// For more information about the permission levels, see "[Repository permission levels for an organization](https://docs.github.com/github/setting-up-and-managing-organizations-and-teams/repository-permission-levels-for-an-organization#permission-levels-for-repositories-owned-by-an-organization)".
-    /// 
+    ///
     /// [GitHub API docs for add_or_update_repo_permissions_in_org](https://docs.github.com/rest/teams/teams#add-or-update-team-repository-permissions)
     ///
     /// ---
@@ -2435,7 +2435,7 @@ impl<'api> Teams<'api> {
     /// > You can also specify a team by `org_id` and `team_id` using the route `PUT /organizations/{org_id}/team/{team_id}/repos/{owner}/{repo}`.
     /// 
     /// For more information about the permission levels, see "[Repository permission levels for an organization](https://docs.github.com/github/setting-up-and-managing-organizations-and-teams/repository-permission-levels-for-an-organization#permission-levels-for-repositories-owned-by-an-organization)".
-    /// 
+    ///
     /// [GitHub API docs for add_or_update_repo_permissions_in_org](https://docs.github.com/rest/teams/teams#add-or-update-team-repository-permissions)
     ///
     /// ---
@@ -2479,7 +2479,7 @@ impl<'api> Teams<'api> {
     /// To add a repository to a team or update the team's permission on a repository, the authenticated user must have admin access to the repository, and must be able to see the team. The repository must be owned by the organization, or a direct fork of a repository owned by the organization. You will get a `422 Unprocessable Entity` status if you attempt to add a repository to a team that is not owned by the organization.
     /// 
     /// Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP method](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
-    /// 
+    ///
     /// [GitHub API docs for add_or_update_repo_permissions_legacy](https://docs.github.com/rest/teams/teams#add-or-update-team-repository-permissions-legacy)
     ///
     /// ---
@@ -2524,7 +2524,7 @@ impl<'api> Teams<'api> {
     /// To add a repository to a team or update the team's permission on a repository, the authenticated user must have admin access to the repository, and must be able to see the team. The repository must be owned by the organization, or a direct fork of a repository owned by the organization. You will get a `422 Unprocessable Entity` status if you attempt to add a repository to a team that is not owned by the organization.
     /// 
     /// Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP method](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
-    /// 
+    ///
     /// [GitHub API docs for add_or_update_repo_permissions_legacy](https://docs.github.com/rest/teams/teams#add-or-update-team-repository-permissions-legacy)
     ///
     /// ---
@@ -2568,7 +2568,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/projects/{project_id}`.
-    /// 
+    ///
     /// [GitHub API docs for check_permissions_for_project_in_org](https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-project)
     ///
     /// ---
@@ -2610,7 +2610,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/projects/{project_id}`.
-    /// 
+    ///
     /// [GitHub API docs for check_permissions_for_project_in_org](https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-project)
     ///
     /// ---
@@ -2653,7 +2653,7 @@ impl<'api> Teams<'api> {
     /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Check team permissions for a project](https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-project) endpoint.
     /// 
     /// Checks whether a team has `read`, `write`, or `admin` permissions for an organization project. The response includes projects inherited from a parent team.
-    /// 
+    ///
     /// [GitHub API docs for check_permissions_for_project_legacy](https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-project-legacy)
     ///
     /// ---
@@ -2695,7 +2695,7 @@ impl<'api> Teams<'api> {
     /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Check team permissions for a project](https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-project) endpoint.
     /// 
     /// Checks whether a team has `read`, `write`, or `admin` permissions for an organization project. The response includes projects inherited from a parent team.
-    /// 
+    ///
     /// [GitHub API docs for check_permissions_for_project_legacy](https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-project-legacy)
     ///
     /// ---
@@ -2744,7 +2744,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/repos/{owner}/{repo}`.
-    /// 
+    ///
     /// [GitHub API docs for check_permissions_for_repo_in_org](https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-repository)
     ///
     /// ---
@@ -2793,7 +2793,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/repos/{owner}/{repo}`.
-    /// 
+    ///
     /// [GitHub API docs for check_permissions_for_repo_in_org](https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-repository)
     ///
     /// ---
@@ -2840,7 +2840,7 @@ impl<'api> Teams<'api> {
     /// > Repositories inherited through a parent team will also be checked.
     /// 
     /// You can also get information about the specified repository, including what permissions the team grants on it, by passing the following custom [media type](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types/) via the `Accept` header:
-    /// 
+    ///
     /// [GitHub API docs for check_permissions_for_repo_legacy](https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-repository-legacy)
     ///
     /// ---
@@ -2886,7 +2886,7 @@ impl<'api> Teams<'api> {
     /// > Repositories inherited through a parent team will also be checked.
     /// 
     /// You can also get information about the specified repository, including what permissions the team grants on it, by passing the following custom [media type](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types/) via the `Accept` header:
-    /// 
+    ///
     /// [GitHub API docs for check_permissions_for_repo_legacy](https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-repository-legacy)
     ///
     /// ---
@@ -2929,7 +2929,7 @@ impl<'api> Teams<'api> {
     /// To create a team, the authenticated user must be a member or owner of `{org}`. By default, organization members can create teams. Organization owners can limit team creation to organization owners. For more information, see "[Setting team creation permissions](https://docs.github.com/articles/setting-team-creation-permissions-in-your-organization)."
     /// 
     /// When you create a new team, you automatically become a team maintainer without explicitly adding yourself to the optional array of `maintainers`. For more information, see "[About teams](https://docs.github.com/github/setting-up-and-managing-organizations-and-teams/about-teams)".
-    /// 
+    ///
     /// [GitHub API docs for create](https://docs.github.com/rest/teams/teams#create-a-team)
     ///
     /// ---
@@ -2971,7 +2971,7 @@ impl<'api> Teams<'api> {
     /// To create a team, the authenticated user must be a member or owner of `{org}`. By default, organization members can create teams. Organization owners can limit team creation to organization owners. For more information, see "[Setting team creation permissions](https://docs.github.com/articles/setting-team-creation-permissions-in-your-organization)."
     /// 
     /// When you create a new team, you automatically become a team maintainer without explicitly adding yourself to the optional array of `maintainers`. For more information, see "[About teams](https://docs.github.com/github/setting-up-and-managing-organizations-and-teams/about-teams)".
-    /// 
+    ///
     /// [GitHub API docs for create](https://docs.github.com/rest/teams/teams#create-a-team)
     ///
     /// ---
@@ -3019,7 +3019,7 @@ impl<'api> Teams<'api> {
     /// > You can also specify a team by `org_id` and `team_id` using the route `POST /organizations/{org_id}/team/{team_id}/discussions/{discussion_number}/comments`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_discussion_comment_in_org](https://docs.github.com/rest/teams/discussion-comments#create-a-discussion-comment)
     ///
     /// ---
@@ -3064,7 +3064,7 @@ impl<'api> Teams<'api> {
     /// > You can also specify a team by `org_id` and `team_id` using the route `POST /organizations/{org_id}/team/{team_id}/discussions/{discussion_number}/comments`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_discussion_comment_in_org](https://docs.github.com/rest/teams/discussion-comments#create-a-discussion-comment)
     ///
     /// ---
@@ -3110,7 +3110,7 @@ impl<'api> Teams<'api> {
     /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)" and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_discussion_comment_legacy](https://docs.github.com/rest/teams/discussion-comments#create-a-discussion-comment-legacy)
     ///
     /// ---
@@ -3155,7 +3155,7 @@ impl<'api> Teams<'api> {
     /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)" and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_discussion_comment_legacy](https://docs.github.com/rest/teams/discussion-comments#create-a-discussion-comment-legacy)
     ///
     /// ---
@@ -3201,7 +3201,7 @@ impl<'api> Teams<'api> {
     /// > You can also specify a team by `org_id` and `team_id` using the route `POST /organizations/{org_id}/team/{team_id}/discussions`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_discussion_in_org](https://docs.github.com/rest/teams/discussions#create-a-discussion)
     ///
     /// ---
@@ -3246,7 +3246,7 @@ impl<'api> Teams<'api> {
     /// > You can also specify a team by `org_id` and `team_id` using the route `POST /organizations/{org_id}/team/{team_id}/discussions`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_discussion_in_org](https://docs.github.com/rest/teams/discussions#create-a-discussion)
     ///
     /// ---
@@ -3292,7 +3292,7 @@ impl<'api> Teams<'api> {
     /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)" and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_discussion_legacy](https://docs.github.com/rest/teams/discussions#create-a-discussion-legacy)
     ///
     /// ---
@@ -3337,7 +3337,7 @@ impl<'api> Teams<'api> {
     /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)" and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_discussion_legacy](https://docs.github.com/rest/teams/discussions#create-a-discussion-legacy)
     ///
     /// ---
@@ -3381,7 +3381,7 @@ impl<'api> Teams<'api> {
     /// > You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}/discussions/{discussion_number}/comments/{comment_number}`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_discussion_comment_in_org](https://docs.github.com/rest/teams/discussion-comments#delete-a-discussion-comment)
     ///
     /// ---
@@ -3424,7 +3424,7 @@ impl<'api> Teams<'api> {
     /// > You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}/discussions/{discussion_number}/comments/{comment_number}`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_discussion_comment_in_org](https://docs.github.com/rest/teams/discussion-comments#delete-a-discussion-comment)
     ///
     /// ---
@@ -3468,7 +3468,7 @@ impl<'api> Teams<'api> {
     /// Deletes a comment on a team discussion.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_discussion_comment_legacy](https://docs.github.com/rest/teams/discussion-comments#delete-a-discussion-comment-legacy)
     ///
     /// ---
@@ -3511,7 +3511,7 @@ impl<'api> Teams<'api> {
     /// Deletes a comment on a team discussion.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_discussion_comment_legacy](https://docs.github.com/rest/teams/discussion-comments#delete-a-discussion-comment-legacy)
     ///
     /// ---
@@ -3555,7 +3555,7 @@ impl<'api> Teams<'api> {
     /// > You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}/discussions/{discussion_number}`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_discussion_in_org](https://docs.github.com/rest/teams/discussions#delete-a-discussion)
     ///
     /// ---
@@ -3598,7 +3598,7 @@ impl<'api> Teams<'api> {
     /// > You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}/discussions/{discussion_number}`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_discussion_in_org](https://docs.github.com/rest/teams/discussions#delete-a-discussion)
     ///
     /// ---
@@ -3642,7 +3642,7 @@ impl<'api> Teams<'api> {
     /// Delete a discussion from a team's page.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_discussion_legacy](https://docs.github.com/rest/teams/discussions#delete-a-discussion-legacy)
     ///
     /// ---
@@ -3685,7 +3685,7 @@ impl<'api> Teams<'api> {
     /// Delete a discussion from a team's page.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_discussion_legacy](https://docs.github.com/rest/teams/discussions#delete-a-discussion-legacy)
     ///
     /// ---
@@ -3729,7 +3729,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}`.
-    /// 
+    ///
     /// [GitHub API docs for delete_in_org](https://docs.github.com/rest/teams/teams#delete-a-team)
     ///
     /// ---
@@ -3772,7 +3772,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}`.
-    /// 
+    ///
     /// [GitHub API docs for delete_in_org](https://docs.github.com/rest/teams/teams#delete-a-team)
     ///
     /// ---
@@ -3816,7 +3816,7 @@ impl<'api> Teams<'api> {
     /// To delete a team, the authenticated user must be an organization owner or team maintainer.
     /// 
     /// If you are an organization owner, deleting a parent team will delete all of its child teams as well.
-    /// 
+    ///
     /// [GitHub API docs for delete_legacy](https://docs.github.com/rest/teams/teams#delete-a-team-legacy)
     ///
     /// ---
@@ -3861,7 +3861,7 @@ impl<'api> Teams<'api> {
     /// To delete a team, the authenticated user must be an organization owner or team maintainer.
     /// 
     /// If you are an organization owner, deleting a parent team will delete all of its child teams as well.
-    /// 
+    ///
     /// [GitHub API docs for delete_legacy](https://docs.github.com/rest/teams/teams#delete-a-team-legacy)
     ///
     /// ---
@@ -3905,7 +3905,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}`.
-    /// 
+    ///
     /// [GitHub API docs for get_by_name](https://docs.github.com/rest/teams/teams#get-a-team-by-name)
     ///
     /// ---
@@ -3947,7 +3947,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}`.
-    /// 
+    ///
     /// [GitHub API docs for get_by_name](https://docs.github.com/rest/teams/teams#get-a-team-by-name)
     ///
     /// ---
@@ -3992,7 +3992,7 @@ impl<'api> Teams<'api> {
     /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/discussions/{discussion_number}/comments/{comment_number}`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_discussion_comment_in_org](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment)
     ///
     /// ---
@@ -4035,7 +4035,7 @@ impl<'api> Teams<'api> {
     /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/discussions/{discussion_number}/comments/{comment_number}`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_discussion_comment_in_org](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment)
     ///
     /// ---
@@ -4079,7 +4079,7 @@ impl<'api> Teams<'api> {
     /// Get a specific comment on a team discussion.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_discussion_comment_legacy](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment-legacy)
     ///
     /// ---
@@ -4122,7 +4122,7 @@ impl<'api> Teams<'api> {
     /// Get a specific comment on a team discussion.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_discussion_comment_legacy](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment-legacy)
     ///
     /// ---
@@ -4166,7 +4166,7 @@ impl<'api> Teams<'api> {
     /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/discussions/{discussion_number}`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_discussion_in_org](https://docs.github.com/rest/teams/discussions#get-a-discussion)
     ///
     /// ---
@@ -4209,7 +4209,7 @@ impl<'api> Teams<'api> {
     /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/discussions/{discussion_number}`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_discussion_in_org](https://docs.github.com/rest/teams/discussions#get-a-discussion)
     ///
     /// ---
@@ -4253,7 +4253,7 @@ impl<'api> Teams<'api> {
     /// Get a specific discussion on a team's page.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_discussion_legacy](https://docs.github.com/rest/teams/discussions#get-a-discussion-legacy)
     ///
     /// ---
@@ -4296,7 +4296,7 @@ impl<'api> Teams<'api> {
     /// Get a specific discussion on a team's page.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_discussion_legacy](https://docs.github.com/rest/teams/discussions#get-a-discussion-legacy)
     ///
     /// ---
@@ -4336,7 +4336,7 @@ impl<'api> Teams<'api> {
     ///
     /// > [!WARNING]
     /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the [Get a team by name](https://docs.github.com/rest/teams/teams#get-a-team-by-name) endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_legacy](https://docs.github.com/rest/teams/teams#get-a-team-legacy)
     ///
     /// ---
@@ -4376,7 +4376,7 @@ impl<'api> Teams<'api> {
     ///
     /// > [!WARNING]
     /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the [Get a team by name](https://docs.github.com/rest/teams/teams#get-a-team-by-name) endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_legacy](https://docs.github.com/rest/teams/teams#get-a-team-legacy)
     ///
     /// ---
@@ -4420,7 +4420,7 @@ impl<'api> Teams<'api> {
     /// We recommend using the [Get team membership for a user](https://docs.github.com/rest/teams/members#get-team-membership-for-a-user) endpoint instead. It allows you to get both active and pending memberships.
     /// 
     /// To list members in a team, the team must be visible to the authenticated user.
-    /// 
+    ///
     /// [GitHub API docs for get_member_legacy](https://docs.github.com/rest/teams/members#get-team-member-legacy)
     ///
     /// ---
@@ -4463,7 +4463,7 @@ impl<'api> Teams<'api> {
     /// We recommend using the [Get team membership for a user](https://docs.github.com/rest/teams/members#get-team-membership-for-a-user) endpoint instead. It allows you to get both active and pending memberships.
     /// 
     /// To list members in a team, the team must be visible to the authenticated user.
-    /// 
+    ///
     /// [GitHub API docs for get_member_legacy](https://docs.github.com/rest/teams/members#get-team-member-legacy)
     ///
     /// ---
@@ -4513,7 +4513,7 @@ impl<'api> Teams<'api> {
     /// > The response contains the `state` of the membership and the member's `role`.
     /// 
     /// The `role` for organization owners is set to `maintainer`. For more information about `maintainer` roles, see [Create a team](https://docs.github.com/rest/teams/teams#create-a-team).
-    /// 
+    ///
     /// [GitHub API docs for get_membership_for_user_in_org](https://docs.github.com/rest/teams/members#get-team-membership-for-a-user)
     ///
     /// ---
@@ -4562,7 +4562,7 @@ impl<'api> Teams<'api> {
     /// > The response contains the `state` of the membership and the member's `role`.
     /// 
     /// The `role` for organization owners is set to `maintainer`. For more information about `maintainer` roles, see [Create a team](https://docs.github.com/rest/teams/teams#create-a-team).
-    /// 
+    ///
     /// [GitHub API docs for get_membership_for_user_in_org](https://docs.github.com/rest/teams/members#get-team-membership-for-a-user)
     ///
     /// ---
@@ -4612,7 +4612,7 @@ impl<'api> Teams<'api> {
     /// The response contains the `state` of the membership and the member's `role`.
     /// 
     /// The `role` for organization owners is set to `maintainer`. For more information about `maintainer` roles, see [Create a team](https://docs.github.com/rest/teams/teams#create-a-team).
-    /// 
+    ///
     /// [GitHub API docs for get_membership_for_user_legacy](https://docs.github.com/rest/teams/members#get-team-membership-for-a-user-legacy)
     ///
     /// ---
@@ -4661,7 +4661,7 @@ impl<'api> Teams<'api> {
     /// The response contains the `state` of the membership and the member's `role`.
     /// 
     /// The `role` for organization owners is set to `maintainer`. For more information about `maintainer` roles, see [Create a team](https://docs.github.com/rest/teams/teams#create-a-team).
-    /// 
+    ///
     /// [GitHub API docs for get_membership_for_user_legacy](https://docs.github.com/rest/teams/members#get-team-membership-for-a-user-legacy)
     ///
     /// ---
@@ -4701,7 +4701,7 @@ impl<'api> Teams<'api> {
     /// # List teams
     ///
     /// Lists all teams in an organization that are visible to the authenticated user.
-    /// 
+    ///
     /// [GitHub API docs for list](https://docs.github.com/rest/teams/teams#list-teams)
     ///
     /// ---
@@ -4744,7 +4744,7 @@ impl<'api> Teams<'api> {
     /// # List teams
     ///
     /// Lists all teams in an organization that are visible to the authenticated user.
-    /// 
+    ///
     /// [GitHub API docs for list](https://docs.github.com/rest/teams/teams#list-teams)
     ///
     /// ---
@@ -4792,7 +4792,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/teams`.
-    /// 
+    ///
     /// [GitHub API docs for list_child_in_org](https://docs.github.com/rest/teams/teams#list-child-teams)
     ///
     /// ---
@@ -4837,7 +4837,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/teams`.
-    /// 
+    ///
     /// [GitHub API docs for list_child_in_org](https://docs.github.com/rest/teams/teams#list-child-teams)
     ///
     /// ---
@@ -4882,7 +4882,7 @@ impl<'api> Teams<'api> {
     ///
     /// > [!WARNING]
     /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List child teams`](https://docs.github.com/rest/teams/teams#list-child-teams) endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_child_legacy](https://docs.github.com/rest/teams/teams#list-child-teams-legacy)
     ///
     /// ---
@@ -4928,7 +4928,7 @@ impl<'api> Teams<'api> {
     ///
     /// > [!WARNING]
     /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List child teams`](https://docs.github.com/rest/teams/teams#list-child-teams) endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_child_legacy](https://docs.github.com/rest/teams/teams#list-child-teams-legacy)
     ///
     /// ---
@@ -4980,7 +4980,7 @@ impl<'api> Teams<'api> {
     /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/discussions/{discussion_number}/comments`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_discussion_comments_in_org](https://docs.github.com/rest/teams/discussion-comments#list-discussion-comments)
     ///
     /// ---
@@ -5027,7 +5027,7 @@ impl<'api> Teams<'api> {
     /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/discussions/{discussion_number}/comments`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_discussion_comments_in_org](https://docs.github.com/rest/teams/discussion-comments#list-discussion-comments)
     ///
     /// ---
@@ -5076,7 +5076,7 @@ impl<'api> Teams<'api> {
     /// List all comments on a team discussion.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_discussion_comments_legacy](https://docs.github.com/rest/teams/discussion-comments#list-discussion-comments-legacy)
     ///
     /// ---
@@ -5123,7 +5123,7 @@ impl<'api> Teams<'api> {
     /// List all comments on a team discussion.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_discussion_comments_legacy](https://docs.github.com/rest/teams/discussion-comments#list-discussion-comments-legacy)
     ///
     /// ---
@@ -5172,7 +5172,7 @@ impl<'api> Teams<'api> {
     /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/discussions`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_discussions_in_org](https://docs.github.com/rest/teams/discussions#list-discussions)
     ///
     /// ---
@@ -5219,7 +5219,7 @@ impl<'api> Teams<'api> {
     /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/discussions`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_discussions_in_org](https://docs.github.com/rest/teams/discussions#list-discussions)
     ///
     /// ---
@@ -5268,7 +5268,7 @@ impl<'api> Teams<'api> {
     /// List all discussions on a team's page.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_discussions_legacy](https://docs.github.com/rest/teams/discussions#list-discussions-legacy)
     ///
     /// ---
@@ -5315,7 +5315,7 @@ impl<'api> Teams<'api> {
     /// List all discussions on a team's page.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_discussions_legacy](https://docs.github.com/rest/teams/discussions#list-discussions-legacy)
     ///
     /// ---
@@ -5364,7 +5364,7 @@ impl<'api> Teams<'api> {
     /// OAuth app tokens and personal access tokens (classic) need the `user`, `repo`, or `read:org` scope to use this endpoint.
     /// 
     /// When using a fine-grained personal access token, the resource owner of the token must be a single organization, and the response will only include the teams from that organization.
-    /// 
+    ///
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/teams/teams#list-teams-for-the-authenticated-user)
     ///
     /// ---
@@ -5414,7 +5414,7 @@ impl<'api> Teams<'api> {
     /// OAuth app tokens and personal access tokens (classic) need the `user`, `repo`, or `read:org` scope to use this endpoint.
     /// 
     /// When using a fine-grained personal access token, the resource owner of the token must be a single organization, and the response will only include the teams from that organization.
-    /// 
+    ///
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/teams/teams#list-teams-for-the-authenticated-user)
     ///
     /// ---
@@ -5463,7 +5463,7 @@ impl<'api> Teams<'api> {
     /// Team members will include the members of child teams.
     /// 
     /// To list members in a team, the team must be visible to the authenticated user.
-    /// 
+    ///
     /// [GitHub API docs for list_members_in_org](https://docs.github.com/rest/teams/members#list-team-members)
     ///
     /// ---
@@ -5507,7 +5507,7 @@ impl<'api> Teams<'api> {
     /// Team members will include the members of child teams.
     /// 
     /// To list members in a team, the team must be visible to the authenticated user.
-    /// 
+    ///
     /// [GitHub API docs for list_members_in_org](https://docs.github.com/rest/teams/members#list-team-members)
     ///
     /// ---
@@ -5554,7 +5554,7 @@ impl<'api> Teams<'api> {
     /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List team members`](https://docs.github.com/rest/teams/members#list-team-members) endpoint.
     /// 
     /// Team members will include the members of child teams.
-    /// 
+    ///
     /// [GitHub API docs for list_members_legacy](https://docs.github.com/rest/teams/members#list-team-members-legacy)
     ///
     /// ---
@@ -5600,7 +5600,7 @@ impl<'api> Teams<'api> {
     /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List team members`](https://docs.github.com/rest/teams/members#list-team-members) endpoint.
     /// 
     /// Team members will include the members of child teams.
-    /// 
+    ///
     /// [GitHub API docs for list_members_legacy](https://docs.github.com/rest/teams/members#list-team-members-legacy)
     ///
     /// ---
@@ -5648,7 +5648,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/invitations`.
-    /// 
+    ///
     /// [GitHub API docs for list_pending_invitations_in_org](https://docs.github.com/rest/teams/members#list-pending-team-invitations)
     ///
     /// ---
@@ -5693,7 +5693,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/invitations`.
-    /// 
+    ///
     /// [GitHub API docs for list_pending_invitations_in_org](https://docs.github.com/rest/teams/members#list-pending-team-invitations)
     ///
     /// ---
@@ -5740,7 +5740,7 @@ impl<'api> Teams<'api> {
     /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List pending team invitations`](https://docs.github.com/rest/teams/members#list-pending-team-invitations) endpoint.
     /// 
     /// The return hash contains a `role` field which refers to the Organization Invitation role and will be one of the following values: `direct_member`, `admin`, `billing_manager`, `hiring_manager`, or `reinstate`. If the invitee is not a GitHub member, the `login` field in the return hash will be `null`.
-    /// 
+    ///
     /// [GitHub API docs for list_pending_invitations_legacy](https://docs.github.com/rest/teams/members#list-pending-team-invitations-legacy)
     ///
     /// ---
@@ -5785,7 +5785,7 @@ impl<'api> Teams<'api> {
     /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List pending team invitations`](https://docs.github.com/rest/teams/members#list-pending-team-invitations) endpoint.
     /// 
     /// The return hash contains a `role` field which refers to the Organization Invitation role and will be one of the following values: `direct_member`, `admin`, `billing_manager`, `hiring_manager`, or `reinstate`. If the invitee is not a GitHub member, the `login` field in the return hash will be `null`.
-    /// 
+    ///
     /// [GitHub API docs for list_pending_invitations_legacy](https://docs.github.com/rest/teams/members#list-pending-team-invitations-legacy)
     ///
     /// ---
@@ -5832,7 +5832,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/projects`.
-    /// 
+    ///
     /// [GitHub API docs for list_projects_in_org](https://docs.github.com/rest/teams/teams#list-team-projects)
     ///
     /// ---
@@ -5877,7 +5877,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/projects`.
-    /// 
+    ///
     /// [GitHub API docs for list_projects_in_org](https://docs.github.com/rest/teams/teams#list-team-projects)
     ///
     /// ---
@@ -5924,7 +5924,7 @@ impl<'api> Teams<'api> {
     /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List team projects`](https://docs.github.com/rest/teams/teams#list-team-projects) endpoint.
     /// 
     /// Lists the organization projects for a team.
-    /// 
+    ///
     /// [GitHub API docs for list_projects_legacy](https://docs.github.com/rest/teams/teams#list-team-projects-legacy)
     ///
     /// ---
@@ -5970,7 +5970,7 @@ impl<'api> Teams<'api> {
     /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List team projects`](https://docs.github.com/rest/teams/teams#list-team-projects) endpoint.
     /// 
     /// Lists the organization projects for a team.
-    /// 
+    ///
     /// [GitHub API docs for list_projects_legacy](https://docs.github.com/rest/teams/teams#list-team-projects-legacy)
     ///
     /// ---
@@ -6018,7 +6018,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/repos`.
-    /// 
+    ///
     /// [GitHub API docs for list_repos_in_org](https://docs.github.com/rest/teams/teams#list-team-repositories)
     ///
     /// ---
@@ -6063,7 +6063,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/repos`.
-    /// 
+    ///
     /// [GitHub API docs for list_repos_in_org](https://docs.github.com/rest/teams/teams#list-team-repositories)
     ///
     /// ---
@@ -6108,7 +6108,7 @@ impl<'api> Teams<'api> {
     ///
     /// > [!WARNING]
     /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [List team repositories](https://docs.github.com/rest/teams/teams#list-team-repositories) endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_repos_legacy](https://docs.github.com/rest/teams/teams#list-team-repositories-legacy)
     ///
     /// ---
@@ -6152,7 +6152,7 @@ impl<'api> Teams<'api> {
     ///
     /// > [!WARNING]
     /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [List team repositories](https://docs.github.com/rest/teams/teams#list-team-repositories) endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_repos_legacy](https://docs.github.com/rest/teams/teams#list-team-repositories-legacy)
     ///
     /// ---
@@ -6206,7 +6206,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > When you have team synchronization set up for a team with your organization's identity provider (IdP), you will see an error if you attempt to use the API for making changes to the team's membership. If you have access to manage group membership in your IdP, you can manage GitHub team membership through your identity provider, which automatically adds and removes team members in an organization. For more information, see "[Synchronizing teams between your identity provider and GitHub](https://docs.github.com/articles/synchronizing-teams-between-your-identity-provider-and-github/)."
-    /// 
+    ///
     /// [GitHub API docs for remove_member_legacy](https://docs.github.com/rest/teams/members#remove-team-member-legacy)
     ///
     /// ---
@@ -6254,7 +6254,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > When you have team synchronization set up for a team with your organization's identity provider (IdP), you will see an error if you attempt to use the API for making changes to the team's membership. If you have access to manage group membership in your IdP, you can manage GitHub team membership through your identity provider, which automatically adds and removes team members in an organization. For more information, see "[Synchronizing teams between your identity provider and GitHub](https://docs.github.com/articles/synchronizing-teams-between-your-identity-provider-and-github/)."
-    /// 
+    ///
     /// [GitHub API docs for remove_member_legacy](https://docs.github.com/rest/teams/members#remove-team-member-legacy)
     ///
     /// ---
@@ -6302,7 +6302,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}/memberships/{username}`.
-    /// 
+    ///
     /// [GitHub API docs for remove_membership_for_user_in_org](https://docs.github.com/rest/teams/members#remove-team-membership-for-a-user)
     ///
     /// ---
@@ -6349,7 +6349,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}/memberships/{username}`.
-    /// 
+    ///
     /// [GitHub API docs for remove_membership_for_user_in_org](https://docs.github.com/rest/teams/members#remove-team-membership-for-a-user)
     ///
     /// ---
@@ -6397,7 +6397,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > When you have team synchronization set up for a team with your organization's identity provider (IdP), you will see an error if you attempt to use the API for making changes to the team's membership. If you have access to manage group membership in your IdP, you can manage GitHub team membership through your identity provider, which automatically adds and removes team members in an organization. For more information, see "[Synchronizing teams between your identity provider and GitHub](https://docs.github.com/articles/synchronizing-teams-between-your-identity-provider-and-github/)."
-    /// 
+    ///
     /// [GitHub API docs for remove_membership_for_user_legacy](https://docs.github.com/rest/teams/members#remove-team-membership-for-a-user-legacy)
     ///
     /// ---
@@ -6444,7 +6444,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > When you have team synchronization set up for a team with your organization's identity provider (IdP), you will see an error if you attempt to use the API for making changes to the team's membership. If you have access to manage group membership in your IdP, you can manage GitHub team membership through your identity provider, which automatically adds and removes team members in an organization. For more information, see "[Synchronizing teams between your identity provider and GitHub](https://docs.github.com/articles/synchronizing-teams-between-your-identity-provider-and-github/)."
-    /// 
+    ///
     /// [GitHub API docs for remove_membership_for_user_legacy](https://docs.github.com/rest/teams/members#remove-team-membership-for-a-user-legacy)
     ///
     /// ---
@@ -6487,7 +6487,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}/projects/{project_id}`.
-    /// 
+    ///
     /// [GitHub API docs for remove_project_in_org](https://docs.github.com/rest/teams/teams#remove-a-project-from-a-team)
     ///
     /// ---
@@ -6528,7 +6528,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}/projects/{project_id}`.
-    /// 
+    ///
     /// [GitHub API docs for remove_project_in_org](https://docs.github.com/rest/teams/teams#remove-a-project-from-a-team)
     ///
     /// ---
@@ -6570,7 +6570,7 @@ impl<'api> Teams<'api> {
     /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Remove a project from a team](https://docs.github.com/rest/teams/teams#remove-a-project-from-a-team) endpoint.
     /// 
     /// Removes an organization project from a team. An organization owner or a team maintainer can remove any project from the team. To remove a project from a team as an organization member, the authenticated user must have `read` access to both the team and project, or `admin` access to the team or project. **Note:** This endpoint removes the project from the team, but does not delete it.
-    /// 
+    ///
     /// [GitHub API docs for remove_project_legacy](https://docs.github.com/rest/teams/teams#remove-a-project-from-a-team-legacy)
     ///
     /// ---
@@ -6613,7 +6613,7 @@ impl<'api> Teams<'api> {
     /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Remove a project from a team](https://docs.github.com/rest/teams/teams#remove-a-project-from-a-team) endpoint.
     /// 
     /// Removes an organization project from a team. An organization owner or a team maintainer can remove any project from the team. To remove a project from a team as an organization member, the authenticated user must have `read` access to both the team and project, or `admin` access to the team or project. **Note:** This endpoint removes the project from the team, but does not delete it.
-    /// 
+    ///
     /// [GitHub API docs for remove_project_legacy](https://docs.github.com/rest/teams/teams#remove-a-project-from-a-team-legacy)
     ///
     /// ---
@@ -6657,7 +6657,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}/repos/{owner}/{repo}`.
-    /// 
+    ///
     /// [GitHub API docs for remove_repo_in_org](https://docs.github.com/rest/teams/teams#remove-a-repository-from-a-team)
     ///
     /// ---
@@ -6698,7 +6698,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `DELETE /organizations/{org_id}/team/{team_id}/repos/{owner}/{repo}`.
-    /// 
+    ///
     /// [GitHub API docs for remove_repo_in_org](https://docs.github.com/rest/teams/teams#remove-a-repository-from-a-team)
     ///
     /// ---
@@ -6740,7 +6740,7 @@ impl<'api> Teams<'api> {
     /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Remove a repository from a team](https://docs.github.com/rest/teams/teams#remove-a-repository-from-a-team) endpoint.
     /// 
     /// If the authenticated user is an organization owner or a team maintainer, they can remove any repositories from the team. To remove a repository from a team as an organization member, the authenticated user must have admin access to the repository and must be able to see the team. NOTE: This does not delete the repository, it just removes it from the team.
-    /// 
+    ///
     /// [GitHub API docs for remove_repo_legacy](https://docs.github.com/rest/teams/teams#remove-a-repository-from-a-team-legacy)
     ///
     /// ---
@@ -6781,7 +6781,7 @@ impl<'api> Teams<'api> {
     /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Remove a repository from a team](https://docs.github.com/rest/teams/teams#remove-a-repository-from-a-team) endpoint.
     /// 
     /// If the authenticated user is an organization owner or a team maintainer, they can remove any repositories from the team. To remove a repository from a team as an organization member, the authenticated user must have admin access to the repository and must be able to see the team. NOTE: This does not delete the repository, it just removes it from the team.
-    /// 
+    ///
     /// [GitHub API docs for remove_repo_legacy](https://docs.github.com/rest/teams/teams#remove-a-repository-from-a-team-legacy)
     ///
     /// ---
@@ -6825,7 +6825,7 @@ impl<'api> Teams<'api> {
     /// > You can also specify a team by `org_id` and `team_id` using the route `PATCH /organizations/{org_id}/team/{team_id}/discussions/{discussion_number}/comments/{comment_number}`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_discussion_comment_in_org](https://docs.github.com/rest/teams/discussion-comments#update-a-discussion-comment)
     ///
     /// ---
@@ -6868,7 +6868,7 @@ impl<'api> Teams<'api> {
     /// > You can also specify a team by `org_id` and `team_id` using the route `PATCH /organizations/{org_id}/team/{team_id}/discussions/{discussion_number}/comments/{comment_number}`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_discussion_comment_in_org](https://docs.github.com/rest/teams/discussion-comments#update-a-discussion-comment)
     ///
     /// ---
@@ -6912,7 +6912,7 @@ impl<'api> Teams<'api> {
     /// Edits the body text of a discussion comment.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_discussion_comment_legacy](https://docs.github.com/rest/teams/discussion-comments#update-a-discussion-comment-legacy)
     ///
     /// ---
@@ -6955,7 +6955,7 @@ impl<'api> Teams<'api> {
     /// Edits the body text of a discussion comment.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_discussion_comment_legacy](https://docs.github.com/rest/teams/discussion-comments#update-a-discussion-comment-legacy)
     ///
     /// ---
@@ -6999,7 +6999,7 @@ impl<'api> Teams<'api> {
     /// > You can also specify a team by `org_id` and `team_id` using the route `PATCH /organizations/{org_id}/team/{team_id}/discussions/{discussion_number}`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_discussion_in_org](https://docs.github.com/rest/teams/discussions#update-a-discussion)
     ///
     /// ---
@@ -7042,7 +7042,7 @@ impl<'api> Teams<'api> {
     /// > You can also specify a team by `org_id` and `team_id` using the route `PATCH /organizations/{org_id}/team/{team_id}/discussions/{discussion_number}`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_discussion_in_org](https://docs.github.com/rest/teams/discussions#update-a-discussion)
     ///
     /// ---
@@ -7086,7 +7086,7 @@ impl<'api> Teams<'api> {
     /// Edits the title and body text of a discussion post. Only the parameters you provide are updated.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_discussion_legacy](https://docs.github.com/rest/teams/discussions#update-a-discussion-legacy)
     ///
     /// ---
@@ -7129,7 +7129,7 @@ impl<'api> Teams<'api> {
     /// Edits the title and body text of a discussion post. Only the parameters you provide are updated.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_discussion_legacy](https://docs.github.com/rest/teams/discussions#update-a-discussion-legacy)
     ///
     /// ---
@@ -7171,7 +7171,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `PATCH /organizations/{org_id}/team/{team_id}`.
-    /// 
+    ///
     /// [GitHub API docs for update_in_org](https://docs.github.com/rest/teams/teams#update-a-team)
     ///
     /// ---
@@ -7216,7 +7216,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > You can also specify a team by `org_id` and `team_id` using the route `PATCH /organizations/{org_id}/team/{team_id}`.
-    /// 
+    ///
     /// [GitHub API docs for update_in_org](https://docs.github.com/rest/teams/teams#update-a-team)
     ///
     /// ---
@@ -7265,7 +7265,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > With nested teams, the `privacy` for parent teams cannot be `secret`.
-    /// 
+    ///
     /// [GitHub API docs for update_legacy](https://docs.github.com/rest/teams/teams#update-a-team-legacy)
     ///
     /// ---
@@ -7313,7 +7313,7 @@ impl<'api> Teams<'api> {
     /// 
     /// > [!NOTE]
     /// > With nested teams, the `privacy` for parent teams cannot be `secret`.
-    /// 
+    ///
     /// [GitHub API docs for update_legacy](https://docs.github.com/rest/teams/teams#update-a-team-legacy)
     ///
     /// ---

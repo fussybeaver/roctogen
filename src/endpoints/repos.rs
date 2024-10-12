@@ -427,7 +427,7 @@ pub enum ReposCreateDeploymentError {
 
     #[error("Merged branch response")]
     Status202(PostReposCreateDeploymentResponse202),
-    #[error("Conflict when there is a merge conflict or the commit&#x27;s status checks failed")]
+    #[error("Conflict when there is a merge conflict or the commit's status checks failed")]
     Status409,
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
@@ -448,7 +448,7 @@ pub enum ReposCreateDeploymentBranchPolicyError {
 
     // -- endpoint errors
 
-    #[error("Not Found or &#x60;deployment_branch_policy.custom_branch_policies&#x60; property for the environment is set to false")]
+    #[error("Not Found or `deployment_branch_policy.custom_branch_policies` property for the environment is set to false")]
     Status404,
     #[error("Response if the same branch name pattern already exists")]
     Status303,
@@ -624,7 +624,7 @@ pub enum ReposCreateOrUpdateEnvironmentError {
 
     // -- endpoint errors
 
-    #[error("Validation error when the environment name is invalid or when &#x60;protected_branches&#x60; and &#x60;custom_branch_policies&#x60; in &#x60;deployment_branch_policy&#x60; are set to the same value")]
+    #[error("Validation error when the environment name is invalid or when `protected_branches` and `custom_branch_policies` in `deployment_branch_policy` are set to the same value")]
     Status422(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -2209,7 +2209,7 @@ pub enum ReposGetPagesHealthCheckError {
     Status202(EmptyObject),
     #[error("Custom domains are not available for GitHub Pages")]
     Status400,
-    #[error("There isn&#x27;t a CNAME for this page")]
+    #[error("There isn't a CNAME for this page")]
     Status422,
     #[error("Resource not found")]
     Status404(BasicError),
@@ -3967,7 +3967,7 @@ impl<'req> ReposCodeownersErrorsParams<'req> {
 
     /// A branch, tag or commit name used to determine which version of the CODEOWNERS file to use. Default: the repository's default branch (e.g. `main`)
     pub fn git_ref(self, git_ref: &'req str) -> Self {
-        Self { 
+        Self {
             git_ref: Some(git_ref),
         }
     }
@@ -3989,7 +3989,7 @@ impl ReposCompareCommitsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             page: Some(page),
             per_page: self.per_page, 
         }
@@ -3997,7 +3997,7 @@ impl ReposCompareCommitsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             page: self.page, 
             per_page: Some(per_page),
         }
@@ -4029,7 +4029,7 @@ impl ReposGetAllEnvironmentsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -4037,7 +4037,7 @@ impl ReposGetAllEnvironmentsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -4069,7 +4069,7 @@ impl ReposGetAllTopicsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             page: Some(page),
             per_page: self.per_page, 
         }
@@ -4077,7 +4077,7 @@ impl ReposGetAllTopicsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             page: self.page, 
             per_page: Some(per_page),
         }
@@ -4109,7 +4109,7 @@ impl ReposGetBranchRulesParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -4117,7 +4117,7 @@ impl ReposGetBranchRulesParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -4147,7 +4147,7 @@ impl<'req> ReposGetClonesParams<'req> {
 
     /// The time frame to display results for.
     pub fn per(self, per: &'req str) -> Self {
-        Self { 
+        Self {
             per: Some(per),
         }
     }
@@ -4169,7 +4169,7 @@ impl ReposGetCombinedStatusForRefParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -4177,7 +4177,7 @@ impl ReposGetCombinedStatusForRefParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -4209,7 +4209,7 @@ impl ReposGetCommitParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             page: Some(page),
             per_page: self.per_page, 
         }
@@ -4217,7 +4217,7 @@ impl ReposGetCommitParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             page: self.page, 
             per_page: Some(per_page),
         }
@@ -4247,7 +4247,7 @@ impl<'req> ReposGetContentParams<'req> {
 
     /// The name of the commit/branch/tag. Default: the repository’s default branch.
     pub fn git_ref(self, git_ref: &'req str) -> Self {
-        Self { 
+        Self {
             git_ref: Some(git_ref),
         }
     }
@@ -4279,7 +4279,7 @@ impl<'req> ReposGetOrgRuleSuitesParams<'req> {
 
     /// The name of the ref. Cannot contain wildcard characters. Optionally prefix with `refs/heads/` to limit to branches or `refs/tags/` to limit to tags. Omit the prefix to search across all refs. When specified, only rule evaluations triggered for this ref will be returned.
     pub fn git_ref(self, git_ref: &'req str) -> Self {
-        Self { 
+        Self {
             git_ref: Some(git_ref),
             repository_name: self.repository_name, 
             time_period: self.time_period, 
@@ -4292,7 +4292,7 @@ impl<'req> ReposGetOrgRuleSuitesParams<'req> {
 
     /// The name of the repository to filter on. When specified, only rule evaluations from this repository will be returned.
     pub fn repository_name(self, repository_name: i32) -> Self {
-        Self { 
+        Self {
             git_ref: self.git_ref, 
             repository_name: Some(repository_name),
             time_period: self.time_period, 
@@ -4305,7 +4305,7 @@ impl<'req> ReposGetOrgRuleSuitesParams<'req> {
 
     /// The time period to filter by.  For example, `day` will filter for rule suites that occurred in the past 24 hours, and `week` will filter for insights that occurred in the past 7 days (168 hours).
     pub fn time_period(self, time_period: &'req str) -> Self {
-        Self { 
+        Self {
             git_ref: self.git_ref, 
             repository_name: self.repository_name, 
             time_period: Some(time_period),
@@ -4318,7 +4318,7 @@ impl<'req> ReposGetOrgRuleSuitesParams<'req> {
 
     /// The handle for the GitHub user account to filter on. When specified, only rule evaluations triggered by this actor will be returned.
     pub fn actor_name(self, actor_name: &'req str) -> Self {
-        Self { 
+        Self {
             git_ref: self.git_ref, 
             repository_name: self.repository_name, 
             time_period: self.time_period, 
@@ -4331,7 +4331,7 @@ impl<'req> ReposGetOrgRuleSuitesParams<'req> {
 
     /// The rule results to filter on. When specified, only suites with this result will be returned.
     pub fn rule_suite_result(self, rule_suite_result: &'req str) -> Self {
-        Self { 
+        Self {
             git_ref: self.git_ref, 
             repository_name: self.repository_name, 
             time_period: self.time_period, 
@@ -4344,7 +4344,7 @@ impl<'req> ReposGetOrgRuleSuitesParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             git_ref: self.git_ref, 
             repository_name: self.repository_name, 
             time_period: self.time_period, 
@@ -4357,7 +4357,7 @@ impl<'req> ReposGetOrgRuleSuitesParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             git_ref: self.git_ref, 
             repository_name: self.repository_name, 
             time_period: self.time_period, 
@@ -4380,36 +4380,49 @@ impl<'enc> From<&'enc PerPage> for ReposGetOrgRuleSuitesParams<'enc> {
 }
 /// Query parameters for the [Get all organization repository rulesets](Repos::get_org_rulesets_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct ReposGetOrgRulesetsParams {
+pub struct ReposGetOrgRulesetsParams<'req> {
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
-    page: Option<u16>
+    page: Option<u16>, 
+    /// A comma-separated list of rule targets to filter by. If provided, only rulesets that apply to the specified targets will be returned. For example, `branch,tag,push`. 
+    targets: Option<&'req str>
 }
 
-impl ReposGetOrgRulesetsParams {
+impl<'req> ReposGetOrgRulesetsParams<'req> {
     pub fn new() -> Self {
         Self::default()
     }
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
+            targets: self.targets, 
         }
     }
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
+            targets: self.targets, 
+        }
+    }
+
+    /// A comma-separated list of rule targets to filter by. If provided, only rulesets that apply to the specified targets will be returned. For example, `branch,tag,push`. 
+    pub fn targets(self, targets: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            targets: Some(targets),
         }
     }
 }
 
-impl<'enc> From<&'enc PerPage> for ReposGetOrgRulesetsParams {
+impl<'enc> From<&'enc PerPage> for ReposGetOrgRulesetsParams<'enc> {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -4432,7 +4445,7 @@ impl<'req> ReposGetReadmeParams<'req> {
 
     /// The name of the commit/branch/tag. Default: the repository’s default branch.
     pub fn git_ref(self, git_ref: &'req str) -> Self {
-        Self { 
+        Self {
             git_ref: Some(git_ref),
         }
     }
@@ -4452,7 +4465,7 @@ impl<'req> ReposGetReadmeInDirectoryParams<'req> {
 
     /// The name of the commit/branch/tag. Default: the repository’s default branch.
     pub fn git_ref(self, git_ref: &'req str) -> Self {
-        Self { 
+        Self {
             git_ref: Some(git_ref),
         }
     }
@@ -4482,7 +4495,7 @@ impl<'req> ReposGetRepoRuleSuitesParams<'req> {
 
     /// The name of the ref. Cannot contain wildcard characters. Optionally prefix with `refs/heads/` to limit to branches or `refs/tags/` to limit to tags. Omit the prefix to search across all refs. When specified, only rule evaluations triggered for this ref will be returned.
     pub fn git_ref(self, git_ref: &'req str) -> Self {
-        Self { 
+        Self {
             git_ref: Some(git_ref),
             time_period: self.time_period, 
             actor_name: self.actor_name, 
@@ -4494,7 +4507,7 @@ impl<'req> ReposGetRepoRuleSuitesParams<'req> {
 
     /// The time period to filter by.  For example, `day` will filter for rule suites that occurred in the past 24 hours, and `week` will filter for insights that occurred in the past 7 days (168 hours).
     pub fn time_period(self, time_period: &'req str) -> Self {
-        Self { 
+        Self {
             git_ref: self.git_ref, 
             time_period: Some(time_period),
             actor_name: self.actor_name, 
@@ -4506,7 +4519,7 @@ impl<'req> ReposGetRepoRuleSuitesParams<'req> {
 
     /// The handle for the GitHub user account to filter on. When specified, only rule evaluations triggered by this actor will be returned.
     pub fn actor_name(self, actor_name: &'req str) -> Self {
-        Self { 
+        Self {
             git_ref: self.git_ref, 
             time_period: self.time_period, 
             actor_name: Some(actor_name),
@@ -4518,7 +4531,7 @@ impl<'req> ReposGetRepoRuleSuitesParams<'req> {
 
     /// The rule results to filter on. When specified, only suites with this result will be returned.
     pub fn rule_suite_result(self, rule_suite_result: &'req str) -> Self {
-        Self { 
+        Self {
             git_ref: self.git_ref, 
             time_period: self.time_period, 
             actor_name: self.actor_name, 
@@ -4530,7 +4543,7 @@ impl<'req> ReposGetRepoRuleSuitesParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             git_ref: self.git_ref, 
             time_period: self.time_period, 
             actor_name: self.actor_name, 
@@ -4542,7 +4555,7 @@ impl<'req> ReposGetRepoRuleSuitesParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             git_ref: self.git_ref, 
             time_period: self.time_period, 
             actor_name: self.actor_name, 
@@ -4576,7 +4589,7 @@ impl ReposGetRepoRulesetParams {
 
     /// Include rulesets configured at higher levels that apply to this repository
     pub fn includes_parents(self, includes_parents: bool) -> Self {
-        Self { 
+        Self {
             includes_parents: Some(includes_parents),
         }
     }
@@ -4584,49 +4597,64 @@ impl ReposGetRepoRulesetParams {
 
 /// Query parameters for the [Get all repository rulesets](Repos::get_repo_rulesets_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct ReposGetRepoRulesetsParams {
+pub struct ReposGetRepoRulesetsParams<'req> {
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>, 
     /// Include rulesets configured at higher levels that apply to this repository
-    includes_parents: Option<bool>
+    includes_parents: Option<bool>, 
+    /// A comma-separated list of rule targets to filter by. If provided, only rulesets that apply to the specified targets will be returned. For example, `branch,tag,push`. 
+    targets: Option<&'req str>
 }
 
-impl ReposGetRepoRulesetsParams {
+impl<'req> ReposGetRepoRulesetsParams<'req> {
     pub fn new() -> Self {
         Self::default()
     }
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
             includes_parents: self.includes_parents, 
+            targets: self.targets, 
         }
     }
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
             includes_parents: self.includes_parents, 
+            targets: self.targets, 
         }
     }
 
     /// Include rulesets configured at higher levels that apply to this repository
     pub fn includes_parents(self, includes_parents: bool) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             includes_parents: Some(includes_parents),
+            targets: self.targets, 
+        }
+    }
+
+    /// A comma-separated list of rule targets to filter by. If provided, only rulesets that apply to the specified targets will be returned. For example, `branch,tag,push`. 
+    pub fn targets(self, targets: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            includes_parents: self.includes_parents, 
+            targets: Some(targets),
         }
     }
 }
 
-impl<'enc> From<&'enc PerPage> for ReposGetRepoRulesetsParams {
+impl<'enc> From<&'enc PerPage> for ReposGetRepoRulesetsParams<'enc> {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -4649,7 +4677,7 @@ impl<'req> ReposGetViewsParams<'req> {
 
     /// The time frame to display results for.
     pub fn per(self, per: &'req str) -> Self {
-        Self { 
+        Self {
             per: Some(per),
         }
     }
@@ -4683,7 +4711,7 @@ impl<'req> ReposListActivitiesParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             direction: Some(direction),
             per_page: self.per_page, 
             before: self.before, 
@@ -4697,7 +4725,7 @@ impl<'req> ReposListActivitiesParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             per_page: Some(per_page),
             before: self.before, 
@@ -4711,7 +4739,7 @@ impl<'req> ReposListActivitiesParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn before(self, before: &'req str) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             per_page: self.per_page, 
             before: Some(before),
@@ -4725,7 +4753,7 @@ impl<'req> ReposListActivitiesParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn after(self, after: &'req str) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             per_page: self.per_page, 
             before: self.before, 
@@ -4739,7 +4767,7 @@ impl<'req> ReposListActivitiesParams<'req> {
 
     /// The Git reference for the activities you want to list.  The `ref` for a branch can be formatted either as `refs/heads/BRANCH_NAME` or `BRANCH_NAME`, where `BRANCH_NAME` is the name of your branch.
     pub fn git_ref(self, git_ref: &'req str) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             per_page: self.per_page, 
             before: self.before, 
@@ -4753,7 +4781,7 @@ impl<'req> ReposListActivitiesParams<'req> {
 
     /// The GitHub username to use to filter by the actor who performed the activity.
     pub fn actor(self, actor: &'req str) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             per_page: self.per_page, 
             before: self.before, 
@@ -4767,7 +4795,7 @@ impl<'req> ReposListActivitiesParams<'req> {
 
     /// The time period to filter by.  For example, `day` will filter for activity that occurred in the past 24 hours, and `week` will filter for activity that occurred in the past 7 days (168 hours).
     pub fn time_period(self, time_period: &'req str) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             per_page: self.per_page, 
             before: self.before, 
@@ -4781,7 +4809,7 @@ impl<'req> ReposListActivitiesParams<'req> {
 
     /// The activity type to filter by.  For example, you can choose to filter by \"force_push\", to see all force pushes to the repository.
     pub fn activity_type(self, activity_type: &'req str) -> Self {
-        Self { 
+        Self {
             direction: self.direction, 
             per_page: self.per_page, 
             before: self.before, 
@@ -4812,7 +4840,7 @@ impl<'req> ReposListAttestationsParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             before: self.before, 
             after: self.after, 
@@ -4821,7 +4849,7 @@ impl<'req> ReposListAttestationsParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn before(self, before: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             before: Some(before),
             after: self.after, 
@@ -4830,7 +4858,7 @@ impl<'req> ReposListAttestationsParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn after(self, after: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             before: self.before, 
             after: Some(after),
@@ -4856,7 +4884,7 @@ impl ReposListBranchesParams {
 
     /// Setting to `true` returns only branches protected by branch protections or rulesets. When set to `false`, only unprotected branches are returned. Omitting this parameter returns all branches.
     pub fn protected(self, protected: bool) -> Self {
-        Self { 
+        Self {
             protected: Some(protected),
             per_page: self.per_page, 
             page: self.page, 
@@ -4865,7 +4893,7 @@ impl ReposListBranchesParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             protected: self.protected, 
             per_page: Some(per_page),
             page: self.page, 
@@ -4874,7 +4902,7 @@ impl ReposListBranchesParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             protected: self.protected, 
             per_page: self.per_page, 
             page: Some(page),
@@ -4911,7 +4939,7 @@ impl<'req> ReposListCollaboratorsParams<'req> {
 
     /// Filter collaborators returned by their affiliation. `outside` means all outside collaborators of an organization-owned repository. `direct` means all collaborators with permissions to an organization-owned repository, regardless of organization membership status. `all` means all collaborators the authenticated user can see.
     pub fn affiliation(self, affiliation: &'req str) -> Self {
-        Self { 
+        Self {
             affiliation: Some(affiliation),
             permission: self.permission, 
             per_page: self.per_page, 
@@ -4921,7 +4949,7 @@ impl<'req> ReposListCollaboratorsParams<'req> {
 
     /// Filter collaborators by the permissions they have on the repository. If not specified, all collaborators will be returned.
     pub fn permission(self, permission: &'req str) -> Self {
-        Self { 
+        Self {
             affiliation: self.affiliation, 
             permission: Some(permission),
             per_page: self.per_page, 
@@ -4931,7 +4959,7 @@ impl<'req> ReposListCollaboratorsParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             affiliation: self.affiliation, 
             permission: self.permission, 
             per_page: Some(per_page),
@@ -4941,7 +4969,7 @@ impl<'req> ReposListCollaboratorsParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             affiliation: self.affiliation, 
             permission: self.permission, 
             per_page: self.per_page, 
@@ -4975,7 +5003,7 @@ impl ReposListCommentsForCommitParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -4983,7 +5011,7 @@ impl ReposListCommentsForCommitParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -5015,7 +5043,7 @@ impl ReposListCommitCommentsForRepoParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -5023,7 +5051,7 @@ impl ReposListCommitCommentsForRepoParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -5055,7 +5083,7 @@ impl ReposListCommitStatusesForRefParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -5063,7 +5091,7 @@ impl ReposListCommitStatusesForRefParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -5107,7 +5135,7 @@ impl<'req> ReposListCommitsParams<'req> {
 
     /// SHA or branch to start listing commits from. Default: the repository’s default branch (usually `main`).
     pub fn sha(self, sha: &'req str) -> Self {
-        Self { 
+        Self {
             sha: Some(sha),
             path: self.path, 
             author: self.author, 
@@ -5121,7 +5149,7 @@ impl<'req> ReposListCommitsParams<'req> {
 
     /// Only commits containing this file path will be returned.
     pub fn path(self, path: &'req str) -> Self {
-        Self { 
+        Self {
             sha: self.sha, 
             path: Some(path),
             author: self.author, 
@@ -5135,7 +5163,7 @@ impl<'req> ReposListCommitsParams<'req> {
 
     /// GitHub username or email address to use to filter by commit author.
     pub fn author(self, author: &'req str) -> Self {
-        Self { 
+        Self {
             sha: self.sha, 
             path: self.path, 
             author: Some(author),
@@ -5149,7 +5177,7 @@ impl<'req> ReposListCommitsParams<'req> {
 
     /// GitHub username or email address to use to filter by commit committer.
     pub fn committer(self, committer: &'req str) -> Self {
-        Self { 
+        Self {
             sha: self.sha, 
             path: self.path, 
             author: self.author, 
@@ -5163,7 +5191,7 @@ impl<'req> ReposListCommitsParams<'req> {
 
     /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`. Due to limitations of Git, timestamps must be between 1970-01-01 and 2099-12-31 (inclusive) or unexpected results may be returned.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             sha: self.sha, 
             path: self.path, 
             author: self.author, 
@@ -5177,7 +5205,7 @@ impl<'req> ReposListCommitsParams<'req> {
 
     /// Only commits before this date will be returned. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`. Due to limitations of Git, timestamps must be between 1970-01-01 and 2099-12-31 (inclusive) or unexpected results may be returned.
     pub fn until(self, until: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             sha: self.sha, 
             path: self.path, 
             author: self.author, 
@@ -5191,7 +5219,7 @@ impl<'req> ReposListCommitsParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             sha: self.sha, 
             path: self.path, 
             author: self.author, 
@@ -5205,7 +5233,7 @@ impl<'req> ReposListCommitsParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             sha: self.sha, 
             path: self.path, 
             author: self.author, 
@@ -5245,7 +5273,7 @@ impl<'req> ReposListContributorsParams<'req> {
 
     /// Set to `1` or `true` to include anonymous contributors in results.
     pub fn anon(self, anon: &'req str) -> Self {
-        Self { 
+        Self {
             anon: Some(anon),
             per_page: self.per_page, 
             page: self.page, 
@@ -5254,7 +5282,7 @@ impl<'req> ReposListContributorsParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             anon: self.anon, 
             per_page: Some(per_page),
             page: self.page, 
@@ -5263,7 +5291,7 @@ impl<'req> ReposListContributorsParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             anon: self.anon, 
             per_page: self.per_page, 
             page: Some(page),
@@ -5296,7 +5324,7 @@ impl ReposListCustomDeploymentRuleIntegrationsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             page: Some(page),
             per_page: self.per_page, 
         }
@@ -5304,7 +5332,7 @@ impl ReposListCustomDeploymentRuleIntegrationsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             page: self.page, 
             per_page: Some(per_page),
         }
@@ -5336,7 +5364,7 @@ impl ReposListDeployKeysParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -5344,7 +5372,7 @@ impl ReposListDeployKeysParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -5376,7 +5404,7 @@ impl ReposListDeploymentBranchPoliciesParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -5384,7 +5412,7 @@ impl ReposListDeploymentBranchPoliciesParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -5416,7 +5444,7 @@ impl ReposListDeploymentStatusesParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -5424,7 +5452,7 @@ impl ReposListDeploymentStatusesParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -5464,7 +5492,7 @@ impl<'req> ReposListDeploymentsParams<'req> {
 
     /// The SHA recorded at creation time.
     pub fn sha(self, sha: &'req str) -> Self {
-        Self { 
+        Self {
             sha: Some(sha),
             git_ref: self.git_ref, 
             task: self.task, 
@@ -5476,7 +5504,7 @@ impl<'req> ReposListDeploymentsParams<'req> {
 
     /// The name of the ref. This can be a branch, tag, or SHA.
     pub fn git_ref(self, git_ref: &'req str) -> Self {
-        Self { 
+        Self {
             sha: self.sha, 
             git_ref: Some(git_ref),
             task: self.task, 
@@ -5488,7 +5516,7 @@ impl<'req> ReposListDeploymentsParams<'req> {
 
     /// The name of the task for the deployment (e.g., `deploy` or `deploy:migrations`).
     pub fn task(self, task: &'req str) -> Self {
-        Self { 
+        Self {
             sha: self.sha, 
             git_ref: self.git_ref, 
             task: Some(task),
@@ -5500,7 +5528,7 @@ impl<'req> ReposListDeploymentsParams<'req> {
 
     /// The name of the environment that was deployed to (e.g., `staging` or `production`).
     pub fn environment(self, environment: &'req str) -> Self {
-        Self { 
+        Self {
             sha: self.sha, 
             git_ref: self.git_ref, 
             task: self.task, 
@@ -5512,7 +5540,7 @@ impl<'req> ReposListDeploymentsParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             sha: self.sha, 
             git_ref: self.git_ref, 
             task: self.task, 
@@ -5524,7 +5552,7 @@ impl<'req> ReposListDeploymentsParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             sha: self.sha, 
             git_ref: self.git_ref, 
             task: self.task, 
@@ -5574,7 +5602,7 @@ impl<'req> ReposListForAuthenticatedUserParams<'req> {
 
     /// Limit results to repositories with the specified visibility.
     pub fn visibility(self, visibility: &'req str) -> Self {
-        Self { 
+        Self {
             visibility: Some(visibility),
             affiliation: self.affiliation, 
             _type: self._type, 
@@ -5589,7 +5617,7 @@ impl<'req> ReposListForAuthenticatedUserParams<'req> {
 
     /// Comma-separated list of values. Can include:    * `owner`: Repositories that are owned by the authenticated user.    * `collaborator`: Repositories that the user has been added to as a collaborator.    * `organization_member`: Repositories that the user has access to through being a member of an organization. This includes every repository on every team that the user is on.
     pub fn affiliation(self, affiliation: &'req str) -> Self {
-        Self { 
+        Self {
             visibility: self.visibility, 
             affiliation: Some(affiliation),
             _type: self._type, 
@@ -5604,7 +5632,7 @@ impl<'req> ReposListForAuthenticatedUserParams<'req> {
 
     /// Limit results to repositories of the specified type. Will cause a `422` error if used in the same request as **visibility** or **affiliation**.
     pub fn _type(self, _type: &'req str) -> Self {
-        Self { 
+        Self {
             visibility: self.visibility, 
             affiliation: self.affiliation, 
             _type: Some(_type),
@@ -5619,7 +5647,7 @@ impl<'req> ReposListForAuthenticatedUserParams<'req> {
 
     /// The property to sort the results by.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             visibility: self.visibility, 
             affiliation: self.affiliation, 
             _type: self._type, 
@@ -5634,7 +5662,7 @@ impl<'req> ReposListForAuthenticatedUserParams<'req> {
 
     /// The order to sort by. Default: `asc` when using `full_name`, otherwise `desc`.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             visibility: self.visibility, 
             affiliation: self.affiliation, 
             _type: self._type, 
@@ -5649,7 +5677,7 @@ impl<'req> ReposListForAuthenticatedUserParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             visibility: self.visibility, 
             affiliation: self.affiliation, 
             _type: self._type, 
@@ -5664,7 +5692,7 @@ impl<'req> ReposListForAuthenticatedUserParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             visibility: self.visibility, 
             affiliation: self.affiliation, 
             _type: self._type, 
@@ -5679,7 +5707,7 @@ impl<'req> ReposListForAuthenticatedUserParams<'req> {
 
     /// Only show repositories updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             visibility: self.visibility, 
             affiliation: self.affiliation, 
             _type: self._type, 
@@ -5694,7 +5722,7 @@ impl<'req> ReposListForAuthenticatedUserParams<'req> {
 
     /// Only show repositories updated before the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn before(self, before: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             visibility: self.visibility, 
             affiliation: self.affiliation, 
             _type: self._type, 
@@ -5739,7 +5767,7 @@ impl<'req> ReposListForOrgParams<'req> {
 
     /// Specifies the types of repositories you want returned.
     pub fn _type(self, _type: &'req str) -> Self {
-        Self { 
+        Self {
             _type: Some(_type),
             sort: self.sort, 
             direction: self.direction, 
@@ -5750,7 +5778,7 @@ impl<'req> ReposListForOrgParams<'req> {
 
     /// The property to sort the results by.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             _type: self._type, 
             sort: Some(sort),
             direction: self.direction, 
@@ -5761,7 +5789,7 @@ impl<'req> ReposListForOrgParams<'req> {
 
     /// The order to sort by. Default: `asc` when using `full_name`, otherwise `desc`.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             _type: self._type, 
             sort: self.sort, 
             direction: Some(direction),
@@ -5772,7 +5800,7 @@ impl<'req> ReposListForOrgParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             _type: self._type, 
             sort: self.sort, 
             direction: self.direction, 
@@ -5783,7 +5811,7 @@ impl<'req> ReposListForOrgParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             _type: self._type, 
             sort: self.sort, 
             direction: self.direction, 
@@ -5824,7 +5852,7 @@ impl<'req> ReposListForUserParams<'req> {
 
     /// Limit results to repositories of the specified type.
     pub fn _type(self, _type: &'req str) -> Self {
-        Self { 
+        Self {
             _type: Some(_type),
             sort: self.sort, 
             direction: self.direction, 
@@ -5835,7 +5863,7 @@ impl<'req> ReposListForUserParams<'req> {
 
     /// The property to sort the results by.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             _type: self._type, 
             sort: Some(sort),
             direction: self.direction, 
@@ -5846,7 +5874,7 @@ impl<'req> ReposListForUserParams<'req> {
 
     /// The order to sort by. Default: `asc` when using `full_name`, otherwise `desc`.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             _type: self._type, 
             sort: self.sort, 
             direction: Some(direction),
@@ -5857,7 +5885,7 @@ impl<'req> ReposListForUserParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             _type: self._type, 
             sort: self.sort, 
             direction: self.direction, 
@@ -5868,7 +5896,7 @@ impl<'req> ReposListForUserParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             _type: self._type, 
             sort: self.sort, 
             direction: self.direction, 
@@ -5905,7 +5933,7 @@ impl<'req> ReposListForksParams<'req> {
 
     /// The sort order. `stargazers` will sort by star count.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             sort: Some(sort),
             per_page: self.per_page, 
             page: self.page, 
@@ -5914,7 +5942,7 @@ impl<'req> ReposListForksParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             per_page: Some(per_page),
             page: self.page, 
@@ -5923,7 +5951,7 @@ impl<'req> ReposListForksParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             per_page: self.per_page, 
             page: Some(page),
@@ -5956,7 +5984,7 @@ impl ReposListInvitationsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -5964,7 +5992,7 @@ impl ReposListInvitationsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -5996,7 +6024,7 @@ impl ReposListInvitationsForAuthenticatedUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -6004,7 +6032,7 @@ impl ReposListInvitationsForAuthenticatedUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -6036,7 +6064,7 @@ impl ReposListPagesBuildsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -6044,7 +6072,7 @@ impl ReposListPagesBuildsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -6074,7 +6102,7 @@ impl ReposListPublicParams {
 
     /// A repository ID. Only return repositories with an ID greater than this ID.
     pub fn since(self, since: i32) -> Self {
-        Self { 
+        Self {
             since: Some(since),
         }
     }
@@ -6096,7 +6124,7 @@ impl ReposListPullRequestsAssociatedWithCommitParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -6104,7 +6132,7 @@ impl ReposListPullRequestsAssociatedWithCommitParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -6136,7 +6164,7 @@ impl ReposListReleaseAssetsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -6144,7 +6172,7 @@ impl ReposListReleaseAssetsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -6176,7 +6204,7 @@ impl ReposListReleasesParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -6184,7 +6212,7 @@ impl ReposListReleasesParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -6216,7 +6244,7 @@ impl ReposListTagsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -6224,7 +6252,7 @@ impl ReposListTagsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -6256,7 +6284,7 @@ impl ReposListTeamsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -6264,7 +6292,7 @@ impl ReposListTeamsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -6298,7 +6326,7 @@ impl<'req> ReposListWebhookDeliveriesParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             cursor: self.cursor, 
             redelivery: self.redelivery, 
@@ -6307,7 +6335,7 @@ impl<'req> ReposListWebhookDeliveriesParams<'req> {
 
     /// Used for pagination: the starting delivery from which the page of deliveries is fetched. Refer to the `link` header for the next and previous page cursors.
     pub fn cursor(self, cursor: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             cursor: Some(cursor),
             redelivery: self.redelivery, 
@@ -6316,7 +6344,7 @@ impl<'req> ReposListWebhookDeliveriesParams<'req> {
 
     
     pub fn redelivery(self, redelivery: bool) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             cursor: self.cursor, 
             redelivery: Some(redelivery),
@@ -6340,7 +6368,7 @@ impl ReposListWebhooksParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -6348,7 +6376,7 @@ impl ReposListWebhooksParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -6380,7 +6408,7 @@ impl<'req> ReposUploadReleaseAssetParams<'req> {
 
     
     pub fn name(self, name: &'req str) -> Self {
-        Self { 
+        Self {
             name: name,
             label: self.label, 
         }
@@ -6388,7 +6416,7 @@ impl<'req> ReposUploadReleaseAssetParams<'req> {
 
     
     pub fn label(self, label: &'req str) -> Self {
-        Self { 
+        Self {
             name: self.name, 
             label: Some(label),
         }
@@ -6400,7 +6428,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Accept a repository invitation
-    /// 
+    ///
     /// [GitHub API docs for accept_invitation_for_authenticated_user](https://docs.github.com/rest/collaborators/invitations#accept-a-repository-invitation)
     ///
     /// ---
@@ -6440,7 +6468,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Accept a repository invitation
-    /// 
+    ///
     /// [GitHub API docs for accept_invitation_for_authenticated_user](https://docs.github.com/rest/collaborators/invitations#accept-a-repository-invitation)
     ///
     /// ---
@@ -6485,7 +6513,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Grants the specified apps push access for this branch. Only GitHub Apps that are installed on the repository and that have been granted write access to the repository contents can be added as authorized actors on a protected branch.
-    /// 
+    ///
     /// [GitHub API docs for add_app_access_restrictions](https://docs.github.com/rest/branches/branch-protection#add-app-access-restrictions)
     ///
     /// ---
@@ -6526,7 +6554,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Grants the specified apps push access for this branch. Only GitHub Apps that are installed on the repository and that have been granted write access to the repository contents can be added as authorized actors on a protected branch.
-    /// 
+    ///
     /// [GitHub API docs for add_app_access_restrictions](https://docs.github.com/rest/branches/branch-protection#add-app-access-restrictions)
     ///
     /// ---
@@ -6586,7 +6614,7 @@ impl<'api> Repos<'api> {
     /// **Rate limits**
     /// 
     /// You are limited to sending 50 invitations to a repository per 24 hour period. Note there is no limit if you are inviting organization members to an organization repository.
-    /// 
+    ///
     /// [GitHub API docs for add_collaborator](https://docs.github.com/rest/collaborators/collaborators#add-a-repository-collaborator)
     ///
     /// ---
@@ -6647,7 +6675,7 @@ impl<'api> Repos<'api> {
     /// **Rate limits**
     /// 
     /// You are limited to sending 50 invitations to a repository per 24 hour period. Note there is no limit if you are inviting organization members to an organization repository.
-    /// 
+    ///
     /// [GitHub API docs for add_collaborator](https://docs.github.com/rest/collaborators/collaborators#add-a-repository-collaborator)
     ///
     /// ---
@@ -6689,7 +6717,7 @@ impl<'api> Repos<'api> {
     /// # Add status check contexts
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
-    /// 
+    ///
     /// [GitHub API docs for add_status_check_contexts](https://docs.github.com/rest/branches/branch-protection#add-status-check-contexts)
     ///
     /// ---
@@ -6730,7 +6758,7 @@ impl<'api> Repos<'api> {
     /// # Add status check contexts
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
-    /// 
+    ///
     /// [GitHub API docs for add_status_check_contexts](https://docs.github.com/rest/branches/branch-protection#add-status-check-contexts)
     ///
     /// ---
@@ -6774,7 +6802,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Grants the specified teams push access for this branch. You can also give push access to child teams.
-    /// 
+    ///
     /// [GitHub API docs for add_team_access_restrictions](https://docs.github.com/rest/branches/branch-protection#add-team-access-restrictions)
     ///
     /// ---
@@ -6815,7 +6843,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Grants the specified teams push access for this branch. You can also give push access to child teams.
-    /// 
+    ///
     /// [GitHub API docs for add_team_access_restrictions](https://docs.github.com/rest/branches/branch-protection#add-team-access-restrictions)
     ///
     /// ---
@@ -6861,7 +6889,7 @@ impl<'api> Repos<'api> {
     /// | Type    | Description                                                                                                                   |
     /// | ------- | ----------------------------------------------------------------------------------------------------------------------------- |
     /// | `array` | Usernames for people who can have push access. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
-    /// 
+    ///
     /// [GitHub API docs for add_user_access_restrictions](https://docs.github.com/rest/branches/branch-protection#add-user-access-restrictions)
     ///
     /// ---
@@ -6906,7 +6934,7 @@ impl<'api> Repos<'api> {
     /// | Type    | Description                                                                                                                   |
     /// | ------- | ----------------------------------------------------------------------------------------------------------------------------- |
     /// | `array` | Usernames for people who can have push access. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
-    /// 
+    ///
     /// [GitHub API docs for add_user_access_restrictions](https://docs.github.com/rest/branches/branch-protection#add-user-access-restrictions)
     ///
     /// ---
@@ -6948,7 +6976,7 @@ impl<'api> Repos<'api> {
     /// Cancels a GitHub Pages deployment.
     /// 
     /// The authenticated user must have write permissions for the GitHub Pages site.
-    /// 
+    ///
     /// [GitHub API docs for cancel_pages_deployment](https://docs.github.com/rest/pages/pages#cancel-a-github-pages-deployment)
     ///
     /// ---
@@ -6989,7 +7017,7 @@ impl<'api> Repos<'api> {
     /// Cancels a GitHub Pages deployment.
     /// 
     /// The authenticated user must have write permissions for the GitHub Pages site.
-    /// 
+    ///
     /// [GitHub API docs for cancel_pages_deployment](https://docs.github.com/rest/pages/pages#cancel-a-github-pages-deployment)
     ///
     /// ---
@@ -7029,7 +7057,7 @@ impl<'api> Repos<'api> {
     /// # Check if automated security fixes are enabled for a repository
     ///
     /// Shows whether automated security fixes are enabled, disabled or paused for a repository. The authenticated user must have admin read access to the repository. For more information, see "[Configuring automated security fixes](https://docs.github.com/articles/configuring-automated-security-fixes)".
-    /// 
+    ///
     /// [GitHub API docs for check_automated_security_fixes](https://docs.github.com/rest/repos/repos#check-if-automated-security-fixes-are-enabled-for-a-repository)
     ///
     /// ---
@@ -7068,7 +7096,7 @@ impl<'api> Repos<'api> {
     /// # Check if automated security fixes are enabled for a repository
     ///
     /// Shows whether automated security fixes are enabled, disabled or paused for a repository. The authenticated user must have admin read access to the repository. For more information, see "[Configuring automated security fixes](https://docs.github.com/articles/configuring-automated-security-fixes)".
-    /// 
+    ///
     /// [GitHub API docs for check_automated_security_fixes](https://docs.github.com/rest/repos/repos#check-if-automated-security-fixes-are-enabled-for-a-repository)
     ///
     /// ---
@@ -7114,7 +7142,7 @@ impl<'api> Repos<'api> {
     /// The authenticated user must have push access to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:org` and `repo` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for check_collaborator](https://docs.github.com/rest/collaborators/collaborators#check-if-a-user-is-a-repository-collaborator)
     ///
     /// ---
@@ -7159,7 +7187,7 @@ impl<'api> Repos<'api> {
     /// The authenticated user must have push access to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:org` and `repo` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for check_collaborator](https://docs.github.com/rest/collaborators/collaborators#check-if-a-user-is-a-repository-collaborator)
     ///
     /// ---
@@ -7199,7 +7227,7 @@ impl<'api> Repos<'api> {
     /// # Check if private vulnerability reporting is enabled for a repository
     ///
     /// Returns a boolean indicating whether or not private vulnerability reporting is enabled for the repository. For more information, see "[Evaluating the security settings of a repository](https://docs.github.com/code-security/security-advisories/working-with-repository-security-advisories/evaluating-the-security-settings-of-a-repository)".
-    /// 
+    ///
     /// [GitHub API docs for check_private_vulnerability_reporting](https://docs.github.com/rest/repos/repos#check-if-private-vulnerability-reporting-is-enabled-for-a-repository)
     ///
     /// ---
@@ -7238,7 +7266,7 @@ impl<'api> Repos<'api> {
     /// # Check if private vulnerability reporting is enabled for a repository
     ///
     /// Returns a boolean indicating whether or not private vulnerability reporting is enabled for the repository. For more information, see "[Evaluating the security settings of a repository](https://docs.github.com/code-security/security-advisories/working-with-repository-security-advisories/evaluating-the-security-settings-of-a-repository)".
-    /// 
+    ///
     /// [GitHub API docs for check_private_vulnerability_reporting](https://docs.github.com/rest/repos/repos#check-if-private-vulnerability-reporting-is-enabled-for-a-repository)
     ///
     /// ---
@@ -7278,7 +7306,7 @@ impl<'api> Repos<'api> {
     /// # Check if vulnerability alerts are enabled for a repository
     ///
     /// Shows whether dependency alerts are enabled or disabled for a repository. The authenticated user must have admin read access to the repository. For more information, see "[About security alerts for vulnerable dependencies](https://docs.github.com/articles/about-security-alerts-for-vulnerable-dependencies)".
-    /// 
+    ///
     /// [GitHub API docs for check_vulnerability_alerts](https://docs.github.com/rest/repos/repos#check-if-vulnerability-alerts-are-enabled-for-a-repository)
     ///
     /// ---
@@ -7317,7 +7345,7 @@ impl<'api> Repos<'api> {
     /// # Check if vulnerability alerts are enabled for a repository
     ///
     /// Shows whether dependency alerts are enabled or disabled for a repository. The authenticated user must have admin read access to the repository. For more information, see "[About security alerts for vulnerable dependencies](https://docs.github.com/articles/about-security-alerts-for-vulnerable-dependencies)".
-    /// 
+    ///
     /// [GitHub API docs for check_vulnerability_alerts](https://docs.github.com/rest/repos/repos#check-if-vulnerability-alerts-are-enabled-for-a-repository)
     ///
     /// ---
@@ -7361,7 +7389,7 @@ impl<'api> Repos<'api> {
     /// 
     /// For more information about the correct CODEOWNERS syntax,
     /// see "[About code owners](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners)."
-    /// 
+    ///
     /// [GitHub API docs for codeowners_errors](https://docs.github.com/rest/repos/repos#list-codeowners-errors)
     ///
     /// ---
@@ -7408,7 +7436,7 @@ impl<'api> Repos<'api> {
     /// 
     /// For more information about the correct CODEOWNERS syntax,
     /// see "[About code owners](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners)."
-    /// 
+    ///
     /// [GitHub API docs for codeowners_errors](https://docs.github.com/rest/repos/repos#list-codeowners-errors)
     ///
     /// ---
@@ -7502,7 +7530,7 @@ impl<'api> Repos<'api> {
     /// | `malformed_signature` | There was an error parsing the signature. |
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
-    /// 
+    ///
     /// [GitHub API docs for compare_commits](https://docs.github.com/rest/commits/commits#compare-two-commits)
     ///
     /// ---
@@ -7596,7 +7624,7 @@ impl<'api> Repos<'api> {
     /// | `malformed_signature` | There was an error parsing the signature. |
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
-    /// 
+    ///
     /// [GitHub API docs for compare_commits](https://docs.github.com/rest/commits/commits#compare-two-commits)
     ///
     /// ---
@@ -7647,7 +7675,7 @@ impl<'api> Repos<'api> {
     /// The authenticated user must have write permission to the repository and, if using a fine-grained access token, the `attestations:write` permission is required.
     /// 
     /// Artifact attestations are meant to be created using the [attest action](https://github.com/actions/attest). For more information, see our guide on [using artifact attestations to establish a build's provenance](https://docs.github.com/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds).
-    /// 
+    ///
     /// [GitHub API docs for create_attestation](https://docs.github.com/rest/repos/repos#create-an-attestation)
     ///
     /// ---
@@ -7691,7 +7719,7 @@ impl<'api> Repos<'api> {
     /// The authenticated user must have write permission to the repository and, if using a fine-grained access token, the `attestations:write` permission is required.
     /// 
     /// Artifact attestations are meant to be created using the [attest action](https://github.com/actions/attest). For more information, see our guide on [using artifact attestations to establish a build's provenance](https://docs.github.com/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds).
-    /// 
+    ///
     /// [GitHub API docs for create_attestation](https://docs.github.com/rest/repos/repos#create-an-attestation)
     ///
     /// ---
@@ -7732,7 +7760,7 @@ impl<'api> Repos<'api> {
     /// # Create an autolink reference for a repository
     ///
     /// Users with admin access to the repository can create an autolink.
-    /// 
+    ///
     /// [GitHub API docs for create_autolink](https://docs.github.com/rest/repos/autolinks#create-an-autolink-reference-for-a-repository)
     ///
     /// ---
@@ -7771,7 +7799,7 @@ impl<'api> Repos<'api> {
     /// # Create an autolink reference for a repository
     ///
     /// Users with admin access to the repository can create an autolink.
-    /// 
+    ///
     /// [GitHub API docs for create_autolink](https://docs.github.com/rest/repos/autolinks#create-an-autolink-reference-for-a-repository)
     ///
     /// ---
@@ -7820,7 +7848,7 @@ impl<'api> Repos<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for create_commit_comment](https://docs.github.com/rest/commits/comments#create-a-commit-comment)
     ///
     /// ---
@@ -7869,7 +7897,7 @@ impl<'api> Repos<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for create_commit_comment](https://docs.github.com/rest/commits/comments#create-a-commit-comment)
     ///
     /// ---
@@ -7912,7 +7940,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// When authenticated with admin or owner permissions to the repository, you can use this endpoint to require signed commits on a branch. You must enable branch protection to require signed commits.
-    /// 
+    ///
     /// [GitHub API docs for create_commit_signature_protection](https://docs.github.com/rest/branches/branch-protection#create-commit-signature-protection)
     ///
     /// ---
@@ -7953,7 +7981,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// When authenticated with admin or owner permissions to the repository, you can use this endpoint to require signed commits on a branch. You must enable branch protection to require signed commits.
-    /// 
+    ///
     /// [GitHub API docs for create_commit_signature_protection](https://docs.github.com/rest/branches/branch-protection#create-commit-signature-protection)
     ///
     /// ---
@@ -7995,7 +8023,7 @@ impl<'api> Repos<'api> {
     /// Users with push access in a repository can create commit statuses for a given SHA.
     /// 
     /// Note: there is a limit of 1000 statuses per `sha` and `context` within a repository. Attempts to create more than 1000 statuses will result in a validation error.
-    /// 
+    ///
     /// [GitHub API docs for create_commit_status](https://docs.github.com/rest/commits/statuses#create-a-commit-status)
     ///
     /// ---
@@ -8035,7 +8063,7 @@ impl<'api> Repos<'api> {
     /// Users with push access in a repository can create commit statuses for a given SHA.
     /// 
     /// Note: there is a limit of 1000 statuses per `sha` and `context` within a repository. Attempts to create more than 1000 statuses will result in a validation error.
-    /// 
+    ///
     /// [GitHub API docs for create_commit_status](https://docs.github.com/rest/commits/statuses#create-a-commit-status)
     ///
     /// ---
@@ -8074,7 +8102,7 @@ impl<'api> Repos<'api> {
     /// # Create a deploy key
     ///
     /// You can create a read-only deploy key.
-    /// 
+    ///
     /// [GitHub API docs for create_deploy_key](https://docs.github.com/rest/deploy-keys/deploy-keys#create-a-deploy-key)
     ///
     /// ---
@@ -8113,7 +8141,7 @@ impl<'api> Repos<'api> {
     /// # Create a deploy key
     ///
     /// You can create a read-only deploy key.
-    /// 
+    ///
     /// [GitHub API docs for create_deploy_key](https://docs.github.com/rest/deploy-keys/deploy-keys#create-a-deploy-key)
     ///
     /// ---
@@ -8200,7 +8228,7 @@ impl<'api> Repos<'api> {
     /// status for the commit to be deployed, but one or more of the required contexts do not have a state of `success`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `repo_deployment` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_deployment](https://docs.github.com/rest/deployments/deployments#create-a-deployment)
     ///
     /// ---
@@ -8288,7 +8316,7 @@ impl<'api> Repos<'api> {
     /// status for the commit to be deployed, but one or more of the required contexts do not have a state of `success`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `repo_deployment` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_deployment](https://docs.github.com/rest/deployments/deployments#create-a-deployment)
     ///
     /// ---
@@ -8332,7 +8360,7 @@ impl<'api> Repos<'api> {
     /// Creates a deployment branch or tag policy for an environment.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_deployment_branch_policy](https://docs.github.com/rest/deployments/branch-policies#create-a-deployment-branch-policy)
     ///
     /// ---
@@ -8374,7 +8402,7 @@ impl<'api> Repos<'api> {
     /// Creates a deployment branch or tag policy for an environment.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_deployment_branch_policy](https://docs.github.com/rest/deployments/branch-policies#create-a-deployment-branch-policy)
     ///
     /// ---
@@ -8421,7 +8449,7 @@ impl<'api> Repos<'api> {
     /// For more information about the app that is providing this custom deployment rule, see the [documentation for the `GET /apps/{app_slug}` endpoint](https://docs.github.com/rest/apps/apps#get-an-app).
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_deployment_protection_rule](https://docs.github.com/rest/deployments/protection-rules#create-a-custom-deployment-protection-rule-on-an-environment)
     ///
     /// ---
@@ -8465,7 +8493,7 @@ impl<'api> Repos<'api> {
     /// For more information about the app that is providing this custom deployment rule, see the [documentation for the `GET /apps/{app_slug}` endpoint](https://docs.github.com/rest/apps/apps#get-an-app).
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_deployment_protection_rule](https://docs.github.com/rest/deployments/protection-rules#create-a-custom-deployment-protection-rule-on-an-environment)
     ///
     /// ---
@@ -8506,7 +8534,7 @@ impl<'api> Repos<'api> {
     /// Users with `push` access can create deployment statuses for a given deployment.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo_deployment` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_deployment_status](https://docs.github.com/rest/deployments/statuses#create-a-deployment-status)
     ///
     /// ---
@@ -8547,7 +8575,7 @@ impl<'api> Repos<'api> {
     /// Users with `push` access can create deployment statuses for a given deployment.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo_deployment` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_deployment_status](https://docs.github.com/rest/deployments/statuses#create-a-deployment-status)
     ///
     /// ---
@@ -8593,7 +8621,7 @@ impl<'api> Repos<'api> {
     /// This input example shows how you can use the `client_payload` as a test to debug your workflow.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_dispatch_event](https://docs.github.com/rest/repos/repos#create-a-repository-dispatch-event)
     ///
     /// ---
@@ -8639,7 +8667,7 @@ impl<'api> Repos<'api> {
     /// This input example shows how you can use the `client_payload` as a test to debug your workflow.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_dispatch_event](https://docs.github.com/rest/repos/repos#create-a-repository-dispatch-event)
     ///
     /// ---
@@ -8682,7 +8710,7 @@ impl<'api> Repos<'api> {
     /// Creates a new repository for the authenticated user.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `public_repo` or `repo` scope to create a public repository, and `repo` scope to create a private repository.
-    /// 
+    ///
     /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/repos/repos#create-a-repository-for-the-authenticated-user)
     ///
     /// ---
@@ -8728,7 +8756,7 @@ impl<'api> Repos<'api> {
     /// Creates a new repository for the authenticated user.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `public_repo` or `repo` scope to create a public repository, and `repo` scope to create a private repository.
-    /// 
+    ///
     /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/repos/repos#create-a-repository-for-the-authenticated-user)
     ///
     /// ---
@@ -8779,7 +8807,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > Although this endpoint works with GitHub Apps, the GitHub App must be installed on the destination account with access to all repositories and on the source account with access to the source repository.
-    /// 
+    ///
     /// [GitHub API docs for create_fork](https://docs.github.com/rest/repos/forks#create-a-fork)
     ///
     /// ---
@@ -8827,7 +8855,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > Although this endpoint works with GitHub Apps, the GitHub App must be installed on the destination account with access to all repositories and on the source account with access to the source repository.
-    /// 
+    ///
     /// [GitHub API docs for create_fork](https://docs.github.com/rest/repos/forks#create-a-fork)
     ///
     /// ---
@@ -8872,7 +8900,7 @@ impl<'api> Repos<'api> {
     /// Creates a new repository in the specified organization. The authenticated user must be a member of the organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `public_repo` or `repo` scope to create a public repository, and `repo` scope to create a private repository.
-    /// 
+    ///
     /// [GitHub API docs for create_in_org](https://docs.github.com/rest/repos/repos#create-an-organization-repository)
     ///
     /// ---
@@ -8914,7 +8942,7 @@ impl<'api> Repos<'api> {
     /// Creates a new repository in the specified organization. The authenticated user must be a member of the organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `public_repo` or `repo` scope to create a public repository, and `repo` scope to create a private repository.
-    /// 
+    ///
     /// [GitHub API docs for create_in_org](https://docs.github.com/rest/repos/repos#create-an-organization-repository)
     ///
     /// ---
@@ -8958,7 +8986,7 @@ impl<'api> Repos<'api> {
     /// Using a value of `null` for a custom property will remove or 'unset' the property value from the repository.
     /// 
     /// Repository admins and other users with the repository-level "edit custom property values" fine-grained permission can use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_custom_properties_values](https://docs.github.com/rest/repos/custom-properties#create-or-update-custom-property-values-for-a-repository)
     ///
     /// ---
@@ -9002,7 +9030,7 @@ impl<'api> Repos<'api> {
     /// Using a value of `null` for a custom property will remove or 'unset' the property value from the repository.
     /// 
     /// Repository admins and other users with the repository-level "edit custom property values" fine-grained permission can use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_custom_properties_values](https://docs.github.com/rest/repos/custom-properties#create-or-update-custom-property-values-for-a-repository)
     ///
     /// ---
@@ -9052,7 +9080,7 @@ impl<'api> Repos<'api> {
     /// > To create or update secrets for an environment, see "[GitHub Actions secrets](/rest/actions/secrets)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_environment](https://docs.github.com/rest/deployments/environments#create-or-update-an-environment)
     ///
     /// ---
@@ -9099,7 +9127,7 @@ impl<'api> Repos<'api> {
     /// > To create or update secrets for an environment, see "[GitHub Actions secrets](/rest/actions/secrets)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_environment](https://docs.github.com/rest/deployments/environments#create-or-update-an-environment)
     ///
     /// ---
@@ -9144,7 +9172,7 @@ impl<'api> Repos<'api> {
     /// > If you use this endpoint and the "[Delete a file](https://docs.github.com/rest/repos/contents/#delete-a-file)" endpoint in parallel, the concurrent requests will conflict and you will receive errors. You must use these endpoints serially instead.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint. The `workflow` scope is also required in order to modify files in the `.github/workflows` directory.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_file_contents](https://docs.github.com/rest/repos/contents#create-or-update-file-contents)
     ///
     /// ---
@@ -9191,7 +9219,7 @@ impl<'api> Repos<'api> {
     /// > If you use this endpoint and the "[Delete a file](https://docs.github.com/rest/repos/contents/#delete-a-file)" endpoint in parallel, the concurrent requests will conflict and you will receive errors. You must use these endpoints serially instead.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint. The `workflow` scope is also required in order to modify files in the `.github/workflows` directory.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_file_contents](https://docs.github.com/rest/repos/contents#create-or-update-file-contents)
     ///
     /// ---
@@ -9234,7 +9262,7 @@ impl<'api> Repos<'api> {
     /// # Create an organization repository ruleset
     ///
     /// Create a repository ruleset for an organization.
-    /// 
+    ///
     /// [GitHub API docs for create_org_ruleset](https://docs.github.com/rest/orgs/rules#create-an-organization-repository-ruleset)
     ///
     /// ---
@@ -9274,7 +9302,7 @@ impl<'api> Repos<'api> {
     /// # Create an organization repository ruleset
     ///
     /// Create a repository ruleset for an organization.
-    /// 
+    ///
     /// [GitHub API docs for create_org_ruleset](https://docs.github.com/rest/orgs/rules#create-an-organization-repository-ruleset)
     ///
     /// ---
@@ -9317,7 +9345,7 @@ impl<'api> Repos<'api> {
     /// Create a GitHub Pages deployment for a repository.
     /// 
     /// The authenticated user must have write permission to the repository.
-    /// 
+    ///
     /// [GitHub API docs for create_pages_deployment](https://docs.github.com/rest/pages/pages#create-a-github-pages-deployment)
     ///
     /// ---
@@ -9360,7 +9388,7 @@ impl<'api> Repos<'api> {
     /// Create a GitHub Pages deployment for a repository.
     /// 
     /// The authenticated user must have write permission to the repository.
-    /// 
+    ///
     /// [GitHub API docs for create_pages_deployment](https://docs.github.com/rest/pages/pages#create-a-github-pages-deployment)
     ///
     /// ---
@@ -9406,7 +9434,7 @@ impl<'api> Repos<'api> {
     /// The authenticated user must be a repository administrator, maintainer, or have the 'manage GitHub Pages settings' permission.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_pages_site](https://docs.github.com/rest/pages/pages#create-a-apiname-pages-site)
     ///
     /// ---
@@ -9450,7 +9478,7 @@ impl<'api> Repos<'api> {
     /// The authenticated user must be a repository administrator, maintainer, or have the 'manage GitHub Pages settings' permission.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_pages_site](https://docs.github.com/rest/pages/pages#create-a-apiname-pages-site)
     ///
     /// ---
@@ -9493,7 +9521,7 @@ impl<'api> Repos<'api> {
     /// Users with push access to the repository can create a release.
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)" and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
-    /// 
+    ///
     /// [GitHub API docs for create_release](https://docs.github.com/rest/releases/releases#create-a-release)
     ///
     /// ---
@@ -9535,7 +9563,7 @@ impl<'api> Repos<'api> {
     /// Users with push access to the repository can create a release.
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)" and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
-    /// 
+    ///
     /// [GitHub API docs for create_release](https://docs.github.com/rest/releases/releases#create-a-release)
     ///
     /// ---
@@ -9576,7 +9604,7 @@ impl<'api> Repos<'api> {
     /// # Create a repository ruleset
     ///
     /// Create a ruleset for a repository.
-    /// 
+    ///
     /// [GitHub API docs for create_repo_ruleset](https://docs.github.com/rest/repos/rules#create-a-repository-ruleset)
     ///
     /// ---
@@ -9616,7 +9644,7 @@ impl<'api> Repos<'api> {
     /// # Create a repository ruleset
     ///
     /// Create a ruleset for a repository.
-    /// 
+    ///
     /// [GitHub API docs for create_repo_ruleset](https://docs.github.com/rest/repos/rules#create-a-repository-ruleset)
     ///
     /// ---
@@ -9661,7 +9689,7 @@ impl<'api> Repos<'api> {
     /// 
     /// This creates a tag protection state for a repository.
     /// This endpoint is only available to repository administrators.
-    /// 
+    ///
     /// [GitHub API docs for create_tag_protection](https://docs.github.com/rest/repos/tags#deprecated---create-a-tag-protection-state-for-a-repository)
     ///
     /// ---
@@ -9705,7 +9733,7 @@ impl<'api> Repos<'api> {
     /// 
     /// This creates a tag protection state for a repository.
     /// This endpoint is only available to repository administrators.
-    /// 
+    ///
     /// [GitHub API docs for create_tag_protection](https://docs.github.com/rest/repos/tags#deprecated---create-a-tag-protection-state-for-a-repository)
     ///
     /// ---
@@ -9748,7 +9776,7 @@ impl<'api> Repos<'api> {
     /// Creates a new repository using a repository template. Use the `template_owner` and `template_repo` route parameters to specify the repository to use as the template. If the repository is not public, the authenticated user must own or be a member of an organization that owns the repository. To check if a repository is available to use as a template, get the repository's information using the [Get a repository](https://docs.github.com/rest/repos/repos#get-a-repository) endpoint and check that the `is_template` key is `true`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `public_repo` or `repo` scope to create a public repository, and `repo` scope to create a private repository.
-    /// 
+    ///
     /// [GitHub API docs for create_using_template](https://docs.github.com/rest/repos/repos#create-a-repository-using-a-template)
     ///
     /// ---
@@ -9788,7 +9816,7 @@ impl<'api> Repos<'api> {
     /// Creates a new repository using a repository template. Use the `template_owner` and `template_repo` route parameters to specify the repository to use as the template. If the repository is not public, the authenticated user must own or be a member of an organization that owns the repository. To check if a repository is available to use as a template, get the repository's information using the [Get a repository](https://docs.github.com/rest/repos/repos#get-a-repository) endpoint and check that the `is_template` key is `true`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `public_repo` or `repo` scope to create a public repository, and `repo` scope to create a private repository.
-    /// 
+    ///
     /// [GitHub API docs for create_using_template](https://docs.github.com/rest/repos/repos#create-a-repository-using-a-template)
     ///
     /// ---
@@ -9828,7 +9856,7 @@ impl<'api> Repos<'api> {
     ///
     /// Repositories can have multiple webhooks installed. Each webhook should have a unique `config`. Multiple webhooks can
     /// share the same `config` as long as those webhooks do not have any `events` that overlap.
-    /// 
+    ///
     /// [GitHub API docs for create_webhook](https://docs.github.com/rest/repos/webhooks#create-a-repository-webhook)
     ///
     /// ---
@@ -9870,7 +9898,7 @@ impl<'api> Repos<'api> {
     ///
     /// Repositories can have multiple webhooks installed. Each webhook should have a unique `config`. Multiple webhooks can
     /// share the same `config` as long as those webhooks do not have any `events` that overlap.
-    /// 
+    ///
     /// [GitHub API docs for create_webhook](https://docs.github.com/rest/repos/webhooks#create-a-repository-webhook)
     ///
     /// ---
@@ -9910,7 +9938,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Decline a repository invitation
-    /// 
+    ///
     /// [GitHub API docs for decline_invitation_for_authenticated_user](https://docs.github.com/rest/collaborators/invitations#decline-a-repository-invitation)
     ///
     /// ---
@@ -9950,7 +9978,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Decline a repository invitation
-    /// 
+    ///
     /// [GitHub API docs for decline_invitation_for_authenticated_user](https://docs.github.com/rest/collaborators/invitations#decline-a-repository-invitation)
     ///
     /// ---
@@ -9998,7 +10026,7 @@ impl<'api> Repos<'api> {
     /// repositories, you will get a `403 Forbidden` response.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `delete_repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete](https://docs.github.com/rest/repos/repos#delete-a-repository)
     ///
     /// ---
@@ -10044,7 +10072,7 @@ impl<'api> Repos<'api> {
     /// repositories, you will get a `403 Forbidden` response.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `delete_repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete](https://docs.github.com/rest/repos/repos#delete-a-repository)
     ///
     /// ---
@@ -10088,7 +10116,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Disables the ability to restrict who can push to this branch.
-    /// 
+    ///
     /// [GitHub API docs for delete_access_restrictions](https://docs.github.com/rest/branches/branch-protection#delete-access-restrictions)
     ///
     /// ---
@@ -10128,7 +10156,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Disables the ability to restrict who can push to this branch.
-    /// 
+    ///
     /// [GitHub API docs for delete_access_restrictions](https://docs.github.com/rest/branches/branch-protection#delete-access-restrictions)
     ///
     /// ---
@@ -10169,7 +10197,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Removing admin enforcement requires admin or owner permissions to the repository and branch protection to be enabled.
-    /// 
+    ///
     /// [GitHub API docs for delete_admin_branch_protection](https://docs.github.com/rest/branches/branch-protection#delete-admin-branch-protection)
     ///
     /// ---
@@ -10210,7 +10238,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Removing admin enforcement requires admin or owner permissions to the repository and branch protection to be enabled.
-    /// 
+    ///
     /// [GitHub API docs for delete_admin_branch_protection](https://docs.github.com/rest/branches/branch-protection#delete-admin-branch-protection)
     ///
     /// ---
@@ -10250,7 +10278,7 @@ impl<'api> Repos<'api> {
     /// # Delete an environment
     ///
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_an_environment](https://docs.github.com/rest/deployments/environments#delete-an-environment)
     ///
     /// ---
@@ -10288,7 +10316,7 @@ impl<'api> Repos<'api> {
     /// # Delete an environment
     ///
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_an_environment](https://docs.github.com/rest/deployments/environments#delete-an-environment)
     ///
     /// ---
@@ -10329,7 +10357,7 @@ impl<'api> Repos<'api> {
     /// This deletes a single autolink reference by ID that was configured for the given repository.
     /// 
     /// Information about autolinks are only available to repository administrators.
-    /// 
+    ///
     /// [GitHub API docs for delete_autolink](https://docs.github.com/rest/repos/autolinks#delete-an-autolink-reference-from-a-repository)
     ///
     /// ---
@@ -10370,7 +10398,7 @@ impl<'api> Repos<'api> {
     /// This deletes a single autolink reference by ID that was configured for the given repository.
     /// 
     /// Information about autolinks are only available to repository administrators.
-    /// 
+    ///
     /// [GitHub API docs for delete_autolink](https://docs.github.com/rest/repos/autolinks#delete-an-autolink-reference-from-a-repository)
     ///
     /// ---
@@ -10410,7 +10438,7 @@ impl<'api> Repos<'api> {
     /// # Delete branch protection
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
-    /// 
+    ///
     /// [GitHub API docs for delete_branch_protection](https://docs.github.com/rest/branches/branch-protection#delete-branch-protection)
     ///
     /// ---
@@ -10449,7 +10477,7 @@ impl<'api> Repos<'api> {
     /// # Delete branch protection
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
-    /// 
+    ///
     /// [GitHub API docs for delete_branch_protection](https://docs.github.com/rest/branches/branch-protection#delete-branch-protection)
     ///
     /// ---
@@ -10487,7 +10515,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Delete a commit comment
-    /// 
+    ///
     /// [GitHub API docs for delete_commit_comment](https://docs.github.com/rest/commits/comments#delete-a-commit-comment)
     ///
     /// ---
@@ -10524,7 +10552,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Delete a commit comment
-    /// 
+    ///
     /// [GitHub API docs for delete_commit_comment](https://docs.github.com/rest/commits/comments#delete-a-commit-comment)
     ///
     /// ---
@@ -10566,7 +10594,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// When authenticated with admin or owner permissions to the repository, you can use this endpoint to disable required signed commits on a branch. You must enable branch protection to require signed commits.
-    /// 
+    ///
     /// [GitHub API docs for delete_commit_signature_protection](https://docs.github.com/rest/branches/branch-protection#delete-commit-signature-protection)
     ///
     /// ---
@@ -10607,7 +10635,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// When authenticated with admin or owner permissions to the repository, you can use this endpoint to disable required signed commits on a branch. You must enable branch protection to require signed commits.
-    /// 
+    ///
     /// [GitHub API docs for delete_commit_signature_protection](https://docs.github.com/rest/branches/branch-protection#delete-commit-signature-protection)
     ///
     /// ---
@@ -10647,7 +10675,7 @@ impl<'api> Repos<'api> {
     /// # Delete a deploy key
     ///
     /// Deploy keys are immutable. If you need to update a key, remove the key and create a new one instead.
-    /// 
+    ///
     /// [GitHub API docs for delete_deploy_key](https://docs.github.com/rest/deploy-keys/deploy-keys#delete-a-deploy-key)
     ///
     /// ---
@@ -10685,7 +10713,7 @@ impl<'api> Repos<'api> {
     /// # Delete a deploy key
     ///
     /// Deploy keys are immutable. If you need to update a key, remove the key and create a new one instead.
-    /// 
+    ///
     /// [GitHub API docs for delete_deploy_key](https://docs.github.com/rest/deploy-keys/deploy-keys#delete-a-deploy-key)
     ///
     /// ---
@@ -10733,7 +10761,7 @@ impl<'api> Repos<'api> {
     /// For more information, see "[Create a deployment](https://docs.github.com/rest/deployments/deployments/#create-a-deployment)" and "[Create a deployment status](https://docs.github.com/rest/deployments/statuses#create-a-deployment-status)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `repo_deployment` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_deployment](https://docs.github.com/rest/deployments/deployments#delete-a-deployment)
     ///
     /// ---
@@ -10782,7 +10810,7 @@ impl<'api> Repos<'api> {
     /// For more information, see "[Create a deployment](https://docs.github.com/rest/deployments/deployments/#create-a-deployment)" and "[Create a deployment status](https://docs.github.com/rest/deployments/statuses#create-a-deployment-status)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `repo_deployment` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_deployment](https://docs.github.com/rest/deployments/deployments#delete-a-deployment)
     ///
     /// ---
@@ -10825,7 +10853,7 @@ impl<'api> Repos<'api> {
     /// Deletes a deployment branch or tag policy for an environment.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_deployment_branch_policy](https://docs.github.com/rest/deployments/branch-policies#delete-a-deployment-branch-policy)
     ///
     /// ---
@@ -10865,7 +10893,7 @@ impl<'api> Repos<'api> {
     /// Deletes a deployment branch or tag policy for an environment.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_deployment_branch_policy](https://docs.github.com/rest/deployments/branch-policies#delete-a-deployment-branch-policy)
     ///
     /// ---
@@ -10913,7 +10941,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > If you use this endpoint and the "[Create or update file contents](https://docs.github.com/rest/repos/contents/#create-or-update-file-contents)" endpoint in parallel, the concurrent requests will conflict and you will receive errors. You must use these endpoints serially instead.
-    /// 
+    ///
     /// [GitHub API docs for delete_file](https://docs.github.com/rest/repos/contents#delete-a-file)
     ///
     /// ---
@@ -10964,7 +10992,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > If you use this endpoint and the "[Create or update file contents](https://docs.github.com/rest/repos/contents/#create-or-update-file-contents)" endpoint in parallel, the concurrent requests will conflict and you will receive errors. You must use these endpoints serially instead.
-    /// 
+    ///
     /// [GitHub API docs for delete_file](https://docs.github.com/rest/repos/contents#delete-a-file)
     ///
     /// ---
@@ -11005,7 +11033,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Delete a repository invitation
-    /// 
+    ///
     /// [GitHub API docs for delete_invitation](https://docs.github.com/rest/collaborators/invitations#delete-a-repository-invitation)
     ///
     /// ---
@@ -11041,7 +11069,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Delete a repository invitation
-    /// 
+    ///
     /// [GitHub API docs for delete_invitation](https://docs.github.com/rest/collaborators/invitations#delete-a-repository-invitation)
     ///
     /// ---
@@ -11080,7 +11108,7 @@ impl<'api> Repos<'api> {
     /// # Delete an organization repository ruleset
     ///
     /// Delete a ruleset for an organization.
-    /// 
+    ///
     /// [GitHub API docs for delete_org_ruleset](https://docs.github.com/rest/orgs/rules#delete-an-organization-repository-ruleset)
     ///
     /// ---
@@ -11120,7 +11148,7 @@ impl<'api> Repos<'api> {
     /// # Delete an organization repository ruleset
     ///
     /// Delete a ruleset for an organization.
-    /// 
+    ///
     /// [GitHub API docs for delete_org_ruleset](https://docs.github.com/rest/orgs/rules#delete-an-organization-repository-ruleset)
     ///
     /// ---
@@ -11165,7 +11193,7 @@ impl<'api> Repos<'api> {
     /// The authenticated user must be a repository administrator, maintainer, or have the 'manage GitHub Pages settings' permission.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_pages_site](https://docs.github.com/rest/pages/pages#delete-a-apiname-pages-site)
     ///
     /// ---
@@ -11210,7 +11238,7 @@ impl<'api> Repos<'api> {
     /// The authenticated user must be a repository administrator, maintainer, or have the 'manage GitHub Pages settings' permission.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_pages_site](https://docs.github.com/rest/pages/pages#delete-a-apiname-pages-site)
     ///
     /// ---
@@ -11252,7 +11280,7 @@ impl<'api> Repos<'api> {
     /// # Delete pull request review protection
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
-    /// 
+    ///
     /// [GitHub API docs for delete_pull_request_review_protection](https://docs.github.com/rest/branches/branch-protection#delete-pull-request-review-protection)
     ///
     /// ---
@@ -11291,7 +11319,7 @@ impl<'api> Repos<'api> {
     /// # Delete pull request review protection
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
-    /// 
+    ///
     /// [GitHub API docs for delete_pull_request_review_protection](https://docs.github.com/rest/branches/branch-protection#delete-pull-request-review-protection)
     ///
     /// ---
@@ -11331,7 +11359,7 @@ impl<'api> Repos<'api> {
     /// # Delete a release
     ///
     /// Users with push access to the repository can delete a release.
-    /// 
+    ///
     /// [GitHub API docs for delete_release](https://docs.github.com/rest/releases/releases#delete-a-release)
     ///
     /// ---
@@ -11369,7 +11397,7 @@ impl<'api> Repos<'api> {
     /// # Delete a release
     ///
     /// Users with push access to the repository can delete a release.
-    /// 
+    ///
     /// [GitHub API docs for delete_release](https://docs.github.com/rest/releases/releases#delete-a-release)
     ///
     /// ---
@@ -11406,7 +11434,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Delete a release asset
-    /// 
+    ///
     /// [GitHub API docs for delete_release_asset](https://docs.github.com/rest/releases/assets#delete-a-release-asset)
     ///
     /// ---
@@ -11442,7 +11470,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Delete a release asset
-    /// 
+    ///
     /// [GitHub API docs for delete_release_asset](https://docs.github.com/rest/releases/assets#delete-a-release-asset)
     ///
     /// ---
@@ -11481,7 +11509,7 @@ impl<'api> Repos<'api> {
     /// # Delete a repository ruleset
     ///
     /// Delete a ruleset for a repository.
-    /// 
+    ///
     /// [GitHub API docs for delete_repo_ruleset](https://docs.github.com/rest/repos/rules#delete-a-repository-ruleset)
     ///
     /// ---
@@ -11521,7 +11549,7 @@ impl<'api> Repos<'api> {
     /// # Delete a repository ruleset
     ///
     /// Delete a ruleset for a repository.
-    /// 
+    ///
     /// [GitHub API docs for delete_repo_ruleset](https://docs.github.com/rest/repos/rules#delete-a-repository-ruleset)
     ///
     /// ---
@@ -11566,7 +11594,7 @@ impl<'api> Repos<'api> {
     /// 
     /// This deletes a tag protection state for a repository.
     /// This endpoint is only available to repository administrators.
-    /// 
+    ///
     /// [GitHub API docs for delete_tag_protection](https://docs.github.com/rest/repos/tags#deprecated---delete-a-tag-protection-state-for-a-repository)
     ///
     /// ---
@@ -11610,7 +11638,7 @@ impl<'api> Repos<'api> {
     /// 
     /// This deletes a tag protection state for a repository.
     /// This endpoint is only available to repository administrators.
-    /// 
+    ///
     /// [GitHub API docs for delete_tag_protection](https://docs.github.com/rest/repos/tags#deprecated---delete-a-tag-protection-state-for-a-repository)
     ///
     /// ---
@@ -11649,7 +11677,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Delete a repository webhook
-    /// 
+    ///
     /// [GitHub API docs for delete_webhook](https://docs.github.com/rest/repos/webhooks#delete-a-repository-webhook)
     ///
     /// ---
@@ -11686,7 +11714,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Delete a repository webhook
-    /// 
+    ///
     /// [GitHub API docs for delete_webhook](https://docs.github.com/rest/repos/webhooks#delete-a-repository-webhook)
     ///
     /// ---
@@ -11726,7 +11754,7 @@ impl<'api> Repos<'api> {
     /// # Disable automated security fixes
     ///
     /// Disables automated security fixes for a repository. The authenticated user must have admin access to the repository. For more information, see "[Configuring automated security fixes](https://docs.github.com/articles/configuring-automated-security-fixes)".
-    /// 
+    ///
     /// [GitHub API docs for disable_automated_security_fixes](https://docs.github.com/rest/repos/repos#disable-automated-security-fixes)
     ///
     /// ---
@@ -11764,7 +11792,7 @@ impl<'api> Repos<'api> {
     /// # Disable automated security fixes
     ///
     /// Disables automated security fixes for a repository. The authenticated user must have admin access to the repository. For more information, see "[Configuring automated security fixes](https://docs.github.com/articles/configuring-automated-security-fixes)".
-    /// 
+    ///
     /// [GitHub API docs for disable_automated_security_fixes](https://docs.github.com/rest/repos/repos#disable-automated-security-fixes)
     ///
     /// ---
@@ -11807,7 +11835,7 @@ impl<'api> Repos<'api> {
     /// The authenticated user must have admin or owner permissions to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for disable_deployment_protection_rule](https://docs.github.com/rest/deployments/protection-rules#disable-a-custom-protection-rule-for-an-environment)
     ///
     /// ---
@@ -11849,7 +11877,7 @@ impl<'api> Repos<'api> {
     /// The authenticated user must have admin or owner permissions to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for disable_deployment_protection_rule](https://docs.github.com/rest/deployments/protection-rules#disable-a-custom-protection-rule-for-an-environment)
     ///
     /// ---
@@ -11888,7 +11916,7 @@ impl<'api> Repos<'api> {
     /// # Disable private vulnerability reporting for a repository
     ///
     /// Disables private vulnerability reporting for a repository. The authenticated user must have admin access to the repository. For more information, see "[Privately reporting a security vulnerability](https://docs.github.com/code-security/security-advisories/guidance-on-reporting-and-writing/privately-reporting-a-security-vulnerability)".
-    /// 
+    ///
     /// [GitHub API docs for disable_private_vulnerability_reporting](https://docs.github.com/rest/repos/repos#disable-private-vulnerability-reporting-for-a-repository)
     ///
     /// ---
@@ -11927,7 +11955,7 @@ impl<'api> Repos<'api> {
     /// # Disable private vulnerability reporting for a repository
     ///
     /// Disables private vulnerability reporting for a repository. The authenticated user must have admin access to the repository. For more information, see "[Privately reporting a security vulnerability](https://docs.github.com/code-security/security-advisories/guidance-on-reporting-and-writing/privately-reporting-a-security-vulnerability)".
-    /// 
+    ///
     /// [GitHub API docs for disable_private_vulnerability_reporting](https://docs.github.com/rest/repos/repos#disable-private-vulnerability-reporting-for-a-repository)
     ///
     /// ---
@@ -11969,7 +11997,7 @@ impl<'api> Repos<'api> {
     /// Disables dependency alerts and the dependency graph for a repository.
     /// The authenticated user must have admin access to the repository. For more information,
     /// see "[About security alerts for vulnerable dependencies](https://docs.github.com/articles/about-security-alerts-for-vulnerable-dependencies)".
-    /// 
+    ///
     /// [GitHub API docs for disable_vulnerability_alerts](https://docs.github.com/rest/repos/repos#disable-vulnerability-alerts)
     ///
     /// ---
@@ -12009,7 +12037,7 @@ impl<'api> Repos<'api> {
     /// Disables dependency alerts and the dependency graph for a repository.
     /// The authenticated user must have admin access to the repository. For more information,
     /// see "[About security alerts for vulnerable dependencies](https://docs.github.com/articles/about-security-alerts-for-vulnerable-dependencies)".
-    /// 
+    ///
     /// [GitHub API docs for disable_vulnerability_alerts](https://docs.github.com/rest/repos/repos#disable-vulnerability-alerts)
     ///
     /// ---
@@ -12053,7 +12081,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > For private repositories, these links are temporary and expire after five minutes.
-    /// 
+    ///
     /// [GitHub API docs for download_tarball_archive](https://docs.github.com/rest/repos/contents#download-a-repository-archive-tar)
     ///
     /// ---
@@ -12097,7 +12125,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > For private repositories, these links are temporary and expire after five minutes.
-    /// 
+    ///
     /// [GitHub API docs for download_tarball_archive](https://docs.github.com/rest/repos/contents#download-a-repository-archive-tar)
     ///
     /// ---
@@ -12142,7 +12170,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > For private repositories, these links are temporary and expire after five minutes. If the repository is empty, you will receive a 404 when you follow the redirect.
-    /// 
+    ///
     /// [GitHub API docs for download_zipball_archive](https://docs.github.com/rest/repos/contents#download-a-repository-archive-zip)
     ///
     /// ---
@@ -12186,7 +12214,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > For private repositories, these links are temporary and expire after five minutes. If the repository is empty, you will receive a 404 when you follow the redirect.
-    /// 
+    ///
     /// [GitHub API docs for download_zipball_archive](https://docs.github.com/rest/repos/contents#download-a-repository-archive-zip)
     ///
     /// ---
@@ -12226,7 +12254,7 @@ impl<'api> Repos<'api> {
     /// # Enable automated security fixes
     ///
     /// Enables automated security fixes for a repository. The authenticated user must have admin access to the repository. For more information, see "[Configuring automated security fixes](https://docs.github.com/articles/configuring-automated-security-fixes)".
-    /// 
+    ///
     /// [GitHub API docs for enable_automated_security_fixes](https://docs.github.com/rest/repos/repos#enable-automated-security-fixes)
     ///
     /// ---
@@ -12264,7 +12292,7 @@ impl<'api> Repos<'api> {
     /// # Enable automated security fixes
     ///
     /// Enables automated security fixes for a repository. The authenticated user must have admin access to the repository. For more information, see "[Configuring automated security fixes](https://docs.github.com/articles/configuring-automated-security-fixes)".
-    /// 
+    ///
     /// [GitHub API docs for enable_automated_security_fixes](https://docs.github.com/rest/repos/repos#enable-automated-security-fixes)
     ///
     /// ---
@@ -12303,7 +12331,7 @@ impl<'api> Repos<'api> {
     /// # Enable private vulnerability reporting for a repository
     ///
     /// Enables private vulnerability reporting for a repository. The authenticated user must have admin access to the repository. For more information, see "[Privately reporting a security vulnerability](https://docs.github.com/code-security/security-advisories/guidance-on-reporting-and-writing/privately-reporting-a-security-vulnerability)."
-    /// 
+    ///
     /// [GitHub API docs for enable_private_vulnerability_reporting](https://docs.github.com/rest/repos/repos#enable-private-vulnerability-reporting-for-a-repository)
     ///
     /// ---
@@ -12342,7 +12370,7 @@ impl<'api> Repos<'api> {
     /// # Enable private vulnerability reporting for a repository
     ///
     /// Enables private vulnerability reporting for a repository. The authenticated user must have admin access to the repository. For more information, see "[Privately reporting a security vulnerability](https://docs.github.com/code-security/security-advisories/guidance-on-reporting-and-writing/privately-reporting-a-security-vulnerability)."
-    /// 
+    ///
     /// [GitHub API docs for enable_private_vulnerability_reporting](https://docs.github.com/rest/repos/repos#enable-private-vulnerability-reporting-for-a-repository)
     ///
     /// ---
@@ -12382,7 +12410,7 @@ impl<'api> Repos<'api> {
     /// # Enable vulnerability alerts
     ///
     /// Enables dependency alerts and the dependency graph for a repository. The authenticated user must have admin access to the repository. For more information, see "[About security alerts for vulnerable dependencies](https://docs.github.com/articles/about-security-alerts-for-vulnerable-dependencies)".
-    /// 
+    ///
     /// [GitHub API docs for enable_vulnerability_alerts](https://docs.github.com/rest/repos/repos#enable-vulnerability-alerts)
     ///
     /// ---
@@ -12420,7 +12448,7 @@ impl<'api> Repos<'api> {
     /// # Enable vulnerability alerts
     ///
     /// Enables dependency alerts and the dependency graph for a repository. The authenticated user must have admin access to the repository. For more information, see "[About security alerts for vulnerable dependencies](https://docs.github.com/articles/about-security-alerts-for-vulnerable-dependencies)".
-    /// 
+    ///
     /// [GitHub API docs for enable_vulnerability_alerts](https://docs.github.com/rest/repos/repos#enable-vulnerability-alerts)
     ///
     /// ---
@@ -12459,7 +12487,7 @@ impl<'api> Repos<'api> {
     /// # Generate release notes content for a release
     ///
     /// Generate a name and body describing a [release](https://docs.github.com/rest/releases/releases#get-a-release). The body content will be markdown formatted and contain information like the changes since last release and users who contributed. The generated release notes are not saved anywhere. They are intended to be generated and used when creating a new release.
-    /// 
+    ///
     /// [GitHub API docs for generate_release_notes](https://docs.github.com/rest/releases/releases#generate-release-notes-content-for-a-release)
     ///
     /// ---
@@ -12498,7 +12526,7 @@ impl<'api> Repos<'api> {
     /// # Generate release notes content for a release
     ///
     /// Generate a name and body describing a [release](https://docs.github.com/rest/releases/releases#get-a-release). The body content will be markdown formatted and contain information like the changes since last release and users who contributed. The generated release notes are not saved anywhere. They are intended to be generated and used when creating a new release.
-    /// 
+    ///
     /// [GitHub API docs for generate_release_notes](https://docs.github.com/rest/releases/releases#generate-release-notes-content-for-a-release)
     ///
     /// ---
@@ -12541,7 +12569,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > In order to see the `security_and_analysis` block for a repository you must have admin permissions for the repository or be an owner or security manager for the organization that owns the repository. For more information, see "[Managing security managers in your organization](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-security-managers-in-your-organization)."
-    /// 
+    ///
     /// [GitHub API docs for get](https://docs.github.com/rest/repos/repos#get-a-repository)
     ///
     /// ---
@@ -12585,7 +12613,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > In order to see the `security_and_analysis` block for a repository you must have admin permissions for the repository or be an owner or security manager for the organization that owns the repository. For more information, see "[Managing security managers in your organization](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-security-managers-in-your-organization)."
-    /// 
+    ///
     /// [GitHub API docs for get](https://docs.github.com/rest/repos/repos#get-a-repository)
     ///
     /// ---
@@ -12632,7 +12660,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > Users, apps, and teams `restrictions` are only available for organization-owned repositories.
-    /// 
+    ///
     /// [GitHub API docs for get_access_restrictions](https://docs.github.com/rest/branches/branch-protection#get-access-restrictions)
     ///
     /// ---
@@ -12676,7 +12704,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > Users, apps, and teams `restrictions` are only available for organization-owned repositories.
-    /// 
+    ///
     /// [GitHub API docs for get_access_restrictions](https://docs.github.com/rest/branches/branch-protection#get-access-restrictions)
     ///
     /// ---
@@ -12716,7 +12744,7 @@ impl<'api> Repos<'api> {
     /// # Get admin branch protection
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
-    /// 
+    ///
     /// [GitHub API docs for get_admin_branch_protection](https://docs.github.com/rest/branches/branch-protection#get-admin-branch-protection)
     ///
     /// ---
@@ -12754,7 +12782,7 @@ impl<'api> Repos<'api> {
     /// # Get admin branch protection
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
-    /// 
+    ///
     /// [GitHub API docs for get_admin_branch_protection](https://docs.github.com/rest/branches/branch-protection#get-admin-branch-protection)
     ///
     /// ---
@@ -12797,7 +12825,7 @@ impl<'api> Repos<'api> {
     /// For more information about the app that is providing this custom deployment rule, see the [documentation for the `GET /apps/{app_slug}` endpoint](https://docs.github.com/rest/apps/apps#get-an-app).
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_all_deployment_protection_rules](https://docs.github.com/rest/deployments/protection-rules#get-all-deployment-protection-rules-for-an-environment)
     ///
     /// ---
@@ -12839,7 +12867,7 @@ impl<'api> Repos<'api> {
     /// For more information about the app that is providing this custom deployment rule, see the [documentation for the `GET /apps/{app_slug}` endpoint](https://docs.github.com/rest/apps/apps#get-an-app).
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_all_deployment_protection_rules](https://docs.github.com/rest/deployments/protection-rules#get-all-deployment-protection-rules-for-an-environment)
     ///
     /// ---
@@ -12882,7 +12910,7 @@ impl<'api> Repos<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_all_environments](https://docs.github.com/rest/deployments/environments#list-environments)
     ///
     /// ---
@@ -12928,7 +12956,7 @@ impl<'api> Repos<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_all_environments](https://docs.github.com/rest/deployments/environments#list-environments)
     ///
     /// ---
@@ -12972,7 +13000,7 @@ impl<'api> Repos<'api> {
     /// # Get all status check contexts
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
-    /// 
+    ///
     /// [GitHub API docs for get_all_status_check_contexts](https://docs.github.com/rest/branches/branch-protection#get-all-status-check-contexts)
     ///
     /// ---
@@ -13011,7 +13039,7 @@ impl<'api> Repos<'api> {
     /// # Get all status check contexts
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
-    /// 
+    ///
     /// [GitHub API docs for get_all_status_check_contexts](https://docs.github.com/rest/branches/branch-protection#get-all-status-check-contexts)
     ///
     /// ---
@@ -13049,7 +13077,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Get all repository topics
-    /// 
+    ///
     /// [GitHub API docs for get_all_topics](https://docs.github.com/rest/repos/repos#get-all-repository-topics)
     ///
     /// ---
@@ -13090,7 +13118,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Get all repository topics
-    /// 
+    ///
     /// [GitHub API docs for get_all_topics](https://docs.github.com/rest/repos/repos#get-all-repository-topics)
     ///
     /// ---
@@ -13137,7 +13165,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Lists the GitHub Apps that have push access to this branch. Only GitHub Apps that are installed on the repository and that have been granted write access to the repository contents can be added as authorized actors on a protected branch.
-    /// 
+    ///
     /// [GitHub API docs for get_apps_with_access_to_protected_branch](https://docs.github.com/rest/branches/branch-protection#get-apps-with-access-to-the-protected-branch)
     ///
     /// ---
@@ -13178,7 +13206,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Lists the GitHub Apps that have push access to this branch. Only GitHub Apps that are installed on the repository and that have been granted write access to the repository contents can be added as authorized actors on a protected branch.
-    /// 
+    ///
     /// [GitHub API docs for get_apps_with_access_to_protected_branch](https://docs.github.com/rest/branches/branch-protection#get-apps-with-access-to-the-protected-branch)
     ///
     /// ---
@@ -13220,7 +13248,7 @@ impl<'api> Repos<'api> {
     /// This returns a single autolink reference by ID that was configured for the given repository.
     /// 
     /// Information about autolinks are only available to repository administrators.
-    /// 
+    ///
     /// [GitHub API docs for get_autolink](https://docs.github.com/rest/repos/autolinks#get-an-autolink-reference-of-a-repository)
     ///
     /// ---
@@ -13261,7 +13289,7 @@ impl<'api> Repos<'api> {
     /// This returns a single autolink reference by ID that was configured for the given repository.
     /// 
     /// Information about autolinks are only available to repository administrators.
-    /// 
+    ///
     /// [GitHub API docs for get_autolink](https://docs.github.com/rest/repos/autolinks#get-an-autolink-reference-of-a-repository)
     ///
     /// ---
@@ -13299,7 +13327,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Get a branch
-    /// 
+    ///
     /// [GitHub API docs for get_branch](https://docs.github.com/rest/branches/branches#get-a-branch)
     ///
     /// ---
@@ -13337,7 +13365,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Get a branch
-    /// 
+    ///
     /// [GitHub API docs for get_branch](https://docs.github.com/rest/branches/branches#get-a-branch)
     ///
     /// ---
@@ -13378,7 +13406,7 @@ impl<'api> Repos<'api> {
     /// # Get branch protection
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
-    /// 
+    ///
     /// [GitHub API docs for get_branch_protection](https://docs.github.com/rest/branches/branch-protection#get-branch-protection)
     ///
     /// ---
@@ -13417,7 +13445,7 @@ impl<'api> Repos<'api> {
     /// # Get branch protection
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
-    /// 
+    ///
     /// [GitHub API docs for get_branch_protection](https://docs.github.com/rest/branches/branch-protection#get-branch-protection)
     ///
     /// ---
@@ -13460,7 +13488,7 @@ impl<'api> Repos<'api> {
     /// to a branch with that name will be returned. All active rules that apply will be returned, regardless of the level
     /// at which they are configured (e.g. repository or organization). Rules in rulesets with "evaluate" or "disabled"
     /// enforcement statuses are not returned.
-    /// 
+    ///
     /// [GitHub API docs for get_branch_rules](https://docs.github.com/rest/repos/rules#get-rules-for-a-branch)
     ///
     /// ---
@@ -13505,7 +13533,7 @@ impl<'api> Repos<'api> {
     /// to a branch with that name will be returned. All active rules that apply will be returned, regardless of the level
     /// at which they are configured (e.g. repository or organization). Rules in rulesets with "evaluate" or "disabled"
     /// enforcement statuses are not returned.
-    /// 
+    ///
     /// [GitHub API docs for get_branch_rules](https://docs.github.com/rest/repos/rules#get-rules-for-a-branch)
     ///
     /// ---
@@ -13549,7 +13577,7 @@ impl<'api> Repos<'api> {
     /// # Get repository clones
     ///
     /// Get the total number of clones and breakdown per day or week for the last 14 days. Timestamps are aligned to UTC midnight of the beginning of the day or week. Week begins on Monday.
-    /// 
+    ///
     /// [GitHub API docs for get_clones](https://docs.github.com/rest/metrics/traffic#get-repository-clones)
     ///
     /// ---
@@ -13592,7 +13620,7 @@ impl<'api> Repos<'api> {
     /// # Get repository clones
     ///
     /// Get the total number of clones and breakdown per day or week for the last 14 days. Timestamps are aligned to UTC midnight of the beginning of the day or week. Week begins on Monday.
-    /// 
+    ///
     /// [GitHub API docs for get_clones](https://docs.github.com/rest/metrics/traffic#get-repository-clones)
     ///
     /// ---
@@ -13640,7 +13668,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > This endpoint can only be used for repositories with fewer than 10,000 commits. If the repository contains 10,000 or more commits, a 422 status code will be returned.
-    /// 
+    ///
     /// [GitHub API docs for get_code_frequency_stats](https://docs.github.com/rest/metrics/statistics#get-the-weekly-commit-activity)
     ///
     /// ---
@@ -13684,7 +13712,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > This endpoint can only be used for repositories with fewer than 10,000 commits. If the repository contains 10,000 or more commits, a 422 status code will be returned.
-    /// 
+    ///
     /// [GitHub API docs for get_code_frequency_stats](https://docs.github.com/rest/metrics/statistics#get-the-weekly-commit-activity)
     ///
     /// ---
@@ -13732,7 +13760,7 @@ impl<'api> Repos<'api> {
     /// `maintain` role is mapped to `write` and the `triage` role is mapped to `read`. To determine the role assigned to the
     /// collaborator, see the `role_name` attribute, which will provide the full role name, including custom roles. The
     /// `permissions` hash can also be used to determine which base level of access the collaborator has to the repository.
-    /// 
+    ///
     /// [GitHub API docs for get_collaborator_permission_level](https://docs.github.com/rest/collaborators/collaborators#get-repository-permissions-for-a-user)
     ///
     /// ---
@@ -13777,7 +13805,7 @@ impl<'api> Repos<'api> {
     /// `maintain` role is mapped to `write` and the `triage` role is mapped to `read`. To determine the role assigned to the
     /// collaborator, see the `role_name` attribute, which will provide the full role name, including custom roles. The
     /// `permissions` hash can also be used to determine which base level of access the collaborator has to the repository.
-    /// 
+    ///
     /// [GitHub API docs for get_collaborator_permission_level](https://docs.github.com/rest/collaborators/collaborators#get-repository-permissions-for-a-user)
     ///
     /// ---
@@ -13824,7 +13852,7 @@ impl<'api> Repos<'api> {
     /// *   **failure** if any of the contexts report as `error` or `failure`
     /// *   **pending** if there are no statuses or a context is `pending`
     /// *   **success** if the latest status for all contexts is `success`
-    /// 
+    ///
     /// [GitHub API docs for get_combined_status_for_ref](https://docs.github.com/rest/commits/statuses#get-the-combined-status-for-a-specific-reference)
     ///
     /// ---
@@ -13874,7 +13902,7 @@ impl<'api> Repos<'api> {
     /// *   **failure** if any of the contexts report as `error` or `failure`
     /// *   **pending** if there are no statuses or a context is `pending`
     /// *   **success** if the latest status for all contexts is `success`
-    /// 
+    ///
     /// [GitHub API docs for get_combined_status_for_ref](https://docs.github.com/rest/commits/statuses#get-the-combined-status-for-a-specific-reference)
     ///
     /// ---
@@ -13957,7 +13985,7 @@ impl<'api> Repos<'api> {
     /// | `malformed_signature` | There was an error parsing the signature. |
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
-    /// 
+    ///
     /// [GitHub API docs for get_commit](https://docs.github.com/rest/commits/commits#get-a-commit)
     ///
     /// ---
@@ -14042,7 +14070,7 @@ impl<'api> Repos<'api> {
     /// | `malformed_signature` | There was an error parsing the signature. |
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
-    /// 
+    ///
     /// [GitHub API docs for get_commit](https://docs.github.com/rest/commits/commits#get-a-commit)
     ///
     /// ---
@@ -14091,7 +14119,7 @@ impl<'api> Repos<'api> {
     /// # Get the last year of commit activity
     ///
     /// Returns the last year of commit activity grouped by week. The `days` array is a group of commits per day, starting on `Sunday`.
-    /// 
+    ///
     /// [GitHub API docs for get_commit_activity_stats](https://docs.github.com/rest/metrics/statistics#get-the-last-year-of-commit-activity)
     ///
     /// ---
@@ -14131,7 +14159,7 @@ impl<'api> Repos<'api> {
     /// # Get the last year of commit activity
     ///
     /// Returns the last year of commit activity grouped by week. The `days` array is a group of commits per day, starting on `Sunday`.
-    /// 
+    ///
     /// [GitHub API docs for get_commit_activity_stats](https://docs.github.com/rest/metrics/statistics#get-the-last-year-of-commit-activity)
     ///
     /// ---
@@ -14179,7 +14207,7 @@ impl<'api> Repos<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for get_commit_comment](https://docs.github.com/rest/commits/comments#get-a-commit-comment)
     ///
     /// ---
@@ -14225,7 +14253,7 @@ impl<'api> Repos<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for get_commit_comment](https://docs.github.com/rest/commits/comments#get-a-commit-comment)
     ///
     /// ---
@@ -14270,7 +14298,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > You must enable branch protection to require signed commits.
-    /// 
+    ///
     /// [GitHub API docs for get_commit_signature_protection](https://docs.github.com/rest/branches/branch-protection#get-commit-signature-protection)
     ///
     /// ---
@@ -14314,7 +14342,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > You must enable branch protection to require signed commits.
-    /// 
+    ///
     /// [GitHub API docs for get_commit_signature_protection](https://docs.github.com/rest/branches/branch-protection#get-commit-signature-protection)
     ///
     /// ---
@@ -14364,7 +14392,7 @@ impl<'api> Repos<'api> {
     /// "[About community profiles for public repositories](https://docs.github.com/communities/setting-up-your-project-for-healthy-contributions/about-community-profiles-for-public-repositories)."
     /// 
     /// `content_reports_enabled` is only returned for organization-owned repositories.
-    /// 
+    ///
     /// [GitHub API docs for get_community_profile_metrics](https://docs.github.com/rest/metrics/community#get-community-profile-metrics)
     ///
     /// ---
@@ -14412,7 +14440,7 @@ impl<'api> Repos<'api> {
     /// "[About community profiles for public repositories](https://docs.github.com/communities/setting-up-your-project-for-healthy-contributions/about-community-profiles-for-public-repositories)."
     /// 
     /// `content_reports_enabled` is only returned for organization-owned repositories.
-    /// 
+    ///
     /// [GitHub API docs for get_community_profile_metrics](https://docs.github.com/rest/metrics/community#get-community-profile-metrics)
     ///
     /// ---
@@ -14475,7 +14503,7 @@ impl<'api> Repos<'api> {
     ///   - Between 1-100 MB: Only the `raw` or `object` custom media types are supported. Both will work as normal, except that when using the `object` media type, the `content` field will be an empty
     /// string and the `encoding` field will be `"none"`. To get the contents of these larger files, use the `raw` media type.
     ///   - Greater than 100 MB: This endpoint is not supported.
-    /// 
+    ///
     /// [GitHub API docs for get_content](https://docs.github.com/rest/repos/contents#get-repository-content)
     ///
     /// ---
@@ -14545,7 +14573,7 @@ impl<'api> Repos<'api> {
     ///   - Between 1-100 MB: Only the `raw` or `object` custom media types are supported. Both will work as normal, except that when using the `object` media type, the `content` field will be an empty
     /// string and the `encoding` field will be `"none"`. To get the contents of these larger files, use the `raw` media type.
     ///   - Greater than 100 MB: This endpoint is not supported.
-    /// 
+    ///
     /// [GitHub API docs for get_content](https://docs.github.com/rest/repos/contents#get-repository-content)
     ///
     /// ---
@@ -14602,7 +14630,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > This endpoint will return `0` values for all addition and deletion counts in repositories with 10,000 or more commits.
-    /// 
+    ///
     /// [GitHub API docs for get_contributors_stats](https://docs.github.com/rest/metrics/statistics#get-all-contributor-commit-activity)
     ///
     /// ---
@@ -14651,7 +14679,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > This endpoint will return `0` values for all addition and deletion counts in repositories with 10,000 or more commits.
-    /// 
+    ///
     /// [GitHub API docs for get_contributors_stats](https://docs.github.com/rest/metrics/statistics#get-all-contributor-commit-activity)
     ///
     /// ---
@@ -14696,7 +14724,7 @@ impl<'api> Repos<'api> {
     /// For more information about the app that is providing this custom deployment rule, see [`GET /apps/{app_slug}`](https://docs.github.com/rest/apps/apps#get-an-app).
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_custom_deployment_protection_rule](https://docs.github.com/rest/deployments/protection-rules#get-a-custom-deployment-protection-rule)
     ///
     /// ---
@@ -14738,7 +14766,7 @@ impl<'api> Repos<'api> {
     /// For more information about the app that is providing this custom deployment rule, see [`GET /apps/{app_slug}`](https://docs.github.com/rest/apps/apps#get-an-app).
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_custom_deployment_protection_rule](https://docs.github.com/rest/deployments/protection-rules#get-a-custom-deployment-protection-rule)
     ///
     /// ---
@@ -14778,7 +14806,7 @@ impl<'api> Repos<'api> {
     ///
     /// Gets all custom property values that are set for a repository.
     /// Users with read access to the repository can use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_custom_properties_values](https://docs.github.com/rest/repos/custom-properties#get-all-custom-property-values-for-a-repository)
     ///
     /// ---
@@ -14819,7 +14847,7 @@ impl<'api> Repos<'api> {
     ///
     /// Gets all custom property values that are set for a repository.
     /// Users with read access to the repository can use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_custom_properties_values](https://docs.github.com/rest/repos/custom-properties#get-all-custom-property-values-for-a-repository)
     ///
     /// ---
@@ -14858,7 +14886,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Get a deploy key
-    /// 
+    ///
     /// [GitHub API docs for get_deploy_key](https://docs.github.com/rest/deploy-keys/deploy-keys#get-a-deploy-key)
     ///
     /// ---
@@ -14895,7 +14923,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Get a deploy key
-    /// 
+    ///
     /// [GitHub API docs for get_deploy_key](https://docs.github.com/rest/deploy-keys/deploy-keys#get-a-deploy-key)
     ///
     /// ---
@@ -14933,7 +14961,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Get a deployment
-    /// 
+    ///
     /// [GitHub API docs for get_deployment](https://docs.github.com/rest/deployments/deployments#get-a-deployment)
     ///
     /// ---
@@ -14970,7 +14998,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Get a deployment
-    /// 
+    ///
     /// [GitHub API docs for get_deployment](https://docs.github.com/rest/deployments/deployments#get-a-deployment)
     ///
     /// ---
@@ -15014,7 +15042,7 @@ impl<'api> Repos<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_deployment_branch_policy](https://docs.github.com/rest/deployments/branch-policies#get-a-deployment-branch-policy)
     ///
     /// ---
@@ -15056,7 +15084,7 @@ impl<'api> Repos<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_deployment_branch_policy](https://docs.github.com/rest/deployments/branch-policies#get-a-deployment-branch-policy)
     ///
     /// ---
@@ -15095,7 +15123,7 @@ impl<'api> Repos<'api> {
     /// # Get a deployment status
     ///
     /// Users with pull access can view a deployment status for a deployment:
-    /// 
+    ///
     /// [GitHub API docs for get_deployment_status](https://docs.github.com/rest/deployments/statuses#get-a-deployment-status)
     ///
     /// ---
@@ -15134,7 +15162,7 @@ impl<'api> Repos<'api> {
     /// # Get a deployment status
     ///
     /// Users with pull access can view a deployment status for a deployment:
-    /// 
+    ///
     /// [GitHub API docs for get_deployment_status](https://docs.github.com/rest/deployments/statuses#get-a-deployment-status)
     ///
     /// ---
@@ -15179,7 +15207,7 @@ impl<'api> Repos<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_environment](https://docs.github.com/rest/deployments/environments#get-an-environment)
     ///
     /// ---
@@ -15222,7 +15250,7 @@ impl<'api> Repos<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_environment](https://docs.github.com/rest/deployments/environments#get-an-environment)
     ///
     /// ---
@@ -15263,7 +15291,7 @@ impl<'api> Repos<'api> {
     /// Gets information about the single most recent build of a GitHub Pages site.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_latest_pages_build](https://docs.github.com/rest/pages/pages#get-latest-pages-build)
     ///
     /// ---
@@ -15303,7 +15331,7 @@ impl<'api> Repos<'api> {
     /// Gets information about the single most recent build of a GitHub Pages site.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_latest_pages_build](https://docs.github.com/rest/pages/pages#get-latest-pages-build)
     ///
     /// ---
@@ -15344,7 +15372,7 @@ impl<'api> Repos<'api> {
     /// View the latest published full release for the repository.
     /// 
     /// The latest release is the most recent non-prerelease, non-draft release, sorted by the `created_at` attribute. The `created_at` attribute is the date of the commit used for the release, and not the date when the release was drafted or published.
-    /// 
+    ///
     /// [GitHub API docs for get_latest_release](https://docs.github.com/rest/releases/releases#get-the-latest-release)
     ///
     /// ---
@@ -15384,7 +15412,7 @@ impl<'api> Repos<'api> {
     /// View the latest published full release for the repository.
     /// 
     /// The latest release is the most recent non-prerelease, non-draft release, sorted by the `created_at` attribute. The `created_at` attribute is the date of the commit used for the release, and not the date when the release was drafted or published.
-    /// 
+    ///
     /// [GitHub API docs for get_latest_release](https://docs.github.com/rest/releases/releases#get-the-latest-release)
     ///
     /// ---
@@ -15424,7 +15452,7 @@ impl<'api> Repos<'api> {
     ///
     /// Gets information about a suite of rule evaluations from within an organization.
     /// For more information, see "[Managing rulesets for repositories in your organization](https://docs.github.com/organizations/managing-organization-settings/managing-rulesets-for-repositories-in-your-organization#viewing-insights-for-rulesets)."
-    /// 
+    ///
     /// [GitHub API docs for get_org_rule_suite](https://docs.github.com/rest/orgs/rule-suites#get-an-organization-rule-suite)
     ///
     /// ---
@@ -15465,7 +15493,7 @@ impl<'api> Repos<'api> {
     ///
     /// Gets information about a suite of rule evaluations from within an organization.
     /// For more information, see "[Managing rulesets for repositories in your organization](https://docs.github.com/organizations/managing-organization-settings/managing-rulesets-for-repositories-in-your-organization#viewing-insights-for-rulesets)."
-    /// 
+    ///
     /// [GitHub API docs for get_org_rule_suite](https://docs.github.com/rest/orgs/rule-suites#get-an-organization-rule-suite)
     ///
     /// ---
@@ -15507,7 +15535,7 @@ impl<'api> Repos<'api> {
     ///
     /// Lists suites of rule evaluations at the organization level.
     /// For more information, see "[Managing rulesets for repositories in your organization](https://docs.github.com/organizations/managing-organization-settings/managing-rulesets-for-repositories-in-your-organization#viewing-insights-for-rulesets)."
-    /// 
+    ///
     /// [GitHub API docs for get_org_rule_suites](https://docs.github.com/rest/orgs/rule-suites#list-organization-rule-suites)
     ///
     /// ---
@@ -15552,7 +15580,7 @@ impl<'api> Repos<'api> {
     ///
     /// Lists suites of rule evaluations at the organization level.
     /// For more information, see "[Managing rulesets for repositories in your organization](https://docs.github.com/organizations/managing-organization-settings/managing-rulesets-for-repositories-in-your-organization#viewing-insights-for-rulesets)."
-    /// 
+    ///
     /// [GitHub API docs for get_org_rule_suites](https://docs.github.com/rest/orgs/rule-suites#list-organization-rule-suites)
     ///
     /// ---
@@ -15601,7 +15629,7 @@ impl<'api> Repos<'api> {
     /// 
     /// **Note:** To prevent leaking sensitive information, the `bypass_actors` property is only returned if the user
     /// making the API request has write access to the ruleset.
-    /// 
+    ///
     /// [GitHub API docs for get_org_ruleset](https://docs.github.com/rest/orgs/rules#get-an-organization-repository-ruleset)
     ///
     /// ---
@@ -15644,7 +15672,7 @@ impl<'api> Repos<'api> {
     /// 
     /// **Note:** To prevent leaking sensitive information, the `bypass_actors` property is only returned if the user
     /// making the API request has write access to the ruleset.
-    /// 
+    ///
     /// [GitHub API docs for get_org_ruleset](https://docs.github.com/rest/orgs/rules#get-an-organization-repository-ruleset)
     ///
     /// ---
@@ -15685,11 +15713,11 @@ impl<'api> Repos<'api> {
     /// # Get all organization repository rulesets
     ///
     /// Get all the repository rulesets for an organization.
-    /// 
+    ///
     /// [GitHub API docs for get_org_rulesets](https://docs.github.com/rest/orgs/rules#get-all-organization-repository-rulesets)
     ///
     /// ---
-    pub async fn get_org_rulesets_async(&self, org: &str, query_params: Option<impl Into<ReposGetOrgRulesetsParams>>) -> Result<Vec<RepositoryRuleset>, ReposGetOrgRulesetsError> {
+    pub async fn get_org_rulesets_async(&self, org: &str, query_params: Option<impl Into<ReposGetOrgRulesetsParams<'api>>>) -> Result<Vec<RepositoryRuleset>, ReposGetOrgRulesetsError> {
 
         let mut request_uri = format!("{}/orgs/{}/rulesets", super::GITHUB_BASE_API_URL, org);
 
@@ -15729,12 +15757,12 @@ impl<'api> Repos<'api> {
     /// # Get all organization repository rulesets
     ///
     /// Get all the repository rulesets for an organization.
-    /// 
+    ///
     /// [GitHub API docs for get_org_rulesets](https://docs.github.com/rest/orgs/rules#get-all-organization-repository-rulesets)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_org_rulesets(&self, org: &str, query_params: Option<impl Into<ReposGetOrgRulesetsParams>>) -> Result<Vec<RepositoryRuleset>, ReposGetOrgRulesetsError> {
+    pub fn get_org_rulesets(&self, org: &str, query_params: Option<impl Into<ReposGetOrgRulesetsParams<'api>>>) -> Result<Vec<RepositoryRuleset>, ReposGetOrgRulesetsError> {
 
         let mut request_uri = format!("{}/orgs/{}/rulesets", super::GITHUB_BASE_API_URL, org);
 
@@ -15777,7 +15805,7 @@ impl<'api> Repos<'api> {
     /// Gets information about a GitHub Pages site.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_pages](https://docs.github.com/rest/pages/pages#get-a-apiname-pages-site)
     ///
     /// ---
@@ -15818,7 +15846,7 @@ impl<'api> Repos<'api> {
     /// Gets information about a GitHub Pages site.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_pages](https://docs.github.com/rest/pages/pages#get-a-apiname-pages-site)
     ///
     /// ---
@@ -15860,7 +15888,7 @@ impl<'api> Repos<'api> {
     /// Gets information about a GitHub Pages build.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_pages_build](https://docs.github.com/rest/pages/pages#get-apiname-pages-build)
     ///
     /// ---
@@ -15900,7 +15928,7 @@ impl<'api> Repos<'api> {
     /// Gets information about a GitHub Pages build.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_pages_build](https://docs.github.com/rest/pages/pages#get-apiname-pages-build)
     ///
     /// ---
@@ -15941,7 +15969,7 @@ impl<'api> Repos<'api> {
     /// Gets the current status of a GitHub Pages deployment.
     /// 
     /// The authenticated user must have read permission for the GitHub Pages site.
-    /// 
+    ///
     /// [GitHub API docs for get_pages_deployment](https://docs.github.com/rest/pages/pages#get-the-status-of-a-github-pages-deployment)
     ///
     /// ---
@@ -15982,7 +16010,7 @@ impl<'api> Repos<'api> {
     /// Gets the current status of a GitHub Pages deployment.
     /// 
     /// The authenticated user must have read permission for the GitHub Pages site.
-    /// 
+    ///
     /// [GitHub API docs for get_pages_deployment](https://docs.github.com/rest/pages/pages#get-the-status-of-a-github-pages-deployment)
     ///
     /// ---
@@ -16028,7 +16056,7 @@ impl<'api> Repos<'api> {
     /// The authenticated user must be a repository administrator, maintainer, or have the 'manage GitHub Pages settings' permission to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_pages_health_check](https://docs.github.com/rest/pages/pages#get-a-dns-health-check-for-github-pages)
     ///
     /// ---
@@ -16076,7 +16104,7 @@ impl<'api> Repos<'api> {
     /// The authenticated user must be a repository administrator, maintainer, or have the 'manage GitHub Pages settings' permission to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_pages_health_check](https://docs.github.com/rest/pages/pages#get-a-dns-health-check-for-github-pages)
     ///
     /// ---
@@ -16123,7 +16151,7 @@ impl<'api> Repos<'api> {
     /// The array order is oldest week (index 0) to most recent week.
     /// 
     /// The most recent week is seven days ago at UTC midnight to today at UTC midnight.
-    /// 
+    ///
     /// [GitHub API docs for get_participation_stats](https://docs.github.com/rest/metrics/statistics#get-the-weekly-commit-count)
     ///
     /// ---
@@ -16166,7 +16194,7 @@ impl<'api> Repos<'api> {
     /// The array order is oldest week (index 0) to most recent week.
     /// 
     /// The most recent week is seven days ago at UTC midnight to today at UTC midnight.
-    /// 
+    ///
     /// [GitHub API docs for get_participation_stats](https://docs.github.com/rest/metrics/statistics#get-the-weekly-commit-count)
     ///
     /// ---
@@ -16206,7 +16234,7 @@ impl<'api> Repos<'api> {
     /// # Get pull request review protection
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
-    /// 
+    ///
     /// [GitHub API docs for get_pull_request_review_protection](https://docs.github.com/rest/branches/branch-protection#get-pull-request-review-protection)
     ///
     /// ---
@@ -16244,7 +16272,7 @@ impl<'api> Repos<'api> {
     /// # Get pull request review protection
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
-    /// 
+    ///
     /// [GitHub API docs for get_pull_request_review_protection](https://docs.github.com/rest/branches/branch-protection#get-pull-request-review-protection)
     ///
     /// ---
@@ -16289,7 +16317,7 @@ impl<'api> Repos<'api> {
     /// *   Number of commits
     /// 
     /// For example, `[2, 14, 25]` indicates that there were 25 total commits, during the 2:00pm hour on Tuesdays. All times are based on the time zone of individual commits.
-    /// 
+    ///
     /// [GitHub API docs for get_punch_card_stats](https://docs.github.com/rest/metrics/statistics#get-the-hourly-commit-count-for-each-day)
     ///
     /// ---
@@ -16334,7 +16362,7 @@ impl<'api> Repos<'api> {
     /// *   Number of commits
     /// 
     /// For example, `[2, 14, 25]` indicates that there were 25 total commits, during the 2:00pm hour on Tuesdays. All times are based on the time zone of individual commits.
-    /// 
+    ///
     /// [GitHub API docs for get_punch_card_stats](https://docs.github.com/rest/metrics/statistics#get-the-hourly-commit-count-for-each-day)
     ///
     /// ---
@@ -16379,7 +16407,7 @@ impl<'api> Repos<'api> {
     /// 
     /// - **`application/vnd.github.raw+json`**: Returns the raw file contents. This is the default if you do not specify a media type.
     /// - **`application/vnd.github.html+json`**: Returns the README in HTML. Markup languages are rendered to HTML using GitHub's open-source [Markup library](https://github.com/github/markup).
-    /// 
+    ///
     /// [GitHub API docs for get_readme](https://docs.github.com/rest/repos/contents#get-a-repository-readme)
     ///
     /// ---
@@ -16429,7 +16457,7 @@ impl<'api> Repos<'api> {
     /// 
     /// - **`application/vnd.github.raw+json`**: Returns the raw file contents. This is the default if you do not specify a media type.
     /// - **`application/vnd.github.html+json`**: Returns the README in HTML. Markup languages are rendered to HTML using GitHub's open-source [Markup library](https://github.com/github/markup).
-    /// 
+    ///
     /// [GitHub API docs for get_readme](https://docs.github.com/rest/repos/contents#get-a-repository-readme)
     ///
     /// ---
@@ -16481,7 +16509,7 @@ impl<'api> Repos<'api> {
     /// 
     /// - **`application/vnd.github.raw+json`**: Returns the raw file contents. This is the default if you do not specify a media type.
     /// - **`application/vnd.github.html+json`**: Returns the README in HTML. Markup languages are rendered to HTML using GitHub's open-source [Markup library](https://github.com/github/markup).
-    /// 
+    ///
     /// [GitHub API docs for get_readme_in_directory](https://docs.github.com/rest/repos/contents#get-a-repository-readme-for-a-directory)
     ///
     /// ---
@@ -16530,7 +16558,7 @@ impl<'api> Repos<'api> {
     /// 
     /// - **`application/vnd.github.raw+json`**: Returns the raw file contents. This is the default if you do not specify a media type.
     /// - **`application/vnd.github.html+json`**: Returns the README in HTML. Markup languages are rendered to HTML using GitHub's open-source [Markup library](https://github.com/github/markup).
-    /// 
+    ///
     /// [GitHub API docs for get_readme_in_directory](https://docs.github.com/rest/repos/contents#get-a-repository-readme-for-a-directory)
     ///
     /// ---
@@ -16579,7 +16607,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > This returns an `upload_url` key corresponding to the endpoint for uploading release assets. This key is a hypermedia resource. For more information, see "[Getting started with the REST API](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#hypermedia)."
-    /// 
+    ///
     /// [GitHub API docs for get_release](https://docs.github.com/rest/releases/releases#get-a-release)
     ///
     /// ---
@@ -16621,7 +16649,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > This returns an `upload_url` key corresponding to the endpoint for uploading release assets. This key is a hypermedia resource. For more information, see "[Getting started with the REST API](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#hypermedia)."
-    /// 
+    ///
     /// [GitHub API docs for get_release](https://docs.github.com/rest/releases/releases#get-a-release)
     ///
     /// ---
@@ -16661,7 +16689,7 @@ impl<'api> Repos<'api> {
     /// # Get a release asset
     ///
     /// To download the asset's binary content, set the `Accept` header of the request to [`application/octet-stream`](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types). The API will either redirect the client to the location, or stream it directly if possible. API clients should handle both a `200` or `302` response.
-    /// 
+    ///
     /// [GitHub API docs for get_release_asset](https://docs.github.com/rest/releases/assets#get-a-release-asset)
     ///
     /// ---
@@ -16701,7 +16729,7 @@ impl<'api> Repos<'api> {
     /// # Get a release asset
     ///
     /// To download the asset's binary content, set the `Accept` header of the request to [`application/octet-stream`](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types). The API will either redirect the client to the location, or stream it directly if possible. API clients should handle both a `200` or `302` response.
-    /// 
+    ///
     /// [GitHub API docs for get_release_asset](https://docs.github.com/rest/releases/assets#get-a-release-asset)
     ///
     /// ---
@@ -16742,7 +16770,7 @@ impl<'api> Repos<'api> {
     /// # Get a release by tag name
     ///
     /// Get a published release with the specified tag.
-    /// 
+    ///
     /// [GitHub API docs for get_release_by_tag](https://docs.github.com/rest/releases/releases#get-a-release-by-tag-name)
     ///
     /// ---
@@ -16781,7 +16809,7 @@ impl<'api> Repos<'api> {
     /// # Get a release by tag name
     ///
     /// Get a published release with the specified tag.
-    /// 
+    ///
     /// [GitHub API docs for get_release_by_tag](https://docs.github.com/rest/releases/releases#get-a-release-by-tag-name)
     ///
     /// ---
@@ -16822,7 +16850,7 @@ impl<'api> Repos<'api> {
     ///
     /// Gets information about a suite of rule evaluations from within a repository.
     /// For more information, see "[Managing rulesets for a repository](https://docs.github.com/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/managing-rulesets-for-a-repository#viewing-insights-for-rulesets)."
-    /// 
+    ///
     /// [GitHub API docs for get_repo_rule_suite](https://docs.github.com/rest/repos/rule-suites#get-a-repository-rule-suite)
     ///
     /// ---
@@ -16863,7 +16891,7 @@ impl<'api> Repos<'api> {
     ///
     /// Gets information about a suite of rule evaluations from within a repository.
     /// For more information, see "[Managing rulesets for a repository](https://docs.github.com/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/managing-rulesets-for-a-repository#viewing-insights-for-rulesets)."
-    /// 
+    ///
     /// [GitHub API docs for get_repo_rule_suite](https://docs.github.com/rest/repos/rule-suites#get-a-repository-rule-suite)
     ///
     /// ---
@@ -16905,7 +16933,7 @@ impl<'api> Repos<'api> {
     ///
     /// Lists suites of rule evaluations at the repository level.
     /// For more information, see "[Managing rulesets for a repository](https://docs.github.com/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/managing-rulesets-for-a-repository#viewing-insights-for-rulesets)."
-    /// 
+    ///
     /// [GitHub API docs for get_repo_rule_suites](https://docs.github.com/rest/repos/rule-suites#list-repository-rule-suites)
     ///
     /// ---
@@ -16950,7 +16978,7 @@ impl<'api> Repos<'api> {
     ///
     /// Lists suites of rule evaluations at the repository level.
     /// For more information, see "[Managing rulesets for a repository](https://docs.github.com/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/managing-rulesets-for-a-repository#viewing-insights-for-rulesets)."
-    /// 
+    ///
     /// [GitHub API docs for get_repo_rule_suites](https://docs.github.com/rest/repos/rule-suites#list-repository-rule-suites)
     ///
     /// ---
@@ -16999,7 +17027,7 @@ impl<'api> Repos<'api> {
     /// 
     /// **Note:** To prevent leaking sensitive information, the `bypass_actors` property is only returned if the user
     /// making the API request has write access to the ruleset.
-    /// 
+    ///
     /// [GitHub API docs for get_repo_ruleset](https://docs.github.com/rest/repos/rules#get-a-repository-ruleset)
     ///
     /// ---
@@ -17046,7 +17074,7 @@ impl<'api> Repos<'api> {
     /// 
     /// **Note:** To prevent leaking sensitive information, the `bypass_actors` property is only returned if the user
     /// making the API request has write access to the ruleset.
-    /// 
+    ///
     /// [GitHub API docs for get_repo_ruleset](https://docs.github.com/rest/repos/rules#get-a-repository-ruleset)
     ///
     /// ---
@@ -17092,11 +17120,11 @@ impl<'api> Repos<'api> {
     /// # Get all repository rulesets
     ///
     /// Get all the rulesets for a repository.
-    /// 
+    ///
     /// [GitHub API docs for get_repo_rulesets](https://docs.github.com/rest/repos/rules#get-all-repository-rulesets)
     ///
     /// ---
-    pub async fn get_repo_rulesets_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetRepoRulesetsParams>>) -> Result<Vec<RepositoryRuleset>, ReposGetRepoRulesetsError> {
+    pub async fn get_repo_rulesets_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetRepoRulesetsParams<'api>>>) -> Result<Vec<RepositoryRuleset>, ReposGetRepoRulesetsError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/rulesets", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -17136,12 +17164,12 @@ impl<'api> Repos<'api> {
     /// # Get all repository rulesets
     ///
     /// Get all the rulesets for a repository.
-    /// 
+    ///
     /// [GitHub API docs for get_repo_rulesets](https://docs.github.com/rest/repos/rules#get-all-repository-rulesets)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_repo_rulesets(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetRepoRulesetsParams>>) -> Result<Vec<RepositoryRuleset>, ReposGetRepoRulesetsError> {
+    pub fn get_repo_rulesets(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetRepoRulesetsParams<'api>>>) -> Result<Vec<RepositoryRuleset>, ReposGetRepoRulesetsError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/rulesets", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -17182,7 +17210,7 @@ impl<'api> Repos<'api> {
     /// # Get status checks protection
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
-    /// 
+    ///
     /// [GitHub API docs for get_status_checks_protection](https://docs.github.com/rest/branches/branch-protection#get-status-checks-protection)
     ///
     /// ---
@@ -17221,7 +17249,7 @@ impl<'api> Repos<'api> {
     /// # Get status checks protection
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
-    /// 
+    ///
     /// [GitHub API docs for get_status_checks_protection](https://docs.github.com/rest/branches/branch-protection#get-status-checks-protection)
     ///
     /// ---
@@ -17263,7 +17291,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Lists the teams who have push access to this branch. The list includes child teams.
-    /// 
+    ///
     /// [GitHub API docs for get_teams_with_access_to_protected_branch](https://docs.github.com/rest/branches/branch-protection#get-teams-with-access-to-the-protected-branch)
     ///
     /// ---
@@ -17304,7 +17332,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Lists the teams who have push access to this branch. The list includes child teams.
-    /// 
+    ///
     /// [GitHub API docs for get_teams_with_access_to_protected_branch](https://docs.github.com/rest/branches/branch-protection#get-teams-with-access-to-the-protected-branch)
     ///
     /// ---
@@ -17344,7 +17372,7 @@ impl<'api> Repos<'api> {
     /// # Get top referral paths
     ///
     /// Get the top 10 popular contents over the last 14 days.
-    /// 
+    ///
     /// [GitHub API docs for get_top_paths](https://docs.github.com/rest/metrics/traffic#get-top-referral-paths)
     ///
     /// ---
@@ -17383,7 +17411,7 @@ impl<'api> Repos<'api> {
     /// # Get top referral paths
     ///
     /// Get the top 10 popular contents over the last 14 days.
-    /// 
+    ///
     /// [GitHub API docs for get_top_paths](https://docs.github.com/rest/metrics/traffic#get-top-referral-paths)
     ///
     /// ---
@@ -17423,7 +17451,7 @@ impl<'api> Repos<'api> {
     /// # Get top referral sources
     ///
     /// Get the top 10 referrers over the last 14 days.
-    /// 
+    ///
     /// [GitHub API docs for get_top_referrers](https://docs.github.com/rest/metrics/traffic#get-top-referral-sources)
     ///
     /// ---
@@ -17462,7 +17490,7 @@ impl<'api> Repos<'api> {
     /// # Get top referral sources
     ///
     /// Get the top 10 referrers over the last 14 days.
-    /// 
+    ///
     /// [GitHub API docs for get_top_referrers](https://docs.github.com/rest/metrics/traffic#get-top-referral-sources)
     ///
     /// ---
@@ -17504,7 +17532,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Lists the people who have push access to this branch.
-    /// 
+    ///
     /// [GitHub API docs for get_users_with_access_to_protected_branch](https://docs.github.com/rest/branches/branch-protection#get-users-with-access-to-the-protected-branch)
     ///
     /// ---
@@ -17545,7 +17573,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Lists the people who have push access to this branch.
-    /// 
+    ///
     /// [GitHub API docs for get_users_with_access_to_protected_branch](https://docs.github.com/rest/branches/branch-protection#get-users-with-access-to-the-protected-branch)
     ///
     /// ---
@@ -17585,7 +17613,7 @@ impl<'api> Repos<'api> {
     /// # Get page views
     ///
     /// Get the total number of views and breakdown per day or week for the last 14 days. Timestamps are aligned to UTC midnight of the beginning of the day or week. Week begins on Monday.
-    /// 
+    ///
     /// [GitHub API docs for get_views](https://docs.github.com/rest/metrics/traffic#get-page-views)
     ///
     /// ---
@@ -17628,7 +17656,7 @@ impl<'api> Repos<'api> {
     /// # Get page views
     ///
     /// Get the total number of views and breakdown per day or week for the last 14 days. Timestamps are aligned to UTC midnight of the beginning of the day or week. Week begins on Monday.
-    /// 
+    ///
     /// [GitHub API docs for get_views](https://docs.github.com/rest/metrics/traffic#get-page-views)
     ///
     /// ---
@@ -17673,7 +17701,7 @@ impl<'api> Repos<'api> {
     /// # Get a repository webhook
     ///
     /// Returns a webhook configured in a repository. To get only the webhook `config` properties, see "[Get a webhook configuration for a repository](/rest/webhooks/repo-config#get-a-webhook-configuration-for-a-repository)."
-    /// 
+    ///
     /// [GitHub API docs for get_webhook](https://docs.github.com/rest/repos/webhooks#get-a-repository-webhook)
     ///
     /// ---
@@ -17712,7 +17740,7 @@ impl<'api> Repos<'api> {
     /// # Get a repository webhook
     ///
     /// Returns a webhook configured in a repository. To get only the webhook `config` properties, see "[Get a webhook configuration for a repository](/rest/webhooks/repo-config#get-a-webhook-configuration-for-a-repository)."
-    /// 
+    ///
     /// [GitHub API docs for get_webhook](https://docs.github.com/rest/repos/webhooks#get-a-repository-webhook)
     ///
     /// ---
@@ -17754,7 +17782,7 @@ impl<'api> Repos<'api> {
     /// Returns the webhook configuration for a repository. To get more information about the webhook, including the `active` state and `events`, use "[Get a repository webhook](/rest/webhooks/repos#get-a-repository-webhook)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:repo_hook` or `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_webhook_config_for_repo](https://docs.github.com/rest/repos/webhooks#get-a-webhook-configuration-for-a-repository)
     ///
     /// ---
@@ -17794,7 +17822,7 @@ impl<'api> Repos<'api> {
     /// Returns the webhook configuration for a repository. To get more information about the webhook, including the `active` state and `events`, use "[Get a repository webhook](/rest/webhooks/repos#get-a-repository-webhook)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:repo_hook` or `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_webhook_config_for_repo](https://docs.github.com/rest/repos/webhooks#get-a-webhook-configuration-for-a-repository)
     ///
     /// ---
@@ -17833,7 +17861,7 @@ impl<'api> Repos<'api> {
     /// # Get a delivery for a repository webhook
     ///
     /// Returns a delivery for a webhook configured in a repository.
-    /// 
+    ///
     /// [GitHub API docs for get_webhook_delivery](https://docs.github.com/rest/repos/webhooks#get-a-delivery-for-a-repository-webhook)
     ///
     /// ---
@@ -17873,7 +17901,7 @@ impl<'api> Repos<'api> {
     /// # Get a delivery for a repository webhook
     ///
     /// Returns a delivery for a webhook configured in a repository.
-    /// 
+    ///
     /// [GitHub API docs for get_webhook_delivery](https://docs.github.com/rest/repos/webhooks#get-a-delivery-for-a-repository-webhook)
     ///
     /// ---
@@ -17917,7 +17945,7 @@ impl<'api> Repos<'api> {
     /// 
     /// For more information about viewing repository activity,
     /// see "[Viewing activity and data for your repository](https://docs.github.com/repositories/viewing-activity-and-data-for-your-repository)."
-    /// 
+    ///
     /// [GitHub API docs for list_activities](https://docs.github.com/rest/repos/repos#list-repository-activities)
     ///
     /// ---
@@ -17963,7 +17991,7 @@ impl<'api> Repos<'api> {
     /// 
     /// For more information about viewing repository activity,
     /// see "[Viewing activity and data for your repository](https://docs.github.com/repositories/viewing-activity-and-data-for-your-repository)."
-    /// 
+    ///
     /// [GitHub API docs for list_activities](https://docs.github.com/rest/repos/repos#list-repository-activities)
     ///
     /// ---
@@ -18012,7 +18040,7 @@ impl<'api> Repos<'api> {
     /// The authenticated user making the request must have read access to the repository. In addition, when using a fine-grained access token the `attestations:read` permission is required.
     /// 
     /// **Please note:** in order to offer meaningful security benefits, an attestation's signature and timestamps **must** be cryptographically verified, and the identity of the attestation signer **must** be validated. Attestations can be verified using the [GitHub CLI `attestation verify` command](https://cli.github.com/manual/gh_attestation_verify). For more information, see [our guide on how to use artifact attestations to establish a build's provenance](https://docs.github.com/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds).
-    /// 
+    ///
     /// [GitHub API docs for list_attestations](https://docs.github.com/rest/repos/repos#list-attestations)
     ///
     /// ---
@@ -18058,7 +18086,7 @@ impl<'api> Repos<'api> {
     /// The authenticated user making the request must have read access to the repository. In addition, when using a fine-grained access token the `attestations:read` permission is required.
     /// 
     /// **Please note:** in order to offer meaningful security benefits, an attestation's signature and timestamps **must** be cryptographically verified, and the identity of the attestation signer **must** be validated. Attestations can be verified using the [GitHub CLI `attestation verify` command](https://cli.github.com/manual/gh_attestation_verify). For more information, see [our guide on how to use artifact attestations to establish a build's provenance](https://docs.github.com/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds).
-    /// 
+    ///
     /// [GitHub API docs for list_attestations](https://docs.github.com/rest/repos/repos#list-attestations)
     ///
     /// ---
@@ -18104,7 +18132,7 @@ impl<'api> Repos<'api> {
     /// Gets all autolinks that are configured for a repository.
     /// 
     /// Information about autolinks are only available to repository administrators.
-    /// 
+    ///
     /// [GitHub API docs for list_autolinks](https://docs.github.com/rest/repos/autolinks#get-all-autolinks-of-a-repository)
     ///
     /// ---
@@ -18144,7 +18172,7 @@ impl<'api> Repos<'api> {
     /// Gets all autolinks that are configured for a repository.
     /// 
     /// Information about autolinks are only available to repository administrators.
-    /// 
+    ///
     /// [GitHub API docs for list_autolinks](https://docs.github.com/rest/repos/autolinks#get-all-autolinks-of-a-repository)
     ///
     /// ---
@@ -18181,7 +18209,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # List branches
-    /// 
+    ///
     /// [GitHub API docs for list_branches](https://docs.github.com/rest/branches/branches#list-branches)
     ///
     /// ---
@@ -18222,7 +18250,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # List branches
-    /// 
+    ///
     /// [GitHub API docs for list_branches](https://docs.github.com/rest/branches/branches#list-branches)
     ///
     /// ---
@@ -18269,7 +18297,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Returns all branches where the given commit SHA is the HEAD, or latest commit for the branch.
-    /// 
+    ///
     /// [GitHub API docs for list_branches_for_head_commit](https://docs.github.com/rest/commits/commits#list-branches-for-head-commit)
     ///
     /// ---
@@ -18311,7 +18339,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Returns all branches where the given commit SHA is the HEAD, or latest commit for the branch.
-    /// 
+    ///
     /// [GitHub API docs for list_branches_for_head_commit](https://docs.github.com/rest/commits/commits#list-branches-for-head-commit)
     ///
     /// ---
@@ -18359,7 +18387,7 @@ impl<'api> Repos<'api> {
     /// The authenticated user must have push access to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:org` and `repo` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_collaborators](https://docs.github.com/rest/collaborators/collaborators#list-repository-collaborators)
     ///
     /// ---
@@ -18409,7 +18437,7 @@ impl<'api> Repos<'api> {
     /// The authenticated user must have push access to the repository to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:org` and `repo` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_collaborators](https://docs.github.com/rest/collaborators/collaborators#list-repository-collaborators)
     ///
     /// ---
@@ -18461,7 +18489,7 @@ impl<'api> Repos<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_comments_for_commit](https://docs.github.com/rest/commits/comments#list-commit-comments)
     ///
     /// ---
@@ -18510,7 +18538,7 @@ impl<'api> Repos<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_comments_for_commit](https://docs.github.com/rest/commits/comments#list-commit-comments)
     ///
     /// ---
@@ -18561,7 +18589,7 @@ impl<'api> Repos<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_commit_comments_for_repo](https://docs.github.com/rest/commits/comments#list-commit-comments-for-a-repository)
     ///
     /// ---
@@ -18610,7 +18638,7 @@ impl<'api> Repos<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_commit_comments_for_repo](https://docs.github.com/rest/commits/comments#list-commit-comments-for-a-repository)
     ///
     /// ---
@@ -18656,7 +18684,7 @@ impl<'api> Repos<'api> {
     /// Users with pull access in a repository can view commit statuses for a given ref. The ref can be a SHA, a branch name, or a tag name. Statuses are returned in reverse chronological order. The first status in the list will be the latest one.
     /// 
     /// This resource is also available via a legacy route: `GET /repos/:owner/:repo/statuses/:ref`.
-    /// 
+    ///
     /// [GitHub API docs for list_commit_statuses_for_ref](https://docs.github.com/rest/commits/statuses#list-commit-statuses-for-a-reference)
     ///
     /// ---
@@ -18701,7 +18729,7 @@ impl<'api> Repos<'api> {
     /// Users with pull access in a repository can view commit statuses for a given ref. The ref can be a SHA, a branch name, or a tag name. Statuses are returned in reverse chronological order. The first status in the list will be the latest one.
     /// 
     /// This resource is also available via a legacy route: `GET /repos/:owner/:repo/statuses/:ref`.
-    /// 
+    ///
     /// [GitHub API docs for list_commit_statuses_for_ref](https://docs.github.com/rest/commits/statuses#list-commit-statuses-for-a-reference)
     ///
     /// ---
@@ -18773,7 +18801,7 @@ impl<'api> Repos<'api> {
     /// | `malformed_signature` | There was an error parsing the signature. |
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
-    /// 
+    ///
     /// [GitHub API docs for list_commits](https://docs.github.com/rest/commits/commits#list-commits)
     ///
     /// ---
@@ -18846,7 +18874,7 @@ impl<'api> Repos<'api> {
     /// | `malformed_signature` | There was an error parsing the signature. |
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
-    /// 
+    ///
     /// [GitHub API docs for list_commits](https://docs.github.com/rest/commits/commits#list-commits)
     ///
     /// ---
@@ -18896,7 +18924,7 @@ impl<'api> Repos<'api> {
     /// Lists contributors to the specified repository and sorts them by the number of commits per contributor in descending order. This endpoint may return information that is a few hours old because the GitHub REST API caches contributor data to improve performance.
     /// 
     /// GitHub identifies contributors by author email address. This endpoint groups contribution counts by GitHub user, which includes all associated email addresses. To improve performance, only the first 500 author email addresses in the repository link to GitHub users. The rest will appear as anonymous contributors without associated GitHub user information.
-    /// 
+    ///
     /// [GitHub API docs for list_contributors](https://docs.github.com/rest/repos/repos#list-repository-contributors)
     ///
     /// ---
@@ -18943,7 +18971,7 @@ impl<'api> Repos<'api> {
     /// Lists contributors to the specified repository and sorts them by the number of commits per contributor in descending order. This endpoint may return information that is a few hours old because the GitHub REST API caches contributor data to improve performance.
     /// 
     /// GitHub identifies contributors by author email address. This endpoint groups contribution counts by GitHub user, which includes all associated email addresses. To improve performance, only the first 500 author email addresses in the repository link to GitHub users. The rest will appear as anonymous contributors without associated GitHub user information.
-    /// 
+    ///
     /// [GitHub API docs for list_contributors](https://docs.github.com/rest/repos/repos#list-repository-contributors)
     ///
     /// ---
@@ -18998,7 +19026,7 @@ impl<'api> Repos<'api> {
     /// For more information about the app that is providing this custom deployment rule, see "[GET an app](https://docs.github.com/rest/apps/apps#get-an-app)".
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_custom_deployment_rule_integrations](https://docs.github.com/rest/deployments/protection-rules#list-custom-deployment-rule-integrations-available-for-an-environment)
     ///
     /// ---
@@ -19048,7 +19076,7 @@ impl<'api> Repos<'api> {
     /// For more information about the app that is providing this custom deployment rule, see "[GET an app](https://docs.github.com/rest/apps/apps#get-an-app)".
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_custom_deployment_rule_integrations](https://docs.github.com/rest/deployments/protection-rules#list-custom-deployment-rule-integrations-available-for-an-environment)
     ///
     /// ---
@@ -19090,7 +19118,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # List deploy keys
-    /// 
+    ///
     /// [GitHub API docs for list_deploy_keys](https://docs.github.com/rest/deploy-keys/deploy-keys#list-deploy-keys)
     ///
     /// ---
@@ -19130,7 +19158,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # List deploy keys
-    /// 
+    ///
     /// [GitHub API docs for list_deploy_keys](https://docs.github.com/rest/deploy-keys/deploy-keys#list-deploy-keys)
     ///
     /// ---
@@ -19178,7 +19206,7 @@ impl<'api> Repos<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_deployment_branch_policies](https://docs.github.com/rest/deployments/branch-policies#list-deployment-branch-policies)
     ///
     /// ---
@@ -19224,7 +19252,7 @@ impl<'api> Repos<'api> {
     /// Anyone with read access to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_deployment_branch_policies](https://docs.github.com/rest/deployments/branch-policies#list-deployment-branch-policies)
     ///
     /// ---
@@ -19268,7 +19296,7 @@ impl<'api> Repos<'api> {
     /// # List deployment statuses
     ///
     /// Users with pull access can view deployment statuses for a deployment:
-    /// 
+    ///
     /// [GitHub API docs for list_deployment_statuses](https://docs.github.com/rest/deployments/statuses#list-deployment-statuses)
     ///
     /// ---
@@ -19311,7 +19339,7 @@ impl<'api> Repos<'api> {
     /// # List deployment statuses
     ///
     /// Users with pull access can view deployment statuses for a deployment:
-    /// 
+    ///
     /// [GitHub API docs for list_deployment_statuses](https://docs.github.com/rest/deployments/statuses#list-deployment-statuses)
     ///
     /// ---
@@ -19356,7 +19384,7 @@ impl<'api> Repos<'api> {
     /// # List deployments
     ///
     /// Simple filtering of deployments is available via query parameters:
-    /// 
+    ///
     /// [GitHub API docs for list_deployments](https://docs.github.com/rest/deployments/deployments#list-deployments)
     ///
     /// ---
@@ -19398,7 +19426,7 @@ impl<'api> Repos<'api> {
     /// # List deployments
     ///
     /// Simple filtering of deployments is available via query parameters:
-    /// 
+    ///
     /// [GitHub API docs for list_deployments](https://docs.github.com/rest/deployments/deployments#list-deployments)
     ///
     /// ---
@@ -19444,7 +19472,7 @@ impl<'api> Repos<'api> {
     /// Lists repositories that the authenticated user has explicit permission (`:read`, `:write`, or `:admin`) to access.
     /// 
     /// The authenticated user has explicit permission to access repositories they own, repositories where they are a collaborator, and repositories that they can access through an organization membership.
-    /// 
+    ///
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/repos/repos#list-repositories-for-the-authenticated-user)
     ///
     /// ---
@@ -19492,7 +19520,7 @@ impl<'api> Repos<'api> {
     /// Lists repositories that the authenticated user has explicit permission (`:read`, `:write`, or `:admin`) to access.
     /// 
     /// The authenticated user has explicit permission to access repositories they own, repositories where they are a collaborator, and repositories that they can access through an organization membership.
-    /// 
+    ///
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/repos/repos#list-repositories-for-the-authenticated-user)
     ///
     /// ---
@@ -19543,7 +19571,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > In order to see the `security_and_analysis` block for a repository you must have admin permissions for the repository or be an owner or security manager for the organization that owns the repository. For more information, see "[Managing security managers in your organization](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-security-managers-in-your-organization)."
-    /// 
+    ///
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/repos/repos#list-organization-repositories)
     ///
     /// ---
@@ -19588,7 +19616,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > In order to see the `security_and_analysis` block for a repository you must have admin permissions for the repository or be an owner or security manager for the organization that owns the repository. For more information, see "[Managing security managers in your organization](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-security-managers-in-your-organization)."
-    /// 
+    ///
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/repos/repos#list-organization-repositories)
     ///
     /// ---
@@ -19632,7 +19660,7 @@ impl<'api> Repos<'api> {
     /// # List repositories for a user
     ///
     /// Lists public repositories for the specified user.
-    /// 
+    ///
     /// [GitHub API docs for list_for_user](https://docs.github.com/rest/repos/repos#list-repositories-for-a-user)
     ///
     /// ---
@@ -19674,7 +19702,7 @@ impl<'api> Repos<'api> {
     /// # List repositories for a user
     ///
     /// Lists public repositories for the specified user.
-    /// 
+    ///
     /// [GitHub API docs for list_for_user](https://docs.github.com/rest/repos/repos#list-repositories-for-a-user)
     ///
     /// ---
@@ -19716,7 +19744,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # List forks
-    /// 
+    ///
     /// [GitHub API docs for list_forks](https://docs.github.com/rest/repos/forks#list-forks)
     ///
     /// ---
@@ -19757,7 +19785,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # List forks
-    /// 
+    ///
     /// [GitHub API docs for list_forks](https://docs.github.com/rest/repos/forks#list-forks)
     ///
     /// ---
@@ -19802,7 +19830,7 @@ impl<'api> Repos<'api> {
     /// # List repository invitations
     ///
     /// When authenticating as a user with admin rights to a repository, this endpoint will list all currently open repository invitations.
-    /// 
+    ///
     /// [GitHub API docs for list_invitations](https://docs.github.com/rest/collaborators/invitations#list-repository-invitations)
     ///
     /// ---
@@ -19844,7 +19872,7 @@ impl<'api> Repos<'api> {
     /// # List repository invitations
     ///
     /// When authenticating as a user with admin rights to a repository, this endpoint will list all currently open repository invitations.
-    /// 
+    ///
     /// [GitHub API docs for list_invitations](https://docs.github.com/rest/collaborators/invitations#list-repository-invitations)
     ///
     /// ---
@@ -19888,7 +19916,7 @@ impl<'api> Repos<'api> {
     /// # List repository invitations for the authenticated user
     ///
     /// When authenticating as a user, this endpoint will list all currently open repository invitations for that user.
-    /// 
+    ///
     /// [GitHub API docs for list_invitations_for_authenticated_user](https://docs.github.com/rest/collaborators/invitations#list-repository-invitations-for-the-authenticated-user)
     ///
     /// ---
@@ -19934,7 +19962,7 @@ impl<'api> Repos<'api> {
     /// # List repository invitations for the authenticated user
     ///
     /// When authenticating as a user, this endpoint will list all currently open repository invitations for that user.
-    /// 
+    ///
     /// [GitHub API docs for list_invitations_for_authenticated_user](https://docs.github.com/rest/collaborators/invitations#list-repository-invitations-for-the-authenticated-user)
     ///
     /// ---
@@ -19982,7 +20010,7 @@ impl<'api> Repos<'api> {
     /// # List repository languages
     ///
     /// Lists languages for the specified repository. The value shown for each language is the number of bytes of code written in that language.
-    /// 
+    ///
     /// [GitHub API docs for list_languages](https://docs.github.com/rest/repos/repos#list-repository-languages)
     ///
     /// ---
@@ -20020,7 +20048,7 @@ impl<'api> Repos<'api> {
     /// # List repository languages
     ///
     /// Lists languages for the specified repository. The value shown for each language is the number of bytes of code written in that language.
-    /// 
+    ///
     /// [GitHub API docs for list_languages](https://docs.github.com/rest/repos/repos#list-repository-languages)
     ///
     /// ---
@@ -20061,7 +20089,7 @@ impl<'api> Repos<'api> {
     /// Lists builts of a GitHub Pages site.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_pages_builds](https://docs.github.com/rest/pages/pages#list-apiname-pages-builds)
     ///
     /// ---
@@ -20105,7 +20133,7 @@ impl<'api> Repos<'api> {
     /// Lists builts of a GitHub Pages site.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_pages_builds](https://docs.github.com/rest/pages/pages#list-apiname-pages-builds)
     ///
     /// ---
@@ -20153,7 +20181,7 @@ impl<'api> Repos<'api> {
     /// Note:
     /// - For GitHub Enterprise Server, this endpoint will only list repositories available to all users on the enterprise.
     /// - Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers) to get the URL for the next page of repositories.
-    /// 
+    ///
     /// [GitHub API docs for list_public](https://docs.github.com/rest/repos/repos#list-public-repositories)
     ///
     /// ---
@@ -20201,7 +20229,7 @@ impl<'api> Repos<'api> {
     /// Note:
     /// - For GitHub Enterprise Server, this endpoint will only list repositories available to all users on the enterprise.
     /// - Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers) to get the URL for the next page of repositories.
-    /// 
+    ///
     /// [GitHub API docs for list_public](https://docs.github.com/rest/repos/repos#list-public-repositories)
     ///
     /// ---
@@ -20249,7 +20277,7 @@ impl<'api> Repos<'api> {
     /// Lists the merged pull request that introduced the commit to the repository. If the commit is not present in the default branch, will only return open pull requests associated with the commit.
     /// 
     /// To list the open or merged pull requests associated with a branch, you can set the `commit_sha` parameter to the branch name.
-    /// 
+    ///
     /// [GitHub API docs for list_pull_requests_associated_with_commit](https://docs.github.com/rest/commits/commits#list-pull-requests-associated-with-a-commit)
     ///
     /// ---
@@ -20294,7 +20322,7 @@ impl<'api> Repos<'api> {
     /// Lists the merged pull request that introduced the commit to the repository. If the commit is not present in the default branch, will only return open pull requests associated with the commit.
     /// 
     /// To list the open or merged pull requests associated with a branch, you can set the `commit_sha` parameter to the branch name.
-    /// 
+    ///
     /// [GitHub API docs for list_pull_requests_associated_with_commit](https://docs.github.com/rest/commits/commits#list-pull-requests-associated-with-a-commit)
     ///
     /// ---
@@ -20337,7 +20365,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # List release assets
-    /// 
+    ///
     /// [GitHub API docs for list_release_assets](https://docs.github.com/rest/releases/assets#list-release-assets)
     ///
     /// ---
@@ -20377,7 +20405,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # List release assets
-    /// 
+    ///
     /// [GitHub API docs for list_release_assets](https://docs.github.com/rest/releases/assets#list-release-assets)
     ///
     /// ---
@@ -20423,7 +20451,7 @@ impl<'api> Repos<'api> {
     /// This returns a list of releases, which does not include regular Git tags that have not been associated with a release. To get a list of Git tags, use the [Repository Tags API](https://docs.github.com/rest/repos/repos#list-repository-tags).
     /// 
     /// Information about published releases are available to everyone. Only users with push access will receive listings for draft releases.
-    /// 
+    ///
     /// [GitHub API docs for list_releases](https://docs.github.com/rest/releases/releases#list-releases)
     ///
     /// ---
@@ -20468,7 +20496,7 @@ impl<'api> Repos<'api> {
     /// This returns a list of releases, which does not include regular Git tags that have not been associated with a release. To get a list of Git tags, use the [Repository Tags API](https://docs.github.com/rest/repos/repos#list-repository-tags).
     /// 
     /// Information about published releases are available to everyone. Only users with push access will receive listings for draft releases.
-    /// 
+    ///
     /// [GitHub API docs for list_releases](https://docs.github.com/rest/releases/releases#list-releases)
     ///
     /// ---
@@ -20518,7 +20546,7 @@ impl<'api> Repos<'api> {
     /// This returns the tag protection states of a repository.
     /// 
     /// This information is only available to repository administrators.
-    /// 
+    ///
     /// [GitHub API docs for list_tag_protection](https://docs.github.com/rest/repos/tags#deprecated---list-tag-protection-states-for-a-repository)
     ///
     /// ---
@@ -20563,7 +20591,7 @@ impl<'api> Repos<'api> {
     /// This returns the tag protection states of a repository.
     /// 
     /// This information is only available to repository administrators.
-    /// 
+    ///
     /// [GitHub API docs for list_tag_protection](https://docs.github.com/rest/repos/tags#deprecated---list-tag-protection-states-for-a-repository)
     ///
     /// ---
@@ -20602,7 +20630,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # List repository tags
-    /// 
+    ///
     /// [GitHub API docs for list_tags](https://docs.github.com/rest/repos/repos#list-repository-tags)
     ///
     /// ---
@@ -20642,7 +20670,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # List repository tags
-    /// 
+    ///
     /// [GitHub API docs for list_tags](https://docs.github.com/rest/repos/repos#list-repository-tags)
     ///
     /// ---
@@ -20690,7 +20718,7 @@ impl<'api> Repos<'api> {
     /// For a public repository, a team is listed only if that team added the public repository explicitly.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `public_repo` or `repo` scope to use this endpoint with a public repository, and `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_teams](https://docs.github.com/rest/repos/repos#list-repository-teams)
     ///
     /// ---
@@ -20737,7 +20765,7 @@ impl<'api> Repos<'api> {
     /// For a public repository, a team is listed only if that team added the public repository explicitly.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `public_repo` or `repo` scope to use this endpoint with a public repository, and `repo` scope to use this endpoint with a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_teams](https://docs.github.com/rest/repos/repos#list-repository-teams)
     ///
     /// ---
@@ -20782,7 +20810,7 @@ impl<'api> Repos<'api> {
     /// # List deliveries for a repository webhook
     ///
     /// Returns a list of webhook deliveries for a webhook configured in a repository.
-    /// 
+    ///
     /// [GitHub API docs for list_webhook_deliveries](https://docs.github.com/rest/repos/webhooks#list-deliveries-for-a-repository-webhook)
     ///
     /// ---
@@ -20826,7 +20854,7 @@ impl<'api> Repos<'api> {
     /// # List deliveries for a repository webhook
     ///
     /// Returns a list of webhook deliveries for a webhook configured in a repository.
-    /// 
+    ///
     /// [GitHub API docs for list_webhook_deliveries](https://docs.github.com/rest/repos/webhooks#list-deliveries-for-a-repository-webhook)
     ///
     /// ---
@@ -20872,7 +20900,7 @@ impl<'api> Repos<'api> {
     /// # List repository webhooks
     ///
     /// Lists webhooks for a repository. `last response` may return null if there have not been any deliveries within 30 days.
-    /// 
+    ///
     /// [GitHub API docs for list_webhooks](https://docs.github.com/rest/repos/webhooks#list-repository-webhooks)
     ///
     /// ---
@@ -20915,7 +20943,7 @@ impl<'api> Repos<'api> {
     /// # List repository webhooks
     ///
     /// Lists webhooks for a repository. `last response` may return null if there have not been any deliveries within 30 days.
-    /// 
+    ///
     /// [GitHub API docs for list_webhooks](https://docs.github.com/rest/repos/webhooks#list-repository-webhooks)
     ///
     /// ---
@@ -20958,7 +20986,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Merge a branch
-    /// 
+    ///
     /// [GitHub API docs for merge](https://docs.github.com/rest/branches/branches#merge-a-branch)
     ///
     /// ---
@@ -20999,7 +21027,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Merge a branch
-    /// 
+    ///
     /// [GitHub API docs for merge](https://docs.github.com/rest/branches/branches#merge-a-branch)
     ///
     /// ---
@@ -21043,7 +21071,7 @@ impl<'api> Repos<'api> {
     /// # Sync a fork branch with the upstream repository
     ///
     /// Sync a branch of a forked repository to keep it up-to-date with the upstream repository.
-    /// 
+    ///
     /// [GitHub API docs for merge_upstream](https://docs.github.com/rest/branches/branches#sync-a-fork-branch-with-the-upstream-repository)
     ///
     /// ---
@@ -21083,7 +21111,7 @@ impl<'api> Repos<'api> {
     /// # Sync a fork branch with the upstream repository
     ///
     /// Sync a branch of a forked repository to keep it up-to-date with the upstream repository.
-    /// 
+    ///
     /// [GitHub API docs for merge_upstream](https://docs.github.com/rest/branches/branches#sync-a-fork-branch-with-the-upstream-repository)
     ///
     /// ---
@@ -21124,7 +21152,7 @@ impl<'api> Repos<'api> {
     /// # Ping a repository webhook
     ///
     /// This will trigger a [ping event](https://docs.github.com/webhooks/#ping-event) to be sent to the hook.
-    /// 
+    ///
     /// [GitHub API docs for ping_webhook](https://docs.github.com/rest/repos/webhooks#ping-a-repository-webhook)
     ///
     /// ---
@@ -21163,7 +21191,7 @@ impl<'api> Repos<'api> {
     /// # Ping a repository webhook
     ///
     /// This will trigger a [ping event](https://docs.github.com/webhooks/#ping-event) to be sent to the hook.
-    /// 
+    ///
     /// [GitHub API docs for ping_webhook](https://docs.github.com/rest/repos/webhooks#ping-a-repository-webhook)
     ///
     /// ---
@@ -21203,7 +21231,7 @@ impl<'api> Repos<'api> {
     /// # Redeliver a delivery for a repository webhook
     ///
     /// Redeliver a webhook delivery for a webhook configured in a repository.
-    /// 
+    ///
     /// [GitHub API docs for redeliver_webhook_delivery](https://docs.github.com/rest/repos/webhooks#redeliver-a-delivery-for-a-repository-webhook)
     ///
     /// ---
@@ -21243,7 +21271,7 @@ impl<'api> Repos<'api> {
     /// # Redeliver a delivery for a repository webhook
     ///
     /// Redeliver a webhook delivery for a webhook configured in a repository.
-    /// 
+    ///
     /// [GitHub API docs for redeliver_webhook_delivery](https://docs.github.com/rest/repos/webhooks#redeliver-a-delivery-for-a-repository-webhook)
     ///
     /// ---
@@ -21286,7 +21314,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Removes the ability of an app to push to this branch. Only GitHub Apps that are installed on the repository and that have been granted write access to the repository contents can be added as authorized actors on a protected branch.
-    /// 
+    ///
     /// [GitHub API docs for remove_app_access_restrictions](https://docs.github.com/rest/branches/branch-protection#remove-app-access-restrictions)
     ///
     /// ---
@@ -21327,7 +21355,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Removes the ability of an app to push to this branch. Only GitHub Apps that are installed on the repository and that have been granted write access to the repository contents can be added as authorized actors on a protected branch.
-    /// 
+    ///
     /// [GitHub API docs for remove_app_access_restrictions](https://docs.github.com/rest/branches/branch-protection#remove-app-access-restrictions)
     ///
     /// ---
@@ -21388,7 +21416,7 @@ impl<'api> Repos<'api> {
     /// Although the API responds immediately, the additional permission updates might take some extra time to complete in the background.
     /// 
     /// For more information on fork permissions, see "[About permissions and visibility of forks](https://docs.github.com/pull-requests/collaborating-with-pull-requests/working-with-forks/about-permissions-and-visibility-of-forks)".
-    /// 
+    ///
     /// [GitHub API docs for remove_collaborator](https://docs.github.com/rest/collaborators/collaborators#remove-a-repository-collaborator)
     ///
     /// ---
@@ -21449,7 +21477,7 @@ impl<'api> Repos<'api> {
     /// Although the API responds immediately, the additional permission updates might take some extra time to complete in the background.
     /// 
     /// For more information on fork permissions, see "[About permissions and visibility of forks](https://docs.github.com/pull-requests/collaborating-with-pull-requests/working-with-forks/about-permissions-and-visibility-of-forks)".
-    /// 
+    ///
     /// [GitHub API docs for remove_collaborator](https://docs.github.com/rest/collaborators/collaborators#remove-a-repository-collaborator)
     ///
     /// ---
@@ -21490,7 +21518,7 @@ impl<'api> Repos<'api> {
     /// # Remove status check contexts
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
-    /// 
+    ///
     /// [GitHub API docs for remove_status_check_contexts](https://docs.github.com/rest/branches/branch-protection#remove-status-check-contexts)
     ///
     /// ---
@@ -21530,7 +21558,7 @@ impl<'api> Repos<'api> {
     /// # Remove status check contexts
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
-    /// 
+    ///
     /// [GitHub API docs for remove_status_check_contexts](https://docs.github.com/rest/branches/branch-protection#remove-status-check-contexts)
     ///
     /// ---
@@ -21571,7 +21599,7 @@ impl<'api> Repos<'api> {
     /// # Remove status check protection
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
-    /// 
+    ///
     /// [GitHub API docs for remove_status_check_protection](https://docs.github.com/rest/branches/branch-protection#remove-status-check-protection)
     ///
     /// ---
@@ -21609,7 +21637,7 @@ impl<'api> Repos<'api> {
     /// # Remove status check protection
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
-    /// 
+    ///
     /// [GitHub API docs for remove_status_check_protection](https://docs.github.com/rest/branches/branch-protection#remove-status-check-protection)
     ///
     /// ---
@@ -21650,7 +21678,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Removes the ability of a team to push to this branch. You can also remove push access for child teams.
-    /// 
+    ///
     /// [GitHub API docs for remove_team_access_restrictions](https://docs.github.com/rest/branches/branch-protection#remove-team-access-restrictions)
     ///
     /// ---
@@ -21691,7 +21719,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Removes the ability of a team to push to this branch. You can also remove push access for child teams.
-    /// 
+    ///
     /// [GitHub API docs for remove_team_access_restrictions](https://docs.github.com/rest/branches/branch-protection#remove-team-access-restrictions)
     ///
     /// ---
@@ -21737,7 +21765,7 @@ impl<'api> Repos<'api> {
     /// | Type    | Description                                                                                                                                   |
     /// | ------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
     /// | `array` | Usernames of the people who should no longer have push access. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
-    /// 
+    ///
     /// [GitHub API docs for remove_user_access_restrictions](https://docs.github.com/rest/branches/branch-protection#remove-user-access-restrictions)
     ///
     /// ---
@@ -21782,7 +21810,7 @@ impl<'api> Repos<'api> {
     /// | Type    | Description                                                                                                                                   |
     /// | ------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
     /// | `array` | Usernames of the people who should no longer have push access. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
-    /// 
+    ///
     /// [GitHub API docs for remove_user_access_restrictions](https://docs.github.com/rest/branches/branch-protection#remove-user-access-restrictions)
     ///
     /// ---
@@ -21829,7 +21857,7 @@ impl<'api> Repos<'api> {
     /// The authenticated user must have push access to the branch. If the branch is the default branch, the authenticated user must also have admin or owner permissions.
     /// 
     /// In order to rename the default branch, fine-grained access tokens also need the `administration:write` repository permission.
-    /// 
+    ///
     /// [GitHub API docs for rename_branch](https://docs.github.com/rest/branches/branches#rename-a-branch)
     ///
     /// ---
@@ -21877,7 +21905,7 @@ impl<'api> Repos<'api> {
     /// The authenticated user must have push access to the branch. If the branch is the default branch, the authenticated user must also have admin or owner permissions.
     /// 
     /// In order to rename the default branch, fine-grained access tokens also need the `administration:write` repository permission.
-    /// 
+    ///
     /// [GitHub API docs for rename_branch](https://docs.github.com/rest/branches/branches#rename-a-branch)
     ///
     /// ---
@@ -21917,7 +21945,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Replace all repository topics
-    /// 
+    ///
     /// [GitHub API docs for replace_all_topics](https://docs.github.com/rest/repos/repos#replace-all-repository-topics)
     ///
     /// ---
@@ -21955,7 +21983,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Replace all repository topics
-    /// 
+    ///
     /// [GitHub API docs for replace_all_topics](https://docs.github.com/rest/repos/repos#replace-all-repository-topics)
     ///
     /// ---
@@ -21998,7 +22026,7 @@ impl<'api> Repos<'api> {
     /// You can request that your site be built from the latest revision on the default branch. This has the same effect as pushing a commit to your default branch, but does not require an additional commit. Manually triggering page builds can be helpful when diagnosing build warnings and failures.
     /// 
     /// Build requests are limited to one concurrent build per repository and one concurrent build per requester. If you request a build while another is still in progress, the second request will be queued until the first completes.
-    /// 
+    ///
     /// [GitHub API docs for request_pages_build](https://docs.github.com/rest/pages/pages#request-a-apiname-pages-build)
     ///
     /// ---
@@ -22038,7 +22066,7 @@ impl<'api> Repos<'api> {
     /// You can request that your site be built from the latest revision on the default branch. This has the same effect as pushing a commit to your default branch, but does not require an additional commit. Manually triggering page builds can be helpful when diagnosing build warnings and failures.
     /// 
     /// Build requests are limited to one concurrent build per repository and one concurrent build per requester. If you request a build while another is still in progress, the second request will be queued until the first completes.
-    /// 
+    ///
     /// [GitHub API docs for request_pages_build](https://docs.github.com/rest/pages/pages#request-a-apiname-pages-build)
     ///
     /// ---
@@ -22079,7 +22107,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Adding admin enforcement requires admin or owner permissions to the repository and branch protection to be enabled.
-    /// 
+    ///
     /// [GitHub API docs for set_admin_branch_protection](https://docs.github.com/rest/branches/branch-protection#set-admin-branch-protection)
     ///
     /// ---
@@ -22119,7 +22147,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Adding admin enforcement requires admin or owner permissions to the repository and branch protection to be enabled.
-    /// 
+    ///
     /// [GitHub API docs for set_admin_branch_protection](https://docs.github.com/rest/branches/branch-protection#set-admin-branch-protection)
     ///
     /// ---
@@ -22160,7 +22188,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Replaces the list of apps that have push access to this branch. This removes all apps that previously had push access and grants push access to the new list of apps. Only GitHub Apps that are installed on the repository and that have been granted write access to the repository contents can be added as authorized actors on a protected branch.
-    /// 
+    ///
     /// [GitHub API docs for set_app_access_restrictions](https://docs.github.com/rest/branches/branch-protection#set-app-access-restrictions)
     ///
     /// ---
@@ -22201,7 +22229,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Replaces the list of apps that have push access to this branch. This removes all apps that previously had push access and grants push access to the new list of apps. Only GitHub Apps that are installed on the repository and that have been granted write access to the repository contents can be added as authorized actors on a protected branch.
-    /// 
+    ///
     /// [GitHub API docs for set_app_access_restrictions](https://docs.github.com/rest/branches/branch-protection#set-app-access-restrictions)
     ///
     /// ---
@@ -22241,7 +22269,7 @@ impl<'api> Repos<'api> {
     /// # Set status check contexts
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
-    /// 
+    ///
     /// [GitHub API docs for set_status_check_contexts](https://docs.github.com/rest/branches/branch-protection#set-status-check-contexts)
     ///
     /// ---
@@ -22281,7 +22309,7 @@ impl<'api> Repos<'api> {
     /// # Set status check contexts
     ///
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
-    /// 
+    ///
     /// [GitHub API docs for set_status_check_contexts](https://docs.github.com/rest/branches/branch-protection#set-status-check-contexts)
     ///
     /// ---
@@ -22324,7 +22352,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Replaces the list of teams that have push access to this branch. This removes all teams that previously had push access and grants push access to the new list of teams. Team restrictions include child teams.
-    /// 
+    ///
     /// [GitHub API docs for set_team_access_restrictions](https://docs.github.com/rest/branches/branch-protection#set-team-access-restrictions)
     ///
     /// ---
@@ -22365,7 +22393,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Replaces the list of teams that have push access to this branch. This removes all teams that previously had push access and grants push access to the new list of teams. Team restrictions include child teams.
-    /// 
+    ///
     /// [GitHub API docs for set_team_access_restrictions](https://docs.github.com/rest/branches/branch-protection#set-team-access-restrictions)
     ///
     /// ---
@@ -22411,7 +22439,7 @@ impl<'api> Repos<'api> {
     /// | Type    | Description                                                                                                                   |
     /// | ------- | ----------------------------------------------------------------------------------------------------------------------------- |
     /// | `array` | Usernames for people who can have push access. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
-    /// 
+    ///
     /// [GitHub API docs for set_user_access_restrictions](https://docs.github.com/rest/branches/branch-protection#set-user-access-restrictions)
     ///
     /// ---
@@ -22456,7 +22484,7 @@ impl<'api> Repos<'api> {
     /// | Type    | Description                                                                                                                   |
     /// | ------- | ----------------------------------------------------------------------------------------------------------------------------- |
     /// | `array` | Usernames for people who can have push access. **Note**: The list of users, apps, and teams in total is limited to 100 items. |
-    /// 
+    ///
     /// [GitHub API docs for set_user_access_restrictions](https://docs.github.com/rest/branches/branch-protection#set-user-access-restrictions)
     ///
     /// ---
@@ -22499,7 +22527,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > Previously `/repos/:owner/:repo/hooks/:hook_id/test`
-    /// 
+    ///
     /// [GitHub API docs for test_push_webhook](https://docs.github.com/rest/repos/webhooks#test-the-push-repository-webhook)
     ///
     /// ---
@@ -22541,7 +22569,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > Previously `/repos/:owner/:repo/hooks/:hook_id/test`
-    /// 
+    ///
     /// [GitHub API docs for test_push_webhook](https://docs.github.com/rest/repos/webhooks#test-the-push-repository-webhook)
     ///
     /// ---
@@ -22581,7 +22609,7 @@ impl<'api> Repos<'api> {
     /// # Transfer a repository
     ///
     /// A transfer request will need to be accepted by the new owner when transferring a personal repository to another user. The response will contain the original `owner`, and the transfer will continue asynchronously. For more details on the requirements to transfer personal and organization-owned repositories, see [about repository transfers](https://docs.github.com/articles/about-repository-transfers/).
-    /// 
+    ///
     /// [GitHub API docs for transfer](https://docs.github.com/rest/repos/repos#transfer-a-repository)
     ///
     /// ---
@@ -22619,7 +22647,7 @@ impl<'api> Repos<'api> {
     /// # Transfer a repository
     ///
     /// A transfer request will need to be accepted by the new owner when transferring a personal repository to another user. The response will contain the original `owner`, and the transfer will continue asynchronously. For more details on the requirements to transfer personal and organization-owned repositories, see [about repository transfers](https://docs.github.com/articles/about-repository-transfers/).
-    /// 
+    ///
     /// [GitHub API docs for transfer](https://docs.github.com/rest/repos/repos#transfer-a-repository)
     ///
     /// ---
@@ -22658,7 +22686,7 @@ impl<'api> Repos<'api> {
     /// # Update a repository
     ///
     /// **Note**: To edit a repository's topics, use the [Replace all repository topics](https://docs.github.com/rest/repos/repos#replace-all-repository-topics) endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update](https://docs.github.com/rest/repos/repos#update-a-repository)
     ///
     /// ---
@@ -22700,7 +22728,7 @@ impl<'api> Repos<'api> {
     /// # Update a repository
     ///
     /// **Note**: To edit a repository's topics, use the [Replace all repository topics](https://docs.github.com/rest/repos/repos#replace-all-repository-topics) endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update](https://docs.github.com/rest/repos/repos#update-a-repository)
     ///
     /// ---
@@ -22751,7 +22779,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > The list of users, apps, and teams in total is limited to 100 items.
-    /// 
+    ///
     /// [GitHub API docs for update_branch_protection](https://docs.github.com/rest/branches/branch-protection#update-branch-protection)
     ///
     /// ---
@@ -22800,7 +22828,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > The list of users, apps, and teams in total is limited to 100 items.
-    /// 
+    ///
     /// [GitHub API docs for update_branch_protection](https://docs.github.com/rest/branches/branch-protection#update-branch-protection)
     ///
     /// ---
@@ -22849,7 +22877,7 @@ impl<'api> Repos<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for update_commit_comment](https://docs.github.com/rest/commits/comments#update-a-commit-comment)
     ///
     /// ---
@@ -22895,7 +22923,7 @@ impl<'api> Repos<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for update_commit_comment](https://docs.github.com/rest/commits/comments#update-a-commit-comment)
     ///
     /// ---
@@ -22937,7 +22965,7 @@ impl<'api> Repos<'api> {
     /// Updates a deployment branch or tag policy for an environment.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_deployment_branch_policy](https://docs.github.com/rest/deployments/branch-policies#update-a-deployment-branch-policy)
     ///
     /// ---
@@ -22977,7 +23005,7 @@ impl<'api> Repos<'api> {
     /// Updates a deployment branch or tag policy for an environment.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_deployment_branch_policy](https://docs.github.com/rest/deployments/branch-policies#update-a-deployment-branch-policy)
     ///
     /// ---
@@ -23020,7 +23048,7 @@ impl<'api> Repos<'api> {
     /// The authenticated user must be a repository administrator, maintainer, or have the 'manage GitHub Pages settings' permission.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_information_about_pages_site](https://docs.github.com/rest/pages/pages#update-information-about-a-apiname-pages-site)
     ///
     /// ---
@@ -23065,7 +23093,7 @@ impl<'api> Repos<'api> {
     /// The authenticated user must be a repository administrator, maintainer, or have the 'manage GitHub Pages settings' permission.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_information_about_pages_site](https://docs.github.com/rest/pages/pages#update-information-about-a-apiname-pages-site)
     ///
     /// ---
@@ -23105,7 +23133,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Update a repository invitation
-    /// 
+    ///
     /// [GitHub API docs for update_invitation](https://docs.github.com/rest/collaborators/invitations#update-a-repository-invitation)
     ///
     /// ---
@@ -23141,7 +23169,7 @@ impl<'api> Repos<'api> {
     /// ---
     ///
     /// # Update a repository invitation
-    /// 
+    ///
     /// [GitHub API docs for update_invitation](https://docs.github.com/rest/collaborators/invitations#update-a-repository-invitation)
     ///
     /// ---
@@ -23180,7 +23208,7 @@ impl<'api> Repos<'api> {
     /// # Update an organization repository ruleset
     ///
     /// Update a ruleset for an organization.
-    /// 
+    ///
     /// [GitHub API docs for update_org_ruleset](https://docs.github.com/rest/orgs/rules#update-an-organization-repository-ruleset)
     ///
     /// ---
@@ -23220,7 +23248,7 @@ impl<'api> Repos<'api> {
     /// # Update an organization repository ruleset
     ///
     /// Update a ruleset for an organization.
-    /// 
+    ///
     /// [GitHub API docs for update_org_ruleset](https://docs.github.com/rest/orgs/rules#update-an-organization-repository-ruleset)
     ///
     /// ---
@@ -23266,7 +23294,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > Passing new arrays of `users` and `teams` replaces their previous values.
-    /// 
+    ///
     /// [GitHub API docs for update_pull_request_review_protection](https://docs.github.com/rest/branches/branch-protection#update-pull-request-review-protection)
     ///
     /// ---
@@ -23310,7 +23338,7 @@ impl<'api> Repos<'api> {
     /// 
     /// > [!NOTE]
     /// > Passing new arrays of `users` and `teams` replaces their previous values.
-    /// 
+    ///
     /// [GitHub API docs for update_pull_request_review_protection](https://docs.github.com/rest/branches/branch-protection#update-pull-request-review-protection)
     ///
     /// ---
@@ -23350,7 +23378,7 @@ impl<'api> Repos<'api> {
     /// # Update a release
     ///
     /// Users with push access to the repository can edit a release.
-    /// 
+    ///
     /// [GitHub API docs for update_release](https://docs.github.com/rest/releases/releases#update-a-release)
     ///
     /// ---
@@ -23389,7 +23417,7 @@ impl<'api> Repos<'api> {
     /// # Update a release
     ///
     /// Users with push access to the repository can edit a release.
-    /// 
+    ///
     /// [GitHub API docs for update_release](https://docs.github.com/rest/releases/releases#update-a-release)
     ///
     /// ---
@@ -23429,7 +23457,7 @@ impl<'api> Repos<'api> {
     /// # Update a release asset
     ///
     /// Users with push access to the repository can edit a release asset.
-    /// 
+    ///
     /// [GitHub API docs for update_release_asset](https://docs.github.com/rest/releases/assets#update-a-release-asset)
     ///
     /// ---
@@ -23467,7 +23495,7 @@ impl<'api> Repos<'api> {
     /// # Update a release asset
     ///
     /// Users with push access to the repository can edit a release asset.
-    /// 
+    ///
     /// [GitHub API docs for update_release_asset](https://docs.github.com/rest/releases/assets#update-a-release-asset)
     ///
     /// ---
@@ -23506,7 +23534,7 @@ impl<'api> Repos<'api> {
     /// # Update a repository ruleset
     ///
     /// Update a ruleset for a repository.
-    /// 
+    ///
     /// [GitHub API docs for update_repo_ruleset](https://docs.github.com/rest/repos/rules#update-a-repository-ruleset)
     ///
     /// ---
@@ -23546,7 +23574,7 @@ impl<'api> Repos<'api> {
     /// # Update a repository ruleset
     ///
     /// Update a ruleset for a repository.
-    /// 
+    ///
     /// [GitHub API docs for update_repo_ruleset](https://docs.github.com/rest/repos/rules#update-a-repository-ruleset)
     ///
     /// ---
@@ -23589,7 +23617,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Updating required status checks requires admin or owner permissions to the repository and branch protection to be enabled.
-    /// 
+    ///
     /// [GitHub API docs for update_status_check_protection](https://docs.github.com/rest/branches/branch-protection#update-status-check-protection)
     ///
     /// ---
@@ -23631,7 +23659,7 @@ impl<'api> Repos<'api> {
     /// Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
     /// Updating required status checks requires admin or owner permissions to the repository and branch protection to be enabled.
-    /// 
+    ///
     /// [GitHub API docs for update_status_check_protection](https://docs.github.com/rest/branches/branch-protection#update-status-check-protection)
     ///
     /// ---
@@ -23672,7 +23700,7 @@ impl<'api> Repos<'api> {
     /// # Update a repository webhook
     ///
     /// Updates a webhook configured in a repository. If you previously had a `secret` set, you must provide the same `secret` or set a new `secret` or the secret will be removed. If you are only updating individual webhook `config` properties, use "[Update a webhook configuration for a repository](/rest/webhooks/repo-config#update-a-webhook-configuration-for-a-repository)."
-    /// 
+    ///
     /// [GitHub API docs for update_webhook](https://docs.github.com/rest/repos/webhooks#update-a-repository-webhook)
     ///
     /// ---
@@ -23712,7 +23740,7 @@ impl<'api> Repos<'api> {
     /// # Update a repository webhook
     ///
     /// Updates a webhook configured in a repository. If you previously had a `secret` set, you must provide the same `secret` or set a new `secret` or the secret will be removed. If you are only updating individual webhook `config` properties, use "[Update a webhook configuration for a repository](/rest/webhooks/repo-config#update-a-webhook-configuration-for-a-repository)."
-    /// 
+    ///
     /// [GitHub API docs for update_webhook](https://docs.github.com/rest/repos/webhooks#update-a-repository-webhook)
     ///
     /// ---
@@ -23755,7 +23783,7 @@ impl<'api> Repos<'api> {
     /// Updates the webhook configuration for a repository. To update more information about the webhook, including the `active` state and `events`, use "[Update a repository webhook](/rest/webhooks/repos#update-a-repository-webhook)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:repo_hook` or `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_webhook_config_for_repo](https://docs.github.com/rest/repos/webhooks#update-a-webhook-configuration-for-a-repository)
     ///
     /// ---
@@ -23795,7 +23823,7 @@ impl<'api> Repos<'api> {
     /// Updates the webhook configuration for a repository. To update more information about the webhook, including the `active` state and `events`, use "[Update a repository webhook](/rest/webhooks/repos#update-a-repository-webhook)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:repo_hook` or `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_webhook_config_for_repo](https://docs.github.com/rest/repos/webhooks#update-a-webhook-configuration-for-a-repository)
     ///
     /// ---
@@ -23852,11 +23880,11 @@ impl<'api> Repos<'api> {
     /// endpoint lists the renamed filenames. For more information and help, contact [GitHub Support](https://support.github.com/contact?tags=dotcom-rest-api).
     /// *   To find the `release_id` query the [`GET /repos/{owner}/{repo}/releases/latest` endpoint](https://docs.github.com/rest/releases/releases#get-the-latest-release). 
     /// *   If you upload an asset with the same filename as another uploaded asset, you'll receive an error and must delete the old file before you can re-upload the new asset.
-    /// 
+    ///
     /// [GitHub API docs for upload_release_asset](https://docs.github.com/rest/releases/assets#upload-a-release-asset)
     ///
     /// ---
-    pub async fn upload_release_asset_async(&self, owner: &str, repo: &str, release_id: i32, query_params: impl Into<ReposUploadReleaseAssetParams<'api>>, body: Object) -> Result<ReleaseAsset, ReposUploadReleaseAssetError> {
+    pub async fn upload_release_asset_async(&self, owner: &str, repo: &str, release_id: i32, query_params: impl Into<ReposUploadReleaseAssetParams<'api>>, body: std::vec::Vec<u8>) -> Result<ReleaseAsset, ReposUploadReleaseAssetError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/releases/{}/assets", super::GITHUB_BASE_API_URL, owner, repo, release_id);
 
@@ -23865,7 +23893,7 @@ impl<'api> Repos<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(Object::from_json(body)?),
+            body: Some(body.into()),
             method: "POST",
             headers: vec![]
         };
@@ -23911,12 +23939,12 @@ impl<'api> Repos<'api> {
     /// endpoint lists the renamed filenames. For more information and help, contact [GitHub Support](https://support.github.com/contact?tags=dotcom-rest-api).
     /// *   To find the `release_id` query the [`GET /repos/{owner}/{repo}/releases/latest` endpoint](https://docs.github.com/rest/releases/releases#get-the-latest-release). 
     /// *   If you upload an asset with the same filename as another uploaded asset, you'll receive an error and must delete the old file before you can re-upload the new asset.
-    /// 
+    ///
     /// [GitHub API docs for upload_release_asset](https://docs.github.com/rest/releases/assets#upload-a-release-asset)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn upload_release_asset(&self, owner: &str, repo: &str, release_id: i32, query_params: impl Into<ReposUploadReleaseAssetParams<'api>>, body: Object) -> Result<ReleaseAsset, ReposUploadReleaseAssetError> {
+    pub fn upload_release_asset(&self, owner: &str, repo: &str, release_id: i32, query_params: impl Into<ReposUploadReleaseAssetParams<'api>>, body: std::vec::Vec<u8>) -> Result<ReleaseAsset, ReposUploadReleaseAssetError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/releases/{}/assets", super::GITHUB_BASE_API_URL, owner, repo, release_id);
 
@@ -23926,7 +23954,7 @@ impl<'api> Repos<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(Object::from_json(body)?),
+            body: Some(body.into()),
             method: "POST",
             headers: vec![]
         };

@@ -601,7 +601,7 @@ impl<'req> PullsListParams<'req> {
 
     /// Either `open`, `closed`, or `all` to filter by state.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             state: Some(state),
             head: self.head, 
             base: self.base, 
@@ -614,7 +614,7 @@ impl<'req> PullsListParams<'req> {
 
     /// Filter pulls by head user or head organization and branch name in the format of `user:ref-name` or `organization:ref-name`. For example: `github:new-script-format` or `octocat:test-branch`.
     pub fn head(self, head: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             head: Some(head),
             base: self.base, 
@@ -627,7 +627,7 @@ impl<'req> PullsListParams<'req> {
 
     /// Filter pulls by base branch name. Example: `gh-pages`.
     pub fn base(self, base: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             head: self.head, 
             base: Some(base),
@@ -640,7 +640,7 @@ impl<'req> PullsListParams<'req> {
 
     /// What to sort results by. `popularity` will sort by the number of comments. `long-running` will sort by date created and will limit the results to pull requests that have been open for more than a month and have had activity within the past month.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             head: self.head, 
             base: self.base, 
@@ -653,7 +653,7 @@ impl<'req> PullsListParams<'req> {
 
     /// The direction of the sort. Default: `desc` when sort is `created` or sort is not specified, otherwise `asc`.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             head: self.head, 
             base: self.base, 
@@ -666,7 +666,7 @@ impl<'req> PullsListParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             head: self.head, 
             base: self.base, 
@@ -679,7 +679,7 @@ impl<'req> PullsListParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             head: self.head, 
             base: self.base, 
@@ -716,7 +716,7 @@ impl PullsListCommentsForReviewParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -724,7 +724,7 @@ impl PullsListCommentsForReviewParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -756,7 +756,7 @@ impl PullsListCommitsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -764,7 +764,7 @@ impl PullsListCommitsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -796,7 +796,7 @@ impl PullsListFilesParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -804,7 +804,7 @@ impl PullsListFilesParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -842,7 +842,7 @@ impl<'req> PullsListReviewCommentsParams<'req> {
 
     /// The property to sort the results by.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             sort: Some(sort),
             direction: self.direction, 
             since: self.since, 
@@ -853,7 +853,7 @@ impl<'req> PullsListReviewCommentsParams<'req> {
 
     /// The direction to sort results. Ignored without `sort` parameter.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: Some(direction),
             since: self.since, 
@@ -864,7 +864,7 @@ impl<'req> PullsListReviewCommentsParams<'req> {
 
     /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: self.direction, 
             since: Some(since),
@@ -875,7 +875,7 @@ impl<'req> PullsListReviewCommentsParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: self.direction, 
             since: self.since, 
@@ -886,7 +886,7 @@ impl<'req> PullsListReviewCommentsParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: self.direction, 
             since: self.since, 
@@ -927,7 +927,7 @@ impl<'req> PullsListReviewCommentsForRepoParams<'req> {
 
     
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             sort: Some(sort),
             direction: self.direction, 
             since: self.since, 
@@ -938,7 +938,7 @@ impl<'req> PullsListReviewCommentsForRepoParams<'req> {
 
     /// The direction to sort results. Ignored without `sort` parameter.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: Some(direction),
             since: self.since, 
@@ -949,7 +949,7 @@ impl<'req> PullsListReviewCommentsForRepoParams<'req> {
 
     /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: self.direction, 
             since: Some(since),
@@ -960,7 +960,7 @@ impl<'req> PullsListReviewCommentsForRepoParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: self.direction, 
             since: self.since, 
@@ -971,7 +971,7 @@ impl<'req> PullsListReviewCommentsForRepoParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: self.direction, 
             since: self.since, 
@@ -1006,7 +1006,7 @@ impl PullsListReviewsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1014,7 +1014,7 @@ impl PullsListReviewsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1037,7 +1037,7 @@ impl<'api> Pulls<'api> {
     /// # Check if a pull request has been merged
     ///
     /// Checks if a pull request has been merged into the base branch. The HTTP status of the response indicates whether or not the pull request has been merged; the response body is empty.
-    /// 
+    ///
     /// [GitHub API docs for check_if_merged](https://docs.github.com/rest/pulls/pulls#check-if-a-pull-request-has-been-merged)
     ///
     /// ---
@@ -1076,7 +1076,7 @@ impl<'api> Pulls<'api> {
     /// # Check if a pull request has been merged
     ///
     /// Checks if a pull request has been merged into the base branch. The HTTP status of the response indicates whether or not the pull request has been merged; the response body is empty.
-    /// 
+    ///
     /// [GitHub API docs for check_if_merged](https://docs.github.com/rest/pulls/pulls#check-if-a-pull-request-has-been-merged)
     ///
     /// ---
@@ -1127,7 +1127,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for create](https://docs.github.com/rest/pulls/pulls#create-a-pull-request)
     ///
     /// ---
@@ -1178,7 +1178,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for create](https://docs.github.com/rest/pulls/pulls#create-a-pull-request)
     ///
     /// ---
@@ -1229,7 +1229,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for create_reply_for_review_comment](https://docs.github.com/rest/pulls/comments#create-a-reply-for-a-review-comment)
     ///
     /// ---
@@ -1278,7 +1278,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for create_reply_for_review_comment](https://docs.github.com/rest/pulls/comments#create-a-reply-for-a-review-comment)
     ///
     /// ---
@@ -1334,7 +1334,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for create_review](https://docs.github.com/rest/pulls/reviews#create-a-review-for-a-pull-request)
     ///
     /// ---
@@ -1390,7 +1390,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for create_review](https://docs.github.com/rest/pulls/reviews#create-a-review-for-a-pull-request)
     ///
     /// ---
@@ -1445,7 +1445,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for create_review_comment](https://docs.github.com/rest/pulls/comments#create-a-review-comment-for-a-pull-request)
     ///
     /// ---
@@ -1499,7 +1499,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for create_review_comment](https://docs.github.com/rest/pulls/comments#create-a-review-comment-for-a-pull-request)
     ///
     /// ---
@@ -1547,7 +1547,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for delete_pending_review](https://docs.github.com/rest/pulls/reviews#delete-a-pending-review-for-a-pull-request)
     ///
     /// ---
@@ -1594,7 +1594,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for delete_pending_review](https://docs.github.com/rest/pulls/reviews#delete-a-pending-review-for-a-pull-request)
     ///
     /// ---
@@ -1635,7 +1635,7 @@ impl<'api> Pulls<'api> {
     /// # Delete a review comment for a pull request
     ///
     /// Deletes a review comment.
-    /// 
+    ///
     /// [GitHub API docs for delete_review_comment](https://docs.github.com/rest/pulls/comments#delete-a-review-comment-for-a-pull-request)
     ///
     /// ---
@@ -1674,7 +1674,7 @@ impl<'api> Pulls<'api> {
     /// # Delete a review comment for a pull request
     ///
     /// Deletes a review comment.
-    /// 
+    ///
     /// [GitHub API docs for delete_review_comment](https://docs.github.com/rest/pulls/comments#delete-a-review-comment-for-a-pull-request)
     ///
     /// ---
@@ -1724,7 +1724,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for dismiss_review](https://docs.github.com/rest/pulls/reviews#dismiss-a-review-for-a-pull-request)
     ///
     /// ---
@@ -1774,7 +1774,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for dismiss_review](https://docs.github.com/rest/pulls/reviews#dismiss-a-review-for-a-pull-request)
     ///
     /// ---
@@ -1837,7 +1837,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
     /// - **`application/vnd.github.diff`**: For more information, see "[git-diff](https://git-scm.com/docs/git-diff)" in the Git documentation. If a diff is corrupt, contact us through the [GitHub Support portal](https://support.github.com/). Include the repository name and pull request ID in your message.
-    /// 
+    ///
     /// [GitHub API docs for get](https://docs.github.com/rest/pulls/pulls#get-a-pull-request)
     ///
     /// ---
@@ -1902,7 +1902,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
     /// - **`application/vnd.github.diff`**: For more information, see "[git-diff](https://git-scm.com/docs/git-diff)" in the Git documentation. If a diff is corrupt, contact us through the [GitHub Support portal](https://support.github.com/). Include the repository name and pull request ID in your message.
-    /// 
+    ///
     /// [GitHub API docs for get](https://docs.github.com/rest/pulls/pulls#get-a-pull-request)
     ///
     /// ---
@@ -1953,7 +1953,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for get_review](https://docs.github.com/rest/pulls/reviews#get-a-review-for-a-pull-request)
     ///
     /// ---
@@ -1999,7 +1999,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for get_review](https://docs.github.com/rest/pulls/reviews#get-a-review-for-a-pull-request)
     ///
     /// ---
@@ -2046,7 +2046,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for get_review_comment](https://docs.github.com/rest/pulls/comments#get-a-review-comment-for-a-pull-request)
     ///
     /// ---
@@ -2092,7 +2092,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for get_review_comment](https://docs.github.com/rest/pulls/comments#get-a-review-comment-for-a-pull-request)
     ///
     /// ---
@@ -2145,7 +2145,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list](https://docs.github.com/rest/pulls/pulls#list-pull-requests)
     ///
     /// ---
@@ -2202,7 +2202,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list](https://docs.github.com/rest/pulls/pulls#list-pull-requests)
     ///
     /// ---
@@ -2255,7 +2255,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_comments_for_review](https://docs.github.com/rest/pulls/reviews#list-comments-for-a-pull-request-review)
     ///
     /// ---
@@ -2305,7 +2305,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_comments_for_review](https://docs.github.com/rest/pulls/reviews#list-comments-for-a-pull-request-review)
     ///
     /// ---
@@ -2359,7 +2359,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_commits](https://docs.github.com/rest/pulls/pulls#list-commits-on-a-pull-request)
     ///
     /// ---
@@ -2410,7 +2410,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_commits](https://docs.github.com/rest/pulls/pulls#list-commits-on-a-pull-request)
     ///
     /// ---
@@ -2464,7 +2464,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_files](https://docs.github.com/rest/pulls/pulls#list-pull-requests-files)
     ///
     /// ---
@@ -2519,7 +2519,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_files](https://docs.github.com/rest/pulls/pulls#list-pull-requests-files)
     ///
     /// ---
@@ -2566,7 +2566,7 @@ impl<'api> Pulls<'api> {
     /// # Get all requested reviewers for a pull request
     ///
     /// Gets the users or teams whose review is requested for a pull request. Once a requested reviewer submits a review, they are no longer considered a requested reviewer. Their review will instead be returned by the [List reviews for a pull request](https://docs.github.com/rest/pulls/reviews#list-reviews-for-a-pull-request) operation.
-    /// 
+    ///
     /// [GitHub API docs for list_requested_reviewers](https://docs.github.com/rest/pulls/review-requests#get-all-requested-reviewers-for-a-pull-request)
     ///
     /// ---
@@ -2604,7 +2604,7 @@ impl<'api> Pulls<'api> {
     /// # Get all requested reviewers for a pull request
     ///
     /// Gets the users or teams whose review is requested for a pull request. Once a requested reviewer submits a review, they are no longer considered a requested reviewer. Their review will instead be returned by the [List reviews for a pull request](https://docs.github.com/rest/pulls/reviews#list-reviews-for-a-pull-request) operation.
-    /// 
+    ///
     /// [GitHub API docs for list_requested_reviewers](https://docs.github.com/rest/pulls/review-requests#get-all-requested-reviewers-for-a-pull-request)
     ///
     /// ---
@@ -2651,7 +2651,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_review_comments](https://docs.github.com/rest/pulls/comments#list-review-comments-on-a-pull-request)
     ///
     /// ---
@@ -2701,7 +2701,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_review_comments](https://docs.github.com/rest/pulls/comments#list-review-comments-on-a-pull-request)
     ///
     /// ---
@@ -2753,7 +2753,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_review_comments_for_repo](https://docs.github.com/rest/pulls/comments#list-review-comments-in-a-repository)
     ///
     /// ---
@@ -2803,7 +2803,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_review_comments_for_repo](https://docs.github.com/rest/pulls/comments#list-review-comments-in-a-repository)
     ///
     /// ---
@@ -2854,7 +2854,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_reviews](https://docs.github.com/rest/pulls/reviews#list-reviews-for-a-pull-request)
     ///
     /// ---
@@ -2903,7 +2903,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for list_reviews](https://docs.github.com/rest/pulls/reviews#list-reviews-for-a-pull-request)
     ///
     /// ---
@@ -2948,7 +2948,7 @@ impl<'api> Pulls<'api> {
     ///
     /// Merges a pull request into the base branch.
     /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)" and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
-    /// 
+    ///
     /// [GitHub API docs for merge](https://docs.github.com/rest/pulls/pulls#merge-a-pull-request)
     ///
     /// ---
@@ -2992,7 +2992,7 @@ impl<'api> Pulls<'api> {
     ///
     /// Merges a pull request into the base branch.
     /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)" and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
-    /// 
+    ///
     /// [GitHub API docs for merge](https://docs.github.com/rest/pulls/pulls#merge-a-pull-request)
     ///
     /// ---
@@ -3036,7 +3036,7 @@ impl<'api> Pulls<'api> {
     /// # Remove requested reviewers from a pull request
     ///
     /// Removes review requests from a pull request for a given set of users and/or teams.
-    /// 
+    ///
     /// [GitHub API docs for remove_requested_reviewers](https://docs.github.com/rest/pulls/review-requests#remove-requested-reviewers-from-a-pull-request)
     ///
     /// ---
@@ -3075,7 +3075,7 @@ impl<'api> Pulls<'api> {
     /// # Remove requested reviewers from a pull request
     ///
     /// Removes review requests from a pull request for a given set of users and/or teams.
-    /// 
+    ///
     /// [GitHub API docs for remove_requested_reviewers](https://docs.github.com/rest/pulls/review-requests#remove-requested-reviewers-from-a-pull-request)
     ///
     /// ---
@@ -3116,7 +3116,7 @@ impl<'api> Pulls<'api> {
     ///
     /// Requests reviews for a pull request from a given set of users and/or teams.
     /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)" and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
-    /// 
+    ///
     /// [GitHub API docs for request_reviewers](https://docs.github.com/rest/pulls/review-requests#request-reviewers-for-a-pull-request)
     ///
     /// ---
@@ -3157,7 +3157,7 @@ impl<'api> Pulls<'api> {
     ///
     /// Requests reviews for a pull request from a given set of users and/or teams.
     /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)" and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
-    /// 
+    ///
     /// [GitHub API docs for request_reviewers](https://docs.github.com/rest/pulls/review-requests#request-reviewers-for-a-pull-request)
     ///
     /// ---
@@ -3205,7 +3205,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for submit_review](https://docs.github.com/rest/pulls/reviews#submit-a-review-for-a-pull-request)
     ///
     /// ---
@@ -3253,7 +3253,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for submit_review](https://docs.github.com/rest/pulls/reviews#submit-a-review-for-a-pull-request)
     ///
     /// ---
@@ -3304,7 +3304,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for update](https://docs.github.com/rest/pulls/pulls#update-a-pull-request)
     ///
     /// ---
@@ -3353,7 +3353,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for update](https://docs.github.com/rest/pulls/pulls#update-a-pull-request)
     ///
     /// ---
@@ -3395,7 +3395,7 @@ impl<'api> Pulls<'api> {
     ///
     /// Updates the pull request branch with the latest upstream changes by merging HEAD from the base branch into the pull request branch.
     /// Note: If making a request on behalf of a GitHub App you must also have permissions to write the contents of the head repository.
-    /// 
+    ///
     /// [GitHub API docs for update_branch](https://docs.github.com/rest/pulls/pulls#update-a-pull-request-branch)
     ///
     /// ---
@@ -3436,7 +3436,7 @@ impl<'api> Pulls<'api> {
     ///
     /// Updates the pull request branch with the latest upstream changes by merging HEAD from the base branch into the pull request branch.
     /// Note: If making a request on behalf of a GitHub App you must also have permissions to write the contents of the head repository.
-    /// 
+    ///
     /// [GitHub API docs for update_branch](https://docs.github.com/rest/pulls/pulls#update-a-pull-request-branch)
     ///
     /// ---
@@ -3484,7 +3484,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for update_review](https://docs.github.com/rest/pulls/reviews#update-a-review-for-a-pull-request)
     ///
     /// ---
@@ -3530,7 +3530,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for update_review](https://docs.github.com/rest/pulls/reviews#update-a-review-for-a-pull-request)
     ///
     /// ---
@@ -3577,7 +3577,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for update_review_comment](https://docs.github.com/rest/pulls/comments#update-a-review-comment-for-a-pull-request)
     ///
     /// ---
@@ -3622,7 +3622,7 @@ impl<'api> Pulls<'api> {
     /// - **`application/vnd.github-commitcomment.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
     /// - **`application/vnd.github-commitcomment.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
     /// - **`application/vnd.github-commitcomment.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
-    /// 
+    ///
     /// [GitHub API docs for update_review_comment](https://docs.github.com/rest/pulls/comments#update-a-review-comment-for-a-pull-request)
     ///
     /// ---

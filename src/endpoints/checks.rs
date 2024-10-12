@@ -182,7 +182,7 @@ pub enum ChecksRerequestRunError {
 
     // -- endpoint errors
 
-    #[error("Forbidden if the check run is not rerequestable or doesn&#x27;t belong to the authenticated GitHub App")]
+    #[error("Forbidden if the check run is not rerequestable or doesn't belong to the authenticated GitHub App")]
     Status403(BasicError),
     #[error("Validation error if the check run is not rerequestable")]
     Status422(BasicError),
@@ -260,7 +260,7 @@ impl ChecksListAnnotationsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -268,7 +268,7 @@ impl ChecksListAnnotationsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -308,7 +308,7 @@ impl<'req> ChecksListForRefParams<'req> {
 
     /// Returns check runs with the specified `name`.
     pub fn check_name(self, check_name: &'req str) -> Self {
-        Self { 
+        Self {
             check_name: Some(check_name),
             status: self.status, 
             filter: self.filter, 
@@ -320,7 +320,7 @@ impl<'req> ChecksListForRefParams<'req> {
 
     /// Returns check runs with the specified `status`.
     pub fn status(self, status: &'req str) -> Self {
-        Self { 
+        Self {
             check_name: self.check_name, 
             status: Some(status),
             filter: self.filter, 
@@ -332,7 +332,7 @@ impl<'req> ChecksListForRefParams<'req> {
 
     /// Filters check runs by their `completed_at` timestamp. `latest` returns the most recent check runs.
     pub fn filter(self, filter: &'req str) -> Self {
-        Self { 
+        Self {
             check_name: self.check_name, 
             status: self.status, 
             filter: Some(filter),
@@ -344,7 +344,7 @@ impl<'req> ChecksListForRefParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             check_name: self.check_name, 
             status: self.status, 
             filter: self.filter, 
@@ -356,7 +356,7 @@ impl<'req> ChecksListForRefParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             check_name: self.check_name, 
             status: self.status, 
             filter: self.filter, 
@@ -368,7 +368,7 @@ impl<'req> ChecksListForRefParams<'req> {
 
     
     pub fn app_id(self, app_id: i32) -> Self {
-        Self { 
+        Self {
             check_name: self.check_name, 
             status: self.status, 
             filter: self.filter, 
@@ -410,7 +410,7 @@ impl<'req> ChecksListForSuiteParams<'req> {
 
     /// Returns check runs with the specified `name`.
     pub fn check_name(self, check_name: &'req str) -> Self {
-        Self { 
+        Self {
             check_name: Some(check_name),
             status: self.status, 
             filter: self.filter, 
@@ -421,7 +421,7 @@ impl<'req> ChecksListForSuiteParams<'req> {
 
     /// Returns check runs with the specified `status`.
     pub fn status(self, status: &'req str) -> Self {
-        Self { 
+        Self {
             check_name: self.check_name, 
             status: Some(status),
             filter: self.filter, 
@@ -432,7 +432,7 @@ impl<'req> ChecksListForSuiteParams<'req> {
 
     /// Filters check runs by their `completed_at` timestamp. `latest` returns the most recent check runs.
     pub fn filter(self, filter: &'req str) -> Self {
-        Self { 
+        Self {
             check_name: self.check_name, 
             status: self.status, 
             filter: Some(filter),
@@ -443,7 +443,7 @@ impl<'req> ChecksListForSuiteParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             check_name: self.check_name, 
             status: self.status, 
             filter: self.filter, 
@@ -454,7 +454,7 @@ impl<'req> ChecksListForSuiteParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             check_name: self.check_name, 
             status: self.status, 
             filter: self.filter, 
@@ -493,7 +493,7 @@ impl<'req> ChecksListSuitesForRefParams<'req> {
 
     /// Filters check suites by GitHub App `id`.
     pub fn app_id(self, app_id: i32) -> Self {
-        Self { 
+        Self {
             app_id: Some(app_id),
             check_name: self.check_name, 
             per_page: self.per_page, 
@@ -503,7 +503,7 @@ impl<'req> ChecksListSuitesForRefParams<'req> {
 
     /// Returns check runs with the specified `name`.
     pub fn check_name(self, check_name: &'req str) -> Self {
-        Self { 
+        Self {
             app_id: self.app_id, 
             check_name: Some(check_name),
             per_page: self.per_page, 
@@ -513,7 +513,7 @@ impl<'req> ChecksListSuitesForRefParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             app_id: self.app_id, 
             check_name: self.check_name, 
             per_page: Some(per_page),
@@ -523,7 +523,7 @@ impl<'req> ChecksListSuitesForRefParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             app_id: self.app_id, 
             check_name: self.check_name, 
             per_page: self.per_page, 
@@ -555,7 +555,7 @@ impl<'api> Checks<'api> {
     /// 
     /// > [!NOTE]
     /// > The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
-    /// 
+    ///
     /// [GitHub API docs for create](https://docs.github.com/rest/checks/runs#create-a-check-run)
     ///
     /// ---
@@ -600,7 +600,7 @@ impl<'api> Checks<'api> {
     /// 
     /// > [!NOTE]
     /// > The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
-    /// 
+    ///
     /// [GitHub API docs for create](https://docs.github.com/rest/checks/runs#create-a-check-run)
     ///
     /// ---
@@ -644,7 +644,7 @@ impl<'api> Checks<'api> {
     /// > The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array and a `null` value for `head_branch`.
     /// 
     /// OAuth apps and personal access tokens (classic) cannot use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_suite](https://docs.github.com/rest/checks/suites#create-a-check-suite)
     ///
     /// ---
@@ -688,7 +688,7 @@ impl<'api> Checks<'api> {
     /// > The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array and a `null` value for `head_branch`.
     /// 
     /// OAuth apps and personal access tokens (classic) cannot use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_suite](https://docs.github.com/rest/checks/suites#create-a-check-suite)
     ///
     /// ---
@@ -733,7 +733,7 @@ impl<'api> Checks<'api> {
     /// > The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get](https://docs.github.com/rest/checks/runs#get-a-check-run)
     ///
     /// ---
@@ -776,7 +776,7 @@ impl<'api> Checks<'api> {
     /// > The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get](https://docs.github.com/rest/checks/runs#get-a-check-run)
     ///
     /// ---
@@ -820,7 +820,7 @@ impl<'api> Checks<'api> {
     /// > The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array and a `null` value for `head_branch`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_suite](https://docs.github.com/rest/checks/suites#get-a-check-suite)
     ///
     /// ---
@@ -863,7 +863,7 @@ impl<'api> Checks<'api> {
     /// > The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array and a `null` value for `head_branch`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
-    /// 
+    ///
     /// [GitHub API docs for get_suite](https://docs.github.com/rest/checks/suites#get-a-check-suite)
     ///
     /// ---
@@ -904,7 +904,7 @@ impl<'api> Checks<'api> {
     /// Lists annotations for a check run using the annotation `id`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_annotations](https://docs.github.com/rest/checks/runs#list-check-run-annotations)
     ///
     /// ---
@@ -948,7 +948,7 @@ impl<'api> Checks<'api> {
     /// Lists annotations for a check run using the annotation `id`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_annotations](https://docs.github.com/rest/checks/runs#list-check-run-annotations)
     ///
     /// ---
@@ -999,7 +999,7 @@ impl<'api> Checks<'api> {
     /// If there are more than 1000 check suites on a single git reference, this endpoint will limit check runs to the 1000 most recent check suites. To iterate over all possible check runs, use the [List check suites for a Git reference](https://docs.github.com/rest/reference/checks#list-check-suites-for-a-git-reference) endpoint and provide the `check_suite_id` parameter to the [List check runs in a check suite](https://docs.github.com/rest/reference/checks#list-check-runs-in-a-check-suite) endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_for_ref](https://docs.github.com/rest/checks/runs#list-check-runs-for-a-git-reference)
     ///
     /// ---
@@ -1048,7 +1048,7 @@ impl<'api> Checks<'api> {
     /// If there are more than 1000 check suites on a single git reference, this endpoint will limit check runs to the 1000 most recent check suites. To iterate over all possible check runs, use the [List check suites for a Git reference](https://docs.github.com/rest/reference/checks#list-check-suites-for-a-git-reference) endpoint and provide the `check_suite_id` parameter to the [List check runs in a check suite](https://docs.github.com/rest/reference/checks#list-check-runs-in-a-check-suite) endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_for_ref](https://docs.github.com/rest/checks/runs#list-check-runs-for-a-git-reference)
     ///
     /// ---
@@ -1097,7 +1097,7 @@ impl<'api> Checks<'api> {
     /// > The endpoints to manage checks only look for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_for_suite](https://docs.github.com/rest/checks/runs#list-check-runs-in-a-check-suite)
     ///
     /// ---
@@ -1144,7 +1144,7 @@ impl<'api> Checks<'api> {
     /// > The endpoints to manage checks only look for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_for_suite](https://docs.github.com/rest/checks/runs#list-check-runs-in-a-check-suite)
     ///
     /// ---
@@ -1193,7 +1193,7 @@ impl<'api> Checks<'api> {
     /// > The endpoints to manage checks only look for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array and a `null` value for `head_branch`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_suites_for_ref](https://docs.github.com/rest/checks/suites#list-check-suites-for-a-git-reference)
     ///
     /// ---
@@ -1240,7 +1240,7 @@ impl<'api> Checks<'api> {
     /// > The endpoints to manage checks only look for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array and a `null` value for `head_branch`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint on a private repository.
-    /// 
+    ///
     /// [GitHub API docs for list_suites_for_ref](https://docs.github.com/rest/checks/suites#list-check-suites-for-a-git-reference)
     ///
     /// ---
@@ -1288,7 +1288,7 @@ impl<'api> Checks<'api> {
     /// For more information about how to re-run GitHub Actions jobs, see "[Re-run a job from a workflow run](https://docs.github.com/rest/actions/workflow-runs#re-run-a-job-from-a-workflow-run)".
     /// 
     /// OAuth apps and personal access tokens (classic) cannot use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for rerequest_run](https://docs.github.com/rest/checks/runs#rerequest-a-check-run)
     ///
     /// ---
@@ -1333,7 +1333,7 @@ impl<'api> Checks<'api> {
     /// For more information about how to re-run GitHub Actions jobs, see "[Re-run a job from a workflow run](https://docs.github.com/rest/actions/workflow-runs#re-run-a-job-from-a-workflow-run)".
     /// 
     /// OAuth apps and personal access tokens (classic) cannot use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for rerequest_run](https://docs.github.com/rest/checks/runs#rerequest-a-check-run)
     ///
     /// ---
@@ -1377,7 +1377,7 @@ impl<'api> Checks<'api> {
     /// Triggers GitHub to rerequest an existing check suite, without pushing new code to a repository. This endpoint will trigger the [`check_suite` webhook](https://docs.github.com/webhooks/event-payloads/#check_suite) event with the action `rerequested`. When a check suite is `rerequested`, its `status` is reset to `queued` and the `conclusion` is cleared.
     /// 
     /// OAuth apps and personal access tokens (classic) cannot use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for rerequest_suite](https://docs.github.com/rest/checks/suites#rerequest-a-check-suite)
     ///
     /// ---
@@ -1417,7 +1417,7 @@ impl<'api> Checks<'api> {
     /// Triggers GitHub to rerequest an existing check suite, without pushing new code to a repository. This endpoint will trigger the [`check_suite` webhook](https://docs.github.com/webhooks/event-payloads/#check_suite) event with the action `rerequested`. When a check suite is `rerequested`, its `status` is reset to `queued` and the `conclusion` is cleared.
     /// 
     /// OAuth apps and personal access tokens (classic) cannot use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for rerequest_suite](https://docs.github.com/rest/checks/suites#rerequest-a-check-suite)
     ///
     /// ---
@@ -1457,7 +1457,7 @@ impl<'api> Checks<'api> {
     ///
     /// Changes the default automatic flow when creating check suites. By default, a check suite is automatically created each time code is pushed to a repository. When you disable the automatic creation of check suites, you can manually [Create a check suite](https://docs.github.com/rest/checks/suites#create-a-check-suite).
     /// You must have admin permissions in the repository to set preferences for check suites.
-    /// 
+    ///
     /// [GitHub API docs for set_suites_preferences](https://docs.github.com/rest/checks/suites#update-repository-preferences-for-check-suites)
     ///
     /// ---
@@ -1496,7 +1496,7 @@ impl<'api> Checks<'api> {
     ///
     /// Changes the default automatic flow when creating check suites. By default, a check suite is automatically created each time code is pushed to a repository. When you disable the automatic creation of check suites, you can manually [Create a check suite](https://docs.github.com/rest/checks/suites#create-a-check-suite).
     /// You must have admin permissions in the repository to set preferences for check suites.
-    /// 
+    ///
     /// [GitHub API docs for set_suites_preferences](https://docs.github.com/rest/checks/suites#update-repository-preferences-for-check-suites)
     ///
     /// ---
@@ -1540,7 +1540,7 @@ impl<'api> Checks<'api> {
     /// > The endpoints to manage checks only look for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
     /// 
     /// OAuth apps and personal access tokens (classic) cannot use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update](https://docs.github.com/rest/checks/runs#update-a-check-run)
     ///
     /// ---
@@ -1583,7 +1583,7 @@ impl<'api> Checks<'api> {
     /// > The endpoints to manage checks only look for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array.
     /// 
     /// OAuth apps and personal access tokens (classic) cannot use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update](https://docs.github.com/rest/checks/runs#update-a-check-run)
     ///
     /// ---

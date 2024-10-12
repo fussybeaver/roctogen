@@ -204,7 +204,7 @@ pub enum OrgsConvertMemberToOutsideCollaboratorError {
 
     #[error("User was converted")]
     Status204,
-    #[error("Forbidden if user is the last owner of the organization, not a member of the organization, or if the enterprise enforces a policy for inviting outside collaborators. For more information, see \&quot;[Enforcing repository management policies in your enterprise](https://docs.github.com/admin/policies/enforcing-policies-for-your-enterprise/enforcing-repository-management-policies-in-your-enterprise#enforcing-a-policy-for-inviting-outside-collaborators-to-repositories).\&quot;")]
+    #[error("Forbidden if user is the last owner of the organization, not a member of the organization, or if the enterprise enforces a policy for inviting outside collaborators. For more information, see \"[Enforcing repository management policies in your enterprise](https://docs.github.com/admin/policies/enforcing-policies-for-your-enterprise/enforcing-repository-management-policies-in-your-enterprise#enforcing-a-policy-for-inviting-outside-collaborators-to-repositories).\"")]
     Status403,
     #[error("Resource not found")]
     Status404(BasicError),
@@ -1519,7 +1519,7 @@ impl OrgsListParams {
 
     /// An organization ID. Only return organizations with an ID greater than this ID.
     pub fn since(self, since: i32) -> Self {
-        Self { 
+        Self {
             since: Some(since),
             per_page: self.per_page, 
         }
@@ -1527,7 +1527,7 @@ impl OrgsListParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             since: self.since, 
             per_page: Some(per_page),
         }
@@ -1550,7 +1550,7 @@ impl OrgsListAppInstallationsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1558,7 +1558,7 @@ impl OrgsListAppInstallationsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1592,7 +1592,7 @@ impl<'req> OrgsListAttestationsParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             before: self.before, 
             after: self.after, 
@@ -1601,7 +1601,7 @@ impl<'req> OrgsListAttestationsParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn before(self, before: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             before: Some(before),
             after: self.after, 
@@ -1610,7 +1610,7 @@ impl<'req> OrgsListAttestationsParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn after(self, after: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             before: self.before, 
             after: Some(after),
@@ -1634,7 +1634,7 @@ impl OrgsListBlockedUsersParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1642,7 +1642,7 @@ impl OrgsListBlockedUsersParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1676,7 +1676,7 @@ impl<'req> OrgsListCustomPropertiesValuesForReposParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
             repository_query: self.repository_query, 
@@ -1685,7 +1685,7 @@ impl<'req> OrgsListCustomPropertiesValuesForReposParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
             repository_query: self.repository_query, 
@@ -1694,7 +1694,7 @@ impl<'req> OrgsListCustomPropertiesValuesForReposParams<'req> {
 
     /// Finds repositories in the organization with a query containing one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as the web interface for GitHub. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/search/search#constructing-a-search-query). See \"[Searching for repositories](https://docs.github.com/articles/searching-for-repositories/)\" for a detailed list of qualifiers.
     pub fn repository_query(self, repository_query: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             repository_query: Some(repository_query),
@@ -1727,7 +1727,7 @@ impl OrgsListFailedInvitationsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1735,7 +1735,7 @@ impl OrgsListFailedInvitationsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1767,7 +1767,7 @@ impl OrgsListForAuthenticatedUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1775,7 +1775,7 @@ impl OrgsListForAuthenticatedUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1807,7 +1807,7 @@ impl OrgsListForUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1815,7 +1815,7 @@ impl OrgsListForUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1847,7 +1847,7 @@ impl OrgsListInvitationTeamsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1855,7 +1855,7 @@ impl OrgsListInvitationTeamsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1891,7 +1891,7 @@ impl<'req> OrgsListMembersParams<'req> {
 
     /// Filter members returned in the list. `2fa_disabled` means that only members without [two-factor authentication](https://github.com/blog/1614-two-factor-authentication) enabled will be returned. This options is only available for organization owners.
     pub fn filter(self, filter: &'req str) -> Self {
-        Self { 
+        Self {
             filter: Some(filter),
             role: self.role, 
             per_page: self.per_page, 
@@ -1901,7 +1901,7 @@ impl<'req> OrgsListMembersParams<'req> {
 
     /// Filter members returned by their role.
     pub fn role(self, role: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             role: Some(role),
             per_page: self.per_page, 
@@ -1911,7 +1911,7 @@ impl<'req> OrgsListMembersParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             role: self.role, 
             per_page: Some(per_page),
@@ -1921,7 +1921,7 @@ impl<'req> OrgsListMembersParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             role: self.role, 
             per_page: self.per_page, 
@@ -1957,7 +1957,7 @@ impl<'req> OrgsListMembershipsForAuthenticatedUserParams<'req> {
 
     /// Indicates the state of the memberships to return. If not specified, the API returns both active and pending memberships.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             state: Some(state),
             per_page: self.per_page, 
             page: self.page, 
@@ -1966,7 +1966,7 @@ impl<'req> OrgsListMembershipsForAuthenticatedUserParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             per_page: Some(per_page),
             page: self.page, 
@@ -1975,7 +1975,7 @@ impl<'req> OrgsListMembershipsForAuthenticatedUserParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             per_page: self.per_page, 
             page: Some(page),
@@ -2008,7 +2008,7 @@ impl OrgsListOrgRoleTeamsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -2016,7 +2016,7 @@ impl OrgsListOrgRoleTeamsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2048,7 +2048,7 @@ impl OrgsListOrgRoleUsersParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -2056,7 +2056,7 @@ impl OrgsListOrgRoleUsersParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2090,7 +2090,7 @@ impl<'req> OrgsListOutsideCollaboratorsParams<'req> {
 
     /// Filter the list of outside collaborators. `2fa_disabled` means that only outside collaborators without [two-factor authentication](https://github.com/blog/1614-two-factor-authentication) enabled will be returned.
     pub fn filter(self, filter: &'req str) -> Self {
-        Self { 
+        Self {
             filter: Some(filter),
             per_page: self.per_page, 
             page: self.page, 
@@ -2099,7 +2099,7 @@ impl<'req> OrgsListOutsideCollaboratorsParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             per_page: Some(per_page),
             page: self.page, 
@@ -2108,7 +2108,7 @@ impl<'req> OrgsListOutsideCollaboratorsParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             per_page: self.per_page, 
             page: Some(page),
@@ -2141,7 +2141,7 @@ impl OrgsListPatGrantRepositoriesParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -2149,7 +2149,7 @@ impl OrgsListPatGrantRepositoriesParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2181,7 +2181,7 @@ impl OrgsListPatGrantRequestRepositoriesParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -2189,7 +2189,7 @@ impl OrgsListPatGrantRequestRepositoriesParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2235,7 +2235,7 @@ impl<'req> OrgsListPatGrantRequestsParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
             sort: self.sort, 
@@ -2250,7 +2250,7 @@ impl<'req> OrgsListPatGrantRequestsParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
             sort: self.sort, 
@@ -2265,7 +2265,7 @@ impl<'req> OrgsListPatGrantRequestsParams<'req> {
 
     /// The property by which to sort the results.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             sort: Some(sort),
@@ -2280,7 +2280,7 @@ impl<'req> OrgsListPatGrantRequestsParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             sort: self.sort, 
@@ -2295,7 +2295,7 @@ impl<'req> OrgsListPatGrantRequestsParams<'req> {
 
     /// A list of owner usernames to use to filter the results.
     pub fn owner(self, owner: Vec<String>) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             sort: self.sort, 
@@ -2310,7 +2310,7 @@ impl<'req> OrgsListPatGrantRequestsParams<'req> {
 
     /// The name of the repository to use to filter the results.
     pub fn repository(self, repository: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             sort: self.sort, 
@@ -2325,7 +2325,7 @@ impl<'req> OrgsListPatGrantRequestsParams<'req> {
 
     /// The permission to use to filter the results.
     pub fn permission(self, permission: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             sort: self.sort, 
@@ -2340,7 +2340,7 @@ impl<'req> OrgsListPatGrantRequestsParams<'req> {
 
     /// Only show fine-grained personal access tokens used before the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn last_used_before(self, last_used_before: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             sort: self.sort, 
@@ -2355,7 +2355,7 @@ impl<'req> OrgsListPatGrantRequestsParams<'req> {
 
     /// Only show fine-grained personal access tokens used after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn last_used_after(self, last_used_after: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             sort: self.sort, 
@@ -2408,7 +2408,7 @@ impl<'req> OrgsListPatGrantsParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
             sort: self.sort, 
@@ -2423,7 +2423,7 @@ impl<'req> OrgsListPatGrantsParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
             sort: self.sort, 
@@ -2438,7 +2438,7 @@ impl<'req> OrgsListPatGrantsParams<'req> {
 
     /// The property by which to sort the results.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             sort: Some(sort),
@@ -2453,7 +2453,7 @@ impl<'req> OrgsListPatGrantsParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             sort: self.sort, 
@@ -2468,7 +2468,7 @@ impl<'req> OrgsListPatGrantsParams<'req> {
 
     /// A list of owner usernames to use to filter the results.
     pub fn owner(self, owner: Vec<String>) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             sort: self.sort, 
@@ -2483,7 +2483,7 @@ impl<'req> OrgsListPatGrantsParams<'req> {
 
     /// The name of the repository to use to filter the results.
     pub fn repository(self, repository: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             sort: self.sort, 
@@ -2498,7 +2498,7 @@ impl<'req> OrgsListPatGrantsParams<'req> {
 
     /// The permission to use to filter the results.
     pub fn permission(self, permission: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             sort: self.sort, 
@@ -2513,7 +2513,7 @@ impl<'req> OrgsListPatGrantsParams<'req> {
 
     /// Only show fine-grained personal access tokens used before the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn last_used_before(self, last_used_before: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             sort: self.sort, 
@@ -2528,7 +2528,7 @@ impl<'req> OrgsListPatGrantsParams<'req> {
 
     /// Only show fine-grained personal access tokens used after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn last_used_after(self, last_used_after: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             sort: self.sort, 
@@ -2571,7 +2571,7 @@ impl<'req> OrgsListPendingInvitationsParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
             role: self.role, 
@@ -2581,7 +2581,7 @@ impl<'req> OrgsListPendingInvitationsParams<'req> {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
             role: self.role, 
@@ -2591,7 +2591,7 @@ impl<'req> OrgsListPendingInvitationsParams<'req> {
 
     /// Filter invitations by their member role.
     pub fn role(self, role: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             role: Some(role),
@@ -2601,7 +2601,7 @@ impl<'req> OrgsListPendingInvitationsParams<'req> {
 
     /// Filter invitations by their invitation source.
     pub fn invitation_source(self, invitation_source: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             role: self.role, 
@@ -2635,7 +2635,7 @@ impl OrgsListPublicMembersParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -2643,7 +2643,7 @@ impl OrgsListPublicMembersParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2677,7 +2677,7 @@ impl<'req> OrgsListWebhookDeliveriesParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             cursor: self.cursor, 
             redelivery: self.redelivery, 
@@ -2686,7 +2686,7 @@ impl<'req> OrgsListWebhookDeliveriesParams<'req> {
 
     /// Used for pagination: the starting delivery from which the page of deliveries is fetched. Refer to the `link` header for the next and previous page cursors.
     pub fn cursor(self, cursor: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             cursor: Some(cursor),
             redelivery: self.redelivery, 
@@ -2695,7 +2695,7 @@ impl<'req> OrgsListWebhookDeliveriesParams<'req> {
 
     
     pub fn redelivery(self, redelivery: bool) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             cursor: self.cursor, 
             redelivery: Some(redelivery),
@@ -2719,7 +2719,7 @@ impl OrgsListWebhooksParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -2727,7 +2727,7 @@ impl OrgsListWebhooksParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2754,7 +2754,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an administrator for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_security_manager_team](https://docs.github.com/rest/orgs/security-managers#add-a-security-manager-team)
     ///
     /// ---
@@ -2796,7 +2796,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an administrator for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_security_manager_team](https://docs.github.com/rest/orgs/security-managers#add-a-security-manager-team)
     ///
     /// ---
@@ -2839,7 +2839,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an administrator for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for assign_team_to_org_role](https://docs.github.com/rest/orgs/organization-roles#assign-an-organization-role-to-a-team)
     ///
     /// ---
@@ -2883,7 +2883,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an administrator for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for assign_team_to_org_role](https://docs.github.com/rest/orgs/organization-roles#assign-an-organization-role-to-a-team)
     ///
     /// ---
@@ -2928,7 +2928,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an administrator for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for assign_user_to_org_role](https://docs.github.com/rest/orgs/organization-roles#assign-an-organization-role-to-a-user)
     ///
     /// ---
@@ -2972,7 +2972,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an administrator for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for assign_user_to_org_role](https://docs.github.com/rest/orgs/organization-roles#assign-an-organization-role-to-a-user)
     ///
     /// ---
@@ -3013,7 +3013,7 @@ impl<'api> Orgs<'api> {
     /// # Block a user from an organization
     ///
     /// Blocks the given user on behalf of the specified organization and returns a 204. If the organization cannot block the given user a 422 is returned.
-    /// 
+    ///
     /// [GitHub API docs for block_user](https://docs.github.com/rest/orgs/blocking#block-a-user-from-an-organization)
     ///
     /// ---
@@ -3052,7 +3052,7 @@ impl<'api> Orgs<'api> {
     /// # Block a user from an organization
     ///
     /// Blocks the given user on behalf of the specified organization and returns a 204. If the organization cannot block the given user a 422 is returned.
-    /// 
+    ///
     /// [GitHub API docs for block_user](https://docs.github.com/rest/orgs/blocking#block-a-user-from-an-organization)
     ///
     /// ---
@@ -3094,7 +3094,7 @@ impl<'api> Orgs<'api> {
     /// Cancel an organization invitation. In order to cancel an organization invitation, the authenticated user must be an organization owner.
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications).
-    /// 
+    ///
     /// [GitHub API docs for cancel_invitation](https://docs.github.com/rest/orgs/members#cancel-an-organization-invitation)
     ///
     /// ---
@@ -3136,7 +3136,7 @@ impl<'api> Orgs<'api> {
     /// Cancel an organization invitation. In order to cancel an organization invitation, the authenticated user must be an organization owner.
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications).
-    /// 
+    ///
     /// [GitHub API docs for cancel_invitation](https://docs.github.com/rest/orgs/members#cancel-an-organization-invitation)
     ///
     /// ---
@@ -3177,7 +3177,7 @@ impl<'api> Orgs<'api> {
     /// # Check if a user is blocked by an organization
     ///
     /// Returns a 204 if the given user is blocked by the given organization. Returns a 404 if the organization is not blocking the user, or if the user account has been identified as spam by GitHub.
-    /// 
+    ///
     /// [GitHub API docs for check_blocked_user](https://docs.github.com/rest/orgs/blocking#check-if-a-user-is-blocked-by-an-organization)
     ///
     /// ---
@@ -3216,7 +3216,7 @@ impl<'api> Orgs<'api> {
     /// # Check if a user is blocked by an organization
     ///
     /// Returns a 204 if the given user is blocked by the given organization. Returns a 404 if the organization is not blocking the user, or if the user account has been identified as spam by GitHub.
-    /// 
+    ///
     /// [GitHub API docs for check_blocked_user](https://docs.github.com/rest/orgs/blocking#check-if-a-user-is-blocked-by-an-organization)
     ///
     /// ---
@@ -3256,7 +3256,7 @@ impl<'api> Orgs<'api> {
     /// # Check organization membership for a user
     ///
     /// Check if a user is, publicly or privately, a member of the organization.
-    /// 
+    ///
     /// [GitHub API docs for check_membership_for_user](https://docs.github.com/rest/orgs/members#check-organization-membership-for-a-user)
     ///
     /// ---
@@ -3296,7 +3296,7 @@ impl<'api> Orgs<'api> {
     /// # Check organization membership for a user
     ///
     /// Check if a user is, publicly or privately, a member of the organization.
-    /// 
+    ///
     /// [GitHub API docs for check_membership_for_user](https://docs.github.com/rest/orgs/members#check-organization-membership-for-a-user)
     ///
     /// ---
@@ -3337,7 +3337,7 @@ impl<'api> Orgs<'api> {
     /// # Check public organization membership for a user
     ///
     /// Check if the provided user is a public member of the organization.
-    /// 
+    ///
     /// [GitHub API docs for check_public_membership_for_user](https://docs.github.com/rest/orgs/members#check-public-organization-membership-for-a-user)
     ///
     /// ---
@@ -3376,7 +3376,7 @@ impl<'api> Orgs<'api> {
     /// # Check public organization membership for a user
     ///
     /// Check if the provided user is a public member of the organization.
-    /// 
+    ///
     /// [GitHub API docs for check_public_membership_for_user](https://docs.github.com/rest/orgs/members#check-public-organization-membership-for-a-user)
     ///
     /// ---
@@ -3416,7 +3416,7 @@ impl<'api> Orgs<'api> {
     /// # Convert an organization member to outside collaborator
     ///
     /// When an organization member is converted to an outside collaborator, they'll only have access to the repositories that their current team membership allows. The user will no longer be a member of the organization. For more information, see "[Converting an organization member to an outside collaborator](https://docs.github.com/articles/converting-an-organization-member-to-an-outside-collaborator/)". Converting an organization member to an outside collaborator may be restricted by enterprise administrators. For more information, see "[Enforcing repository management policies in your enterprise](https://docs.github.com/admin/policies/enforcing-policies-for-your-enterprise/enforcing-repository-management-policies-in-your-enterprise#enforcing-a-policy-for-inviting-outside-collaborators-to-repositories)."
-    /// 
+    ///
     /// [GitHub API docs for convert_member_to_outside_collaborator](https://docs.github.com/rest/orgs/outside-collaborators#convert-an-organization-member-to-outside-collaborator)
     ///
     /// ---
@@ -3457,7 +3457,7 @@ impl<'api> Orgs<'api> {
     /// # Convert an organization member to outside collaborator
     ///
     /// When an organization member is converted to an outside collaborator, they'll only have access to the repositories that their current team membership allows. The user will no longer be a member of the organization. For more information, see "[Converting an organization member to an outside collaborator](https://docs.github.com/articles/converting-an-organization-member-to-an-outside-collaborator/)". Converting an organization member to an outside collaborator may be restricted by enterprise administrators. For more information, see "[Enforcing repository management policies in your enterprise](https://docs.github.com/admin/policies/enforcing-policies-for-your-enterprise/enforcing-repository-management-policies-in-your-enterprise#enforcing-a-policy-for-inviting-outside-collaborators-to-repositories)."
-    /// 
+    ///
     /// [GitHub API docs for convert_member_to_outside_collaborator](https://docs.github.com/rest/orgs/outside-collaborators#convert-an-organization-member-to-outside-collaborator)
     ///
     /// ---
@@ -3502,7 +3502,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)"
     /// and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
-    /// 
+    ///
     /// [GitHub API docs for create_invitation](https://docs.github.com/rest/orgs/members#create-an-organization-invitation)
     ///
     /// ---
@@ -3545,7 +3545,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)"
     /// and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
-    /// 
+    ///
     /// [GitHub API docs for create_invitation](https://docs.github.com/rest/orgs/members#create-an-organization-invitation)
     ///
     /// ---
@@ -3590,7 +3590,7 @@ impl<'api> Orgs<'api> {
     /// To use this endpoint, the authenticated user must be one of:
     ///   - An administrator for the organization.
     ///   - A user, or a user on a team, with the fine-grained permission of `custom_properties_org_definitions_manager` in the organization.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_custom_properties](https://docs.github.com/rest/orgs/custom-properties#create-or-update-custom-properties-for-an-organization)
     ///
     /// ---
@@ -3634,7 +3634,7 @@ impl<'api> Orgs<'api> {
     /// To use this endpoint, the authenticated user must be one of:
     ///   - An administrator for the organization.
     ///   - A user, or a user on a team, with the fine-grained permission of `custom_properties_org_definitions_manager` in the organization.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_custom_properties](https://docs.github.com/rest/orgs/custom-properties#create-or-update-custom-properties-for-an-organization)
     ///
     /// ---
@@ -3684,7 +3684,7 @@ impl<'api> Orgs<'api> {
     /// To use this endpoint, the authenticated user must be one of:
     ///   - An administrator for the organization.
     ///   - A user, or a user on a team, with the fine-grained permission of `custom_properties_org_values_editor` in the organization.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_custom_properties_values_for_repos](https://docs.github.com/rest/orgs/custom-properties#create-or-update-custom-property-values-for-organization-repositories)
     ///
     /// ---
@@ -3734,7 +3734,7 @@ impl<'api> Orgs<'api> {
     /// To use this endpoint, the authenticated user must be one of:
     ///   - An administrator for the organization.
     ///   - A user, or a user on a team, with the fine-grained permission of `custom_properties_org_values_editor` in the organization.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_custom_properties_values_for_repos](https://docs.github.com/rest/orgs/custom-properties#create-or-update-custom-property-values-for-organization-repositories)
     ///
     /// ---
@@ -3780,7 +3780,7 @@ impl<'api> Orgs<'api> {
     /// To use this endpoint, the authenticated user must be one of:
     /// - An administrator for the organization.
     /// - A user, or a user on a team, with the fine-grained permission of `custom_properties_org_definitions_manager` in the organization.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_custom_property](https://docs.github.com/rest/orgs/custom-properties#create-or-update-a-custom-property-for-an-organization)
     ///
     /// ---
@@ -3824,7 +3824,7 @@ impl<'api> Orgs<'api> {
     /// To use this endpoint, the authenticated user must be one of:
     /// - An administrator for the organization.
     /// - A user, or a user on a team, with the fine-grained permission of `custom_properties_org_definitions_manager` in the organization.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_custom_property](https://docs.github.com/rest/orgs/custom-properties#create-or-update-a-custom-property-for-an-organization)
     ///
     /// ---
@@ -3870,7 +3870,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or
     /// edit webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
-    /// 
+    ///
     /// [GitHub API docs for create_webhook](https://docs.github.com/rest/orgs/webhooks#create-an-organization-webhook)
     ///
     /// ---
@@ -3915,7 +3915,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or
     /// edit webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
-    /// 
+    ///
     /// [GitHub API docs for create_webhook](https://docs.github.com/rest/orgs/webhooks#create-an-organization-webhook)
     ///
     /// ---
@@ -3962,7 +3962,7 @@ impl<'api> Orgs<'api> {
     /// Please review the Terms of Service regarding account deletion before using this endpoint:
     /// 
     /// https://docs.github.com/site-policy/github-terms/github-terms-of-service
-    /// 
+    ///
     /// [GitHub API docs for delete](https://docs.github.com/rest/orgs/orgs#delete-an-organization)
     ///
     /// ---
@@ -4008,7 +4008,7 @@ impl<'api> Orgs<'api> {
     /// Please review the Terms of Service regarding account deletion before using this endpoint:
     /// 
     /// https://docs.github.com/site-policy/github-terms/github-terms-of-service
-    /// 
+    ///
     /// [GitHub API docs for delete](https://docs.github.com/rest/orgs/orgs#delete-an-organization)
     ///
     /// ---
@@ -4052,7 +4052,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
-    /// 
+    ///
     /// [GitHub API docs for delete_webhook](https://docs.github.com/rest/orgs/webhooks#delete-an-organization-webhook)
     ///
     /// ---
@@ -4094,7 +4094,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
-    /// 
+    ///
     /// [GitHub API docs for delete_webhook](https://docs.github.com/rest/orgs/webhooks#delete-an-organization-webhook)
     ///
     /// ---
@@ -4141,7 +4141,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an organization owner or be member of a team with the security manager role to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org`, `write:org`, or `repo` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for enable_or_disable_security_product_on_all_org_repos](https://docs.github.com/rest/orgs/orgs#enable-or-disable-a-security-feature-for-an-organization)
     ///
     /// ---
@@ -4187,7 +4187,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an organization owner or be member of a team with the security manager role to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org`, `write:org`, or `repo` scopes to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for enable_or_disable_security_product_on_all_org_repos](https://docs.github.com/rest/orgs/orgs#enable-or-disable-a-security-feature-for-an-organization)
     ///
     /// ---
@@ -4235,7 +4235,7 @@ impl<'api> Orgs<'api> {
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to see the full details about an organization.
     /// 
     /// To see information about an organization's GitHub plan, GitHub Apps need the `Organization plan` permission.
-    /// 
+    ///
     /// [GitHub API docs for get](https://docs.github.com/rest/orgs/orgs#get-an-organization)
     ///
     /// ---
@@ -4282,7 +4282,7 @@ impl<'api> Orgs<'api> {
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to see the full details about an organization.
     /// 
     /// To see information about an organization's GitHub plan, GitHub Apps need the `Organization plan` permission.
-    /// 
+    ///
     /// [GitHub API docs for get](https://docs.github.com/rest/orgs/orgs#get-an-organization)
     ///
     /// ---
@@ -4323,7 +4323,7 @@ impl<'api> Orgs<'api> {
     ///
     /// Gets all custom properties defined for an organization.
     /// Organization members can read these properties.
-    /// 
+    ///
     /// [GitHub API docs for get_all_custom_properties](https://docs.github.com/rest/orgs/custom-properties#get-all-custom-properties-for-an-organization)
     ///
     /// ---
@@ -4364,7 +4364,7 @@ impl<'api> Orgs<'api> {
     ///
     /// Gets all custom properties defined for an organization.
     /// Organization members can read these properties.
-    /// 
+    ///
     /// [GitHub API docs for get_all_custom_properties](https://docs.github.com/rest/orgs/custom-properties#get-all-custom-properties-for-an-organization)
     ///
     /// ---
@@ -4406,7 +4406,7 @@ impl<'api> Orgs<'api> {
     ///
     /// Gets a custom property that is defined for an organization.
     /// Organization members can read these properties.
-    /// 
+    ///
     /// [GitHub API docs for get_custom_property](https://docs.github.com/rest/orgs/custom-properties#get-a-custom-property-for-an-organization)
     ///
     /// ---
@@ -4447,7 +4447,7 @@ impl<'api> Orgs<'api> {
     ///
     /// Gets a custom property that is defined for an organization.
     /// Organization members can read these properties.
-    /// 
+    ///
     /// [GitHub API docs for get_custom_property](https://docs.github.com/rest/orgs/custom-properties#get-a-custom-property-for-an-organization)
     ///
     /// ---
@@ -4488,7 +4488,7 @@ impl<'api> Orgs<'api> {
     /// # Get an organization membership for the authenticated user
     ///
     /// If the authenticated user is an active or pending member of the organization, this endpoint will return the user's membership. If the authenticated user is not affiliated with the organization, a `404` is returned. This endpoint will return a `403` if the request is made by a GitHub App that is blocked by the organization.
-    /// 
+    ///
     /// [GitHub API docs for get_membership_for_authenticated_user](https://docs.github.com/rest/orgs/members#get-an-organization-membership-for-the-authenticated-user)
     ///
     /// ---
@@ -4528,7 +4528,7 @@ impl<'api> Orgs<'api> {
     /// # Get an organization membership for the authenticated user
     ///
     /// If the authenticated user is an active or pending member of the organization, this endpoint will return the user's membership. If the authenticated user is not affiliated with the organization, a `404` is returned. This endpoint will return a `403` if the request is made by a GitHub App that is blocked by the organization.
-    /// 
+    ///
     /// [GitHub API docs for get_membership_for_authenticated_user](https://docs.github.com/rest/orgs/members#get-an-organization-membership-for-the-authenticated-user)
     ///
     /// ---
@@ -4569,7 +4569,7 @@ impl<'api> Orgs<'api> {
     /// # Get organization membership for a user
     ///
     /// In order to get a user's membership with an organization, the authenticated user must be an organization member. The `state` parameter in the response can be used to identify the user's membership status.
-    /// 
+    ///
     /// [GitHub API docs for get_membership_for_user](https://docs.github.com/rest/orgs/members#get-organization-membership-for-a-user)
     ///
     /// ---
@@ -4609,7 +4609,7 @@ impl<'api> Orgs<'api> {
     /// # Get organization membership for a user
     ///
     /// In order to get a user's membership with an organization, the authenticated user must be an organization member. The `state` parameter in the response can be used to identify the user's membership status.
-    /// 
+    ///
     /// [GitHub API docs for get_membership_for_user](https://docs.github.com/rest/orgs/members#get-organization-membership-for-a-user)
     ///
     /// ---
@@ -4657,7 +4657,7 @@ impl<'api> Orgs<'api> {
     /// - A user, or a user on a team, with the fine-grained permissions of `read_organization_custom_org_role` in the organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_org_role](https://docs.github.com/rest/orgs/organization-roles#get-an-organization-role)
     ///
     /// ---
@@ -4704,7 +4704,7 @@ impl<'api> Orgs<'api> {
     /// - A user, or a user on a team, with the fine-grained permissions of `read_organization_custom_org_role` in the organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_org_role](https://docs.github.com/rest/orgs/organization-roles#get-an-organization-role)
     ///
     /// ---
@@ -4751,7 +4751,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
-    /// 
+    ///
     /// [GitHub API docs for get_webhook](https://docs.github.com/rest/orgs/webhooks#get-an-organization-webhook)
     ///
     /// ---
@@ -4796,7 +4796,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
-    /// 
+    ///
     /// [GitHub API docs for get_webhook](https://docs.github.com/rest/orgs/webhooks#get-an-organization-webhook)
     ///
     /// ---
@@ -4841,7 +4841,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
-    /// 
+    ///
     /// [GitHub API docs for get_webhook_config_for_org](https://docs.github.com/rest/orgs/webhooks#get-a-webhook-configuration-for-an-organization)
     ///
     /// ---
@@ -4884,7 +4884,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
-    /// 
+    ///
     /// [GitHub API docs for get_webhook_config_for_org](https://docs.github.com/rest/orgs/webhooks#get-a-webhook-configuration-for-an-organization)
     ///
     /// ---
@@ -4928,7 +4928,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
-    /// 
+    ///
     /// [GitHub API docs for get_webhook_delivery](https://docs.github.com/rest/orgs/webhooks#get-a-webhook-delivery-for-an-organization-webhook)
     ///
     /// ---
@@ -4973,7 +4973,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
-    /// 
+    ///
     /// [GitHub API docs for get_webhook_delivery](https://docs.github.com/rest/orgs/webhooks#get-a-webhook-delivery-for-an-organization-webhook)
     ///
     /// ---
@@ -5017,7 +5017,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// > [!NOTE]
     /// > Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers) to get the URL for the next page of organizations.
-    /// 
+    ///
     /// [GitHub API docs for list](https://docs.github.com/rest/orgs/orgs#list-organizations)
     ///
     /// ---
@@ -5063,7 +5063,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// > [!NOTE]
     /// > Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers) to get the URL for the next page of organizations.
-    /// 
+    ///
     /// [GitHub API docs for list](https://docs.github.com/rest/orgs/orgs#list-organizations)
     ///
     /// ---
@@ -5113,7 +5113,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an organization owner to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:read` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_app_installations](https://docs.github.com/rest/orgs/orgs#list-app-installations-for-an-organization)
     ///
     /// ---
@@ -5160,7 +5160,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an organization owner to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:read` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_app_installations](https://docs.github.com/rest/orgs/orgs#list-app-installations-for-an-organization)
     ///
     /// ---
@@ -5208,7 +5208,7 @@ impl<'api> Orgs<'api> {
     /// The collection of attestations returned by this endpoint is filtered according to the authenticated user's permissions; if the authenticated user cannot read a repository, the attestations associated with that repository will not be included in the response. In addition, when using a fine-grained access token the `attestations:read` permission is required.
     /// 
     /// **Please note:** in order to offer meaningful security benefits, an attestation's signature and timestamps **must** be cryptographically verified, and the identity of the attestation signer **must** be validated. Attestations can be verified using the [GitHub CLI `attestation verify` command](https://cli.github.com/manual/gh_attestation_verify). For more information, see [our guide on how to use artifact attestations to establish a build's provenance](https://docs.github.com/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds).
-    /// 
+    ///
     /// [GitHub API docs for list_attestations](https://docs.github.com/rest/orgs/orgs#list-attestations)
     ///
     /// ---
@@ -5254,7 +5254,7 @@ impl<'api> Orgs<'api> {
     /// The collection of attestations returned by this endpoint is filtered according to the authenticated user's permissions; if the authenticated user cannot read a repository, the attestations associated with that repository will not be included in the response. In addition, when using a fine-grained access token the `attestations:read` permission is required.
     /// 
     /// **Please note:** in order to offer meaningful security benefits, an attestation's signature and timestamps **must** be cryptographically verified, and the identity of the attestation signer **must** be validated. Attestations can be verified using the [GitHub CLI `attestation verify` command](https://cli.github.com/manual/gh_attestation_verify). For more information, see [our guide on how to use artifact attestations to establish a build's provenance](https://docs.github.com/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds).
-    /// 
+    ///
     /// [GitHub API docs for list_attestations](https://docs.github.com/rest/orgs/orgs#list-attestations)
     ///
     /// ---
@@ -5298,7 +5298,7 @@ impl<'api> Orgs<'api> {
     /// # List users blocked by an organization
     ///
     /// List the users blocked by an organization.
-    /// 
+    ///
     /// [GitHub API docs for list_blocked_users](https://docs.github.com/rest/orgs/blocking#list-users-blocked-by-an-organization)
     ///
     /// ---
@@ -5340,7 +5340,7 @@ impl<'api> Orgs<'api> {
     /// # List users blocked by an organization
     ///
     /// List the users blocked by an organization.
-    /// 
+    ///
     /// [GitHub API docs for list_blocked_users](https://docs.github.com/rest/orgs/blocking#list-users-blocked-by-an-organization)
     ///
     /// ---
@@ -5385,7 +5385,7 @@ impl<'api> Orgs<'api> {
     ///
     /// Lists organization repositories with all of their custom property values.
     /// Organization members can read these properties.
-    /// 
+    ///
     /// [GitHub API docs for list_custom_properties_values_for_repos](https://docs.github.com/rest/orgs/custom-properties#list-custom-property-values-for-organization-repositories)
     ///
     /// ---
@@ -5430,7 +5430,7 @@ impl<'api> Orgs<'api> {
     ///
     /// Lists organization repositories with all of their custom property values.
     /// Organization members can read these properties.
-    /// 
+    ///
     /// [GitHub API docs for list_custom_properties_values_for_repos](https://docs.github.com/rest/orgs/custom-properties#list-custom-property-values-for-organization-repositories)
     ///
     /// ---
@@ -5476,7 +5476,7 @@ impl<'api> Orgs<'api> {
     /// # List failed organization invitations
     ///
     /// The return hash contains `failed_at` and `failed_reason` fields which represent the time at which the invitation failed and the reason for the failure.
-    /// 
+    ///
     /// [GitHub API docs for list_failed_invitations](https://docs.github.com/rest/orgs/members#list-failed-organization-invitations)
     ///
     /// ---
@@ -5519,7 +5519,7 @@ impl<'api> Orgs<'api> {
     /// # List failed organization invitations
     ///
     /// The return hash contains `failed_at` and `failed_reason` fields which represent the time at which the invitation failed and the reason for the failure.
-    /// 
+    ///
     /// [GitHub API docs for list_failed_invitations](https://docs.github.com/rest/orgs/members#list-failed-organization-invitations)
     ///
     /// ---
@@ -5566,7 +5566,7 @@ impl<'api> Orgs<'api> {
     /// List organizations for the authenticated user.
     /// 
     /// For OAuth app tokens and personal access tokens (classic), this endpoint only lists organizations that your authorization allows you to operate on in some way (e.g., you can list teams with `read:org` scope, you can publicize your organization membership with `user` scope, etc.). Therefore, this API requires at least `user` or `read:org` scope for OAuth app tokens and personal access tokens (classic). Requests with insufficient scope will receive a `403 Forbidden` response.
-    /// 
+    ///
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/orgs/orgs#list-organizations-for-the-authenticated-user)
     ///
     /// ---
@@ -5613,7 +5613,7 @@ impl<'api> Orgs<'api> {
     /// List organizations for the authenticated user.
     /// 
     /// For OAuth app tokens and personal access tokens (classic), this endpoint only lists organizations that your authorization allows you to operate on in some way (e.g., you can list teams with `read:org` scope, you can publicize your organization membership with `user` scope, etc.). Therefore, this API requires at least `user` or `read:org` scope for OAuth app tokens and personal access tokens (classic). Requests with insufficient scope will receive a `403 Forbidden` response.
-    /// 
+    ///
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/orgs/orgs#list-organizations-for-the-authenticated-user)
     ///
     /// ---
@@ -5662,7 +5662,7 @@ impl<'api> Orgs<'api> {
     /// List [public organization memberships](https://docs.github.com/articles/publicizing-or-concealing-organization-membership) for the specified user.
     /// 
     /// This method only lists _public_ memberships, regardless of authentication. If you need to fetch all of the organization memberships (public and private) for the authenticated user, use the [List organizations for the authenticated user](https://docs.github.com/rest/orgs/orgs#list-organizations-for-the-authenticated-user) API instead.
-    /// 
+    ///
     /// [GitHub API docs for list_for_user](https://docs.github.com/rest/orgs/orgs#list-organizations-for-a-user)
     ///
     /// ---
@@ -5706,7 +5706,7 @@ impl<'api> Orgs<'api> {
     /// List [public organization memberships](https://docs.github.com/articles/publicizing-or-concealing-organization-membership) for the specified user.
     /// 
     /// This method only lists _public_ memberships, regardless of authentication. If you need to fetch all of the organization memberships (public and private) for the authenticated user, use the [List organizations for the authenticated user](https://docs.github.com/rest/orgs/orgs#list-organizations-for-the-authenticated-user) API instead.
-    /// 
+    ///
     /// [GitHub API docs for list_for_user](https://docs.github.com/rest/orgs/orgs#list-organizations-for-a-user)
     ///
     /// ---
@@ -5750,7 +5750,7 @@ impl<'api> Orgs<'api> {
     /// # List organization invitation teams
     ///
     /// List all teams associated with an invitation. In order to see invitations in an organization, the authenticated user must be an organization owner.
-    /// 
+    ///
     /// [GitHub API docs for list_invitation_teams](https://docs.github.com/rest/orgs/members#list-organization-invitation-teams)
     ///
     /// ---
@@ -5793,7 +5793,7 @@ impl<'api> Orgs<'api> {
     /// # List organization invitation teams
     ///
     /// List all teams associated with an invitation. In order to see invitations in an organization, the authenticated user must be an organization owner.
-    /// 
+    ///
     /// [GitHub API docs for list_invitation_teams](https://docs.github.com/rest/orgs/members#list-organization-invitation-teams)
     ///
     /// ---
@@ -5838,7 +5838,7 @@ impl<'api> Orgs<'api> {
     /// # List organization members
     ///
     /// List all users who are members of an organization. If the authenticated user is also a member of this organization then both concealed and public members will be returned.
-    /// 
+    ///
     /// [GitHub API docs for list_members](https://docs.github.com/rest/orgs/members#list-organization-members)
     ///
     /// ---
@@ -5881,7 +5881,7 @@ impl<'api> Orgs<'api> {
     /// # List organization members
     ///
     /// List all users who are members of an organization. If the authenticated user is also a member of this organization then both concealed and public members will be returned.
-    /// 
+    ///
     /// [GitHub API docs for list_members](https://docs.github.com/rest/orgs/members#list-organization-members)
     ///
     /// ---
@@ -5926,7 +5926,7 @@ impl<'api> Orgs<'api> {
     /// # List organization memberships for the authenticated user
     ///
     /// Lists all of the authenticated user's organization memberships.
-    /// 
+    ///
     /// [GitHub API docs for list_memberships_for_authenticated_user](https://docs.github.com/rest/orgs/members#list-organization-memberships-for-the-authenticated-user)
     ///
     /// ---
@@ -5972,7 +5972,7 @@ impl<'api> Orgs<'api> {
     /// # List organization memberships for the authenticated user
     ///
     /// Lists all of the authenticated user's organization memberships.
-    /// 
+    ///
     /// [GitHub API docs for list_memberships_for_authenticated_user](https://docs.github.com/rest/orgs/members#list-organization-memberships-for-the-authenticated-user)
     ///
     /// ---
@@ -6024,7 +6024,7 @@ impl<'api> Orgs<'api> {
     /// To use this endpoint, you must be an administrator for the organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_org_role_teams](https://docs.github.com/rest/orgs/organization-roles#list-teams-that-are-assigned-to-an-organization-role)
     ///
     /// ---
@@ -6072,7 +6072,7 @@ impl<'api> Orgs<'api> {
     /// To use this endpoint, you must be an administrator for the organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_org_role_teams](https://docs.github.com/rest/orgs/organization-roles#list-teams-that-are-assigned-to-an-organization-role)
     ///
     /// ---
@@ -6122,7 +6122,7 @@ impl<'api> Orgs<'api> {
     /// To use this endpoint, you must be an administrator for the organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_org_role_users](https://docs.github.com/rest/orgs/organization-roles#list-users-that-are-assigned-to-an-organization-role)
     ///
     /// ---
@@ -6170,7 +6170,7 @@ impl<'api> Orgs<'api> {
     /// To use this endpoint, you must be an administrator for the organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_org_role_users](https://docs.github.com/rest/orgs/organization-roles#list-users-that-are-assigned-to-an-organization-role)
     ///
     /// ---
@@ -6223,7 +6223,7 @@ impl<'api> Orgs<'api> {
     /// - A user, or a user on a team, with the fine-grained permissions of `read_organization_custom_org_role` in the organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_org_roles](https://docs.github.com/rest/orgs/organization-roles#get-all-organization-roles-for-an-organization)
     ///
     /// ---
@@ -6270,7 +6270,7 @@ impl<'api> Orgs<'api> {
     /// - A user, or a user on a team, with the fine-grained permissions of `read_organization_custom_org_role` in the organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_org_roles](https://docs.github.com/rest/orgs/organization-roles#get-all-organization-roles-for-an-organization)
     ///
     /// ---
@@ -6311,7 +6311,7 @@ impl<'api> Orgs<'api> {
     /// # List outside collaborators for an organization
     ///
     /// List all users who are outside collaborators of an organization.
-    /// 
+    ///
     /// [GitHub API docs for list_outside_collaborators](https://docs.github.com/rest/orgs/outside-collaborators#list-outside-collaborators-for-an-organization)
     ///
     /// ---
@@ -6353,7 +6353,7 @@ impl<'api> Orgs<'api> {
     /// # List outside collaborators for an organization
     ///
     /// List all users who are outside collaborators of an organization.
-    /// 
+    ///
     /// [GitHub API docs for list_outside_collaborators](https://docs.github.com/rest/orgs/outside-collaborators#list-outside-collaborators-for-an-organization)
     ///
     /// ---
@@ -6399,7 +6399,7 @@ impl<'api> Orgs<'api> {
     /// Lists the repositories a fine-grained personal access token has access to.
     /// 
     /// Only GitHub Apps can use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_pat_grant_repositories](https://docs.github.com/rest/orgs/personal-access-tokens#list-repositories-a-fine-grained-personal-access-token-has-access-to)
     ///
     /// ---
@@ -6446,7 +6446,7 @@ impl<'api> Orgs<'api> {
     /// Lists the repositories a fine-grained personal access token has access to.
     /// 
     /// Only GitHub Apps can use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_pat_grant_repositories](https://docs.github.com/rest/orgs/personal-access-tokens#list-repositories-a-fine-grained-personal-access-token-has-access-to)
     ///
     /// ---
@@ -6495,7 +6495,7 @@ impl<'api> Orgs<'api> {
     /// Lists the repositories a fine-grained personal access token request is requesting access to.
     /// 
     /// Only GitHub Apps can use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_pat_grant_request_repositories](https://docs.github.com/rest/orgs/personal-access-tokens#list-repositories-requested-to-be-accessed-by-a-fine-grained-personal-access-token)
     ///
     /// ---
@@ -6542,7 +6542,7 @@ impl<'api> Orgs<'api> {
     /// Lists the repositories a fine-grained personal access token request is requesting access to.
     /// 
     /// Only GitHub Apps can use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_pat_grant_request_repositories](https://docs.github.com/rest/orgs/personal-access-tokens#list-repositories-requested-to-be-accessed-by-a-fine-grained-personal-access-token)
     ///
     /// ---
@@ -6591,7 +6591,7 @@ impl<'api> Orgs<'api> {
     /// Lists requests from organization members to access organization resources with a fine-grained personal access token.
     /// 
     /// Only GitHub Apps can use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_pat_grant_requests](https://docs.github.com/rest/orgs/personal-access-tokens#list-requests-to-access-organization-resources-with-fine-grained-personal-access-tokens)
     ///
     /// ---
@@ -6639,7 +6639,7 @@ impl<'api> Orgs<'api> {
     /// Lists requests from organization members to access organization resources with a fine-grained personal access token.
     /// 
     /// Only GitHub Apps can use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_pat_grant_requests](https://docs.github.com/rest/orgs/personal-access-tokens#list-requests-to-access-organization-resources-with-fine-grained-personal-access-tokens)
     ///
     /// ---
@@ -6689,7 +6689,7 @@ impl<'api> Orgs<'api> {
     /// Lists approved fine-grained personal access tokens owned by organization members that can access organization resources.
     /// 
     /// Only GitHub Apps can use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_pat_grants](https://docs.github.com/rest/orgs/personal-access-tokens#list-fine-grained-personal-access-tokens-with-access-to-organization-resources)
     ///
     /// ---
@@ -6737,7 +6737,7 @@ impl<'api> Orgs<'api> {
     /// Lists approved fine-grained personal access tokens owned by organization members that can access organization resources.
     /// 
     /// Only GitHub Apps can use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_pat_grants](https://docs.github.com/rest/orgs/personal-access-tokens#list-fine-grained-personal-access-tokens-with-access-to-organization-resources)
     ///
     /// ---
@@ -6788,7 +6788,7 @@ impl<'api> Orgs<'api> {
     /// Invitation role and will be one of the following values: `direct_member`, `admin`,
     /// `billing_manager`, or `hiring_manager`. If the invitee is not a GitHub
     /// member, the `login` field in the return hash will be `null`.
-    /// 
+    ///
     /// [GitHub API docs for list_pending_invitations](https://docs.github.com/rest/orgs/members#list-pending-organization-invitations)
     ///
     /// ---
@@ -6834,7 +6834,7 @@ impl<'api> Orgs<'api> {
     /// Invitation role and will be one of the following values: `direct_member`, `admin`,
     /// `billing_manager`, or `hiring_manager`. If the invitee is not a GitHub
     /// member, the `login` field in the return hash will be `null`.
-    /// 
+    ///
     /// [GitHub API docs for list_pending_invitations](https://docs.github.com/rest/orgs/members#list-pending-organization-invitations)
     ///
     /// ---
@@ -6879,7 +6879,7 @@ impl<'api> Orgs<'api> {
     /// # List public organization members
     ///
     /// Members of an organization can choose to have their membership publicized or not.
-    /// 
+    ///
     /// [GitHub API docs for list_public_members](https://docs.github.com/rest/orgs/members#list-public-organization-members)
     ///
     /// ---
@@ -6921,7 +6921,7 @@ impl<'api> Orgs<'api> {
     /// # List public organization members
     ///
     /// Members of an organization can choose to have their membership publicized or not.
-    /// 
+    ///
     /// [GitHub API docs for list_public_members](https://docs.github.com/rest/orgs/members#list-public-organization-members)
     ///
     /// ---
@@ -6969,7 +6969,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_security_manager_teams](https://docs.github.com/rest/orgs/security-managers#list-security-manager-teams)
     ///
     /// ---
@@ -7011,7 +7011,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_security_manager_teams](https://docs.github.com/rest/orgs/security-managers#list-security-manager-teams)
     ///
     /// ---
@@ -7055,7 +7055,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
-    /// 
+    ///
     /// [GitHub API docs for list_webhook_deliveries](https://docs.github.com/rest/orgs/webhooks#list-deliveries-for-an-organization-webhook)
     ///
     /// ---
@@ -7104,7 +7104,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
-    /// 
+    ///
     /// [GitHub API docs for list_webhook_deliveries](https://docs.github.com/rest/orgs/webhooks#list-deliveries-for-an-organization-webhook)
     ///
     /// ---
@@ -7153,7 +7153,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
-    /// 
+    ///
     /// [GitHub API docs for list_webhooks](https://docs.github.com/rest/orgs/webhooks#list-organization-webhooks)
     ///
     /// ---
@@ -7199,7 +7199,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
-    /// 
+    ///
     /// [GitHub API docs for list_webhooks](https://docs.github.com/rest/orgs/webhooks#list-organization-webhooks)
     ///
     /// ---
@@ -7250,7 +7250,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
-    /// 
+    ///
     /// [GitHub API docs for ping_webhook](https://docs.github.com/rest/orgs/webhooks#ping-an-organization-webhook)
     ///
     /// ---
@@ -7295,7 +7295,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
-    /// 
+    ///
     /// [GitHub API docs for ping_webhook](https://docs.github.com/rest/orgs/webhooks#ping-an-organization-webhook)
     ///
     /// ---
@@ -7340,7 +7340,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
-    /// 
+    ///
     /// [GitHub API docs for redeliver_webhook_delivery](https://docs.github.com/rest/orgs/webhooks#redeliver-a-delivery-for-an-organization-webhook)
     ///
     /// ---
@@ -7385,7 +7385,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
-    /// 
+    ///
     /// [GitHub API docs for redeliver_webhook_delivery](https://docs.github.com/rest/orgs/webhooks#redeliver-a-delivery-for-an-organization-webhook)
     ///
     /// ---
@@ -7430,7 +7430,7 @@ impl<'api> Orgs<'api> {
     /// To use this endpoint, the authenticated user must be one of:
     ///   - An administrator for the organization.
     ///   - A user, or a user on a team, with the fine-grained permission of `custom_properties_org_definitions_manager` in the organization.
-    /// 
+    ///
     /// [GitHub API docs for remove_custom_property](https://docs.github.com/rest/orgs/custom-properties#remove-a-custom-property-for-an-organization)
     ///
     /// ---
@@ -7474,7 +7474,7 @@ impl<'api> Orgs<'api> {
     /// To use this endpoint, the authenticated user must be one of:
     ///   - An administrator for the organization.
     ///   - A user, or a user on a team, with the fine-grained permission of `custom_properties_org_definitions_manager` in the organization.
-    /// 
+    ///
     /// [GitHub API docs for remove_custom_property](https://docs.github.com/rest/orgs/custom-properties#remove-a-custom-property-for-an-organization)
     ///
     /// ---
@@ -7515,7 +7515,7 @@ impl<'api> Orgs<'api> {
     /// # Remove an organization member
     ///
     /// Removing a user from this list will remove them from all teams and they will no longer have any access to the organization's repositories.
-    /// 
+    ///
     /// [GitHub API docs for remove_member](https://docs.github.com/rest/orgs/members#remove-an-organization-member)
     ///
     /// ---
@@ -7554,7 +7554,7 @@ impl<'api> Orgs<'api> {
     /// # Remove an organization member
     ///
     /// Removing a user from this list will remove them from all teams and they will no longer have any access to the organization's repositories.
-    /// 
+    ///
     /// [GitHub API docs for remove_member](https://docs.github.com/rest/orgs/members#remove-an-organization-member)
     ///
     /// ---
@@ -7596,7 +7596,7 @@ impl<'api> Orgs<'api> {
     /// In order to remove a user's membership with an organization, the authenticated user must be an organization owner.
     /// 
     /// If the specified user is an active member of the organization, this will remove them from the organization. If the specified user has been invited to the organization, this will cancel their invitation. The specified user will receive an email notification in both cases.
-    /// 
+    ///
     /// [GitHub API docs for remove_membership_for_user](https://docs.github.com/rest/orgs/members#remove-organization-membership-for-a-user)
     ///
     /// ---
@@ -7638,7 +7638,7 @@ impl<'api> Orgs<'api> {
     /// In order to remove a user's membership with an organization, the authenticated user must be an organization owner.
     /// 
     /// If the specified user is an active member of the organization, this will remove them from the organization. If the specified user has been invited to the organization, this will cancel their invitation. The specified user will receive an email notification in both cases.
-    /// 
+    ///
     /// [GitHub API docs for remove_membership_for_user](https://docs.github.com/rest/orgs/members#remove-organization-membership-for-a-user)
     ///
     /// ---
@@ -7679,7 +7679,7 @@ impl<'api> Orgs<'api> {
     /// # Remove outside collaborator from an organization
     ///
     /// Removing a user from this list will remove them from all the organization's repositories.
-    /// 
+    ///
     /// [GitHub API docs for remove_outside_collaborator](https://docs.github.com/rest/orgs/outside-collaborators#remove-outside-collaborator-from-an-organization)
     ///
     /// ---
@@ -7718,7 +7718,7 @@ impl<'api> Orgs<'api> {
     /// # Remove outside collaborator from an organization
     ///
     /// Removing a user from this list will remove them from all the organization's repositories.
-    /// 
+    ///
     /// [GitHub API docs for remove_outside_collaborator](https://docs.github.com/rest/orgs/outside-collaborators#remove-outside-collaborator-from-an-organization)
     ///
     /// ---
@@ -7758,7 +7758,7 @@ impl<'api> Orgs<'api> {
     /// # Remove public organization membership for the authenticated user
     ///
     /// Removes the public membership for the authenticated user from the specified organization, unless public visibility is enforced by default.
-    /// 
+    ///
     /// [GitHub API docs for remove_public_membership_for_authenticated_user](https://docs.github.com/rest/orgs/members#remove-public-organization-membership-for-the-authenticated-user)
     ///
     /// ---
@@ -7796,7 +7796,7 @@ impl<'api> Orgs<'api> {
     /// # Remove public organization membership for the authenticated user
     ///
     /// Removes the public membership for the authenticated user from the specified organization, unless public visibility is enforced by default.
-    /// 
+    ///
     /// [GitHub API docs for remove_public_membership_for_authenticated_user](https://docs.github.com/rest/orgs/members#remove-public-organization-membership-for-the-authenticated-user)
     ///
     /// ---
@@ -7839,7 +7839,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an administrator for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for remove_security_manager_team](https://docs.github.com/rest/orgs/security-managers#remove-a-security-manager-team)
     ///
     /// ---
@@ -7881,7 +7881,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an administrator for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for remove_security_manager_team](https://docs.github.com/rest/orgs/security-managers#remove-a-security-manager-team)
     ///
     /// ---
@@ -7922,7 +7922,7 @@ impl<'api> Orgs<'api> {
     /// Approves or denies a pending request to access organization resources via a fine-grained personal access token.
     /// 
     /// Only GitHub Apps can use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for review_pat_grant_request](https://docs.github.com/rest/orgs/personal-access-tokens#review-a-request-to-access-organization-resources-with-a-fine-grained-personal-access-token)
     ///
     /// ---
@@ -7966,7 +7966,7 @@ impl<'api> Orgs<'api> {
     /// Approves or denies a pending request to access organization resources via a fine-grained personal access token.
     /// 
     /// Only GitHub Apps can use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for review_pat_grant_request](https://docs.github.com/rest/orgs/personal-access-tokens#review-a-request-to-access-organization-resources-with-a-fine-grained-personal-access-token)
     ///
     /// ---
@@ -8011,7 +8011,7 @@ impl<'api> Orgs<'api> {
     /// Approves or denies multiple pending requests to access organization resources via a fine-grained personal access token.
     /// 
     /// Only GitHub Apps can use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for review_pat_grant_requests_in_bulk](https://docs.github.com/rest/orgs/personal-access-tokens#review-requests-to-access-organization-resources-with-fine-grained-personal-access-tokens)
     ///
     /// ---
@@ -8055,7 +8055,7 @@ impl<'api> Orgs<'api> {
     /// Approves or denies multiple pending requests to access organization resources via a fine-grained personal access token.
     /// 
     /// Only GitHub Apps can use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for review_pat_grant_requests_in_bulk](https://docs.github.com/rest/orgs/personal-access-tokens#review-requests-to-access-organization-resources-with-fine-grained-personal-access-tokens)
     ///
     /// ---
@@ -8102,7 +8102,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an administrator for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for revoke_all_org_roles_team](https://docs.github.com/rest/orgs/organization-roles#remove-all-organization-roles-for-a-team)
     ///
     /// ---
@@ -8144,7 +8144,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an administrator for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for revoke_all_org_roles_team](https://docs.github.com/rest/orgs/organization-roles#remove-all-organization-roles-for-a-team)
     ///
     /// ---
@@ -8187,7 +8187,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an administrator for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for revoke_all_org_roles_user](https://docs.github.com/rest/orgs/organization-roles#remove-all-organization-roles-for-a-user)
     ///
     /// ---
@@ -8229,7 +8229,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an administrator for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for revoke_all_org_roles_user](https://docs.github.com/rest/orgs/organization-roles#remove-all-organization-roles-for-a-user)
     ///
     /// ---
@@ -8272,7 +8272,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an administrator for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for revoke_org_role_team](https://docs.github.com/rest/orgs/organization-roles#remove-an-organization-role-from-a-team)
     ///
     /// ---
@@ -8314,7 +8314,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an administrator for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for revoke_org_role_team](https://docs.github.com/rest/orgs/organization-roles#remove-an-organization-role-from-a-team)
     ///
     /// ---
@@ -8357,7 +8357,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an administrator for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for revoke_org_role_user](https://docs.github.com/rest/orgs/organization-roles#remove-an-organization-role-from-a-user)
     ///
     /// ---
@@ -8399,7 +8399,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an administrator for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for revoke_org_role_user](https://docs.github.com/rest/orgs/organization-roles#remove-an-organization-role-from-a-user)
     ///
     /// ---
@@ -8446,7 +8446,7 @@ impl<'api> Orgs<'api> {
     /// **Rate limits**
     /// 
     /// To prevent abuse, organization owners are limited to creating 50 organization invitations for an organization within a 24 hour period. If the organization is more than one month old or on a paid plan, the limit is 500 invitations per 24 hour period.
-    /// 
+    ///
     /// [GitHub API docs for set_membership_for_user](https://docs.github.com/rest/orgs/members#set-organization-membership-for-a-user)
     ///
     /// ---
@@ -8494,7 +8494,7 @@ impl<'api> Orgs<'api> {
     /// **Rate limits**
     /// 
     /// To prevent abuse, organization owners are limited to creating 50 organization invitations for an organization within a 24 hour period. If the organization is more than one month old or on a paid plan, the limit is 500 invitations per 24 hour period.
-    /// 
+    ///
     /// [GitHub API docs for set_membership_for_user](https://docs.github.com/rest/orgs/members#set-organization-membership-for-a-user)
     ///
     /// ---
@@ -8537,7 +8537,7 @@ impl<'api> Orgs<'api> {
     /// The user can publicize their own membership. (A user cannot publicize the membership for another user.)
     /// 
     /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP method](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
-    /// 
+    ///
     /// [GitHub API docs for set_public_membership_for_authenticated_user](https://docs.github.com/rest/orgs/members#set-public-organization-membership-for-the-authenticated-user)
     ///
     /// ---
@@ -8578,7 +8578,7 @@ impl<'api> Orgs<'api> {
     /// The user can publicize their own membership. (A user cannot publicize the membership for another user.)
     /// 
     /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP method](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
-    /// 
+    ///
     /// [GitHub API docs for set_public_membership_for_authenticated_user](https://docs.github.com/rest/orgs/members#set-public-organization-membership-for-the-authenticated-user)
     ///
     /// ---
@@ -8618,7 +8618,7 @@ impl<'api> Orgs<'api> {
     /// # Unblock a user from an organization
     ///
     /// Unblocks the given user on behalf of the specified organization.
-    /// 
+    ///
     /// [GitHub API docs for unblock_user](https://docs.github.com/rest/orgs/blocking#unblock-a-user-from-an-organization)
     ///
     /// ---
@@ -8656,7 +8656,7 @@ impl<'api> Orgs<'api> {
     /// # Unblock a user from an organization
     ///
     /// Unblocks the given user on behalf of the specified organization.
-    /// 
+    ///
     /// [GitHub API docs for unblock_user](https://docs.github.com/rest/orgs/blocking#unblock-a-user-from-an-organization)
     ///
     /// ---
@@ -8705,7 +8705,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an organization owner to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` or `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update](https://docs.github.com/rest/orgs/orgs#update-an-organization)
     ///
     /// ---
@@ -8755,7 +8755,7 @@ impl<'api> Orgs<'api> {
     /// The authenticated user must be an organization owner to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` or `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update](https://docs.github.com/rest/orgs/orgs#update-an-organization)
     ///
     /// ---
@@ -8796,7 +8796,7 @@ impl<'api> Orgs<'api> {
     /// # Update an organization membership for the authenticated user
     ///
     /// Converts the authenticated user to an active member of the organization, if that user has a pending invitation from the organization.
-    /// 
+    ///
     /// [GitHub API docs for update_membership_for_authenticated_user](https://docs.github.com/rest/orgs/members#update-an-organization-membership-for-the-authenticated-user)
     ///
     /// ---
@@ -8837,7 +8837,7 @@ impl<'api> Orgs<'api> {
     /// # Update an organization membership for the authenticated user
     ///
     /// Converts the authenticated user to an active member of the organization, if that user has a pending invitation from the organization.
-    /// 
+    ///
     /// [GitHub API docs for update_membership_for_authenticated_user](https://docs.github.com/rest/orgs/members#update-an-organization-membership-for-the-authenticated-user)
     ///
     /// ---
@@ -8881,7 +8881,7 @@ impl<'api> Orgs<'api> {
     /// Updates the access an organization member has to organization resources via a fine-grained personal access token. Limited to revoking the token's existing access. Limited to revoking a token's existing access.
     /// 
     /// Only GitHub Apps can use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_pat_access](https://docs.github.com/rest/orgs/personal-access-tokens#update-the-access-a-fine-grained-personal-access-token-has-to-organization-resources)
     ///
     /// ---
@@ -8925,7 +8925,7 @@ impl<'api> Orgs<'api> {
     /// Updates the access an organization member has to organization resources via a fine-grained personal access token. Limited to revoking the token's existing access. Limited to revoking a token's existing access.
     /// 
     /// Only GitHub Apps can use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_pat_access](https://docs.github.com/rest/orgs/personal-access-tokens#update-the-access-a-fine-grained-personal-access-token-has-to-organization-resources)
     ///
     /// ---
@@ -8970,7 +8970,7 @@ impl<'api> Orgs<'api> {
     /// Updates the access organization members have to organization resources via fine-grained personal access tokens. Limited to revoking a token's existing access.
     /// 
     /// Only GitHub Apps can use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_pat_accesses](https://docs.github.com/rest/orgs/personal-access-tokens#update-the-access-to-organization-resources-via-fine-grained-personal-access-tokens)
     ///
     /// ---
@@ -9014,7 +9014,7 @@ impl<'api> Orgs<'api> {
     /// Updates the access organization members have to organization resources via fine-grained personal access tokens. Limited to revoking a token's existing access.
     /// 
     /// Only GitHub Apps can use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_pat_accesses](https://docs.github.com/rest/orgs/personal-access-tokens#update-the-access-to-organization-resources-via-fine-grained-personal-access-tokens)
     ///
     /// ---
@@ -9066,7 +9066,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
-    /// 
+    ///
     /// [GitHub API docs for update_webhook](https://docs.github.com/rest/orgs/webhooks#update-an-organization-webhook)
     ///
     /// ---
@@ -9115,7 +9115,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
-    /// 
+    ///
     /// [GitHub API docs for update_webhook](https://docs.github.com/rest/orgs/webhooks#update-an-organization-webhook)
     ///
     /// ---
@@ -9161,7 +9161,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
-    /// 
+    ///
     /// [GitHub API docs for update_webhook_config_for_org](https://docs.github.com/rest/orgs/webhooks#update-a-webhook-configuration-for-an-organization)
     ///
     /// ---
@@ -9204,7 +9204,7 @@ impl<'api> Orgs<'api> {
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
-    /// 
+    ///
     /// [GitHub API docs for update_webhook_config_for_org](https://docs.github.com/rest/orgs/webhooks#update-a-webhook-configuration-for-an-organization)
     ///
     /// ---

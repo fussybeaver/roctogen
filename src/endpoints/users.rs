@@ -1061,7 +1061,7 @@ impl<'req> UsersGetContextForUserParams<'req> {
 
     /// Identifies which additional information you'd like to receive about the person's hovercard. Can be `organization`, `repository`, `issue`, `pull_request`. **Required** when using `subject_id`.
     pub fn subject_type(self, subject_type: &'req str) -> Self {
-        Self { 
+        Self {
             subject_type: Some(subject_type),
             subject_id: self.subject_id, 
         }
@@ -1069,7 +1069,7 @@ impl<'req> UsersGetContextForUserParams<'req> {
 
     /// Uses the ID for the `subject_type` you specified. **Required** when using `subject_type`.
     pub fn subject_id(self, subject_id: &'req str) -> Self {
-        Self { 
+        Self {
             subject_type: self.subject_type, 
             subject_id: Some(subject_id),
         }
@@ -1092,7 +1092,7 @@ impl UsersListParams {
 
     /// A user ID. Only return users with an ID greater than this ID.
     pub fn since(self, since: i32) -> Self {
-        Self { 
+        Self {
             since: Some(since),
             per_page: self.per_page, 
         }
@@ -1100,7 +1100,7 @@ impl UsersListParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             since: self.since, 
             per_page: Some(per_page),
         }
@@ -1125,7 +1125,7 @@ impl<'req> UsersListAttestationsParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             before: self.before, 
             after: self.after, 
@@ -1134,7 +1134,7 @@ impl<'req> UsersListAttestationsParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn before(self, before: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             before: Some(before),
             after: self.after, 
@@ -1143,7 +1143,7 @@ impl<'req> UsersListAttestationsParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn after(self, after: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             before: self.before, 
             after: Some(after),
@@ -1167,7 +1167,7 @@ impl UsersListBlockedByAuthenticatedUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1175,7 +1175,7 @@ impl UsersListBlockedByAuthenticatedUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1207,7 +1207,7 @@ impl UsersListEmailsForAuthenticatedUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1215,7 +1215,7 @@ impl UsersListEmailsForAuthenticatedUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1247,7 +1247,7 @@ impl UsersListFollowedByAuthenticatedUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1255,7 +1255,7 @@ impl UsersListFollowedByAuthenticatedUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1287,7 +1287,7 @@ impl UsersListFollowersForAuthenticatedUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1295,7 +1295,7 @@ impl UsersListFollowersForAuthenticatedUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1327,7 +1327,7 @@ impl UsersListFollowersForUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1335,7 +1335,7 @@ impl UsersListFollowersForUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1367,7 +1367,7 @@ impl UsersListFollowingForUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1375,7 +1375,7 @@ impl UsersListFollowingForUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1407,7 +1407,7 @@ impl UsersListGpgKeysForAuthenticatedUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1415,7 +1415,7 @@ impl UsersListGpgKeysForAuthenticatedUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1447,7 +1447,7 @@ impl UsersListGpgKeysForUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1455,7 +1455,7 @@ impl UsersListGpgKeysForUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1487,7 +1487,7 @@ impl UsersListPublicEmailsForAuthenticatedUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1495,7 +1495,7 @@ impl UsersListPublicEmailsForAuthenticatedUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1527,7 +1527,7 @@ impl UsersListPublicKeysForUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1535,7 +1535,7 @@ impl UsersListPublicKeysForUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1567,7 +1567,7 @@ impl UsersListPublicSshKeysForAuthenticatedUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1575,7 +1575,7 @@ impl UsersListPublicSshKeysForAuthenticatedUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1607,7 +1607,7 @@ impl UsersListSocialAccountsForAuthenticatedUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1615,7 +1615,7 @@ impl UsersListSocialAccountsForAuthenticatedUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1647,7 +1647,7 @@ impl UsersListSocialAccountsForUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1655,7 +1655,7 @@ impl UsersListSocialAccountsForUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1687,7 +1687,7 @@ impl UsersListSshSigningKeysForAuthenticatedUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1695,7 +1695,7 @@ impl UsersListSshSigningKeysForAuthenticatedUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1727,7 +1727,7 @@ impl UsersListSshSigningKeysForUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1735,7 +1735,7 @@ impl UsersListSshSigningKeysForUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1758,7 +1758,7 @@ impl<'api> Users<'api> {
     /// # Add an email address for the authenticated user
     ///
     /// OAuth app tokens and personal access tokens (classic) need the `user` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_email_for_authenticated_user](https://docs.github.com/rest/users/emails#add-an-email-address-for-the-authenticated-user)
     ///
     /// ---
@@ -1801,7 +1801,7 @@ impl<'api> Users<'api> {
     /// # Add an email address for the authenticated user
     ///
     /// OAuth app tokens and personal access tokens (classic) need the `user` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_email_for_authenticated_user](https://docs.github.com/rest/users/emails#add-an-email-address-for-the-authenticated-user)
     ///
     /// ---
@@ -1847,7 +1847,7 @@ impl<'api> Users<'api> {
     /// Add one or more social accounts to the authenticated user's profile.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `user` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_social_account_for_authenticated_user](https://docs.github.com/rest/users/social-accounts#add-social-accounts-for-the-authenticated-user)
     ///
     /// ---
@@ -1892,7 +1892,7 @@ impl<'api> Users<'api> {
     /// Add one or more social accounts to the authenticated user's profile.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `user` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_social_account_for_authenticated_user](https://docs.github.com/rest/users/social-accounts#add-social-accounts-for-the-authenticated-user)
     ///
     /// ---
@@ -1936,7 +1936,7 @@ impl<'api> Users<'api> {
     /// # Block a user
     ///
     /// Blocks the given user and returns a 204. If the authenticated user cannot block the given user a 422 is returned.
-    /// 
+    ///
     /// [GitHub API docs for block](https://docs.github.com/rest/users/blocking#block-a-user)
     ///
     /// ---
@@ -1979,7 +1979,7 @@ impl<'api> Users<'api> {
     /// # Block a user
     ///
     /// Blocks the given user and returns a 204. If the authenticated user cannot block the given user a 422 is returned.
-    /// 
+    ///
     /// [GitHub API docs for block](https://docs.github.com/rest/users/blocking#block-a-user)
     ///
     /// ---
@@ -2023,7 +2023,7 @@ impl<'api> Users<'api> {
     /// # Check if a user is blocked by the authenticated user
     ///
     /// Returns a 204 if the given user is blocked by the authenticated user. Returns a 404 if the given user is not blocked by the authenticated user, or if the given user account has been identified as spam by GitHub.
-    /// 
+    ///
     /// [GitHub API docs for check_blocked](https://docs.github.com/rest/users/blocking#check-if-a-user-is-blocked-by-the-authenticated-user)
     ///
     /// ---
@@ -2065,7 +2065,7 @@ impl<'api> Users<'api> {
     /// # Check if a user is blocked by the authenticated user
     ///
     /// Returns a 204 if the given user is blocked by the authenticated user. Returns a 404 if the given user is not blocked by the authenticated user, or if the given user account has been identified as spam by GitHub.
-    /// 
+    ///
     /// [GitHub API docs for check_blocked](https://docs.github.com/rest/users/blocking#check-if-a-user-is-blocked-by-the-authenticated-user)
     ///
     /// ---
@@ -2106,7 +2106,7 @@ impl<'api> Users<'api> {
     /// ---
     ///
     /// # Check if a user follows another user
-    /// 
+    ///
     /// [GitHub API docs for check_following_for_user](https://docs.github.com/rest/users/followers#check-if-a-user-follows-another-user)
     ///
     /// ---
@@ -2143,7 +2143,7 @@ impl<'api> Users<'api> {
     /// ---
     ///
     /// # Check if a user follows another user
-    /// 
+    ///
     /// [GitHub API docs for check_following_for_user](https://docs.github.com/rest/users/followers#check-if-a-user-follows-another-user)
     ///
     /// ---
@@ -2181,7 +2181,7 @@ impl<'api> Users<'api> {
     /// ---
     ///
     /// # Check if a person is followed by the authenticated user
-    /// 
+    ///
     /// [GitHub API docs for check_person_is_followed_by_authenticated](https://docs.github.com/rest/users/followers#check-if-a-person-is-followed-by-the-authenticated-user)
     ///
     /// ---
@@ -2221,7 +2221,7 @@ impl<'api> Users<'api> {
     /// ---
     ///
     /// # Check if a person is followed by the authenticated user
-    /// 
+    ///
     /// [GitHub API docs for check_person_is_followed_by_authenticated](https://docs.github.com/rest/users/followers#check-if-a-person-is-followed-by-the-authenticated-user)
     ///
     /// ---
@@ -2266,7 +2266,7 @@ impl<'api> Users<'api> {
     /// Adds a GPG key to the authenticated user's GitHub account.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:gpg_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_gpg_key_for_authenticated_user](https://docs.github.com/rest/users/gpg-keys#create-a-gpg-key-for-the-authenticated-user)
     ///
     /// ---
@@ -2311,7 +2311,7 @@ impl<'api> Users<'api> {
     /// Adds a GPG key to the authenticated user's GitHub account.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:gpg_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_gpg_key_for_authenticated_user](https://docs.github.com/rest/users/gpg-keys#create-a-gpg-key-for-the-authenticated-user)
     ///
     /// ---
@@ -2357,7 +2357,7 @@ impl<'api> Users<'api> {
     /// Adds a public SSH key to the authenticated user's GitHub account.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:gpg_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/users/keys#create-a-public-ssh-key-for-the-authenticated-user)
     ///
     /// ---
@@ -2402,7 +2402,7 @@ impl<'api> Users<'api> {
     /// Adds a public SSH key to the authenticated user's GitHub account.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:gpg_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/users/keys#create-a-public-ssh-key-for-the-authenticated-user)
     ///
     /// ---
@@ -2448,7 +2448,7 @@ impl<'api> Users<'api> {
     /// Creates an SSH signing key for the authenticated user's GitHub account.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:ssh_signing_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_ssh_signing_key_for_authenticated_user](https://docs.github.com/rest/users/ssh-signing-keys#create-a-ssh-signing-key-for-the-authenticated-user)
     ///
     /// ---
@@ -2493,7 +2493,7 @@ impl<'api> Users<'api> {
     /// Creates an SSH signing key for the authenticated user's GitHub account.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:ssh_signing_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_ssh_signing_key_for_authenticated_user](https://docs.github.com/rest/users/ssh-signing-keys#create-a-ssh-signing-key-for-the-authenticated-user)
     ///
     /// ---
@@ -2537,7 +2537,7 @@ impl<'api> Users<'api> {
     /// # Delete an email address for the authenticated user
     ///
     /// OAuth app tokens and personal access tokens (classic) need the `user` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_email_for_authenticated_user](https://docs.github.com/rest/users/emails#delete-an-email-address-for-the-authenticated-user)
     ///
     /// ---
@@ -2580,7 +2580,7 @@ impl<'api> Users<'api> {
     /// # Delete an email address for the authenticated user
     ///
     /// OAuth app tokens and personal access tokens (classic) need the `user` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_email_for_authenticated_user](https://docs.github.com/rest/users/emails#delete-an-email-address-for-the-authenticated-user)
     ///
     /// ---
@@ -2626,7 +2626,7 @@ impl<'api> Users<'api> {
     /// Removes a GPG key from the authenticated user's GitHub account.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:gpg_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_gpg_key_for_authenticated_user](https://docs.github.com/rest/users/gpg-keys#delete-a-gpg-key-for-the-authenticated-user)
     ///
     /// ---
@@ -2671,7 +2671,7 @@ impl<'api> Users<'api> {
     /// Removes a GPG key from the authenticated user's GitHub account.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:gpg_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_gpg_key_for_authenticated_user](https://docs.github.com/rest/users/gpg-keys#delete-a-gpg-key-for-the-authenticated-user)
     ///
     /// ---
@@ -2717,7 +2717,7 @@ impl<'api> Users<'api> {
     /// Removes a public SSH key from the authenticated user's GitHub account.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:public_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/users/keys#delete-a-public-ssh-key-for-the-authenticated-user)
     ///
     /// ---
@@ -2761,7 +2761,7 @@ impl<'api> Users<'api> {
     /// Removes a public SSH key from the authenticated user's GitHub account.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:public_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/users/keys#delete-a-public-ssh-key-for-the-authenticated-user)
     ///
     /// ---
@@ -2806,7 +2806,7 @@ impl<'api> Users<'api> {
     /// Deletes one or more social accounts from the authenticated user's profile.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `user` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_social_account_for_authenticated_user](https://docs.github.com/rest/users/social-accounts#delete-social-accounts-for-the-authenticated-user)
     ///
     /// ---
@@ -2851,7 +2851,7 @@ impl<'api> Users<'api> {
     /// Deletes one or more social accounts from the authenticated user's profile.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `user` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_social_account_for_authenticated_user](https://docs.github.com/rest/users/social-accounts#delete-social-accounts-for-the-authenticated-user)
     ///
     /// ---
@@ -2897,7 +2897,7 @@ impl<'api> Users<'api> {
     /// Deletes an SSH signing key from the authenticated user's GitHub account.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:ssh_signing_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_ssh_signing_key_for_authenticated_user](https://docs.github.com/rest/users/ssh-signing-keys#delete-an-ssh-signing-key-for-the-authenticated-user)
     ///
     /// ---
@@ -2941,7 +2941,7 @@ impl<'api> Users<'api> {
     /// Deletes an SSH signing key from the authenticated user's GitHub account.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:ssh_signing_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_ssh_signing_key_for_authenticated_user](https://docs.github.com/rest/users/ssh-signing-keys#delete-an-ssh-signing-key-for-the-authenticated-user)
     ///
     /// ---
@@ -2986,7 +2986,7 @@ impl<'api> Users<'api> {
     /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `user:follow` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for follow](https://docs.github.com/rest/users/followers#follow-a-user)
     ///
     /// ---
@@ -3030,7 +3030,7 @@ impl<'api> Users<'api> {
     /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `user:follow` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for follow](https://docs.github.com/rest/users/followers#follow-a-user)
     ///
     /// ---
@@ -3073,7 +3073,7 @@ impl<'api> Users<'api> {
     /// # Get the authenticated user
     ///
     /// OAuth app tokens and personal access tokens (classic) need the `user` scope in order for the response to include private profile information.
-    /// 
+    ///
     /// [GitHub API docs for get_authenticated](https://docs.github.com/rest/users/users#get-the-authenticated-user)
     ///
     /// ---
@@ -3114,7 +3114,7 @@ impl<'api> Users<'api> {
     /// # Get the authenticated user
     ///
     /// OAuth app tokens and personal access tokens (classic) need the `user` scope in order for the response to include private profile information.
-    /// 
+    ///
     /// [GitHub API docs for get_authenticated](https://docs.github.com/rest/users/users#get-the-authenticated-user)
     ///
     /// ---
@@ -3160,7 +3160,7 @@ impl<'api> Users<'api> {
     /// The `email` key in the following response is the publicly visible email address from your GitHub [profile page](https://github.com/settings/profile). When setting up your profile, you can select a primary email address to be “public” which provides an email entry for this endpoint. If you do not set a public email address for `email`, then it will have a value of `null`. You only see publicly visible email addresses when authenticated with GitHub. For more information, see [Authentication](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#authentication).
     /// 
     /// The Emails API enables you to list all of your email addresses, and toggle a primary email to be visible publicly. For more information, see "[Emails API](https://docs.github.com/rest/users/emails)".
-    /// 
+    ///
     /// [GitHub API docs for get_by_id](https://docs.github.com/rest/users/users#get-a-user-using-their-id)
     ///
     /// ---
@@ -3203,7 +3203,7 @@ impl<'api> Users<'api> {
     /// The `email` key in the following response is the publicly visible email address from your GitHub [profile page](https://github.com/settings/profile). When setting up your profile, you can select a primary email address to be “public” which provides an email entry for this endpoint. If you do not set a public email address for `email`, then it will have a value of `null`. You only see publicly visible email addresses when authenticated with GitHub. For more information, see [Authentication](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#authentication).
     /// 
     /// The Emails API enables you to list all of your email addresses, and toggle a primary email to be visible publicly. For more information, see "[Emails API](https://docs.github.com/rest/users/emails)".
-    /// 
+    ///
     /// [GitHub API docs for get_by_id](https://docs.github.com/rest/users/users#get-a-user-using-their-id)
     ///
     /// ---
@@ -3247,7 +3247,7 @@ impl<'api> Users<'api> {
     /// The `email` key in the following response is the publicly visible email address from your GitHub [profile page](https://github.com/settings/profile). When setting up your profile, you can select a primary email address to be “public” which provides an email entry for this endpoint. If you do not set a public email address for `email`, then it will have a value of `null`. You only see publicly visible email addresses when authenticated with GitHub. For more information, see [Authentication](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#authentication).
     /// 
     /// The Emails API enables you to list all of your email addresses, and toggle a primary email to be visible publicly. For more information, see "[Emails API](https://docs.github.com/rest/users/emails)".
-    /// 
+    ///
     /// [GitHub API docs for get_by_username](https://docs.github.com/rest/users/users#get-a-user)
     ///
     /// ---
@@ -3290,7 +3290,7 @@ impl<'api> Users<'api> {
     /// The `email` key in the following response is the publicly visible email address from your GitHub [profile page](https://github.com/settings/profile). When setting up your profile, you can select a primary email address to be “public” which provides an email entry for this endpoint. If you do not set a public email address for `email`, then it will have a value of `null`. You only see publicly visible email addresses when authenticated with GitHub. For more information, see [Authentication](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#authentication).
     /// 
     /// The Emails API enables you to list all of your email addresses, and toggle a primary email to be visible publicly. For more information, see "[Emails API](https://docs.github.com/rest/users/emails)".
-    /// 
+    ///
     /// [GitHub API docs for get_by_username](https://docs.github.com/rest/users/users#get-a-user)
     ///
     /// ---
@@ -3334,7 +3334,7 @@ impl<'api> Users<'api> {
     ///   The `subject_type` and `subject_id` parameters provide context for the person's hovercard, which returns more information than without the parameters. For example, if you wanted to find out more about `octocat` who owns the `Spoon-Knife` repository, you would use a `subject_type` value of `repository` and a `subject_id` value of `1300192` (the ID of the `Spoon-Knife` repository).
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_context_for_user](https://docs.github.com/rest/users/users#get-contextual-information-for-a-user)
     ///
     /// ---
@@ -3382,7 +3382,7 @@ impl<'api> Users<'api> {
     ///   The `subject_type` and `subject_id` parameters provide context for the person's hovercard, which returns more information than without the parameters. For example, if you wanted to find out more about `octocat` who owns the `Spoon-Knife` repository, you would use a `subject_type` value of `repository` and a `subject_id` value of `1300192` (the ID of the `Spoon-Knife` repository).
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_context_for_user](https://docs.github.com/rest/users/users#get-contextual-information-for-a-user)
     ///
     /// ---
@@ -3430,7 +3430,7 @@ impl<'api> Users<'api> {
     /// View extended details for a single GPG key.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:gpg_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_gpg_key_for_authenticated_user](https://docs.github.com/rest/users/gpg-keys#get-a-gpg-key-for-the-authenticated-user)
     ///
     /// ---
@@ -3474,7 +3474,7 @@ impl<'api> Users<'api> {
     /// View extended details for a single GPG key.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:gpg_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_gpg_key_for_authenticated_user](https://docs.github.com/rest/users/gpg-keys#get-a-gpg-key-for-the-authenticated-user)
     ///
     /// ---
@@ -3519,7 +3519,7 @@ impl<'api> Users<'api> {
     /// View extended details for a single public SSH key.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:public_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/users/keys#get-a-public-ssh-key-for-the-authenticated-user)
     ///
     /// ---
@@ -3563,7 +3563,7 @@ impl<'api> Users<'api> {
     /// View extended details for a single public SSH key.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:public_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/users/keys#get-a-public-ssh-key-for-the-authenticated-user)
     ///
     /// ---
@@ -3608,7 +3608,7 @@ impl<'api> Users<'api> {
     /// Gets extended details for an SSH signing key.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:ssh_signing_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_ssh_signing_key_for_authenticated_user](https://docs.github.com/rest/users/ssh-signing-keys#get-an-ssh-signing-key-for-the-authenticated-user)
     ///
     /// ---
@@ -3652,7 +3652,7 @@ impl<'api> Users<'api> {
     /// Gets extended details for an SSH signing key.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:ssh_signing_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_ssh_signing_key_for_authenticated_user](https://docs.github.com/rest/users/ssh-signing-keys#get-an-ssh-signing-key-for-the-authenticated-user)
     ///
     /// ---
@@ -3697,7 +3697,7 @@ impl<'api> Users<'api> {
     /// Lists all users, in the order that they signed up on GitHub. This list includes personal user accounts and organization accounts.
     /// 
     /// Note: Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers) to get the URL for the next page of users.
-    /// 
+    ///
     /// [GitHub API docs for list](https://docs.github.com/rest/users/users#list-users)
     ///
     /// ---
@@ -3742,7 +3742,7 @@ impl<'api> Users<'api> {
     /// Lists all users, in the order that they signed up on GitHub. This list includes personal user accounts and organization accounts.
     /// 
     /// Note: Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers) to get the URL for the next page of users.
-    /// 
+    ///
     /// [GitHub API docs for list](https://docs.github.com/rest/users/users#list-users)
     ///
     /// ---
@@ -3791,7 +3791,7 @@ impl<'api> Users<'api> {
     /// The collection of attestations returned by this endpoint is filtered according to the authenticated user's permissions; if the authenticated user cannot read a repository, the attestations associated with that repository will not be included in the response. In addition, when using a fine-grained access token the `attestations:read` permission is required.
     /// 
     /// **Please note:** in order to offer meaningful security benefits, an attestation's signature and timestamps **must** be cryptographically verified, and the identity of the attestation signer **must** be validated. Attestations can be verified using the [GitHub CLI `attestation verify` command](https://cli.github.com/manual/gh_attestation_verify). For more information, see [our guide on how to use artifact attestations to establish a build's provenance](https://docs.github.com/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds).
-    /// 
+    ///
     /// [GitHub API docs for list_attestations](https://docs.github.com/rest/users/attestations#list-attestations)
     ///
     /// ---
@@ -3840,7 +3840,7 @@ impl<'api> Users<'api> {
     /// The collection of attestations returned by this endpoint is filtered according to the authenticated user's permissions; if the authenticated user cannot read a repository, the attestations associated with that repository will not be included in the response. In addition, when using a fine-grained access token the `attestations:read` permission is required.
     /// 
     /// **Please note:** in order to offer meaningful security benefits, an attestation's signature and timestamps **must** be cryptographically verified, and the identity of the attestation signer **must** be validated. Attestations can be verified using the [GitHub CLI `attestation verify` command](https://cli.github.com/manual/gh_attestation_verify). For more information, see [our guide on how to use artifact attestations to establish a build's provenance](https://docs.github.com/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds).
-    /// 
+    ///
     /// [GitHub API docs for list_attestations](https://docs.github.com/rest/users/attestations#list-attestations)
     ///
     /// ---
@@ -3887,7 +3887,7 @@ impl<'api> Users<'api> {
     /// # List users blocked by the authenticated user
     ///
     /// List the users you've blocked on your personal account.
-    /// 
+    ///
     /// [GitHub API docs for list_blocked_by_authenticated_user](https://docs.github.com/rest/users/blocking#list-users-blocked-by-the-authenticated-user)
     ///
     /// ---
@@ -3933,7 +3933,7 @@ impl<'api> Users<'api> {
     /// # List users blocked by the authenticated user
     ///
     /// List the users you've blocked on your personal account.
-    /// 
+    ///
     /// [GitHub API docs for list_blocked_by_authenticated_user](https://docs.github.com/rest/users/blocking#list-users-blocked-by-the-authenticated-user)
     ///
     /// ---
@@ -3984,7 +3984,7 @@ impl<'api> Users<'api> {
     /// to the public.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `user:email` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_emails_for_authenticated_user](https://docs.github.com/rest/users/emails#list-email-addresses-for-the-authenticated-user)
     ///
     /// ---
@@ -4033,7 +4033,7 @@ impl<'api> Users<'api> {
     /// to the public.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `user:email` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_emails_for_authenticated_user](https://docs.github.com/rest/users/emails#list-email-addresses-for-the-authenticated-user)
     ///
     /// ---
@@ -4081,7 +4081,7 @@ impl<'api> Users<'api> {
     /// # List the people the authenticated user follows
     ///
     /// Lists the people who the authenticated user follows.
-    /// 
+    ///
     /// [GitHub API docs for list_followed_by_authenticated_user](https://docs.github.com/rest/users/followers#list-the-people-the-authenticated-user-follows)
     ///
     /// ---
@@ -4126,7 +4126,7 @@ impl<'api> Users<'api> {
     /// # List the people the authenticated user follows
     ///
     /// Lists the people who the authenticated user follows.
-    /// 
+    ///
     /// [GitHub API docs for list_followed_by_authenticated_user](https://docs.github.com/rest/users/followers#list-the-people-the-authenticated-user-follows)
     ///
     /// ---
@@ -4173,7 +4173,7 @@ impl<'api> Users<'api> {
     /// # List followers of the authenticated user
     ///
     /// Lists the people following the authenticated user.
-    /// 
+    ///
     /// [GitHub API docs for list_followers_for_authenticated_user](https://docs.github.com/rest/users/followers#list-followers-of-the-authenticated-user)
     ///
     /// ---
@@ -4218,7 +4218,7 @@ impl<'api> Users<'api> {
     /// # List followers of the authenticated user
     ///
     /// Lists the people following the authenticated user.
-    /// 
+    ///
     /// [GitHub API docs for list_followers_for_authenticated_user](https://docs.github.com/rest/users/followers#list-followers-of-the-authenticated-user)
     ///
     /// ---
@@ -4265,7 +4265,7 @@ impl<'api> Users<'api> {
     /// # List followers of a user
     ///
     /// Lists the people following the specified user.
-    /// 
+    ///
     /// [GitHub API docs for list_followers_for_user](https://docs.github.com/rest/users/followers#list-followers-of-a-user)
     ///
     /// ---
@@ -4307,7 +4307,7 @@ impl<'api> Users<'api> {
     /// # List followers of a user
     ///
     /// Lists the people following the specified user.
-    /// 
+    ///
     /// [GitHub API docs for list_followers_for_user](https://docs.github.com/rest/users/followers#list-followers-of-a-user)
     ///
     /// ---
@@ -4351,7 +4351,7 @@ impl<'api> Users<'api> {
     /// # List the people a user follows
     ///
     /// Lists the people who the specified user follows.
-    /// 
+    ///
     /// [GitHub API docs for list_following_for_user](https://docs.github.com/rest/users/followers#list-the-people-a-user-follows)
     ///
     /// ---
@@ -4393,7 +4393,7 @@ impl<'api> Users<'api> {
     /// # List the people a user follows
     ///
     /// Lists the people who the specified user follows.
-    /// 
+    ///
     /// [GitHub API docs for list_following_for_user](https://docs.github.com/rest/users/followers#list-the-people-a-user-follows)
     ///
     /// ---
@@ -4439,7 +4439,7 @@ impl<'api> Users<'api> {
     /// Lists the current user's GPG keys.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:gpg_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_gpg_keys_for_authenticated_user](https://docs.github.com/rest/users/gpg-keys#list-gpg-keys-for-the-authenticated-user)
     ///
     /// ---
@@ -4487,7 +4487,7 @@ impl<'api> Users<'api> {
     /// Lists the current user's GPG keys.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:gpg_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_gpg_keys_for_authenticated_user](https://docs.github.com/rest/users/gpg-keys#list-gpg-keys-for-the-authenticated-user)
     ///
     /// ---
@@ -4535,7 +4535,7 @@ impl<'api> Users<'api> {
     /// # List GPG keys for a user
     ///
     /// Lists the GPG keys for a user. This information is accessible by anyone.
-    /// 
+    ///
     /// [GitHub API docs for list_gpg_keys_for_user](https://docs.github.com/rest/users/gpg-keys#list-gpg-keys-for-a-user)
     ///
     /// ---
@@ -4577,7 +4577,7 @@ impl<'api> Users<'api> {
     /// # List GPG keys for a user
     ///
     /// Lists the GPG keys for a user. This information is accessible by anyone.
-    /// 
+    ///
     /// [GitHub API docs for list_gpg_keys_for_user](https://docs.github.com/rest/users/gpg-keys#list-gpg-keys-for-a-user)
     ///
     /// ---
@@ -4625,7 +4625,7 @@ impl<'api> Users<'api> {
     /// endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `user:email` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_public_emails_for_authenticated_user](https://docs.github.com/rest/users/emails#list-public-email-addresses-for-the-authenticated-user)
     ///
     /// ---
@@ -4675,7 +4675,7 @@ impl<'api> Users<'api> {
     /// endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `user:email` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_public_emails_for_authenticated_user](https://docs.github.com/rest/users/emails#list-public-email-addresses-for-the-authenticated-user)
     ///
     /// ---
@@ -4723,7 +4723,7 @@ impl<'api> Users<'api> {
     /// # List public keys for a user
     ///
     /// Lists the _verified_ public SSH keys for a user. This is accessible by anyone.
-    /// 
+    ///
     /// [GitHub API docs for list_public_keys_for_user](https://docs.github.com/rest/users/keys#list-public-keys-for-a-user)
     ///
     /// ---
@@ -4765,7 +4765,7 @@ impl<'api> Users<'api> {
     /// # List public keys for a user
     ///
     /// Lists the _verified_ public SSH keys for a user. This is accessible by anyone.
-    /// 
+    ///
     /// [GitHub API docs for list_public_keys_for_user](https://docs.github.com/rest/users/keys#list-public-keys-for-a-user)
     ///
     /// ---
@@ -4811,7 +4811,7 @@ impl<'api> Users<'api> {
     /// Lists the public SSH keys for the authenticated user's GitHub account.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:public_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_public_ssh_keys_for_authenticated_user](https://docs.github.com/rest/users/keys#list-public-ssh-keys-for-the-authenticated-user)
     ///
     /// ---
@@ -4859,7 +4859,7 @@ impl<'api> Users<'api> {
     /// Lists the public SSH keys for the authenticated user's GitHub account.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:public_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_public_ssh_keys_for_authenticated_user](https://docs.github.com/rest/users/keys#list-public-ssh-keys-for-the-authenticated-user)
     ///
     /// ---
@@ -4907,7 +4907,7 @@ impl<'api> Users<'api> {
     /// # List social accounts for the authenticated user
     ///
     /// Lists all of your social accounts.
-    /// 
+    ///
     /// [GitHub API docs for list_social_accounts_for_authenticated_user](https://docs.github.com/rest/users/social-accounts#list-social-accounts-for-the-authenticated-user)
     ///
     /// ---
@@ -4953,7 +4953,7 @@ impl<'api> Users<'api> {
     /// # List social accounts for the authenticated user
     ///
     /// Lists all of your social accounts.
-    /// 
+    ///
     /// [GitHub API docs for list_social_accounts_for_authenticated_user](https://docs.github.com/rest/users/social-accounts#list-social-accounts-for-the-authenticated-user)
     ///
     /// ---
@@ -5001,7 +5001,7 @@ impl<'api> Users<'api> {
     /// # List social accounts for a user
     ///
     /// Lists social media accounts for a user. This endpoint is accessible by anyone.
-    /// 
+    ///
     /// [GitHub API docs for list_social_accounts_for_user](https://docs.github.com/rest/users/social-accounts#list-social-accounts-for-a-user)
     ///
     /// ---
@@ -5043,7 +5043,7 @@ impl<'api> Users<'api> {
     /// # List social accounts for a user
     ///
     /// Lists social media accounts for a user. This endpoint is accessible by anyone.
-    /// 
+    ///
     /// [GitHub API docs for list_social_accounts_for_user](https://docs.github.com/rest/users/social-accounts#list-social-accounts-for-a-user)
     ///
     /// ---
@@ -5089,7 +5089,7 @@ impl<'api> Users<'api> {
     /// Lists the SSH signing keys for the authenticated user's GitHub account.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:ssh_signing_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_ssh_signing_keys_for_authenticated_user](https://docs.github.com/rest/users/ssh-signing-keys#list-ssh-signing-keys-for-the-authenticated-user)
     ///
     /// ---
@@ -5137,7 +5137,7 @@ impl<'api> Users<'api> {
     /// Lists the SSH signing keys for the authenticated user's GitHub account.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:ssh_signing_key` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_ssh_signing_keys_for_authenticated_user](https://docs.github.com/rest/users/ssh-signing-keys#list-ssh-signing-keys-for-the-authenticated-user)
     ///
     /// ---
@@ -5185,7 +5185,7 @@ impl<'api> Users<'api> {
     /// # List SSH signing keys for a user
     ///
     /// Lists the SSH signing keys for a user. This operation is accessible by anyone.
-    /// 
+    ///
     /// [GitHub API docs for list_ssh_signing_keys_for_user](https://docs.github.com/rest/users/ssh-signing-keys#list-ssh-signing-keys-for-a-user)
     ///
     /// ---
@@ -5227,7 +5227,7 @@ impl<'api> Users<'api> {
     /// # List SSH signing keys for a user
     ///
     /// Lists the SSH signing keys for a user. This operation is accessible by anyone.
-    /// 
+    ///
     /// [GitHub API docs for list_ssh_signing_keys_for_user](https://docs.github.com/rest/users/ssh-signing-keys#list-ssh-signing-keys-for-a-user)
     ///
     /// ---
@@ -5271,7 +5271,7 @@ impl<'api> Users<'api> {
     /// # Set primary email visibility for the authenticated user
     ///
     /// Sets the visibility for your primary email addresses.
-    /// 
+    ///
     /// [GitHub API docs for set_primary_email_visibility_for_authenticated_user](https://docs.github.com/rest/users/emails#set-primary-email-visibility-for-the-authenticated-user)
     ///
     /// ---
@@ -5314,7 +5314,7 @@ impl<'api> Users<'api> {
     /// # Set primary email visibility for the authenticated user
     ///
     /// Sets the visibility for your primary email addresses.
-    /// 
+    ///
     /// [GitHub API docs for set_primary_email_visibility_for_authenticated_user](https://docs.github.com/rest/users/emails#set-primary-email-visibility-for-the-authenticated-user)
     ///
     /// ---
@@ -5358,7 +5358,7 @@ impl<'api> Users<'api> {
     /// # Unblock a user
     ///
     /// Unblocks the given user and returns a 204.
-    /// 
+    ///
     /// [GitHub API docs for unblock](https://docs.github.com/rest/users/blocking#unblock-a-user)
     ///
     /// ---
@@ -5400,7 +5400,7 @@ impl<'api> Users<'api> {
     /// # Unblock a user
     ///
     /// Unblocks the given user and returns a 204.
-    /// 
+    ///
     /// [GitHub API docs for unblock](https://docs.github.com/rest/users/blocking#unblock-a-user)
     ///
     /// ---
@@ -5443,7 +5443,7 @@ impl<'api> Users<'api> {
     /// # Unfollow a user
     ///
     /// OAuth app tokens and personal access tokens (classic) need the `user:follow` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for unfollow](https://docs.github.com/rest/users/followers#unfollow-a-user)
     ///
     /// ---
@@ -5485,7 +5485,7 @@ impl<'api> Users<'api> {
     /// # Unfollow a user
     ///
     /// OAuth app tokens and personal access tokens (classic) need the `user:follow` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for unfollow](https://docs.github.com/rest/users/followers#unfollow-a-user)
     ///
     /// ---
@@ -5528,7 +5528,7 @@ impl<'api> Users<'api> {
     /// # Update the authenticated user
     ///
     /// **Note:** If your email is set to private and you send an `email` parameter as part of this request to update your profile, your privacy settings are still enforced: the email address will not be displayed on your public profile or via the API.
-    /// 
+    ///
     /// [GitHub API docs for update_authenticated](https://docs.github.com/rest/users/users#update-the-authenticated-user)
     ///
     /// ---
@@ -5571,7 +5571,7 @@ impl<'api> Users<'api> {
     /// # Update the authenticated user
     ///
     /// **Note:** If your email is set to private and you send an `email` parameter as part of this request to update your profile, your privacy settings are still enforced: the email address will not be displayed on your public profile or via the API.
-    /// 
+    ///
     /// [GitHub API docs for update_authenticated](https://docs.github.com/rest/users/users#update-the-authenticated-user)
     ///
     /// ---

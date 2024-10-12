@@ -79,7 +79,7 @@ impl<'api> Oidc<'api> {
     /// Gets the customization template for an OpenID Connect (OIDC) subject claim.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_oidc_custom_sub_template_for_org](https://docs.github.com/rest/actions/oidc#get-the-customization-template-for-an-oidc-subject-claim-for-an-organization)
     ///
     /// ---
@@ -119,7 +119,7 @@ impl<'api> Oidc<'api> {
     /// Gets the customization template for an OpenID Connect (OIDC) subject claim.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `read:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_oidc_custom_sub_template_for_org](https://docs.github.com/rest/actions/oidc#get-the-customization-template-for-an-oidc-subject-claim-for-an-organization)
     ///
     /// ---
@@ -160,18 +160,18 @@ impl<'api> Oidc<'api> {
     /// Creates or updates the customization template for an OpenID Connect (OIDC) subject claim.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_oidc_custom_sub_template_for_org](https://docs.github.com/rest/actions/oidc#set-the-customization-template-for-an-oidc-subject-claim-for-an-organization)
     ///
     /// ---
-    pub async fn update_oidc_custom_sub_template_for_org_async(&self, org: &str, body: PutOidcUpdateOidcCustomSubTemplateForOrg) -> Result<EmptyObject, OidcUpdateOidcCustomSubTemplateForOrgError> {
+    pub async fn update_oidc_custom_sub_template_for_org_async(&self, org: &str, body: OidcCustomSub) -> Result<EmptyObject, OidcUpdateOidcCustomSubTemplateForOrgError> {
 
         let request_uri = format!("{}/orgs/{}/actions/oidc/customization/sub", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutOidcUpdateOidcCustomSubTemplateForOrg::from_json(body)?),
+            body: Some(OidcCustomSub::from_json(body)?),
             method: "PUT",
             headers: vec![]
         };
@@ -202,19 +202,19 @@ impl<'api> Oidc<'api> {
     /// Creates or updates the customization template for an OpenID Connect (OIDC) subject claim.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_oidc_custom_sub_template_for_org](https://docs.github.com/rest/actions/oidc#set-the-customization-template-for-an-oidc-subject-claim-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_oidc_custom_sub_template_for_org(&self, org: &str, body: PutOidcUpdateOidcCustomSubTemplateForOrg) -> Result<EmptyObject, OidcUpdateOidcCustomSubTemplateForOrgError> {
+    pub fn update_oidc_custom_sub_template_for_org(&self, org: &str, body: OidcCustomSub) -> Result<EmptyObject, OidcUpdateOidcCustomSubTemplateForOrgError> {
 
         let request_uri = format!("{}/orgs/{}/actions/oidc/customization/sub", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutOidcUpdateOidcCustomSubTemplateForOrg::from_json(body)?),
+            body: Some(OidcCustomSub::from_json(body)?),
             method: "PUT",
             headers: vec![]
         };

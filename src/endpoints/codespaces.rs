@@ -1166,7 +1166,7 @@ impl<'req> CodespacesCheckPermissionsForDevcontainerParams<'req> {
 
     /// The git reference that points to the location of the devcontainer configuration to use for the permission check. The value of `ref` will typically be a branch name (`heads/BRANCH_NAME`). For more information, see \"[Git References](https://git-scm.com/book/en/v2/Git-Internals-Git-References)\" in the Git documentation.
     pub fn git_ref(self, git_ref: &'req str) -> Self {
-        Self { 
+        Self {
             git_ref: git_ref,
             devcontainer_path: self.devcontainer_path, 
         }
@@ -1174,7 +1174,7 @@ impl<'req> CodespacesCheckPermissionsForDevcontainerParams<'req> {
 
     /// Path to the devcontainer.json configuration to use for the permission check.
     pub fn devcontainer_path(self, devcontainer_path: &'req str) -> Self {
-        Self { 
+        Self {
             git_ref: self.git_ref, 
             devcontainer_path: devcontainer_path,
         }
@@ -1197,7 +1197,7 @@ impl CodespacesGetCodespacesForUserInOrgParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1205,7 +1205,7 @@ impl CodespacesGetCodespacesForUserInOrgParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1237,7 +1237,7 @@ impl CodespacesListDevcontainersInRepositoryForAuthenticatedUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1245,7 +1245,7 @@ impl CodespacesListDevcontainersInRepositoryForAuthenticatedUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1279,7 +1279,7 @@ impl CodespacesListForAuthenticatedUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
             repository_id: self.repository_id, 
@@ -1288,7 +1288,7 @@ impl CodespacesListForAuthenticatedUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
             repository_id: self.repository_id, 
@@ -1297,7 +1297,7 @@ impl CodespacesListForAuthenticatedUserParams {
 
     /// ID of the Repository to filter on
     pub fn repository_id(self, repository_id: i32) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             repository_id: Some(repository_id),
@@ -1330,7 +1330,7 @@ impl CodespacesListInOrganizationParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1338,7 +1338,7 @@ impl CodespacesListInOrganizationParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1370,7 +1370,7 @@ impl CodespacesListInRepositoryForAuthenticatedUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1378,7 +1378,7 @@ impl CodespacesListInRepositoryForAuthenticatedUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1410,7 +1410,7 @@ impl CodespacesListOrgSecretsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1418,7 +1418,7 @@ impl CodespacesListOrgSecretsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1450,7 +1450,7 @@ impl CodespacesListRepoSecretsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1458,7 +1458,7 @@ impl CodespacesListRepoSecretsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1490,7 +1490,7 @@ impl CodespacesListSecretsForAuthenticatedUserParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1498,7 +1498,7 @@ impl CodespacesListSecretsForAuthenticatedUserParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1530,7 +1530,7 @@ impl CodespacesListSelectedReposForOrgSecretParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             page: Some(page),
             per_page: self.per_page, 
         }
@@ -1538,7 +1538,7 @@ impl CodespacesListSelectedReposForOrgSecretParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             page: self.page, 
             per_page: Some(per_page),
         }
@@ -1570,7 +1570,7 @@ impl<'req> CodespacesPreFlightWithRepoForAuthenticatedUserParams<'req> {
 
     /// The branch or commit to check for a default devcontainer path. If not specified, the default branch will be checked.
     pub fn git_ref(self, git_ref: &'req str) -> Self {
-        Self { 
+        Self {
             git_ref: Some(git_ref),
             client_ip: self.client_ip, 
         }
@@ -1578,7 +1578,7 @@ impl<'req> CodespacesPreFlightWithRepoForAuthenticatedUserParams<'req> {
 
     /// An alternative IP for default location auto-detection, such as when proxying a request.
     pub fn client_ip(self, client_ip: &'req str) -> Self {
-        Self { 
+        Self {
             git_ref: self.git_ref, 
             client_ip: Some(client_ip),
         }
@@ -1603,7 +1603,7 @@ impl<'req> CodespacesRepoMachinesForAuthenticatedUserParams<'req> {
 
     /// The location to check for available machines. Assigned by IP if not provided.
     pub fn location(self, location: &'req str) -> Self {
-        Self { 
+        Self {
             location: Some(location),
             client_ip: self.client_ip, 
             git_ref: self.git_ref, 
@@ -1612,7 +1612,7 @@ impl<'req> CodespacesRepoMachinesForAuthenticatedUserParams<'req> {
 
     /// IP for location auto-detection when proxying a request
     pub fn client_ip(self, client_ip: &'req str) -> Self {
-        Self { 
+        Self {
             location: self.location, 
             client_ip: Some(client_ip),
             git_ref: self.git_ref, 
@@ -1621,7 +1621,7 @@ impl<'req> CodespacesRepoMachinesForAuthenticatedUserParams<'req> {
 
     /// The branch or commit to check for prebuild availability and devcontainer restrictions.
     pub fn git_ref(self, git_ref: &'req str) -> Self {
-        Self { 
+        Self {
             location: self.location, 
             client_ip: self.client_ip, 
             git_ref: Some(git_ref),
@@ -1640,7 +1640,7 @@ impl<'api> Codespaces<'api> {
     /// The authenticated user must have Codespaces access to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_repository_for_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#add-a-selected-repository-to-a-user-secret)
     ///
     /// ---
@@ -1686,7 +1686,7 @@ impl<'api> Codespaces<'api> {
     /// The authenticated user must have Codespaces access to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_repository_for_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#add-a-selected-repository-to-a-user-secret)
     ///
     /// ---
@@ -1730,7 +1730,7 @@ impl<'api> Codespaces<'api> {
     ///
     /// Adds a repository to an organization development environment secret when the `visibility` for repository access is set to `selected`. The visibility is set when you [Create or update an organization secret](https://docs.github.com/rest/codespaces/organization-secrets#create-or-update-an-organization-secret).
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_selected_repo_to_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#add-selected-repository-to-an-organization-secret)
     ///
     /// ---
@@ -1772,7 +1772,7 @@ impl<'api> Codespaces<'api> {
     ///
     /// Adds a repository to an organization development environment secret when the `visibility` for repository access is set to `selected`. The visibility is set when you [Create or update an organization secret](https://docs.github.com/rest/codespaces/organization-secrets#create-or-update-an-organization-secret).
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_selected_repo_to_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#add-selected-repository-to-an-organization-secret)
     ///
     /// ---
@@ -1816,7 +1816,7 @@ impl<'api> Codespaces<'api> {
     /// Checks whether the permissions defined by a given devcontainer configuration have been accepted by the authenticated user.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for check_permissions_for_devcontainer](https://docs.github.com/rest/codespaces/codespaces#check-if-permissions-defined-by-a-devcontainer-have-been-accepted-by-the-authenticated-user)
     ///
     /// ---
@@ -1863,7 +1863,7 @@ impl<'api> Codespaces<'api> {
     /// Checks whether the permissions defined by a given devcontainer configuration have been accepted by the authenticated user.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for check_permissions_for_devcontainer](https://docs.github.com/rest/codespaces/codespaces#check-if-permissions-defined-by-a-devcontainer-have-been-accepted-by-the-authenticated-user)
     ///
     /// ---
@@ -1912,7 +1912,7 @@ impl<'api> Codespaces<'api> {
     /// List the machine types a codespace can transition to use.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for codespace_machines_for_authenticated_user](https://docs.github.com/rest/codespaces/machines#list-machine-types-for-a-codespace)
     ///
     /// ---
@@ -1957,7 +1957,7 @@ impl<'api> Codespaces<'api> {
     /// List the machine types a codespace can transition to use.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for codespace_machines_for_authenticated_user](https://docs.github.com/rest/codespaces/machines#list-machine-types-for-a-codespace)
     ///
     /// ---
@@ -2005,7 +2005,7 @@ impl<'api> Codespaces<'api> {
     /// This endpoint requires either a `repository_id` OR a `pull_request` but not both.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#create-a-codespace-for-the-authenticated-user)
     ///
     /// ---
@@ -2052,7 +2052,7 @@ impl<'api> Codespaces<'api> {
     /// This endpoint requires either a `repository_id` OR a `pull_request` but not both.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#create-a-codespace-for-the-authenticated-user)
     ///
     /// ---
@@ -2099,7 +2099,7 @@ impl<'api> Codespaces<'api> {
     /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). For more information, see "[Encrypting secrets for the REST API](https://docs.github.com/rest/guides/encrypting-secrets-for-the-rest-api)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#create-or-update-an-organization-secret)
     ///
     /// ---
@@ -2143,7 +2143,7 @@ impl<'api> Codespaces<'api> {
     /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). For more information, see "[Encrypting secrets for the REST API](https://docs.github.com/rest/guides/encrypting-secrets-for-the-rest-api)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#create-or-update-an-organization-secret)
     ///
     /// ---
@@ -2188,7 +2188,7 @@ impl<'api> Codespaces<'api> {
     /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). For more information, see "[Encrypting secrets for the REST API](https://docs.github.com/rest/guides/encrypting-secrets-for-the-rest-api)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_repo_secret](https://docs.github.com/rest/codespaces/repository-secrets#create-or-update-a-repository-secret)
     ///
     /// ---
@@ -2230,7 +2230,7 @@ impl<'api> Codespaces<'api> {
     /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). For more information, see "[Encrypting secrets for the REST API](https://docs.github.com/rest/guides/encrypting-secrets-for-the-rest-api)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_repo_secret](https://docs.github.com/rest/codespaces/repository-secrets#create-or-update-a-repository-secret)
     ///
     /// ---
@@ -2275,7 +2275,7 @@ impl<'api> Codespaces<'api> {
     /// The authenticated user must have Codespaces access to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#create-or-update-a-secret-for-the-authenticated-user)
     ///
     /// ---
@@ -2321,7 +2321,7 @@ impl<'api> Codespaces<'api> {
     /// The authenticated user must have Codespaces access to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#create-or-update-a-secret-for-the-authenticated-user)
     ///
     /// ---
@@ -2365,7 +2365,7 @@ impl<'api> Codespaces<'api> {
     /// Creates a codespace owned by the authenticated user for the specified pull request.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_with_pr_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#create-a-codespace-from-a-pull-request)
     ///
     /// ---
@@ -2410,7 +2410,7 @@ impl<'api> Codespaces<'api> {
     /// Creates a codespace owned by the authenticated user for the specified pull request.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_with_pr_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#create-a-codespace-from-a-pull-request)
     ///
     /// ---
@@ -2456,7 +2456,7 @@ impl<'api> Codespaces<'api> {
     /// Creates a codespace owned by the authenticated user in the specified repository.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_with_repo_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#create-a-codespace-in-a-repository)
     ///
     /// ---
@@ -2502,7 +2502,7 @@ impl<'api> Codespaces<'api> {
     /// Creates a codespace owned by the authenticated user in the specified repository.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_with_repo_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#create-a-codespace-in-a-repository)
     ///
     /// ---
@@ -2552,7 +2552,7 @@ impl<'api> Codespaces<'api> {
     /// For information on how to change this setting, see "[Manage access control for organization codespaces](https://docs.github.com/rest/codespaces/organizations#manage-access-control-for-organization-codespaces)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_codespaces_access_users](https://docs.github.com/rest/codespaces/organizations#remove-users-from-codespaces-access-for-an-organization)
     ///
     /// ---
@@ -2600,7 +2600,7 @@ impl<'api> Codespaces<'api> {
     /// For information on how to change this setting, see "[Manage access control for organization codespaces](https://docs.github.com/rest/codespaces/organizations#manage-access-control-for-organization-codespaces)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_codespaces_access_users](https://docs.github.com/rest/codespaces/organizations#remove-users-from-codespaces-access-for-an-organization)
     ///
     /// ---
@@ -2646,7 +2646,7 @@ impl<'api> Codespaces<'api> {
     /// Deletes a user's codespace.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#delete-a-codespace-for-the-authenticated-user)
     ///
     /// ---
@@ -2691,7 +2691,7 @@ impl<'api> Codespaces<'api> {
     /// Deletes a user's codespace.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#delete-a-codespace-for-the-authenticated-user)
     ///
     /// ---
@@ -2737,7 +2737,7 @@ impl<'api> Codespaces<'api> {
     /// Deletes a user's codespace.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_from_organization](https://docs.github.com/rest/codespaces/organizations#delete-a-codespace-from-the-organization)
     ///
     /// ---
@@ -2782,7 +2782,7 @@ impl<'api> Codespaces<'api> {
     /// Deletes a user's codespace.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_from_organization](https://docs.github.com/rest/codespaces/organizations#delete-a-codespace-from-the-organization)
     ///
     /// ---
@@ -2828,7 +2828,7 @@ impl<'api> Codespaces<'api> {
     /// Deletes an organization development environment secret using the secret name.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#delete-an-organization-secret)
     ///
     /// ---
@@ -2869,7 +2869,7 @@ impl<'api> Codespaces<'api> {
     /// Deletes an organization development environment secret using the secret name.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#delete-an-organization-secret)
     ///
     /// ---
@@ -2911,7 +2911,7 @@ impl<'api> Codespaces<'api> {
     /// Deletes a development environment secret in a repository using the secret name.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_repo_secret](https://docs.github.com/rest/codespaces/repository-secrets#delete-a-repository-secret)
     ///
     /// ---
@@ -2951,7 +2951,7 @@ impl<'api> Codespaces<'api> {
     /// Deletes a development environment secret in a repository using the secret name.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_repo_secret](https://docs.github.com/rest/codespaces/repository-secrets#delete-a-repository-secret)
     ///
     /// ---
@@ -2994,7 +2994,7 @@ impl<'api> Codespaces<'api> {
     /// The authenticated user must have Codespaces access to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#delete-a-secret-for-the-authenticated-user)
     ///
     /// ---
@@ -3036,7 +3036,7 @@ impl<'api> Codespaces<'api> {
     /// The authenticated user must have Codespaces access to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#delete-a-secret-for-the-authenticated-user)
     ///
     /// ---
@@ -3079,7 +3079,7 @@ impl<'api> Codespaces<'api> {
     /// If changes cannot be pushed to the codespace's repository, they will be pushed to a new or previously-existing fork instead.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for export_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#export-a-codespace-for-the-authenticated-user)
     ///
     /// ---
@@ -3126,7 +3126,7 @@ impl<'api> Codespaces<'api> {
     /// If changes cannot be pushed to the codespace's repository, they will be pushed to a new or previously-existing fork instead.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for export_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#export-a-codespace-for-the-authenticated-user)
     ///
     /// ---
@@ -3172,7 +3172,7 @@ impl<'api> Codespaces<'api> {
     /// Lists the codespaces that a member of an organization has for repositories in that organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_codespaces_for_user_in_org](https://docs.github.com/rest/codespaces/organizations#list-codespaces-for-a-user-in-organization)
     ///
     /// ---
@@ -3221,7 +3221,7 @@ impl<'api> Codespaces<'api> {
     /// Lists the codespaces that a member of an organization has for repositories in that organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_codespaces_for_user_in_org](https://docs.github.com/rest/codespaces/organizations#list-codespaces-for-a-user-in-organization)
     ///
     /// ---
@@ -3272,7 +3272,7 @@ impl<'api> Codespaces<'api> {
     /// Gets information about an export of a codespace.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_export_details_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#get-details-about-a-codespace-export)
     ///
     /// ---
@@ -3313,7 +3313,7 @@ impl<'api> Codespaces<'api> {
     /// Gets information about an export of a codespace.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_export_details_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#get-details-about-a-codespace-export)
     ///
     /// ---
@@ -3355,7 +3355,7 @@ impl<'api> Codespaces<'api> {
     /// Gets information about a user's codespace.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#get-a-codespace-for-the-authenticated-user)
     ///
     /// ---
@@ -3400,7 +3400,7 @@ impl<'api> Codespaces<'api> {
     /// Gets information about a user's codespace.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#get-a-codespace-for-the-authenticated-user)
     ///
     /// ---
@@ -3445,7 +3445,7 @@ impl<'api> Codespaces<'api> {
     ///
     /// Gets a public key for an organization, which is required in order to encrypt secrets. You need to encrypt the value of a secret before you can create or update secrets.
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_org_public_key](https://docs.github.com/rest/codespaces/organization-secrets#get-an-organization-public-key)
     ///
     /// ---
@@ -3484,7 +3484,7 @@ impl<'api> Codespaces<'api> {
     ///
     /// Gets a public key for an organization, which is required in order to encrypt secrets. You need to encrypt the value of a secret before you can create or update secrets.
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_org_public_key](https://docs.github.com/rest/codespaces/organization-secrets#get-an-organization-public-key)
     ///
     /// ---
@@ -3525,7 +3525,7 @@ impl<'api> Codespaces<'api> {
     /// Gets an organization development environment secret without revealing its encrypted value.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#get-an-organization-secret)
     ///
     /// ---
@@ -3565,7 +3565,7 @@ impl<'api> Codespaces<'api> {
     /// Gets an organization development environment secret without revealing its encrypted value.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#get-an-organization-secret)
     ///
     /// ---
@@ -3608,7 +3608,7 @@ impl<'api> Codespaces<'api> {
     /// The authenticated user must have Codespaces access to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_public_key_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#get-public-key-for-the-authenticated-user)
     ///
     /// ---
@@ -3650,7 +3650,7 @@ impl<'api> Codespaces<'api> {
     /// The authenticated user must have Codespaces access to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_public_key_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#get-public-key-for-the-authenticated-user)
     ///
     /// ---
@@ -3692,7 +3692,7 @@ impl<'api> Codespaces<'api> {
     /// encrypt a secret before you can create or update secrets.
     /// 
     /// If the repository is private, OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_repo_public_key](https://docs.github.com/rest/codespaces/repository-secrets#get-a-repository-public-key)
     ///
     /// ---
@@ -3733,7 +3733,7 @@ impl<'api> Codespaces<'api> {
     /// encrypt a secret before you can create or update secrets.
     /// 
     /// If the repository is private, OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_repo_public_key](https://docs.github.com/rest/codespaces/repository-secrets#get-a-repository-public-key)
     ///
     /// ---
@@ -3774,7 +3774,7 @@ impl<'api> Codespaces<'api> {
     /// Gets a single repository development environment secret without revealing its encrypted value.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_repo_secret](https://docs.github.com/rest/codespaces/repository-secrets#get-a-repository-secret)
     ///
     /// ---
@@ -3814,7 +3814,7 @@ impl<'api> Codespaces<'api> {
     /// Gets a single repository development environment secret without revealing its encrypted value.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_repo_secret](https://docs.github.com/rest/codespaces/repository-secrets#get-a-repository-secret)
     ///
     /// ---
@@ -3857,7 +3857,7 @@ impl<'api> Codespaces<'api> {
     /// The authenticated user must have Codespaces access to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#get-a-secret-for-the-authenticated-user)
     ///
     /// ---
@@ -3899,7 +3899,7 @@ impl<'api> Codespaces<'api> {
     /// The authenticated user must have Codespaces access to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#get-a-secret-for-the-authenticated-user)
     ///
     /// ---
@@ -3941,7 +3941,7 @@ impl<'api> Codespaces<'api> {
     /// specify launchpoint configurations for codespaces created within the repository.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_devcontainers_in_repository_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#list-devcontainer-configurations-in-a-repository-for-the-authenticated-user)
     ///
     /// ---
@@ -3991,7 +3991,7 @@ impl<'api> Codespaces<'api> {
     /// specify launchpoint configurations for codespaces created within the repository.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_devcontainers_in_repository_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#list-devcontainer-configurations-in-a-repository-for-the-authenticated-user)
     ///
     /// ---
@@ -4042,7 +4042,7 @@ impl<'api> Codespaces<'api> {
     /// Lists the authenticated user's codespaces.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#list-codespaces-for-the-authenticated-user)
     ///
     /// ---
@@ -4091,7 +4091,7 @@ impl<'api> Codespaces<'api> {
     /// Lists the authenticated user's codespaces.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#list-codespaces-for-the-authenticated-user)
     ///
     /// ---
@@ -4142,7 +4142,7 @@ impl<'api> Codespaces<'api> {
     /// Lists the codespaces associated to a specified organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_in_organization](https://docs.github.com/rest/codespaces/organizations#list-codespaces-for-the-organization)
     ///
     /// ---
@@ -4191,7 +4191,7 @@ impl<'api> Codespaces<'api> {
     /// Lists the codespaces associated to a specified organization.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_in_organization](https://docs.github.com/rest/codespaces/organizations#list-codespaces-for-the-organization)
     ///
     /// ---
@@ -4242,7 +4242,7 @@ impl<'api> Codespaces<'api> {
     /// Lists the codespaces associated to a specified repository and the authenticated user.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_in_repository_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#list-codespaces-in-a-repository-for-the-authenticated-user)
     ///
     /// ---
@@ -4290,7 +4290,7 @@ impl<'api> Codespaces<'api> {
     /// Lists the codespaces associated to a specified repository and the authenticated user.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_in_repository_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#list-codespaces-in-a-repository-for-the-authenticated-user)
     ///
     /// ---
@@ -4341,7 +4341,7 @@ impl<'api> Codespaces<'api> {
     /// values.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_org_secrets](https://docs.github.com/rest/codespaces/organization-secrets#list-organization-secrets)
     ///
     /// ---
@@ -4386,7 +4386,7 @@ impl<'api> Codespaces<'api> {
     /// values.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_org_secrets](https://docs.github.com/rest/codespaces/organization-secrets#list-organization-secrets)
     ///
     /// ---
@@ -4433,7 +4433,7 @@ impl<'api> Codespaces<'api> {
     /// values.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_repo_secrets](https://docs.github.com/rest/codespaces/repository-secrets#list-repository-secrets)
     ///
     /// ---
@@ -4478,7 +4478,7 @@ impl<'api> Codespaces<'api> {
     /// values.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_repo_secrets](https://docs.github.com/rest/codespaces/repository-secrets#list-repository-secrets)
     ///
     /// ---
@@ -4526,7 +4526,7 @@ impl<'api> Codespaces<'api> {
     /// The authenticated user must have Codespaces access to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_repositories_for_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#list-selected-repositories-for-a-user-secret)
     ///
     /// ---
@@ -4572,7 +4572,7 @@ impl<'api> Codespaces<'api> {
     /// The authenticated user must have Codespaces access to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_repositories_for_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#list-selected-repositories-for-a-user-secret)
     ///
     /// ---
@@ -4620,7 +4620,7 @@ impl<'api> Codespaces<'api> {
     /// The authenticated user must have Codespaces access to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_secrets_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#list-secrets-for-the-authenticated-user)
     ///
     /// ---
@@ -4667,7 +4667,7 @@ impl<'api> Codespaces<'api> {
     /// The authenticated user must have Codespaces access to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_secrets_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#list-secrets-for-the-authenticated-user)
     ///
     /// ---
@@ -4714,7 +4714,7 @@ impl<'api> Codespaces<'api> {
     /// for repository access to a secret is set to `selected`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_selected_repos_for_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#list-selected-repositories-for-an-organization-secret)
     ///
     /// ---
@@ -4760,7 +4760,7 @@ impl<'api> Codespaces<'api> {
     /// for repository access to a secret is set to `selected`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_selected_repos_for_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#list-selected-repositories-for-an-organization-secret)
     ///
     /// ---
@@ -4807,7 +4807,7 @@ impl<'api> Codespaces<'api> {
     /// Gets the default attributes for codespaces created by the user with the repository.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for pre_flight_with_repo_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#get-default-attributes-for-a-codespace)
     ///
     /// ---
@@ -4854,7 +4854,7 @@ impl<'api> Codespaces<'api> {
     /// Gets the default attributes for codespaces created by the user with the repository.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for pre_flight_with_repo_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#get-default-attributes-for-a-codespace)
     ///
     /// ---
@@ -4907,7 +4907,7 @@ impl<'api> Codespaces<'api> {
     /// This will fail for a codespace that is already published, meaning it has an associated repository.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for publish_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#create-a-repository-from-an-unpublished-codespace)
     ///
     /// ---
@@ -4955,7 +4955,7 @@ impl<'api> Codespaces<'api> {
     /// This will fail for a codespace that is already published, meaning it has an associated repository.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for publish_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#create-a-repository-from-an-unpublished-codespace)
     ///
     /// ---
@@ -5002,7 +5002,7 @@ impl<'api> Codespaces<'api> {
     /// The authenticated user must have Codespaces access to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for remove_repository_for_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#remove-a-selected-repository-from-a-user-secret)
     ///
     /// ---
@@ -5048,7 +5048,7 @@ impl<'api> Codespaces<'api> {
     /// The authenticated user must have Codespaces access to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for remove_repository_for_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#remove-a-selected-repository-from-a-user-secret)
     ///
     /// ---
@@ -5095,7 +5095,7 @@ impl<'api> Codespaces<'api> {
     /// or update an organization secret](https://docs.github.com/rest/codespaces/organization-secrets#create-or-update-an-organization-secret).
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for remove_selected_repo_from_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#remove-selected-repository-from-an-organization-secret)
     ///
     /// ---
@@ -5140,7 +5140,7 @@ impl<'api> Codespaces<'api> {
     /// or update an organization secret](https://docs.github.com/rest/codespaces/organization-secrets#create-or-update-an-organization-secret).
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for remove_selected_repo_from_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#remove-selected-repository-from-an-organization-secret)
     ///
     /// ---
@@ -5184,7 +5184,7 @@ impl<'api> Codespaces<'api> {
     /// List the machine types available for a given repository based on its configuration.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for repo_machines_for_authenticated_user](https://docs.github.com/rest/codespaces/machines#list-available-machine-types-for-a-repository)
     ///
     /// ---
@@ -5233,7 +5233,7 @@ impl<'api> Codespaces<'api> {
     /// List the machine types available for a given repository based on its configuration.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for repo_machines_for_authenticated_user](https://docs.github.com/rest/codespaces/machines#list-available-machine-types-for-a-repository)
     ///
     /// ---
@@ -5283,7 +5283,7 @@ impl<'api> Codespaces<'api> {
     ///
     /// Sets which users can access codespaces in an organization. This is synonymous with granting or revoking codespaces access permissions for users according to the visibility.
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_codespaces_access](https://docs.github.com/rest/codespaces/organizations#manage-access-control-for-organization-codespaces)
     ///
     /// ---
@@ -5327,7 +5327,7 @@ impl<'api> Codespaces<'api> {
     ///
     /// Sets which users can access codespaces in an organization. This is synonymous with granting or revoking codespaces access permissions for users according to the visibility.
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_codespaces_access](https://docs.github.com/rest/codespaces/organizations#manage-access-control-for-organization-codespaces)
     ///
     /// ---
@@ -5376,7 +5376,7 @@ impl<'api> Codespaces<'api> {
     /// For information on how to change this setting, see "[Manage access control for organization codespaces](https://docs.github.com/rest/codespaces/organizations#manage-access-control-for-organization-codespaces)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_codespaces_access_users](https://docs.github.com/rest/codespaces/organizations#add-users-to-codespaces-access-for-an-organization)
     ///
     /// ---
@@ -5424,7 +5424,7 @@ impl<'api> Codespaces<'api> {
     /// For information on how to change this setting, see "[Manage access control for organization codespaces](https://docs.github.com/rest/codespaces/organizations#manage-access-control-for-organization-codespaces)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_codespaces_access_users](https://docs.github.com/rest/codespaces/organizations#add-users-to-codespaces-access-for-an-organization)
     ///
     /// ---
@@ -5472,7 +5472,7 @@ impl<'api> Codespaces<'api> {
     /// The authenticated user must have Codespaces access to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_repositories_for_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#set-selected-repositories-for-a-user-secret)
     ///
     /// ---
@@ -5518,7 +5518,7 @@ impl<'api> Codespaces<'api> {
     /// The authenticated user must have Codespaces access to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_repositories_for_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#set-selected-repositories-for-a-user-secret)
     ///
     /// ---
@@ -5565,7 +5565,7 @@ impl<'api> Codespaces<'api> {
     /// or update an organization secret](https://docs.github.com/rest/codespaces/organization-secrets#create-or-update-an-organization-secret).
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_selected_repos_for_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#set-selected-repositories-for-an-organization-secret)
     ///
     /// ---
@@ -5609,7 +5609,7 @@ impl<'api> Codespaces<'api> {
     /// or update an organization secret](https://docs.github.com/rest/codespaces/organization-secrets#create-or-update-an-organization-secret).
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_selected_repos_for_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#set-selected-repositories-for-an-organization-secret)
     ///
     /// ---
@@ -5652,7 +5652,7 @@ impl<'api> Codespaces<'api> {
     /// Starts a user's codespace.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for start_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#start-a-codespace-for-the-authenticated-user)
     ///
     /// ---
@@ -5700,7 +5700,7 @@ impl<'api> Codespaces<'api> {
     /// Starts a user's codespace.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for start_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#start-a-codespace-for-the-authenticated-user)
     ///
     /// ---
@@ -5749,7 +5749,7 @@ impl<'api> Codespaces<'api> {
     /// Stops a user's codespace.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for stop_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#stop-a-codespace-for-the-authenticated-user)
     ///
     /// ---
@@ -5793,7 +5793,7 @@ impl<'api> Codespaces<'api> {
     /// Stops a user's codespace.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for stop_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#stop-a-codespace-for-the-authenticated-user)
     ///
     /// ---
@@ -5838,7 +5838,7 @@ impl<'api> Codespaces<'api> {
     /// Stops a user's codespace.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for stop_in_organization](https://docs.github.com/rest/codespaces/organizations#stop-a-codespace-for-an-organization-user)
     ///
     /// ---
@@ -5883,7 +5883,7 @@ impl<'api> Codespaces<'api> {
     /// Stops a user's codespace.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for stop_in_organization](https://docs.github.com/rest/codespaces/organizations#stop-a-codespace-for-an-organization-user)
     ///
     /// ---
@@ -5931,7 +5931,7 @@ impl<'api> Codespaces<'api> {
     /// If you specify a new machine type it will be applied the next time your codespace is started.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#update-a-codespace-for-the-authenticated-user)
     ///
     /// ---
@@ -5976,7 +5976,7 @@ impl<'api> Codespaces<'api> {
     /// If you specify a new machine type it will be applied the next time your codespace is started.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for update_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#update-a-codespace-for-the-authenticated-user)
     ///
     /// ---

@@ -443,7 +443,7 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
 
     /// A comma-separated list of states. If specified, only alerts with these states will be returned.  Can be: `auto_dismissed`, `dismissed`, `fixed`, `open`
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             state: Some(state),
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -461,7 +461,7 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
 
     /// A comma-separated list of severities. If specified, only alerts with these severities will be returned.  Can be: `low`, `medium`, `high`, `critical`
     pub fn severity(self, severity: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: Some(severity),
             ecosystem: self.ecosystem, 
@@ -479,7 +479,7 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
 
     /// A comma-separated list of ecosystems. If specified, only alerts for these ecosystems will be returned.  Can be: `composer`, `go`, `maven`, `npm`, `nuget`, `pip`, `pub`, `rubygems`, `rust`
     pub fn ecosystem(self, ecosystem: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: Some(ecosystem),
@@ -497,7 +497,7 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
 
     /// A comma-separated list of package names. If specified, only alerts for these packages will be returned.
     pub fn package(self, package: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -515,7 +515,7 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
 
     /// The scope of the vulnerable dependency. If specified, only alerts with this scope will be returned.
     pub fn scope(self, scope: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -533,7 +533,7 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
 
     /// The property by which to sort the results. `created` means when the alert was created. `updated` means when the alert's state last changed.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -551,7 +551,7 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -569,7 +569,7 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn before(self, before: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -587,7 +587,7 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn after(self, after: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -605,7 +605,7 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
 
     /// **Deprecated**. The number of results per page (max 100), starting from the first matching result. This parameter must not be used in combination with `last`. Instead, use `per_page` in combination with `after` to fetch the first page of results.
     pub fn first(self, first: i32) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -623,7 +623,7 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
 
     /// **Deprecated**. The number of results per page (max 100), starting from the last matching result. This parameter must not be used in combination with `first`. Instead, use `per_page` in combination with `before` to fetch the last page of results.
     pub fn last(self, last: i32) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -641,7 +641,7 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -694,7 +694,7 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
 
     /// A comma-separated list of states. If specified, only alerts with these states will be returned.  Can be: `auto_dismissed`, `dismissed`, `fixed`, `open`
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             state: Some(state),
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -712,7 +712,7 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
 
     /// A comma-separated list of severities. If specified, only alerts with these severities will be returned.  Can be: `low`, `medium`, `high`, `critical`
     pub fn severity(self, severity: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: Some(severity),
             ecosystem: self.ecosystem, 
@@ -730,7 +730,7 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
 
     /// A comma-separated list of ecosystems. If specified, only alerts for these ecosystems will be returned.  Can be: `composer`, `go`, `maven`, `npm`, `nuget`, `pip`, `pub`, `rubygems`, `rust`
     pub fn ecosystem(self, ecosystem: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: Some(ecosystem),
@@ -748,7 +748,7 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
 
     /// A comma-separated list of package names. If specified, only alerts for these packages will be returned.
     pub fn package(self, package: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -766,7 +766,7 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
 
     /// The scope of the vulnerable dependency. If specified, only alerts with this scope will be returned.
     pub fn scope(self, scope: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -784,7 +784,7 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
 
     /// The property by which to sort the results. `created` means when the alert was created. `updated` means when the alert's state last changed.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -802,7 +802,7 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -820,7 +820,7 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn before(self, before: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -838,7 +838,7 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn after(self, after: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -856,7 +856,7 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
 
     /// **Deprecated**. The number of results per page (max 100), starting from the first matching result. This parameter must not be used in combination with `last`. Instead, use `per_page` in combination with `after` to fetch the first page of results.
     pub fn first(self, first: i32) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -874,7 +874,7 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
 
     /// **Deprecated**. The number of results per page (max 100), starting from the last matching result. This parameter must not be used in combination with `first`. Instead, use `per_page` in combination with `before` to fetch the last page of results.
     pub fn last(self, last: i32) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -892,7 +892,7 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -949,7 +949,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
 
     /// A comma-separated list of states. If specified, only alerts with these states will be returned.  Can be: `auto_dismissed`, `dismissed`, `fixed`, `open`
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             state: Some(state),
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -969,7 +969,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
 
     /// A comma-separated list of severities. If specified, only alerts with these severities will be returned.  Can be: `low`, `medium`, `high`, `critical`
     pub fn severity(self, severity: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: Some(severity),
             ecosystem: self.ecosystem, 
@@ -989,7 +989,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
 
     /// A comma-separated list of ecosystems. If specified, only alerts for these ecosystems will be returned.  Can be: `composer`, `go`, `maven`, `npm`, `nuget`, `pip`, `pub`, `rubygems`, `rust`
     pub fn ecosystem(self, ecosystem: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: Some(ecosystem),
@@ -1009,7 +1009,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
 
     /// A comma-separated list of package names. If specified, only alerts for these packages will be returned.
     pub fn package(self, package: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -1029,7 +1029,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
 
     /// A comma-separated list of full manifest paths. If specified, only alerts for these manifests will be returned.
     pub fn manifest(self, manifest: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -1049,7 +1049,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
 
     /// The scope of the vulnerable dependency. If specified, only alerts with this scope will be returned.
     pub fn scope(self, scope: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -1069,7 +1069,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
 
     /// The property by which to sort the results. `created` means when the alert was created. `updated` means when the alert's state last changed.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -1089,7 +1089,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
 
     /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -1109,7 +1109,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
 
     /// **Deprecated**. Page number of the results to fetch. Use cursor-based pagination with `before` or `after` instead.
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -1129,7 +1129,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -1149,7 +1149,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn before(self, before: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -1169,7 +1169,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
 
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn after(self, after: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -1189,7 +1189,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
 
     /// **Deprecated**. The number of results per page (max 100), starting from the first matching result. This parameter must not be used in combination with `last`. Instead, use `per_page` in combination with `after` to fetch the first page of results.
     pub fn first(self, first: i32) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -1209,7 +1209,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
 
     /// **Deprecated**. The number of results per page (max 100), starting from the last matching result. This parameter must not be used in combination with `first`. Instead, use `per_page` in combination with `before` to fetch the last page of results.
     pub fn last(self, last: i32) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
@@ -1253,7 +1253,7 @@ impl DependabotListOrgSecretsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1261,7 +1261,7 @@ impl DependabotListOrgSecretsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1293,7 +1293,7 @@ impl DependabotListRepoSecretsParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
@@ -1301,7 +1301,7 @@ impl DependabotListRepoSecretsParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1333,7 +1333,7 @@ impl DependabotListSelectedReposForOrgSecretParams {
 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             page: Some(page),
             per_page: self.per_page, 
         }
@@ -1341,7 +1341,7 @@ impl DependabotListSelectedReposForOrgSecretParams {
 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             page: self.page, 
             per_page: Some(per_page),
         }
@@ -1368,7 +1368,7 @@ impl<'api> Dependabot<'api> {
     /// update an organization secret](https://docs.github.com/rest/dependabot/secrets#create-or-update-an-organization-secret).
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_selected_repo_to_org_secret](https://docs.github.com/rest/dependabot/secrets#add-selected-repository-to-an-organization-secret)
     ///
     /// ---
@@ -1411,7 +1411,7 @@ impl<'api> Dependabot<'api> {
     /// update an organization secret](https://docs.github.com/rest/dependabot/secrets#create-or-update-an-organization-secret).
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for add_selected_repo_to_org_secret](https://docs.github.com/rest/dependabot/secrets#add-selected-repository-to-an-organization-secret)
     ///
     /// ---
@@ -1454,7 +1454,7 @@ impl<'api> Dependabot<'api> {
     /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). For more information, see "[Encrypting secrets for the REST API](https://docs.github.com/rest/guides/encrypting-secrets-for-the-rest-api)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_org_secret](https://docs.github.com/rest/dependabot/secrets#create-or-update-an-organization-secret)
     ///
     /// ---
@@ -1496,7 +1496,7 @@ impl<'api> Dependabot<'api> {
     /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). For more information, see "[Encrypting secrets for the REST API](https://docs.github.com/rest/guides/encrypting-secrets-for-the-rest-api)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_org_secret](https://docs.github.com/rest/dependabot/secrets#create-or-update-an-organization-secret)
     ///
     /// ---
@@ -1539,7 +1539,7 @@ impl<'api> Dependabot<'api> {
     /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). For more information, see "[Encrypting secrets for the REST API](https://docs.github.com/rest/guides/encrypting-secrets-for-the-rest-api)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_repo_secret](https://docs.github.com/rest/dependabot/secrets#create-or-update-a-repository-secret)
     ///
     /// ---
@@ -1581,7 +1581,7 @@ impl<'api> Dependabot<'api> {
     /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). For more information, see "[Encrypting secrets for the REST API](https://docs.github.com/rest/guides/encrypting-secrets-for-the-rest-api)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for create_or_update_repo_secret](https://docs.github.com/rest/dependabot/secrets#create-or-update-a-repository-secret)
     ///
     /// ---
@@ -1623,7 +1623,7 @@ impl<'api> Dependabot<'api> {
     /// Deletes a secret in an organization using the secret name.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_org_secret](https://docs.github.com/rest/dependabot/secrets#delete-an-organization-secret)
     ///
     /// ---
@@ -1663,7 +1663,7 @@ impl<'api> Dependabot<'api> {
     /// Deletes a secret in an organization using the secret name.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_org_secret](https://docs.github.com/rest/dependabot/secrets#delete-an-organization-secret)
     ///
     /// ---
@@ -1704,7 +1704,7 @@ impl<'api> Dependabot<'api> {
     /// Deletes a secret in a repository using the secret name.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_repo_secret](https://docs.github.com/rest/dependabot/secrets#delete-a-repository-secret)
     ///
     /// ---
@@ -1744,7 +1744,7 @@ impl<'api> Dependabot<'api> {
     /// Deletes a secret in a repository using the secret name.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for delete_repo_secret](https://docs.github.com/rest/dependabot/secrets#delete-a-repository-secret)
     ///
     /// ---
@@ -1783,7 +1783,7 @@ impl<'api> Dependabot<'api> {
     /// # Get a Dependabot alert
     ///
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
-    /// 
+    ///
     /// [GitHub API docs for get_alert](https://docs.github.com/rest/dependabot/alerts#get-a-dependabot-alert)
     ///
     /// ---
@@ -1824,7 +1824,7 @@ impl<'api> Dependabot<'api> {
     /// # Get a Dependabot alert
     ///
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
-    /// 
+    ///
     /// [GitHub API docs for get_alert](https://docs.github.com/rest/dependabot/alerts#get-a-dependabot-alert)
     ///
     /// ---
@@ -1869,7 +1869,7 @@ impl<'api> Dependabot<'api> {
     /// encrypt a secret before you can create or update secrets.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_org_public_key](https://docs.github.com/rest/dependabot/secrets#get-an-organization-public-key)
     ///
     /// ---
@@ -1910,7 +1910,7 @@ impl<'api> Dependabot<'api> {
     /// encrypt a secret before you can create or update secrets.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_org_public_key](https://docs.github.com/rest/dependabot/secrets#get-an-organization-public-key)
     ///
     /// ---
@@ -1951,7 +1951,7 @@ impl<'api> Dependabot<'api> {
     /// Gets a single organization secret without revealing its encrypted value.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_org_secret](https://docs.github.com/rest/dependabot/secrets#get-an-organization-secret)
     ///
     /// ---
@@ -1991,7 +1991,7 @@ impl<'api> Dependabot<'api> {
     /// Gets a single organization secret without revealing its encrypted value.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_org_secret](https://docs.github.com/rest/dependabot/secrets#get-an-organization-secret)
     ///
     /// ---
@@ -2034,7 +2034,7 @@ impl<'api> Dependabot<'api> {
     /// to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint if the repository is private.
-    /// 
+    ///
     /// [GitHub API docs for get_repo_public_key](https://docs.github.com/rest/dependabot/secrets#get-a-repository-public-key)
     ///
     /// ---
@@ -2076,7 +2076,7 @@ impl<'api> Dependabot<'api> {
     /// to the repository can use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint if the repository is private.
-    /// 
+    ///
     /// [GitHub API docs for get_repo_public_key](https://docs.github.com/rest/dependabot/secrets#get-a-repository-public-key)
     ///
     /// ---
@@ -2117,7 +2117,7 @@ impl<'api> Dependabot<'api> {
     /// Gets a single repository secret without revealing its encrypted value.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_repo_secret](https://docs.github.com/rest/dependabot/secrets#get-a-repository-secret)
     ///
     /// ---
@@ -2157,7 +2157,7 @@ impl<'api> Dependabot<'api> {
     /// Gets a single repository secret without revealing its encrypted value.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for get_repo_secret](https://docs.github.com/rest/dependabot/secrets#get-a-repository-secret)
     ///
     /// ---
@@ -2202,7 +2202,7 @@ impl<'api> Dependabot<'api> {
     /// Alerts are only returned for organizations in the enterprise for which you are an organization owner or a security manager. For more information about security managers, see "[Managing security managers in your organization](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-security-managers-in-your-organization)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_alerts_for_enterprise](https://docs.github.com/rest/dependabot/alerts#list-dependabot-alerts-for-an-enterprise)
     ///
     /// ---
@@ -2254,7 +2254,7 @@ impl<'api> Dependabot<'api> {
     /// Alerts are only returned for organizations in the enterprise for which you are an organization owner or a security manager. For more information about security managers, see "[Managing security managers in your organization](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-security-managers-in-your-organization)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_alerts_for_enterprise](https://docs.github.com/rest/dependabot/alerts#list-dependabot-alerts-for-an-enterprise)
     ///
     /// ---
@@ -2306,7 +2306,7 @@ impl<'api> Dependabot<'api> {
     /// The authenticated user must be an owner or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
-    /// 
+    ///
     /// [GitHub API docs for list_alerts_for_org](https://docs.github.com/rest/dependabot/alerts#list-dependabot-alerts-for-an-organization)
     ///
     /// ---
@@ -2357,7 +2357,7 @@ impl<'api> Dependabot<'api> {
     /// The authenticated user must be an owner or security manager for the organization to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
-    /// 
+    ///
     /// [GitHub API docs for list_alerts_for_org](https://docs.github.com/rest/dependabot/alerts#list-dependabot-alerts-for-an-organization)
     ///
     /// ---
@@ -2406,7 +2406,7 @@ impl<'api> Dependabot<'api> {
     /// # List Dependabot alerts for a repository
     ///
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
-    /// 
+    ///
     /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/dependabot/alerts#list-dependabot-alerts-for-a-repository)
     ///
     /// ---
@@ -2453,7 +2453,7 @@ impl<'api> Dependabot<'api> {
     /// # List Dependabot alerts for a repository
     ///
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
-    /// 
+    ///
     /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/dependabot/alerts#list-dependabot-alerts-for-a-repository)
     ///
     /// ---
@@ -2505,7 +2505,7 @@ impl<'api> Dependabot<'api> {
     /// encrypted values.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_org_secrets](https://docs.github.com/rest/dependabot/secrets#list-organization-secrets)
     ///
     /// ---
@@ -2550,7 +2550,7 @@ impl<'api> Dependabot<'api> {
     /// encrypted values.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_org_secrets](https://docs.github.com/rest/dependabot/secrets#list-organization-secrets)
     ///
     /// ---
@@ -2597,7 +2597,7 @@ impl<'api> Dependabot<'api> {
     /// values.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_repo_secrets](https://docs.github.com/rest/dependabot/secrets#list-repository-secrets)
     ///
     /// ---
@@ -2642,7 +2642,7 @@ impl<'api> Dependabot<'api> {
     /// values.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_repo_secrets](https://docs.github.com/rest/dependabot/secrets#list-repository-secrets)
     ///
     /// ---
@@ -2689,7 +2689,7 @@ impl<'api> Dependabot<'api> {
     /// for repository access to a secret is set to `selected`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_selected_repos_for_org_secret](https://docs.github.com/rest/dependabot/secrets#list-selected-repositories-for-an-organization-secret)
     ///
     /// ---
@@ -2734,7 +2734,7 @@ impl<'api> Dependabot<'api> {
     /// for repository access to a secret is set to `selected`.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for list_selected_repos_for_org_secret](https://docs.github.com/rest/dependabot/secrets#list-selected-repositories-for-an-organization-secret)
     ///
     /// ---
@@ -2782,7 +2782,7 @@ impl<'api> Dependabot<'api> {
     /// or update an organization secret](https://docs.github.com/rest/dependabot/secrets#create-or-update-an-organization-secret).
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for remove_selected_repo_from_org_secret](https://docs.github.com/rest/dependabot/secrets#remove-selected-repository-from-an-organization-secret)
     ///
     /// ---
@@ -2825,7 +2825,7 @@ impl<'api> Dependabot<'api> {
     /// or update an organization secret](https://docs.github.com/rest/dependabot/secrets#create-or-update-an-organization-secret).
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for remove_selected_repo_from_org_secret](https://docs.github.com/rest/dependabot/secrets#remove-selected-repository-from-an-organization-secret)
     ///
     /// ---
@@ -2869,7 +2869,7 @@ impl<'api> Dependabot<'api> {
     /// or update an organization secret](https://docs.github.com/rest/dependabot/secrets#create-or-update-an-organization-secret).
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_selected_repos_for_org_secret](https://docs.github.com/rest/dependabot/secrets#set-selected-repositories-for-an-organization-secret)
     ///
     /// ---
@@ -2911,7 +2911,7 @@ impl<'api> Dependabot<'api> {
     /// or update an organization secret](https://docs.github.com/rest/dependabot/secrets#create-or-update-an-organization-secret).
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
-    /// 
+    ///
     /// [GitHub API docs for set_selected_repos_for_org_secret](https://docs.github.com/rest/dependabot/secrets#set-selected-repositories-for-an-organization-secret)
     ///
     /// ---
@@ -2952,7 +2952,7 @@ impl<'api> Dependabot<'api> {
     /// The authenticated user must have access to security alerts for the repository to use this endpoint. For more information, see "[Granting access to security alerts](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-security-and-analysis-settings-for-your-repository#granting-access-to-security-alerts)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
-    /// 
+    ///
     /// [GitHub API docs for update_alert](https://docs.github.com/rest/dependabot/alerts#update-a-dependabot-alert)
     ///
     /// ---
@@ -2997,7 +2997,7 @@ impl<'api> Dependabot<'api> {
     /// The authenticated user must have access to security alerts for the repository to use this endpoint. For more information, see "[Granting access to security alerts](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-security-and-analysis-settings-for-your-repository#granting-access-to-security-alerts)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
-    /// 
+    ///
     /// [GitHub API docs for update_alert](https://docs.github.com/rest/dependabot/alerts#update-a-dependabot-alert)
     ///
     /// ---

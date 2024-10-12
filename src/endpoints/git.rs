@@ -333,7 +333,7 @@ impl<'req> GitGetTreeParams<'req> {
 
     /// Setting this parameter to any value returns the objects or subtrees referenced by the tree specified in `:tree_sha`. For example, setting `recursive` to any of the following will enable returning objects or subtrees: `0`, `1`, `\"true\"`, and `\"false\"`. Omit this parameter to prevent recursively returning objects or subtrees.
     pub fn recursive(self, recursive: &'req str) -> Self {
-        Self { 
+        Self {
             recursive: Some(recursive),
         }
     }
@@ -344,7 +344,7 @@ impl<'api> Git<'api> {
     /// ---
     ///
     /// # Create a blob
-    /// 
+    ///
     /// [GitHub API docs for create_blob](https://docs.github.com/rest/git/blobs#create-a-blob)
     ///
     /// ---
@@ -384,7 +384,7 @@ impl<'api> Git<'api> {
     /// ---
     ///
     /// # Create a blob
-    /// 
+    ///
     /// [GitHub API docs for create_blob](https://docs.github.com/rest/git/blobs#create-a-blob)
     ///
     /// ---
@@ -456,7 +456,7 @@ impl<'api> Git<'api> {
     /// | `malformed_signature` | There was an error parsing the signature. |
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
-    /// 
+    ///
     /// [GitHub API docs for create_commit](https://docs.github.com/rest/git/commits#create-a-commit)
     ///
     /// ---
@@ -526,7 +526,7 @@ impl<'api> Git<'api> {
     /// | `malformed_signature` | There was an error parsing the signature. |
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
-    /// 
+    ///
     /// [GitHub API docs for create_commit](https://docs.github.com/rest/git/commits#create-a-commit)
     ///
     /// ---
@@ -568,7 +568,7 @@ impl<'api> Git<'api> {
     /// # Create a reference
     ///
     /// Creates a reference for your repository. You are unable to create new references for empty repositories, even if the commit SHA-1 hash used exists. Empty repositories are repositories without branches.
-    /// 
+    ///
     /// [GitHub API docs for create_ref](https://docs.github.com/rest/git/refs#create-a-reference)
     ///
     /// ---
@@ -608,7 +608,7 @@ impl<'api> Git<'api> {
     /// # Create a reference
     ///
     /// Creates a reference for your repository. You are unable to create new references for empty repositories, even if the commit SHA-1 hash used exists. Empty repositories are repositories without branches.
-    /// 
+    ///
     /// [GitHub API docs for create_ref](https://docs.github.com/rest/git/refs#create-a-reference)
     ///
     /// ---
@@ -678,7 +678,7 @@ impl<'api> Git<'api> {
     /// | `malformed_signature` | There was an error parsing the signature. |
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
-    /// 
+    ///
     /// [GitHub API docs for create_tag](https://docs.github.com/rest/git/tags#create-a-tag-object)
     ///
     /// ---
@@ -747,7 +747,7 @@ impl<'api> Git<'api> {
     /// | `malformed_signature` | There was an error parsing the signature. |
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
-    /// 
+    ///
     /// [GitHub API docs for create_tag](https://docs.github.com/rest/git/tags#create-a-tag-object)
     ///
     /// ---
@@ -792,7 +792,7 @@ impl<'api> Git<'api> {
     /// If you use this endpoint to add, delete, or modify the file contents in a tree, you will need to commit the tree and then update a branch to point to the commit. For more information see "[Create a commit](https://docs.github.com/rest/git/commits#create-a-commit)" and "[Update a reference](https://docs.github.com/rest/git/refs#update-a-reference)."
     /// 
     /// Returns an error if you try to delete a file that does not exist.
-    /// 
+    ///
     /// [GitHub API docs for create_tree](https://docs.github.com/rest/git/trees#create-a-tree)
     ///
     /// ---
@@ -838,7 +838,7 @@ impl<'api> Git<'api> {
     /// If you use this endpoint to add, delete, or modify the file contents in a tree, you will need to commit the tree and then update a branch to point to the commit. For more information see "[Create a commit](https://docs.github.com/rest/git/commits#create-a-commit)" and "[Update a reference](https://docs.github.com/rest/git/refs#update-a-reference)."
     /// 
     /// Returns an error if you try to delete a file that does not exist.
-    /// 
+    ///
     /// [GitHub API docs for create_tree](https://docs.github.com/rest/git/trees#create-a-tree)
     ///
     /// ---
@@ -881,7 +881,7 @@ impl<'api> Git<'api> {
     /// # Delete a reference
     ///
     /// Deletes the provided reference.
-    /// 
+    ///
     /// [GitHub API docs for delete_ref](https://docs.github.com/rest/git/refs#delete-a-reference)
     ///
     /// ---
@@ -921,7 +921,7 @@ impl<'api> Git<'api> {
     /// # Delete a reference
     ///
     /// Deletes the provided reference.
-    /// 
+    ///
     /// [GitHub API docs for delete_ref](https://docs.github.com/rest/git/refs#delete-a-reference)
     ///
     /// ---
@@ -969,7 +969,7 @@ impl<'api> Git<'api> {
     /// - **`application/vnd.github+json`**: Returns a JSON representation of the blob with `content` as a base64 encoded string. This is the default if no media type is specified.
     /// 
     /// **Note** This endpoint supports blobs up to 100 megabytes in size.
-    /// 
+    ///
     /// [GitHub API docs for get_blob](https://docs.github.com/rest/git/blobs#get-a-blob)
     ///
     /// ---
@@ -1018,7 +1018,7 @@ impl<'api> Git<'api> {
     /// - **`application/vnd.github+json`**: Returns a JSON representation of the blob with `content` as a base64 encoded string. This is the default if no media type is specified.
     /// 
     /// **Note** This endpoint supports blobs up to 100 megabytes in size.
-    /// 
+    ///
     /// [GitHub API docs for get_blob](https://docs.github.com/rest/git/blobs#get-a-blob)
     ///
     /// ---
@@ -1092,7 +1092,7 @@ impl<'api> Git<'api> {
     /// | `malformed_signature` | There was an error parsing the signature. |
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
-    /// 
+    ///
     /// [GitHub API docs for get_commit](https://docs.github.com/rest/git/commits#get-a-commit-object)
     ///
     /// ---
@@ -1163,7 +1163,7 @@ impl<'api> Git<'api> {
     /// | `malformed_signature` | There was an error parsing the signature. |
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
-    /// 
+    ///
     /// [GitHub API docs for get_commit](https://docs.github.com/rest/git/commits#get-a-commit-object)
     ///
     /// ---
@@ -1207,7 +1207,7 @@ impl<'api> Git<'api> {
     /// 
     /// > [!NOTE]
     /// > You need to explicitly [request a pull request](https://docs.github.com/rest/pulls/pulls#get-a-pull-request) to trigger a test merge commit, which checks the mergeability of pull requests. For more information, see "[Checking mergeability of pull requests](https://docs.github.com/rest/guides/getting-started-with-the-git-database-api#checking-mergeability-of-pull-requests)".
-    /// 
+    ///
     /// [GitHub API docs for get_ref](https://docs.github.com/rest/git/refs#get-a-reference)
     ///
     /// ---
@@ -1250,7 +1250,7 @@ impl<'api> Git<'api> {
     /// 
     /// > [!NOTE]
     /// > You need to explicitly [request a pull request](https://docs.github.com/rest/pulls/pulls#get-a-pull-request) to trigger a test merge commit, which checks the mergeability of pull requests. For more information, see "[Checking mergeability of pull requests](https://docs.github.com/rest/guides/getting-started-with-the-git-database-api#checking-mergeability-of-pull-requests)".
-    /// 
+    ///
     /// [GitHub API docs for get_ref](https://docs.github.com/rest/git/refs#get-a-reference)
     ///
     /// ---
@@ -1318,7 +1318,7 @@ impl<'api> Git<'api> {
     /// | `malformed_signature` | There was an error parsing the signature. |
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
-    /// 
+    ///
     /// [GitHub API docs for get_tag](https://docs.github.com/rest/git/tags#get-a-tag)
     ///
     /// ---
@@ -1385,7 +1385,7 @@ impl<'api> Git<'api> {
     /// | `malformed_signature` | There was an error parsing the signature. |
     /// | `invalid` | The signature could not be cryptographically verified using the key whose key-id was found in the signature. |
     /// | `valid` | None of the above errors applied, so the signature is considered to be verified. |
-    /// 
+    ///
     /// [GitHub API docs for get_tag](https://docs.github.com/rest/git/tags#get-a-tag)
     ///
     /// ---
@@ -1431,7 +1431,7 @@ impl<'api> Git<'api> {
     /// 
     /// > [!NOTE]
     /// > The limit for the `tree` array is 100,000 entries with a maximum size of 7 MB when using the `recursive` parameter.
-    /// 
+    ///
     /// [GitHub API docs for get_tree](https://docs.github.com/rest/git/trees#get-a-tree)
     ///
     /// ---
@@ -1481,7 +1481,7 @@ impl<'api> Git<'api> {
     /// 
     /// > [!NOTE]
     /// > The limit for the `tree` array is 100,000 entries with a maximum size of 7 MB when using the `recursive` parameter.
-    /// 
+    ///
     /// [GitHub API docs for get_tree](https://docs.github.com/rest/git/trees#get-a-tree)
     ///
     /// ---
@@ -1535,7 +1535,7 @@ impl<'api> Git<'api> {
     /// > You need to explicitly [request a pull request](https://docs.github.com/rest/pulls/pulls#get-a-pull-request) to trigger a test merge commit, which checks the mergeability of pull requests. For more information, see "[Checking mergeability of pull requests](https://docs.github.com/rest/guides/getting-started-with-the-git-database-api#checking-mergeability-of-pull-requests)".
     /// 
     /// If you request matching references for a branch named `feature` but the branch `feature` doesn't exist, the response can still include other matching head refs that start with the word `feature`, such as `featureA` and `featureB`.
-    /// 
+    ///
     /// [GitHub API docs for list_matching_refs](https://docs.github.com/rest/git/refs#list-matching-references)
     ///
     /// ---
@@ -1581,7 +1581,7 @@ impl<'api> Git<'api> {
     /// > You need to explicitly [request a pull request](https://docs.github.com/rest/pulls/pulls#get-a-pull-request) to trigger a test merge commit, which checks the mergeability of pull requests. For more information, see "[Checking mergeability of pull requests](https://docs.github.com/rest/guides/getting-started-with-the-git-database-api#checking-mergeability-of-pull-requests)".
     /// 
     /// If you request matching references for a branch named `feature` but the branch `feature` doesn't exist, the response can still include other matching head refs that start with the word `feature`, such as `featureA` and `featureB`.
-    /// 
+    ///
     /// [GitHub API docs for list_matching_refs](https://docs.github.com/rest/git/refs#list-matching-references)
     ///
     /// ---
@@ -1621,7 +1621,7 @@ impl<'api> Git<'api> {
     /// # Update a reference
     ///
     /// Updates the provided reference to point to a new SHA. For more information, see "[Git References](https://git-scm.com/book/en/v2/Git-Internals-Git-References)" in the Git documentation.
-    /// 
+    ///
     /// [GitHub API docs for update_ref](https://docs.github.com/rest/git/refs#update-a-reference)
     ///
     /// ---
@@ -1661,7 +1661,7 @@ impl<'api> Git<'api> {
     /// # Update a reference
     ///
     /// Updates the provided reference to point to a new SHA. For more information, see "[Git References](https://git-scm.com/book/en/v2/Git-Internals-Git-References)" in the Git documentation.
-    /// 
+    ///
     /// [GitHub API docs for update_ref](https://docs.github.com/rest/git/refs#update-a-reference)
     ///
     /// ---
