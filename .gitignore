@@ -12,3 +12,4 @@ target/
 /generated-sources
 /.cargo
 /Cargo.lock
+/.idea
