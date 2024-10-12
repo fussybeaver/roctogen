@@ -94,12 +94,12 @@ pub type {{classname}} = DateTime<Utc>;
 pub type {{classname}} = Vec<{{arrayModelType}}>;
 {{/vendorExtensions.x-rustgen-is-array}}{{^vendorExtensions.has-vars}}{{! general struct}}#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]{{#xmlName}}
 #[serde(rename = "{{xmlName}}")]{{/xmlName}}
-pub struct {{classname}} {     
+pub struct {{classname}} {
 {{#vars}}{{#description}}    /// {{{.}}}
 {{/description}}{{^vendorExtensions.x-rustgen-serde-no-rename}}    #[serde(rename = "{{baseName}}")]
 {{/vendorExtensions.x-rustgen-serde-no-rename}}
     #[serde(skip_serializing_if="Option::is_none")]
-    pub {{name}}: Option<{{#vendorExtensions.is-enum}}{{classname}}{{enumName}}{{/vendorExtensions.is-enum}}{{^vendorExtensions.is-enum}}{{#vendorExtensions.x-is-list-container}}Vec<{{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-list-container}}{{#vendorExtensions.x-is-map-container}}HashMap<String, {{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-map-container}}{{^vendorExtensions.x-is-container}}{{{datatype}}}{{/vendorExtensions.x-is-container}}{{/vendorExtensions.is-enum}}>,
+    pub {{name}}: Option<{{#vendorExtensions.is-enum}}{{classname}}{{enumName}}{{/vendorExtensions.is-enum}}{{^vendorExtensions.is-enum}}{{#vendorExtensions.x-is-list-container}}Vec<{{#items}}{{#vendorExtensions.x-is-map-container}}HashMap<String, {{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-map-container}}{{^vendorExtensions.x-is-container}}{{{datatype}}}{{/vendorExtensions.x-is-container}}{{/items}}>{{/vendorExtensions.x-is-list-container}}{{#vendorExtensions.x-is-map-container}}HashMap<String, {{#items}}{{{datatype}}}{{/items}}>{{/vendorExtensions.x-is-map-container}}{{^vendorExtensions.x-is-container}}{{{datatype}}}{{/vendorExtensions.x-is-container}}{{/vendorExtensions.is-enum}}>,
 {{/vars}}
 }
 {{#vars}}{{#vendorExtensions.is-enum}}

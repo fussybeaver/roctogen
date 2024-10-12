@@ -38,7 +38,7 @@ pub enum {{classname}}{{operationIdCamelCase}}Error {
     // -- endpoint errors
 
 {{#responses}}{{^vendorExtensions.x-is-default}}
-    #[error("{{message}}")]
+    #[error("{{{message}}}")]
     Status{{code}}{{#dataType}}({{{.}}}){{/dataType}},
 {{/vendorExtensions.x-is-default}}{{/responses}}
     #[error("Status code: {}", code)]
@@ -65,7 +65,7 @@ impl{{#vendorExtensions.x-codegen-has-string-params}}<'req>{{/vendorExtensions.x
 
     {{#description}}/// {{{.}}}{{/description}}
     pub fn {{paramName}}(self, {{paramName}}: {{#isString}}&'req str{{/isString}}{{#isUuid}}&'req str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}) -> Self {
-        Self { 
+        Self {
 {{#queryParams}}            {{#equals paramName ../paramName}}{{paramName}}: {{^required}}Some({{/required}}{{paramName}}{{#isString}}{{/isString}}{{#isUuid}}{{/isUuid}}{{^required}}){{/required}},{{else}}{{paramName}}: self.{{paramName}}, {{/equals}}
             {{/queryParams}}
         }
@@ -95,12 +95,12 @@ impl<'api> {{classname}}<'api> {
     /// # {{.}}
     {{/summary}}{{#unescapedNotes}}///
     /// {{{.}}}
-    {{/unescapedNotes}}{{#externalDocs.url}}/// 
+    {{/unescapedNotes}}{{#externalDocs.url}}///
     /// [GitHub API docs for {{operationId}}]({{.}}){{/externalDocs.url}}
-    {{#vendorExtensions.x-codegen-has-previews}}   
+    {{#vendorExtensions.x-codegen-has-previews}}
     ///
     {{/vendorExtensions.x-codegen-has-previews}}
-    {{#vendorExtensions.x-github.previews}}   
+    {{#vendorExtensions.x-github.previews}}
     /// The `{{operationId}}_async` endpoint is enabled with the `{{name}}` cargo feature.
     {{/vendorExtensions.x-github.previews}}
     ///
@@ -125,7 +125,7 @@ impl<'api> {{classname}}<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: {{#hasBodyParam}}Some({{#bodyParam}}{{#vendorExtensions.x-is-map-container}}HashMap{{/vendorExtensions.x-is-map-container}}{{^vendorExtensions.x-is-map-container}}{{{dataType}}}{{/vendorExtensions.x-is-map-container}}{{/bodyParam}}::from_json(body)?){{/hasBodyParam}}{{^hasBodyParam}}None{{/hasBodyParam}},
+            body: {{#hasBodyParam}}Some({{#bodyParam}}{{^vendorExtensions.x-codegen-body-bytes}}{{#vendorExtensions.x-is-map-container}}HashMap{{/vendorExtensions.x-is-map-container}}{{^vendorExtensions.x-is-map-container}}{{{dataType}}}{{/vendorExtensions.x-is-map-container}}::from_json(body)?{{/vendorExtensions.x-codegen-body-bytes}}{{#vendorExtensions.x-codegen-body-bytes}}body.into(){{/vendorExtensions.x-codegen-body-bytes}}{{/bodyParam}}){{/hasBodyParam}}{{^hasBodyParam}}None{{/hasBodyParam}},
             method: "{{httpMethod}}",
             headers: vec![{{#vendorExtensions.x-github.previews}}("Accept", "application/vnd.github.{{name}}-preview+json"), {{/vendorExtensions.x-github.previews}}]
         };
@@ -156,9 +156,9 @@ impl<'api> {{classname}}<'api> {
     /// # {{.}}
     {{/summary}}{{#unescapedNotes}}///
     /// {{{.}}}
-    {{/unescapedNotes}}{{#externalDocs.url}}/// 
+    {{/unescapedNotes}}{{#externalDocs.url}}///
     /// [GitHub API docs for {{operationId}}]({{.}}){{/externalDocs.url}}
-    {{#vendorExtensions.x-codegen-has-previews}}   
+    {{#vendorExtensions.x-codegen-has-previews}}
     ///
     {{/vendorExtensions.x-codegen-has-previews}}
     {{#vendorExtensions.x-github.previews}}
@@ -189,7 +189,7 @@ impl<'api> {{classname}}<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: {{#hasBodyParam}}Some({{#bodyParam}}{{#vendorExtensions.x-is-map-container}}HashMap{{/vendorExtensions.x-is-map-container}}{{^vendorExtensions.x-is-map-container}}{{{dataType}}}{{/vendorExtensions.x-is-map-container}}{{/bodyParam}}::from_json(body)?){{/hasBodyParam}}{{^hasBodyParam}}None{{/hasBodyParam}},
+            body: {{#hasBodyParam}}Some({{#bodyParam}}{{^vendorExtensions.x-codegen-body-bytes}}{{#vendorExtensions.x-is-map-container}}HashMap{{/vendorExtensions.x-is-map-container}}{{^vendorExtensions.x-is-map-container}}{{{dataType}}}{{/vendorExtensions.x-is-map-container}}::from_json(body)?{{/vendorExtensions.x-codegen-body-bytes}}{{#vendorExtensions.x-codegen-body-bytes}}body.into(){{/vendorExtensions.x-codegen-body-bytes}}{{/bodyParam}}){{/hasBodyParam}}{{^hasBodyParam}}None{{/hasBodyParam}},
             method: "{{httpMethod}}",
             headers: vec![{{#vendorExtensions.x-github.previews}}("Accept", "application/vnd.github.{{name}}-preview+json"), {{/vendorExtensions.x-github.previews}}]
         };
