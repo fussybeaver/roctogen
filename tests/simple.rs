@@ -2,10 +2,7 @@
 use wasm_bindgen_test::*;
 
 #[cfg(not(target_arch = "wasm32"))]
-use roctogen::api::{
-    self, activity, gists, issues, licenses, meta, projects, rate_limit, reactions, repos, search,
-    users,
-};
+use roctogen::api::{self, repos};
 
 #[cfg(target_arch = "wasm32")]
 use roctogen::api::{self, repos};
@@ -13,7 +10,7 @@ use roctogen::api::{self, repos};
 use roctogen::auth::Auth;
 use roctogen::models;
 
-use log::{debug, info};
+use log::debug;
 
 #[cfg(target_arch = "wasm32")]
 wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
@@ -240,7 +237,9 @@ async fn post_wasm_fail() {
 fn post_sync_fail() {
     let auth = Auth::None;
 
-    let body: models::PostReposAddUserAccessRestrictions = vec!["fussybeaver".to_string()].into();
+    let body = models::PostReposAddUserAccessRestrictions {
+        users: vec!["fussybeaver".to_string()].into(),
+    };
 
     let req =
         repos::new(&auth).add_user_access_restrictions("fussybeaver", "bollard", "master", body);
@@ -262,7 +261,9 @@ fn post_sync_fail() {
 async fn post_async_fail() {
     let auth = Auth::None;
 
-    let body: models::PostReposAddUserAccessRestrictions = vec!["fussybeaver".to_string()].into();
+    let body = models::PostReposAddUserAccessRestrictions {
+        users: vec!["fussybeaver".to_string()].into(),
+    };
 
     let req = repos::new(&auth)
         .add_user_access_restrictions_async("fussybeaver", "bollard", "master", body)
@@ -286,8 +287,9 @@ fn post_async_fail() {
     let req = futures_lite::future::block_on(async {
         let auth = Auth::None;
 
-        let body: models::PostReposAddUserAccessRestrictions =
-            vec!["fussybeaver".to_string()].into();
+        let body = models::PostReposAddUserAccessRestrictions {
+            users: vec!["fussybeaver".to_string()].into(),
+        };
 
         repos::new(&auth)
             .add_user_access_restrictions_async("fussybeaver", "bollard", "master", body)
