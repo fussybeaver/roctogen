@@ -26,19 +26,19 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: check
-          args: --features isahc,mercy,squirrel-girl,inertia,starfox --target x86_64-unknown-linux-gnu
+          args: --features isahc --target x86_64-unknown-linux-gnu
 
       - name: Run cargo check reqwest
         uses: actions-rs/cargo@v1
         with:
           command: check
-          args: --features reqwest,mercy,squirrel-girl,inertia,starfox --target x86_64-unknown-linux-gnu
+          args: --features reqwest --target x86_64-unknown-linux-gnu
 
       - name: Run cargo check ureq
         uses: actions-rs/cargo@v1
         with:
           command: check
-          args: --features ureq,mercy,squirrel-girl,inertia,starfox --target x86_64-unknown-linux-gnu
+          args: --features ureq --target x86_64-unknown-linux-gnu
 
       - name: Install wasm toolchain
         uses: actions-rs/toolchain@v1
@@ -51,7 +51,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: check
-          args: --features mercy,squirrel-girl,inertia,starfox --target wasm32-unknown-unknown
+          args: --target wasm32-unknown-unknown
 
   test:
     name: Test Suite
@@ -89,15 +89,15 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test 
-          args: --features isahc,mercy,squirrel-girl,inertia,starfox,mock --target x86_64-unknown-linux-gnu
+          args: --features isahc --target x86_64-unknown-linux-gnu
 
       - name: Run cargo test reqwest
         uses: actions-rs/cargo@v1
         with:
           command: test 
-          args: --features reqwest,mercy,squirrel-girl,inertia,starfox,mock --target x86_64-unknown-linux-gnu
+          args: --features reqwest --target x86_64-unknown-linux-gnu
       - name: Run cargo test ureq
         uses: actions-rs/cargo@v1
         with:
           command: test 
-          args: --features ureq,mercy,squirrel-girl,inertia,starfox,mock --target x86_64-unknown-linux-gnu
+          args: --features ureq --target x86_64-unknown-linux-gnu

@@ -139,15 +139,6 @@
 //! $ cargo build --features ureq
 //! ```
 //!
-//! # GitHub preview features
-//!
-//! GitHub supports a phased rollout of non-stable endpoints behind header flags. These are
-//! supported in this library through cargo feature flags. 
-//!
-//! ```nocompile
-//! $ cargo build --features squirrel-girl
-//! ```
-//!
 //! # Generate the API
 //!
 //! The majority of code is generated through the [Swagger OpenAPI
