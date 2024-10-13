@@ -1,3 +1,4 @@
+use base64::{prelude::BASE64_STANDARD, Engine};
 use http::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE, USER_AGENT};
 
 use ureq::{Request, Response};
@@ -110,7 +111,7 @@ impl GitHubRequestBuilder<Vec<u8>> for RequestWithBody {
                 let creds = format!("{}:{}", user, pass);
                 builder.set(
                     AUTHORIZATION.as_str(),
-                    &format!("Basic {}", base64::encode(creds.as_bytes())),
+                    &format!("Basic {}", BASE64_STANDARD.encode(creds.as_bytes())),
                 )
             }
             Auth::Token(token) => builder.set(AUTHORIZATION.as_str(), &format!("token {}", token)),

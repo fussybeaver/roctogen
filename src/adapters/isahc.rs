@@ -1,14 +1,16 @@
+use base64::prelude::BASE64_STANDARD;
+use base64::Engine;
 use http::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE, USER_AGENT};
 
-use http::response::Response;
 use http::request::Request;
+use http::response::Response;
 
 use isahc::prelude::*;
-use isahc::{AsyncBody, Body, RequestExt, ResponseFuture, AsyncReadResponseExt};
+use isahc::{AsyncBody, AsyncReadResponseExt, Body, RequestExt, ResponseFuture};
 use log::debug;
 
-use crate::auth::Auth;
 use super::{FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use crate::auth::Auth;
 
 use serde::{ser, Deserialize};
 
@@ -24,7 +26,9 @@ pub(crate) fn fetch(request: Request<Body>) -> Result<Response<Body>, AdapterErr
     Ok(request.send()?)
 }
 
-pub(crate) async fn fetch_async(request: Request<AsyncBody>) -> Result<Response<AsyncBody>, AdapterError> {
+pub(crate) async fn fetch_async(
+    request: Request<AsyncBody>,
+) -> Result<Response<AsyncBody>, AdapterError> {
     Ok(request.send_async().await?)
 }
 
@@ -38,11 +42,15 @@ impl<T> GitHubResponseExt for Response<T> {
     }
 }
 
-pub(crate) fn to_json<E: for<'de> Deserialize<'de>>(mut res: Response<Body>) -> Result<E, serde_json::Error> {
+pub(crate) fn to_json<E: for<'de> Deserialize<'de>>(
+    mut res: Response<Body>,
+) -> Result<E, serde_json::Error> {
     res.json()
 }
 
-pub(crate) async fn to_json_async<E: for<'de> Deserialize<'de> + Unpin>(mut res: Response<AsyncBody>) -> Result<E, serde_json::Error> {
+pub(crate) async fn to_json_async<E: for<'de> Deserialize<'de> + Unpin>(
+    mut res: Response<AsyncBody>,
+) -> Result<E, serde_json::Error> {
     Ok(res.json().await?)
 }
 
@@ -52,13 +60,11 @@ where
     E: ser::Serialize + std::fmt::Debug,
 {
     fn from_json(model: E) -> Result<T, serde_json::Error> {
-
         Ok(serde_json::to_vec(&model)?.into())
     }
 }
 
-impl<T: From<()>> GitHubRequestBuilder<T> for Request<T> 
-{
+impl<T: From<()>> GitHubRequestBuilder<T> for Request<T> {
     fn build(req: GitHubRequest<T>, auth: &Auth) -> Result<Self, AdapterError> {
         let mut builder = http::Request::builder();
 
@@ -78,7 +84,7 @@ impl<T: From<()>> GitHubRequestBuilder<T> for Request<T>
                 let creds = format!("{}:{}", user, pass);
                 builder.header(
                     AUTHORIZATION,
-                    format!("Basic {}", base64::encode(creds.as_bytes())),
+                    format!("Basic {}", BASE64_STANDARD.encode(creds.as_bytes())),
                 )
             }
             Auth::Token(token) => builder.header(AUTHORIZATION, format!("token {}", token)),

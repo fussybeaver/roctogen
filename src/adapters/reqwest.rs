@@ -1,3 +1,4 @@
+use base64::{prelude::BASE64_STANDARD, Engine};
 use http::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE, USER_AGENT};
 
 use log::debug;
@@ -85,7 +86,7 @@ impl GitHubRequestBuilder<Body> for Request {
                 let creds = format!("{}:{}", user, pass);
                 builder.header(
                     AUTHORIZATION,
-                    format!("Basic {}", base64::encode(creds.as_bytes())),
+                    format!("Basic {}", BASE64_STANDARD.encode(creds.as_bytes())),
                 )
             }
             Auth::Token(token) => builder.header(AUTHORIZATION, format!("token {}", token)),

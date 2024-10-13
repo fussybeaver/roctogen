@@ -1,5 +1,6 @@
 use super::{FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::auth::Auth;
+use base64::{prelude::BASE64_STANDARD, Engine};
 
 use chrono::{DateTime, Duration, Utc};
 use js_sys::{Object, Promise, Reflect};
@@ -147,7 +148,7 @@ impl GitHubRequestBuilder<JsValue> for Request {
                 let creds = format!("{}:{}", user, pass);
                 headers.set(
                     "Authorization",
-                    &format!("Basic {}", base64::encode(creds.as_bytes())),
+                    &format!("Basic {}", BASE64_STANDARD.encode(creds.as_bytes())),
                 )?;
             }
             Auth::Token(token) => headers.set("Authorization", &format!("token {}", token))?,
