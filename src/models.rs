@@ -1,4 +1,4 @@
-#![allow(unused_imports, unused_qualifications, unused_extern_crates)]
+#![allow(clippy::all)]
 /* 
  * GitHub v3 REST API
  *

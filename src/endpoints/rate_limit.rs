@@ -1,6 +1,6 @@
 //! Method, error and parameter types for the RateLimit endpoint.
 #![allow(
-    unused_imports,
+    clippy::all
 )]
 /* 
  * GitHub v3 REST API

@@ -61,7 +61,7 @@ fn get_sync_fail() {
         }
         Err(x) => {
             debug!("{:?}", x);
-            assert!(false);
+            panic!();
         }
     };
 

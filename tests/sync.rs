@@ -162,7 +162,7 @@ fn rate_limit_sync_ok() {
         }
         Err(x) => {
             debug!("{:#?}", x);
-            assert!(false);
+            panic!();
         }
     };
 
@@ -186,7 +186,7 @@ fn post_sync_fail() {
             assert_eq!(404, *code);
         }
         Err(_) => {
-            assert!(false);
+            panic!();
         }
     };
 

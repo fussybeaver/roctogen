@@ -152,6 +152,7 @@ where
     fn from_json(model: A) -> Result<T, serde_json::Error>;
 }
 
+#[allow(dead_code)]
 pub(crate) struct GitHubRequest<T> {
     pub uri: String,
     pub method: &'static str,
