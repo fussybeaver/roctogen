@@ -1,6 +1,6 @@
 //! Method, error and parameter types for the Codespaces endpoint.
 #![allow(
-    unused_imports,
+    clippy::all
 )]
 /* 
  * GitHub v3 REST API
@@ -56,6 +56,56 @@ pub enum CodespacesAddRepositoryForSecretForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Add selected repository to an organization secret](Codespaces::add_selected_repo_to_org_secret_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesAddSelectedRepoToOrgSecretError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Conflict when visibility type is not set to selected")]
+    Status409,
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Check if permissions defined by a devcontainer have been accepted by the authenticated user](Codespaces::check_permissions_for_devcontainer_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesCheckPermissionsForDevcontainerError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationError),
+    #[error("Service unavailable")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [List machine types for a codespace](Codespaces::codespace_machines_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesCodespaceMachinesForAuthenticatedUserError {
@@ -104,6 +154,50 @@ pub enum CodespacesCreateForAuthenticatedUserError {
     Status403(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
+    #[error("Service unavailable")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Create or update an organization secret](Codespaces::create_or_update_org_secret_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesCreateOrUpdateOrgSecretError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Response when updating a secret")]
+    Status204,
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Create or update a repository secret](Codespaces::create_or_update_repo_secret_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesCreateOrUpdateRepoSecretError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Response when updating a secret")]
+    Status204,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -123,7 +217,7 @@ pub enum CodespacesCreateOrUpdateSecretForAuthenticatedUserError {
 
     #[error("Response after successfully updating a secret")]
     Status204,
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
     Status404(BasicError),
@@ -152,6 +246,8 @@ pub enum CodespacesCreateWithPrForAuthenticatedUserError {
     Status403(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
+    #[error("Service unavailable")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -171,12 +267,43 @@ pub enum CodespacesCreateWithRepoForAuthenticatedUserError {
 
     #[error("Response when the codespace creation partially failed but is being retried in the background")]
     Status202(Codespace),
+    #[error("Bad Request")]
+    Status400(BasicError),
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
+    #[error("Service unavailable")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Remove users from Codespaces access for an organization](Codespaces::delete_codespaces_access_users_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesDeleteCodespacesAccessUsersError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Not modified")]
+    Status304,
+    #[error("Users are neither members nor collaborators of this organization.")]
+    Status400,
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationError),
+    #[error("Internal Error")]
+    Status500(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -208,6 +335,69 @@ pub enum CodespacesDeleteForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Delete a codespace from the organization](Codespaces::delete_from_organization_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesDeleteFromOrganizationError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Not modified")]
+    Status304,
+    #[error("Internal Error")]
+    Status500(BasicError),
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Delete an organization secret](Codespaces::delete_org_secret_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesDeleteOrgSecretError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Delete a repository secret](Codespaces::delete_repo_secret_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesDeleteRepoSecretError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Delete a secret for the authenticated user](Codespaces::delete_secret_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesDeleteSecretForAuthenticatedUserError {
@@ -221,6 +411,79 @@ pub enum CodespacesDeleteSecretForAuthenticatedUserError {
 
     // -- endpoint errors
 
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Export a codespace for the authenticated user](Codespaces::export_for_authenticated_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesExportForAuthenticatedUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Internal Error")]
+    Status500(BasicError),
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List codespaces for a user in organization](Codespaces::get_codespaces_for_user_in_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesGetCodespacesForUserInOrgError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Not modified")]
+    Status304,
+    #[error("Internal Error")]
+    Status500(BasicError),
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get details about a codespace export](Codespaces::get_export_details_for_authenticated_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesGetExportDetailsForAuthenticatedUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -252,9 +515,77 @@ pub enum CodespacesGetForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Get an organization public key](Codespaces::get_org_public_key_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesGetOrgPublicKeyError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get an organization secret](Codespaces::get_org_secret_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesGetOrgSecretError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Get public key for the authenticated user](Codespaces::get_public_key_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesGetPublicKeyForAuthenticatedUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get a repository public key](Codespaces::get_repo_public_key_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesGetRepoPublicKeyError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get a repository secret](Codespaces::get_repo_secret_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesGetRepoSecretError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -286,9 +617,63 @@ pub enum CodespacesGetSecretForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+/// Errors for the [List devcontainer configurations in a repository for the authenticated user](Codespaces::list_devcontainers_in_repository_for_authenticated_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesListDevcontainersInRepositoryForAuthenticatedUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Internal Error")]
+    Status500(BasicError),
+    #[error("Bad Request")]
+    Status400(BasicError),
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [List codespaces for the authenticated user](Codespaces::list_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesListForAuthenticatedUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Not modified")]
+    Status304,
+    #[error("Internal Error")]
+    Status500(BasicError),
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List codespaces for the organization](Codespaces::list_in_organization_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesListInOrganizationError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -338,6 +723,40 @@ pub enum CodespacesListInRepositoryForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+/// Errors for the [List organization secrets](Codespaces::list_org_secrets_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesListOrgSecretsError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List repository secrets](Codespaces::list_repo_secrets_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesListRepoSecretsError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [List selected repositories for a user secret](Codespaces::list_repositories_for_secret_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesListRepositoriesForSecretForAuthenticatedUserError {
@@ -380,6 +799,73 @@ pub enum CodespacesListSecretsForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+/// Errors for the [List selected repositories for an organization secret](Codespaces::list_selected_repos_for_org_secret_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesListSelectedReposForOrgSecretError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get default attributes for a codespace](Codespaces::pre_flight_with_repo_for_authenticated_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesPreFlightWithRepoForAuthenticatedUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Create a repository from an unpublished codespace](Codespaces::publish_for_authenticated_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesPublishForAuthenticatedUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Remove a selected repository from a user secret](Codespaces::remove_repository_for_secret_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesRemoveRepositoryForSecretForAuthenticatedUserError {
@@ -401,6 +887,29 @@ pub enum CodespacesRemoveRepositoryForSecretForAuthenticatedUserError {
     Status404(BasicError),
     #[error("Internal Error")]
     Status500(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Remove selected repository from an organization secret](Codespaces::remove_selected_repo_from_org_secret_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesRemoveSelectedRepoFromOrgSecretError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Conflict when visibility type not set to selected")]
+    Status409,
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -432,6 +941,60 @@ pub enum CodespacesRepoMachinesForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Manage access control for organization codespaces](Codespaces::set_codespaces_access_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesSetCodespacesAccessError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Not modified")]
+    Status304,
+    #[error("Users are neither members nor collaborators of this organization.")]
+    Status400,
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationError),
+    #[error("Internal Error")]
+    Status500(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Add users to Codespaces access for an organization](Codespaces::set_codespaces_access_users_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesSetCodespacesAccessUsersError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Not modified")]
+    Status304,
+    #[error("Users are neither members nor collaborators of this organization.")]
+    Status400,
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationError),
+    #[error("Internal Error")]
+    Status500(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Set selected repositories for a user secret](Codespaces::set_repositories_for_secret_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesSetRepositoriesForSecretForAuthenticatedUserError {
@@ -453,6 +1016,27 @@ pub enum CodespacesSetRepositoriesForSecretForAuthenticatedUserError {
     Status404(BasicError),
     #[error("Internal Error")]
     Status500(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Set selected repositories for an organization secret](Codespaces::set_selected_repos_for_org_secret_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesSetSelectedReposForOrgSecretError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Conflict when visibility type not set to selected")]
+    Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -515,6 +1099,33 @@ pub enum CodespacesStopForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Stop a codespace for an organization user](Codespaces::stop_in_organization_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodespacesStopInOrganizationError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Not modified")]
+    Status304,
+    #[error("Internal Error")]
+    Status500(BasicError),
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Update a codespace for the authenticated user](Codespaces::update_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesUpdateForAuthenticatedUserError {
@@ -539,12 +1150,123 @@ pub enum CodespacesUpdateForAuthenticatedUserError {
 }
 
 
+/// Query parameters for the [Check if permissions defined by a devcontainer have been accepted by the authenticated user](Codespaces::check_permissions_for_devcontainer_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct CodespacesCheckPermissionsForDevcontainerParams<'req> {
+    /// The git reference that points to the location of the devcontainer configuration to use for the permission check. The value of `ref` will typically be a branch name (`heads/BRANCH_NAME`). For more information, see \"[Git References](https://git-scm.com/book/en/v2/Git-Internals-Git-References)\" in the Git documentation.
+    git_ref: &'req str, 
+    /// Path to the devcontainer.json configuration to use for the permission check.
+    devcontainer_path: &'req str
+}
+
+impl<'req> CodespacesCheckPermissionsForDevcontainerParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The git reference that points to the location of the devcontainer configuration to use for the permission check. The value of `ref` will typically be a branch name (`heads/BRANCH_NAME`). For more information, see \"[Git References](https://git-scm.com/book/en/v2/Git-Internals-Git-References)\" in the Git documentation.
+    pub fn git_ref(self, git_ref: &'req str) -> Self {
+        Self {
+            git_ref: git_ref,
+            devcontainer_path: self.devcontainer_path, 
+        }
+    }
+
+    /// Path to the devcontainer.json configuration to use for the permission check.
+    pub fn devcontainer_path(self, devcontainer_path: &'req str) -> Self {
+        Self {
+            git_ref: self.git_ref, 
+            devcontainer_path: devcontainer_path,
+        }
+    }
+}
+
+/// Query parameters for the [List codespaces for a user in organization](Codespaces::get_codespaces_for_user_in_org_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct CodespacesGetCodespacesForUserInOrgParams {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl CodespacesGetCodespacesForUserInOrgParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for CodespacesGetCodespacesForUserInOrgParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [List devcontainer configurations in a repository for the authenticated user](Codespaces::list_devcontainers_in_repository_for_authenticated_user_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct CodespacesListDevcontainersInRepositoryForAuthenticatedUserParams {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl CodespacesListDevcontainersInRepositoryForAuthenticatedUserParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for CodespacesListDevcontainersInRepositoryForAuthenticatedUserParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [List codespaces for the authenticated user](Codespaces::list_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct CodespacesListForAuthenticatedUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>, 
     /// ID of the Repository to filter on
     repository_id: Option<i32>
@@ -555,18 +1277,18 @@ impl CodespacesListForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
             repository_id: self.repository_id, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
             repository_id: self.repository_id, 
@@ -575,7 +1297,7 @@ impl CodespacesListForAuthenticatedUserParams {
 
     /// ID of the Repository to filter on
     pub fn repository_id(self, repository_id: i32) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: self.page, 
             repository_id: Some(repository_id),
@@ -592,12 +1314,52 @@ impl<'enc> From<&'enc PerPage> for CodespacesListForAuthenticatedUserParams {
         }
     }
 }
+/// Query parameters for the [List codespaces for the organization](Codespaces::list_in_organization_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct CodespacesListInOrganizationParams {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl CodespacesListInOrganizationParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for CodespacesListInOrganizationParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [List codespaces in a repository for the authenticated user](Codespaces::list_in_repository_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct CodespacesListInRepositoryForAuthenticatedUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -606,17 +1368,17 @@ impl CodespacesListInRepositoryForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -632,12 +1394,92 @@ impl<'enc> From<&'enc PerPage> for CodespacesListInRepositoryForAuthenticatedUse
         }
     }
 }
+/// Query parameters for the [List organization secrets](Codespaces::list_org_secrets_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct CodespacesListOrgSecretsParams {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl CodespacesListOrgSecretsParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for CodespacesListOrgSecretsParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [List repository secrets](Codespaces::list_repo_secrets_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct CodespacesListRepoSecretsParams {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl CodespacesListRepoSecretsParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for CodespacesListRepoSecretsParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [List secrets for the authenticated user](Codespaces::list_secrets_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct CodespacesListSecretsForAuthenticatedUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -646,17 +1488,17 @@ impl CodespacesListSecretsForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -672,11 +1514,86 @@ impl<'enc> From<&'enc PerPage> for CodespacesListSecretsForAuthenticatedUserPara
         }
     }
 }
+/// Query parameters for the [List selected repositories for an organization secret](Codespaces::list_selected_repos_for_org_secret_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct CodespacesListSelectedReposForOrgSecretParams {
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>, 
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>
+}
+
+impl CodespacesListSelectedReposForOrgSecretParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            page: Some(page),
+            per_page: self.per_page, 
+        }
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            page: self.page, 
+            per_page: Some(per_page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for CodespacesListSelectedReposForOrgSecretParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [Get default attributes for a codespace](Codespaces::pre_flight_with_repo_for_authenticated_user_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct CodespacesPreFlightWithRepoForAuthenticatedUserParams<'req> {
+    /// The branch or commit to check for a default devcontainer path. If not specified, the default branch will be checked.
+    git_ref: Option<&'req str>, 
+    /// An alternative IP for default location auto-detection, such as when proxying a request.
+    client_ip: Option<&'req str>
+}
+
+impl<'req> CodespacesPreFlightWithRepoForAuthenticatedUserParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The branch or commit to check for a default devcontainer path. If not specified, the default branch will be checked.
+    pub fn git_ref(self, git_ref: &'req str) -> Self {
+        Self {
+            git_ref: Some(git_ref),
+            client_ip: self.client_ip, 
+        }
+    }
+
+    /// An alternative IP for default location auto-detection, such as when proxying a request.
+    pub fn client_ip(self, client_ip: &'req str) -> Self {
+        Self {
+            git_ref: self.git_ref, 
+            client_ip: Some(client_ip),
+        }
+    }
+}
+
 /// Query parameters for the [List available machine types for a repository](Codespaces::repo_machines_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct CodespacesRepoMachinesForAuthenticatedUserParams<'req> {
-    /// Required. The location to check for available machines.
-    location: &'req str
+    /// The location to check for available machines. Assigned by IP if not provided.
+    location: Option<&'req str>, 
+    /// IP for location auto-detection when proxying a request
+    client_ip: Option<&'req str>, 
+    /// The branch or commit to check for prebuild availability and devcontainer restrictions.
+    git_ref: Option<&'req str>
 }
 
 impl<'req> CodespacesRepoMachinesForAuthenticatedUserParams<'req> {
@@ -684,10 +1601,30 @@ impl<'req> CodespacesRepoMachinesForAuthenticatedUserParams<'req> {
         Self::default()
     }
 
-    /// Required. The location to check for available machines.
+    /// The location to check for available machines. Assigned by IP if not provided.
     pub fn location(self, location: &'req str) -> Self {
-        Self { 
-            location: location,
+        Self {
+            location: Some(location),
+            client_ip: self.client_ip, 
+            git_ref: self.git_ref, 
+        }
+    }
+
+    /// IP for location auto-detection when proxying a request
+    pub fn client_ip(self, client_ip: &'req str) -> Self {
+        Self {
+            location: self.location, 
+            client_ip: Some(client_ip),
+            git_ref: self.git_ref, 
+        }
+    }
+
+    /// The branch or commit to check for prebuild availability and devcontainer restrictions.
+    pub fn git_ref(self, git_ref: &'req str) -> Self {
+        Self {
+            location: self.location, 
+            client_ip: self.client_ip, 
+            git_ref: Some(git_ref),
         }
     }
 }
@@ -698,10 +1635,13 @@ impl<'api> Codespaces<'api> {
     ///
     /// # Add a selected repository to a user secret
     ///
-    /// Adds a repository to the selected repositories for a user's codespace secret.
-    /// You must authenticate using an access token with the `user` or `read:user` scope to use this endpoint. User must have Codespaces access to use this endpoint.
+    /// Adds a repository to the selected repositories for a user's development environment secret.
     /// 
-    /// [GitHub API docs for add_repository_for_secret_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#add-a-selected-repository-to-a-user-secret)
+    /// The authenticated user must have Codespaces access to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for add_repository_for_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#add-a-selected-repository-to-a-user-secret)
     ///
     /// ---
     pub async fn add_repository_for_secret_for_authenticated_user_async(&self, secret_name: &str, repository_id: i32) -> Result<(), CodespacesAddRepositoryForSecretForAuthenticatedUserError> {
@@ -741,10 +1681,13 @@ impl<'api> Codespaces<'api> {
     ///
     /// # Add a selected repository to a user secret
     ///
-    /// Adds a repository to the selected repositories for a user's codespace secret.
-    /// You must authenticate using an access token with the `user` or `read:user` scope to use this endpoint. User must have Codespaces access to use this endpoint.
+    /// Adds a repository to the selected repositories for a user's development environment secret.
     /// 
-    /// [GitHub API docs for add_repository_for_secret_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#add-a-selected-repository-to-a-user-secret)
+    /// The authenticated user must have Codespaces access to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for add_repository_for_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#add-a-selected-repository-to-a-user-secret)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -783,13 +1726,194 @@ impl<'api> Codespaces<'api> {
 
     /// ---
     ///
+    /// # Add selected repository to an organization secret
+    ///
+    /// Adds a repository to an organization development environment secret when the `visibility` for repository access is set to `selected`. The visibility is set when you [Create or update an organization secret](https://docs.github.com/rest/codespaces/organization-secrets#create-or-update-an-organization-secret).
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for add_selected_repo_to_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#add-selected-repository-to-an-organization-secret)
+    ///
+    /// ---
+    pub async fn add_selected_repo_to_org_secret_async(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), CodespacesAddSelectedRepoToOrgSecretError> {
+
+        let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, secret_name, repository_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status409),
+                422 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodespacesAddSelectedRepoToOrgSecretError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Add selected repository to an organization secret
+    ///
+    /// Adds a repository to an organization development environment secret when the `visibility` for repository access is set to `selected`. The visibility is set when you [Create or update an organization secret](https://docs.github.com/rest/codespaces/organization-secrets#create-or-update-an-organization-secret).
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for add_selected_repo_to_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#add-selected-repository-to-an-organization-secret)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn add_selected_repo_to_org_secret(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), CodespacesAddSelectedRepoToOrgSecretError> {
+
+        let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, secret_name, repository_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status404(crate::adapters::to_json(github_response)?)),
+                409 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status409),
+                422 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(CodespacesAddSelectedRepoToOrgSecretError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Check if permissions defined by a devcontainer have been accepted by the authenticated user
+    ///
+    /// Checks whether the permissions defined by a given devcontainer configuration have been accepted by the authenticated user.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for check_permissions_for_devcontainer](https://docs.github.com/rest/codespaces/codespaces#check-if-permissions-defined-by-a-devcontainer-have-been-accepted-by-the-authenticated-user)
+    ///
+    /// ---
+    pub async fn check_permissions_for_devcontainer_async(&self, owner: &str, repo: &str, query_params: impl Into<CodespacesCheckPermissionsForDevcontainerParams<'api>>) -> Result<CodespacesPermissionsCheckForDevcontainer, CodespacesCheckPermissionsForDevcontainerError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/codespaces/permissions_check", super::GITHUB_BASE_API_URL, owner, repo);
+
+        request_uri.push_str("?");
+        request_uri.push_str(&serde_urlencoded::to_string(query_params.into())?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                401 => Err(CodespacesCheckPermissionsForDevcontainerError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(CodespacesCheckPermissionsForDevcontainerError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodespacesCheckPermissionsForDevcontainerError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(CodespacesCheckPermissionsForDevcontainerError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(CodespacesCheckPermissionsForDevcontainerError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodespacesCheckPermissionsForDevcontainerError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Check if permissions defined by a devcontainer have been accepted by the authenticated user
+    ///
+    /// Checks whether the permissions defined by a given devcontainer configuration have been accepted by the authenticated user.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for check_permissions_for_devcontainer](https://docs.github.com/rest/codespaces/codespaces#check-if-permissions-defined-by-a-devcontainer-have-been-accepted-by-the-authenticated-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn check_permissions_for_devcontainer(&self, owner: &str, repo: &str, query_params: impl Into<CodespacesCheckPermissionsForDevcontainerParams<'api>>) -> Result<CodespacesPermissionsCheckForDevcontainer, CodespacesCheckPermissionsForDevcontainerError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/codespaces/permissions_check", super::GITHUB_BASE_API_URL, owner, repo);
+
+        request_uri.push_str("?");
+        let qp: CodespacesCheckPermissionsForDevcontainerParams = query_params.into();
+        request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                401 => Err(CodespacesCheckPermissionsForDevcontainerError::Status401(crate::adapters::to_json(github_response)?)),
+                403 => Err(CodespacesCheckPermissionsForDevcontainerError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodespacesCheckPermissionsForDevcontainerError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(CodespacesCheckPermissionsForDevcontainerError::Status422(crate::adapters::to_json(github_response)?)),
+                503 => Err(CodespacesCheckPermissionsForDevcontainerError::Status503(crate::adapters::to_json(github_response)?)),
+                code => Err(CodespacesCheckPermissionsForDevcontainerError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List machine types for a codespace
     ///
     /// List the machine types a codespace can transition to use.
     /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for codespace_machines_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#list-machine-types-for-a-codespace)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for codespace_machines_for_authenticated_user](https://docs.github.com/rest/codespaces/machines#list-machine-types-for-a-codespace)
     ///
     /// ---
     pub async fn codespace_machines_for_authenticated_user_async(&self, codespace_name: &str) -> Result<GetCodespacesCodespaceMachinesForAuthenticatedUserResponse200, CodespacesCodespaceMachinesForAuthenticatedUserError> {
@@ -832,9 +1956,9 @@ impl<'api> Codespaces<'api> {
     ///
     /// List the machine types a codespace can transition to use.
     /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for codespace_machines_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#list-machine-types-for-a-codespace)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for codespace_machines_for_authenticated_user](https://docs.github.com/rest/codespaces/machines#list-machine-types-for-a-codespace)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -880,9 +2004,9 @@ impl<'api> Codespaces<'api> {
     /// 
     /// This endpoint requires either a `repository_id` OR a `pull_request` but not both.
     /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#create-a-codespace-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#create-a-codespace-for-the-authenticated-user)
     ///
     /// ---
     pub async fn create_for_authenticated_user_async(&self, body: PostCodespacesCreateForAuthenticatedUser) -> Result<Codespace, CodespacesCreateForAuthenticatedUserError> {
@@ -913,6 +2037,7 @@ impl<'api> Codespaces<'api> {
                 401 => Err(CodespacesCreateForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 403 => Err(CodespacesCreateForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(CodespacesCreateForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(CodespacesCreateForAuthenticatedUserError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(CodespacesCreateForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -926,9 +2051,9 @@ impl<'api> Codespaces<'api> {
     /// 
     /// This endpoint requires either a `repository_id` OR a `pull_request` but not both.
     /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#create-a-codespace-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#create-a-codespace-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -960,7 +2085,182 @@ impl<'api> Codespaces<'api> {
                 401 => Err(CodespacesCreateForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 403 => Err(CodespacesCreateForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
                 404 => Err(CodespacesCreateForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                503 => Err(CodespacesCreateForAuthenticatedUserError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(CodespacesCreateForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create or update an organization secret
+    ///
+    /// Creates or updates an organization development environment secret with an encrypted value. Encrypt your secret using
+    /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). For more information, see "[Encrypting secrets for the REST API](https://docs.github.com/rest/guides/encrypting-secrets-for-the-rest-api)."
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_or_update_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#create-or-update-an-organization-secret)
+    ///
+    /// ---
+    pub async fn create_or_update_org_secret_async(&self, org: &str, secret_name: &str, body: PutCodespacesCreateOrUpdateOrgSecret) -> Result<EmptyObject, CodespacesCreateOrUpdateOrgSecretError> {
+
+        let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PutCodespacesCreateOrUpdateOrgSecret::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                204 => Err(CodespacesCreateOrUpdateOrgSecretError::Status204),
+                404 => Err(CodespacesCreateOrUpdateOrgSecretError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(CodespacesCreateOrUpdateOrgSecretError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodespacesCreateOrUpdateOrgSecretError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create or update an organization secret
+    ///
+    /// Creates or updates an organization development environment secret with an encrypted value. Encrypt your secret using
+    /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). For more information, see "[Encrypting secrets for the REST API](https://docs.github.com/rest/guides/encrypting-secrets-for-the-rest-api)."
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_or_update_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#create-or-update-an-organization-secret)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn create_or_update_org_secret(&self, org: &str, secret_name: &str, body: PutCodespacesCreateOrUpdateOrgSecret) -> Result<EmptyObject, CodespacesCreateOrUpdateOrgSecretError> {
+
+        let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PutCodespacesCreateOrUpdateOrgSecret::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                204 => Err(CodespacesCreateOrUpdateOrgSecretError::Status204),
+                404 => Err(CodespacesCreateOrUpdateOrgSecretError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(CodespacesCreateOrUpdateOrgSecretError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(CodespacesCreateOrUpdateOrgSecretError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create or update a repository secret
+    ///
+    /// Creates or updates a repository development environment secret with an encrypted value. Encrypt your secret using
+    /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). For more information, see "[Encrypting secrets for the REST API](https://docs.github.com/rest/guides/encrypting-secrets-for-the-rest-api)."
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_or_update_repo_secret](https://docs.github.com/rest/codespaces/repository-secrets#create-or-update-a-repository-secret)
+    ///
+    /// ---
+    pub async fn create_or_update_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str, body: PutCodespacesCreateOrUpdateRepoSecret) -> Result<EmptyObject, CodespacesCreateOrUpdateRepoSecretError> {
+
+        let request_uri = format!("{}/repos/{}/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PutCodespacesCreateOrUpdateRepoSecret::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                204 => Err(CodespacesCreateOrUpdateRepoSecretError::Status204),
+                code => Err(CodespacesCreateOrUpdateRepoSecretError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create or update a repository secret
+    ///
+    /// Creates or updates a repository development environment secret with an encrypted value. Encrypt your secret using
+    /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). For more information, see "[Encrypting secrets for the REST API](https://docs.github.com/rest/guides/encrypting-secrets-for-the-rest-api)."
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_or_update_repo_secret](https://docs.github.com/rest/codespaces/repository-secrets#create-or-update-a-repository-secret)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn create_or_update_repo_secret(&self, owner: &str, repo: &str, secret_name: &str, body: PutCodespacesCreateOrUpdateRepoSecret) -> Result<EmptyObject, CodespacesCreateOrUpdateRepoSecretError> {
+
+        let request_uri = format!("{}/repos/{}/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PutCodespacesCreateOrUpdateRepoSecret::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                204 => Err(CodespacesCreateOrUpdateRepoSecretError::Status204),
+                code => Err(CodespacesCreateOrUpdateRepoSecretError::Generic { code }),
             }
         }
     }
@@ -969,84 +2269,17 @@ impl<'api> Codespaces<'api> {
     ///
     /// # Create or update a secret for the authenticated user
     ///
-    /// Creates or updates a secret for a user's codespace with an encrypted value. Encrypt your secret using
-    /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). You must authenticate using an access token with the `user` scope to use this endpoint. User must also have Codespaces access to use this endpoint.
+    /// Creates or updates a development environment secret for a user's codespace with an encrypted value. Encrypt your secret using
+    /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). For more information, see "[Encrypting secrets for the REST API](https://docs.github.com/rest/guides/encrypting-secrets-for-the-rest-api)."
     /// 
-    /// #### Example encrypting a secret using Node.js
+    /// The authenticated user must have Codespaces access to use this endpoint.
     /// 
-    /// Encrypt your secret using the [tweetsodium](https://github.com/github/tweetsodium) library.
-    /// 
-    /// ```nocompile
-    /// const sodium = require('tweetsodium');
-    /// 
-    /// const key = "base64-encoded-public-key";
-    /// const value = "plain-text-secret";
-    /// 
-    /// // Convert the message and key to Uint8Array's (Buffer implements that interface)
-    /// const messageBytes = Buffer.from(value);
-    /// const keyBytes = Buffer.from(key, 'base64');
-    /// 
-    /// // Encrypt using LibSodium.
-    /// const encryptedBytes = sodium.seal(messageBytes, keyBytes);
-    /// 
-    /// // Base64 the encrypted secret
-    /// const encrypted = Buffer.from(encryptedBytes).toString('base64');
-    /// 
-    /// console.log(encrypted);
-    /// ```
-    /// 
-    /// 
-    /// #### Example encrypting a secret using Python
-    /// 
-    /// Encrypt your secret using [pynacl](https://pynacl.readthedocs.io/en/stable/public/#nacl-public-sealedbox) with Python 3.
-    /// 
-    /// ```nocompile
-    /// from base64 import b64encode
-    /// from nacl import encoding, public
-    /// 
-    /// def encrypt(public_key: str, secret_value: str) -> str:
-    ///   """Encrypt a Unicode string using the public key."""
-    ///   public_key = public.PublicKey(public_key.encode("utf-8"), encoding.Base64Encoder())
-    ///   sealed_box = public.SealedBox(public_key)
-    ///   encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
-    ///   return b64encode(encrypted).decode("utf-8")
-    /// ```
-    /// 
-    /// #### Example encrypting a secret using C#
-    /// 
-    /// Encrypt your secret using the [Sodium.Core](https://www.nuget.org/packages/Sodium.Core/) package.
-    /// 
-    /// ```nocompile
-    /// var secretValue = System.Text.Encoding.UTF8.GetBytes("mySecret");
-    /// var publicKey = Convert.FromBase64String("2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=");
-    /// 
-    /// var sealedPublicKeyBox = Sodium.SealedPublicKeyBox.Create(secretValue, publicKey);
-    /// 
-    /// Console.WriteLine(Convert.ToBase64String(sealedPublicKeyBox));
-    /// ```
-    /// 
-    /// #### Example encrypting a secret using Ruby
-    /// 
-    /// Encrypt your secret using the [rbnacl](https://github.com/RubyCrypto/rbnacl) gem.
-    /// 
-    /// ```ruby,nocompile
-    /// require "rbnacl"
-    /// require "base64"
-    /// 
-    /// key = Base64.decode64("+ZYvJDZMHUfBkJdyq5Zm9SKqeuBQ4sj+6sfjlH4CgG0=")
-    /// public_key = RbNaCl::PublicKey.new(key)
-    /// 
-    /// box = RbNaCl::Boxes::Sealed.from_public_key(public_key)
-    /// encrypted_secret = box.encrypt("my_secret")
-    /// 
-    /// # Print the base64 encoded secret
-    /// puts Base64.strict_encode64(encrypted_secret)
-    /// ```
-    /// 
-    /// [GitHub API docs for create_or_update_secret_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#create-or-update-a-secret-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_or_update_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#create-or-update-a-secret-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn create_or_update_secret_for_authenticated_user_async(&self, secret_name: &str, body: PutCodespacesCreateOrUpdateSecretForAuthenticatedUser) -> Result<HashMap<String, Value>, CodespacesCreateOrUpdateSecretForAuthenticatedUserError> {
+    pub async fn create_or_update_secret_for_authenticated_user_async(&self, secret_name: &str, body: PutCodespacesCreateOrUpdateSecretForAuthenticatedUser) -> Result<EmptyObject, CodespacesCreateOrUpdateSecretForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, secret_name);
 
@@ -1082,85 +2315,18 @@ impl<'api> Codespaces<'api> {
     ///
     /// # Create or update a secret for the authenticated user
     ///
-    /// Creates or updates a secret for a user's codespace with an encrypted value. Encrypt your secret using
-    /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). You must authenticate using an access token with the `user` scope to use this endpoint. User must also have Codespaces access to use this endpoint.
+    /// Creates or updates a development environment secret for a user's codespace with an encrypted value. Encrypt your secret using
+    /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). For more information, see "[Encrypting secrets for the REST API](https://docs.github.com/rest/guides/encrypting-secrets-for-the-rest-api)."
     /// 
-    /// #### Example encrypting a secret using Node.js
+    /// The authenticated user must have Codespaces access to use this endpoint.
     /// 
-    /// Encrypt your secret using the [tweetsodium](https://github.com/github/tweetsodium) library.
-    /// 
-    /// ```nocompile
-    /// const sodium = require('tweetsodium');
-    /// 
-    /// const key = "base64-encoded-public-key";
-    /// const value = "plain-text-secret";
-    /// 
-    /// // Convert the message and key to Uint8Array's (Buffer implements that interface)
-    /// const messageBytes = Buffer.from(value);
-    /// const keyBytes = Buffer.from(key, 'base64');
-    /// 
-    /// // Encrypt using LibSodium.
-    /// const encryptedBytes = sodium.seal(messageBytes, keyBytes);
-    /// 
-    /// // Base64 the encrypted secret
-    /// const encrypted = Buffer.from(encryptedBytes).toString('base64');
-    /// 
-    /// console.log(encrypted);
-    /// ```
-    /// 
-    /// 
-    /// #### Example encrypting a secret using Python
-    /// 
-    /// Encrypt your secret using [pynacl](https://pynacl.readthedocs.io/en/stable/public/#nacl-public-sealedbox) with Python 3.
-    /// 
-    /// ```nocompile
-    /// from base64 import b64encode
-    /// from nacl import encoding, public
-    /// 
-    /// def encrypt(public_key: str, secret_value: str) -> str:
-    ///   """Encrypt a Unicode string using the public key."""
-    ///   public_key = public.PublicKey(public_key.encode("utf-8"), encoding.Base64Encoder())
-    ///   sealed_box = public.SealedBox(public_key)
-    ///   encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
-    ///   return b64encode(encrypted).decode("utf-8")
-    /// ```
-    /// 
-    /// #### Example encrypting a secret using C#
-    /// 
-    /// Encrypt your secret using the [Sodium.Core](https://www.nuget.org/packages/Sodium.Core/) package.
-    /// 
-    /// ```nocompile
-    /// var secretValue = System.Text.Encoding.UTF8.GetBytes("mySecret");
-    /// var publicKey = Convert.FromBase64String("2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=");
-    /// 
-    /// var sealedPublicKeyBox = Sodium.SealedPublicKeyBox.Create(secretValue, publicKey);
-    /// 
-    /// Console.WriteLine(Convert.ToBase64String(sealedPublicKeyBox));
-    /// ```
-    /// 
-    /// #### Example encrypting a secret using Ruby
-    /// 
-    /// Encrypt your secret using the [rbnacl](https://github.com/RubyCrypto/rbnacl) gem.
-    /// 
-    /// ```ruby,nocompile
-    /// require "rbnacl"
-    /// require "base64"
-    /// 
-    /// key = Base64.decode64("+ZYvJDZMHUfBkJdyq5Zm9SKqeuBQ4sj+6sfjlH4CgG0=")
-    /// public_key = RbNaCl::PublicKey.new(key)
-    /// 
-    /// box = RbNaCl::Boxes::Sealed.from_public_key(public_key)
-    /// encrypted_secret = box.encrypt("my_secret")
-    /// 
-    /// # Print the base64 encoded secret
-    /// puts Base64.strict_encode64(encrypted_secret)
-    /// ```
-    /// 
-    /// [GitHub API docs for create_or_update_secret_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#create-or-update-a-secret-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_or_update_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#create-or-update-a-secret-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_or_update_secret_for_authenticated_user(&self, secret_name: &str, body: PutCodespacesCreateOrUpdateSecretForAuthenticatedUser) -> Result<HashMap<String, Value>, CodespacesCreateOrUpdateSecretForAuthenticatedUserError> {
+    pub fn create_or_update_secret_for_authenticated_user(&self, secret_name: &str, body: PutCodespacesCreateOrUpdateSecretForAuthenticatedUser) -> Result<EmptyObject, CodespacesCreateOrUpdateSecretForAuthenticatedUserError> {
 
         let request_uri = format!("{}/user/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, secret_name);
 
@@ -1198,9 +2364,9 @@ impl<'api> Codespaces<'api> {
     ///
     /// Creates a codespace owned by the authenticated user for the specified pull request.
     /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for create_with_pr_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#create-a-codespace-from-a-pull-request)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_with_pr_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#create-a-codespace-from-a-pull-request)
     ///
     /// ---
     pub async fn create_with_pr_for_authenticated_user_async(&self, owner: &str, repo: &str, pull_number: i32, body: PostCodespacesCreateWithPrForAuthenticatedUser) -> Result<Codespace, CodespacesCreateWithPrForAuthenticatedUserError> {
@@ -1231,6 +2397,7 @@ impl<'api> Codespaces<'api> {
                 401 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 403 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(CodespacesCreateWithPrForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -1242,9 +2409,9 @@ impl<'api> Codespaces<'api> {
     ///
     /// Creates a codespace owned by the authenticated user for the specified pull request.
     /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for create_with_pr_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#create-a-codespace-from-a-pull-request)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_with_pr_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#create-a-codespace-from-a-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1276,6 +2443,7 @@ impl<'api> Codespaces<'api> {
                 401 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 403 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
                 404 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                503 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(CodespacesCreateWithPrForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -1287,9 +2455,9 @@ impl<'api> Codespaces<'api> {
     ///
     /// Creates a codespace owned by the authenticated user in the specified repository.
     /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for create_with_repo_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#create-a-codespace-in-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_with_repo_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#create-a-codespace-in-a-repository)
     ///
     /// ---
     pub async fn create_with_repo_for_authenticated_user_async(&self, owner: &str, repo: &str, body: PostCodespacesCreateWithRepoForAuthenticatedUser) -> Result<Codespace, CodespacesCreateWithRepoForAuthenticatedUserError> {
@@ -1317,9 +2485,11 @@ impl<'api> Codespaces<'api> {
         } else {
             match github_response.status_code() {
                 202 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status202(crate::adapters::to_json_async(github_response).await?)),
+                400 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status400(crate::adapters::to_json_async(github_response).await?)),
                 401 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
                 403 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status503(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -1331,9 +2501,9 @@ impl<'api> Codespaces<'api> {
     ///
     /// Creates a codespace owned by the authenticated user in the specified repository.
     /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for create_with_repo_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#create-a-codespace-in-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_with_repo_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#create-a-codespace-in-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1362,10 +2532,109 @@ impl<'api> Codespaces<'api> {
         } else {
             match github_response.status_code() {
                 202 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status202(crate::adapters::to_json(github_response)?)),
+                400 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status400(crate::adapters::to_json(github_response)?)),
                 401 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
                 403 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
                 404 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                503 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status503(crate::adapters::to_json(github_response)?)),
                 code => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove users from Codespaces access for an organization
+    ///
+    /// Codespaces for the specified users will no longer be billed to the organization.
+    /// 
+    /// To use this endpoint, the access settings for the organization must be set to `selected_members`.
+    /// For information on how to change this setting, see "[Manage access control for organization codespaces](https://docs.github.com/rest/codespaces/organizations#manage-access-control-for-organization-codespaces)."
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_codespaces_access_users](https://docs.github.com/rest/codespaces/organizations#remove-users-from-codespaces-access-for-an-organization)
+    ///
+    /// ---
+    pub async fn delete_codespaces_access_users_async(&self, org: &str, body: DeleteCodespacesDeleteCodespacesAccessUsers) -> Result<(), CodespacesDeleteCodespacesAccessUsersError> {
+
+        let request_uri = format!("{}/orgs/{}/codespaces/access/selected_users", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(DeleteCodespacesDeleteCodespacesAccessUsers::from_json(body)?),
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(CodespacesDeleteCodespacesAccessUsersError::Status304),
+                400 => Err(CodespacesDeleteCodespacesAccessUsersError::Status400),
+                404 => Err(CodespacesDeleteCodespacesAccessUsersError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(CodespacesDeleteCodespacesAccessUsersError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                500 => Err(CodespacesDeleteCodespacesAccessUsersError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodespacesDeleteCodespacesAccessUsersError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove users from Codespaces access for an organization
+    ///
+    /// Codespaces for the specified users will no longer be billed to the organization.
+    /// 
+    /// To use this endpoint, the access settings for the organization must be set to `selected_members`.
+    /// For information on how to change this setting, see "[Manage access control for organization codespaces](https://docs.github.com/rest/codespaces/organizations#manage-access-control-for-organization-codespaces)."
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_codespaces_access_users](https://docs.github.com/rest/codespaces/organizations#remove-users-from-codespaces-access-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn delete_codespaces_access_users(&self, org: &str, body: DeleteCodespacesDeleteCodespacesAccessUsers) -> Result<(), CodespacesDeleteCodespacesAccessUsersError> {
+
+        let request_uri = format!("{}/orgs/{}/codespaces/access/selected_users", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(DeleteCodespacesDeleteCodespacesAccessUsers::from_json(body)?),
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(CodespacesDeleteCodespacesAccessUsersError::Status304),
+                400 => Err(CodespacesDeleteCodespacesAccessUsersError::Status400),
+                404 => Err(CodespacesDeleteCodespacesAccessUsersError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(CodespacesDeleteCodespacesAccessUsersError::Status422(crate::adapters::to_json(github_response)?)),
+                500 => Err(CodespacesDeleteCodespacesAccessUsersError::Status500(crate::adapters::to_json(github_response)?)),
+                code => Err(CodespacesDeleteCodespacesAccessUsersError::Generic { code }),
             }
         }
     }
@@ -1376,9 +2645,9 @@ impl<'api> Codespaces<'api> {
     ///
     /// Deletes a user's codespace.
     /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for delete_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#delete-a-codespace-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#delete-a-codespace-for-the-authenticated-user)
     ///
     /// ---
     pub async fn delete_for_authenticated_user_async(&self, codespace_name: &str) -> Result<HashMap<String, Value>, CodespacesDeleteForAuthenticatedUserError> {
@@ -1421,9 +2690,9 @@ impl<'api> Codespaces<'api> {
     ///
     /// Deletes a user's codespace.
     /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for delete_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#delete-a-codespace-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#delete-a-codespace-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1463,11 +2732,270 @@ impl<'api> Codespaces<'api> {
 
     /// ---
     ///
+    /// # Delete a codespace from the organization
+    ///
+    /// Deletes a user's codespace.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_from_organization](https://docs.github.com/rest/codespaces/organizations#delete-a-codespace-from-the-organization)
+    ///
+    /// ---
+    pub async fn delete_from_organization_async(&self, org: &str, username: &str, codespace_name: &str) -> Result<HashMap<String, Value>, CodespacesDeleteFromOrganizationError> {
+
+        let request_uri = format!("{}/orgs/{}/members/{}/codespaces/{}", super::GITHUB_BASE_API_URL, org, username, codespace_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(CodespacesDeleteFromOrganizationError::Status304),
+                500 => Err(CodespacesDeleteFromOrganizationError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(CodespacesDeleteFromOrganizationError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(CodespacesDeleteFromOrganizationError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodespacesDeleteFromOrganizationError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodespacesDeleteFromOrganizationError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete a codespace from the organization
+    ///
+    /// Deletes a user's codespace.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_from_organization](https://docs.github.com/rest/codespaces/organizations#delete-a-codespace-from-the-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn delete_from_organization(&self, org: &str, username: &str, codespace_name: &str) -> Result<HashMap<String, Value>, CodespacesDeleteFromOrganizationError> {
+
+        let request_uri = format!("{}/orgs/{}/members/{}/codespaces/{}", super::GITHUB_BASE_API_URL, org, username, codespace_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(CodespacesDeleteFromOrganizationError::Status304),
+                500 => Err(CodespacesDeleteFromOrganizationError::Status500(crate::adapters::to_json(github_response)?)),
+                401 => Err(CodespacesDeleteFromOrganizationError::Status401(crate::adapters::to_json(github_response)?)),
+                403 => Err(CodespacesDeleteFromOrganizationError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodespacesDeleteFromOrganizationError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(CodespacesDeleteFromOrganizationError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete an organization secret
+    ///
+    /// Deletes an organization development environment secret using the secret name.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#delete-an-organization-secret)
+    ///
+    /// ---
+    pub async fn delete_org_secret_async(&self, org: &str, secret_name: &str) -> Result<(), CodespacesDeleteOrgSecretError> {
+
+        let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(CodespacesDeleteOrgSecretError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodespacesDeleteOrgSecretError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete an organization secret
+    ///
+    /// Deletes an organization development environment secret using the secret name.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#delete-an-organization-secret)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn delete_org_secret(&self, org: &str, secret_name: &str) -> Result<(), CodespacesDeleteOrgSecretError> {
+
+        let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(CodespacesDeleteOrgSecretError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(CodespacesDeleteOrgSecretError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete a repository secret
+    ///
+    /// Deletes a development environment secret in a repository using the secret name.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_repo_secret](https://docs.github.com/rest/codespaces/repository-secrets#delete-a-repository-secret)
+    ///
+    /// ---
+    pub async fn delete_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str) -> Result<(), CodespacesDeleteRepoSecretError> {
+
+        let request_uri = format!("{}/repos/{}/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(CodespacesDeleteRepoSecretError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete a repository secret
+    ///
+    /// Deletes a development environment secret in a repository using the secret name.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_repo_secret](https://docs.github.com/rest/codespaces/repository-secrets#delete-a-repository-secret)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn delete_repo_secret(&self, owner: &str, repo: &str, secret_name: &str) -> Result<(), CodespacesDeleteRepoSecretError> {
+
+        let request_uri = format!("{}/repos/{}/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(CodespacesDeleteRepoSecretError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Delete a secret for the authenticated user
     ///
-    /// Deletes a secret from a user's codespaces using the secret name. Deleting the secret will remove access from all codespaces that were allowed to access the secret. You must authenticate using an access token with the `user` scope to use this endpoint. User must have Codespaces access to use this endpoint.
+    /// Deletes a development environment secret from a user's codespaces using the secret name. Deleting the secret will remove access from all codespaces that were allowed to access the secret.
     /// 
-    /// [GitHub API docs for delete_secret_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#delete-a-secret-for-the-authenticated-user)
+    /// The authenticated user must have Codespaces access to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#delete-a-secret-for-the-authenticated-user)
     ///
     /// ---
     pub async fn delete_secret_for_authenticated_user_async(&self, secret_name: &str) -> Result<(), CodespacesDeleteSecretForAuthenticatedUserError> {
@@ -1503,9 +3031,13 @@ impl<'api> Codespaces<'api> {
     ///
     /// # Delete a secret for the authenticated user
     ///
-    /// Deletes a secret from a user's codespaces using the secret name. Deleting the secret will remove access from all codespaces that were allowed to access the secret. You must authenticate using an access token with the `user` scope to use this endpoint. User must have Codespaces access to use this endpoint.
+    /// Deletes a development environment secret from a user's codespaces using the secret name. Deleting the secret will remove access from all codespaces that were allowed to access the secret.
     /// 
-    /// [GitHub API docs for delete_secret_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#delete-a-secret-for-the-authenticated-user)
+    /// The authenticated user must have Codespaces access to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#delete-a-secret-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1540,13 +3072,291 @@ impl<'api> Codespaces<'api> {
 
     /// ---
     ///
+    /// # Export a codespace for the authenticated user
+    ///
+    /// Triggers an export of the specified codespace and returns a URL and ID where the status of the export can be monitored.
+    /// 
+    /// If changes cannot be pushed to the codespace's repository, they will be pushed to a new or previously-existing fork instead.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for export_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#export-a-codespace-for-the-authenticated-user)
+    ///
+    /// ---
+    pub async fn export_for_authenticated_user_async(&self, codespace_name: &str) -> Result<CodespaceExportDetails, CodespacesExportForAuthenticatedUserError> {
+
+        let request_uri = format!("{}/user/codespaces/{}/exports", super::GITHUB_BASE_API_URL, codespace_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(CodespacesExportForAuthenticatedUserError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(CodespacesExportForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(CodespacesExportForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodespacesExportForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(CodespacesExportForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodespacesExportForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Export a codespace for the authenticated user
+    ///
+    /// Triggers an export of the specified codespace and returns a URL and ID where the status of the export can be monitored.
+    /// 
+    /// If changes cannot be pushed to the codespace's repository, they will be pushed to a new or previously-existing fork instead.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for export_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#export-a-codespace-for-the-authenticated-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn export_for_authenticated_user(&self, codespace_name: &str) -> Result<CodespaceExportDetails, CodespacesExportForAuthenticatedUserError> {
+
+        let request_uri = format!("{}/user/codespaces/{}/exports", super::GITHUB_BASE_API_URL, codespace_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(CodespacesExportForAuthenticatedUserError::Status500(crate::adapters::to_json(github_response)?)),
+                401 => Err(CodespacesExportForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                403 => Err(CodespacesExportForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodespacesExportForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(CodespacesExportForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(CodespacesExportForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List codespaces for a user in organization
+    ///
+    /// Lists the codespaces that a member of an organization has for repositories in that organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_codespaces_for_user_in_org](https://docs.github.com/rest/codespaces/organizations#list-codespaces-for-a-user-in-organization)
+    ///
+    /// ---
+    pub async fn get_codespaces_for_user_in_org_async(&self, org: &str, username: &str, query_params: Option<impl Into<CodespacesGetCodespacesForUserInOrgParams>>) -> Result<GetCodespacesListForAuthenticatedUserResponse200, CodespacesGetCodespacesForUserInOrgError> {
+
+        let mut request_uri = format!("{}/orgs/{}/members/{}/codespaces", super::GITHUB_BASE_API_URL, org, username);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(CodespacesGetCodespacesForUserInOrgError::Status304),
+                500 => Err(CodespacesGetCodespacesForUserInOrgError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(CodespacesGetCodespacesForUserInOrgError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(CodespacesGetCodespacesForUserInOrgError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodespacesGetCodespacesForUserInOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodespacesGetCodespacesForUserInOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List codespaces for a user in organization
+    ///
+    /// Lists the codespaces that a member of an organization has for repositories in that organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_codespaces_for_user_in_org](https://docs.github.com/rest/codespaces/organizations#list-codespaces-for-a-user-in-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_codespaces_for_user_in_org(&self, org: &str, username: &str, query_params: Option<impl Into<CodespacesGetCodespacesForUserInOrgParams>>) -> Result<GetCodespacesListForAuthenticatedUserResponse200, CodespacesGetCodespacesForUserInOrgError> {
+
+        let mut request_uri = format!("{}/orgs/{}/members/{}/codespaces", super::GITHUB_BASE_API_URL, org, username);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: CodespacesGetCodespacesForUserInOrgParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(CodespacesGetCodespacesForUserInOrgError::Status304),
+                500 => Err(CodespacesGetCodespacesForUserInOrgError::Status500(crate::adapters::to_json(github_response)?)),
+                401 => Err(CodespacesGetCodespacesForUserInOrgError::Status401(crate::adapters::to_json(github_response)?)),
+                403 => Err(CodespacesGetCodespacesForUserInOrgError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodespacesGetCodespacesForUserInOrgError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(CodespacesGetCodespacesForUserInOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get details about a codespace export
+    ///
+    /// Gets information about an export of a codespace.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_export_details_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#get-details-about-a-codespace-export)
+    ///
+    /// ---
+    pub async fn get_export_details_for_authenticated_user_async(&self, codespace_name: &str, export_id: &str) -> Result<CodespaceExportDetails, CodespacesGetExportDetailsForAuthenticatedUserError> {
+
+        let request_uri = format!("{}/user/codespaces/{}/exports/{}", super::GITHUB_BASE_API_URL, codespace_name, export_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(CodespacesGetExportDetailsForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodespacesGetExportDetailsForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get details about a codespace export
+    ///
+    /// Gets information about an export of a codespace.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_export_details_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#get-details-about-a-codespace-export)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_export_details_for_authenticated_user(&self, codespace_name: &str, export_id: &str) -> Result<CodespaceExportDetails, CodespacesGetExportDetailsForAuthenticatedUserError> {
+
+        let request_uri = format!("{}/user/codespaces/{}/exports/{}", super::GITHUB_BASE_API_URL, codespace_name, export_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(CodespacesGetExportDetailsForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(CodespacesGetExportDetailsForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Get a codespace for the authenticated user
     ///
     /// Gets information about a user's codespace.
     /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for get_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#get-a-codespace-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#get-a-codespace-for-the-authenticated-user)
     ///
     /// ---
     pub async fn get_for_authenticated_user_async(&self, codespace_name: &str) -> Result<Codespace, CodespacesGetForAuthenticatedUserError> {
@@ -1589,9 +3399,9 @@ impl<'api> Codespaces<'api> {
     ///
     /// Gets information about a user's codespace.
     /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for get_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#get-a-codespace-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#get-a-codespace-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1631,11 +3441,175 @@ impl<'api> Codespaces<'api> {
 
     /// ---
     ///
+    /// # Get an organization public key
+    ///
+    /// Gets a public key for an organization, which is required in order to encrypt secrets. You need to encrypt the value of a secret before you can create or update secrets.
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_org_public_key](https://docs.github.com/rest/codespaces/organization-secrets#get-an-organization-public-key)
+    ///
+    /// ---
+    pub async fn get_org_public_key_async(&self, org: &str) -> Result<CodespacesPublicKey, CodespacesGetOrgPublicKeyError> {
+
+        let request_uri = format!("{}/orgs/{}/codespaces/secrets/public-key", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(CodespacesGetOrgPublicKeyError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get an organization public key
+    ///
+    /// Gets a public key for an organization, which is required in order to encrypt secrets. You need to encrypt the value of a secret before you can create or update secrets.
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_org_public_key](https://docs.github.com/rest/codespaces/organization-secrets#get-an-organization-public-key)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_org_public_key(&self, org: &str) -> Result<CodespacesPublicKey, CodespacesGetOrgPublicKeyError> {
+
+        let request_uri = format!("{}/orgs/{}/codespaces/secrets/public-key", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(CodespacesGetOrgPublicKeyError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get an organization secret
+    ///
+    /// Gets an organization development environment secret without revealing its encrypted value.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#get-an-organization-secret)
+    ///
+    /// ---
+    pub async fn get_org_secret_async(&self, org: &str, secret_name: &str) -> Result<CodespacesOrgSecret, CodespacesGetOrgSecretError> {
+
+        let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(CodespacesGetOrgSecretError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get an organization secret
+    ///
+    /// Gets an organization development environment secret without revealing its encrypted value.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#get-an-organization-secret)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_org_secret(&self, org: &str, secret_name: &str) -> Result<CodespacesOrgSecret, CodespacesGetOrgSecretError> {
+
+        let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(CodespacesGetOrgSecretError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Get public key for the authenticated user
     ///
-    /// Gets your public key, which you need to encrypt secrets. You need to encrypt a secret before you can create or update secrets. Anyone with one of the 'read:user' or 'user' scopes in their personal access token. User must have Codespaces access to use this endpoint.
+    /// Gets your public key, which you need to encrypt secrets. You need to encrypt a secret before you can create or update secrets.
     /// 
-    /// [GitHub API docs for get_public_key_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#get-public-key-for-the-authenticated-user)
+    /// The authenticated user must have Codespaces access to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_public_key_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#get-public-key-for-the-authenticated-user)
     ///
     /// ---
     pub async fn get_public_key_for_authenticated_user_async(&self) -> Result<CodespacesUserPublicKey, CodespacesGetPublicKeyForAuthenticatedUserError> {
@@ -1671,9 +3645,13 @@ impl<'api> Codespaces<'api> {
     ///
     /// # Get public key for the authenticated user
     ///
-    /// Gets your public key, which you need to encrypt secrets. You need to encrypt a secret before you can create or update secrets. Anyone with one of the 'read:user' or 'user' scopes in their personal access token. User must have Codespaces access to use this endpoint.
+    /// Gets your public key, which you need to encrypt secrets. You need to encrypt a secret before you can create or update secrets.
     /// 
-    /// [GitHub API docs for get_public_key_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#get-public-key-for-the-authenticated-user)
+    /// The authenticated user must have Codespaces access to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_public_key_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#get-public-key-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1708,12 +3686,179 @@ impl<'api> Codespaces<'api> {
 
     /// ---
     ///
+    /// # Get a repository public key
+    ///
+    /// Gets your public key, which you need to encrypt secrets. You need to
+    /// encrypt a secret before you can create or update secrets.
+    /// 
+    /// If the repository is private, OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_repo_public_key](https://docs.github.com/rest/codespaces/repository-secrets#get-a-repository-public-key)
+    ///
+    /// ---
+    pub async fn get_repo_public_key_async(&self, owner: &str, repo: &str) -> Result<CodespacesPublicKey, CodespacesGetRepoPublicKeyError> {
+
+        let request_uri = format!("{}/repos/{}/{}/codespaces/secrets/public-key", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(CodespacesGetRepoPublicKeyError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get a repository public key
+    ///
+    /// Gets your public key, which you need to encrypt secrets. You need to
+    /// encrypt a secret before you can create or update secrets.
+    /// 
+    /// If the repository is private, OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_repo_public_key](https://docs.github.com/rest/codespaces/repository-secrets#get-a-repository-public-key)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_repo_public_key(&self, owner: &str, repo: &str) -> Result<CodespacesPublicKey, CodespacesGetRepoPublicKeyError> {
+
+        let request_uri = format!("{}/repos/{}/{}/codespaces/secrets/public-key", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(CodespacesGetRepoPublicKeyError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get a repository secret
+    ///
+    /// Gets a single repository development environment secret without revealing its encrypted value.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_repo_secret](https://docs.github.com/rest/codespaces/repository-secrets#get-a-repository-secret)
+    ///
+    /// ---
+    pub async fn get_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str) -> Result<RepoCodespacesSecret, CodespacesGetRepoSecretError> {
+
+        let request_uri = format!("{}/repos/{}/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(CodespacesGetRepoSecretError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get a repository secret
+    ///
+    /// Gets a single repository development environment secret without revealing its encrypted value.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_repo_secret](https://docs.github.com/rest/codespaces/repository-secrets#get-a-repository-secret)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_repo_secret(&self, owner: &str, repo: &str, secret_name: &str) -> Result<RepoCodespacesSecret, CodespacesGetRepoSecretError> {
+
+        let request_uri = format!("{}/repos/{}/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(CodespacesGetRepoSecretError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Get a secret for the authenticated user
     ///
-    /// Gets a secret available to a user's codespaces without revealing its encrypted value.
-    /// You must authenticate using an access token with the `user` or `read:user` scope to use this endpoint. User must have Codespaces access to use this endpoint.
+    /// Gets a development environment secret available to a user's codespaces without revealing its encrypted value.
     /// 
-    /// [GitHub API docs for get_secret_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#get-a-secret-for-the-authenticated-user)
+    /// The authenticated user must have Codespaces access to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#get-a-secret-for-the-authenticated-user)
     ///
     /// ---
     pub async fn get_secret_for_authenticated_user_async(&self, secret_name: &str) -> Result<CodespacesSecret, CodespacesGetSecretForAuthenticatedUserError> {
@@ -1749,10 +3894,13 @@ impl<'api> Codespaces<'api> {
     ///
     /// # Get a secret for the authenticated user
     ///
-    /// Gets a secret available to a user's codespaces without revealing its encrypted value.
-    /// You must authenticate using an access token with the `user` or `read:user` scope to use this endpoint. User must have Codespaces access to use this endpoint.
+    /// Gets a development environment secret available to a user's codespaces without revealing its encrypted value.
     /// 
-    /// [GitHub API docs for get_secret_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#get-a-secret-for-the-authenticated-user)
+    /// The authenticated user must have Codespaces access to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#get-a-secret-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1787,13 +3935,115 @@ impl<'api> Codespaces<'api> {
 
     /// ---
     ///
+    /// # List devcontainer configurations in a repository for the authenticated user
+    ///
+    /// Lists the devcontainer.json files associated with a specified repository and the authenticated user. These files
+    /// specify launchpoint configurations for codespaces created within the repository.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_devcontainers_in_repository_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#list-devcontainer-configurations-in-a-repository-for-the-authenticated-user)
+    ///
+    /// ---
+    pub async fn list_devcontainers_in_repository_for_authenticated_user_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesListDevcontainersInRepositoryForAuthenticatedUserParams>>) -> Result<GetCodespacesListDevcontainersInRepositoryForAuthenticatedUserResponse200, CodespacesListDevcontainersInRepositoryForAuthenticatedUserError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/codespaces/devcontainers", super::GITHUB_BASE_API_URL, owner, repo);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                400 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status400(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List devcontainer configurations in a repository for the authenticated user
+    ///
+    /// Lists the devcontainer.json files associated with a specified repository and the authenticated user. These files
+    /// specify launchpoint configurations for codespaces created within the repository.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_devcontainers_in_repository_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#list-devcontainer-configurations-in-a-repository-for-the-authenticated-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_devcontainers_in_repository_for_authenticated_user(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesListDevcontainersInRepositoryForAuthenticatedUserParams>>) -> Result<GetCodespacesListDevcontainersInRepositoryForAuthenticatedUserResponse200, CodespacesListDevcontainersInRepositoryForAuthenticatedUserError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/codespaces/devcontainers", super::GITHUB_BASE_API_URL, owner, repo);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: CodespacesListDevcontainersInRepositoryForAuthenticatedUserParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status500(crate::adapters::to_json(github_response)?)),
+                400 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status400(crate::adapters::to_json(github_response)?)),
+                401 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                403 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List codespaces for the authenticated user
     ///
     /// Lists the authenticated user's codespaces.
     /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#list-codespaces-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#list-codespaces-for-the-authenticated-user)
     ///
     /// ---
     pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<CodespacesListForAuthenticatedUserParams>>) -> Result<GetCodespacesListForAuthenticatedUserResponse200, CodespacesListForAuthenticatedUserError> {
@@ -1840,9 +4090,9 @@ impl<'api> Codespaces<'api> {
     ///
     /// Lists the authenticated user's codespaces.
     /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#list-codespaces-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#list-codespaces-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1887,13 +4137,113 @@ impl<'api> Codespaces<'api> {
 
     /// ---
     ///
+    /// # List codespaces for the organization
+    ///
+    /// Lists the codespaces associated to a specified organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_in_organization](https://docs.github.com/rest/codespaces/organizations#list-codespaces-for-the-organization)
+    ///
+    /// ---
+    pub async fn list_in_organization_async(&self, org: &str, query_params: Option<impl Into<CodespacesListInOrganizationParams>>) -> Result<GetCodespacesListForAuthenticatedUserResponse200, CodespacesListInOrganizationError> {
+
+        let mut request_uri = format!("{}/orgs/{}/codespaces", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(CodespacesListInOrganizationError::Status304),
+                500 => Err(CodespacesListInOrganizationError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(CodespacesListInOrganizationError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(CodespacesListInOrganizationError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodespacesListInOrganizationError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodespacesListInOrganizationError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List codespaces for the organization
+    ///
+    /// Lists the codespaces associated to a specified organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_in_organization](https://docs.github.com/rest/codespaces/organizations#list-codespaces-for-the-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_in_organization(&self, org: &str, query_params: Option<impl Into<CodespacesListInOrganizationParams>>) -> Result<GetCodespacesListForAuthenticatedUserResponse200, CodespacesListInOrganizationError> {
+
+        let mut request_uri = format!("{}/orgs/{}/codespaces", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: CodespacesListInOrganizationParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(CodespacesListInOrganizationError::Status304),
+                500 => Err(CodespacesListInOrganizationError::Status500(crate::adapters::to_json(github_response)?)),
+                401 => Err(CodespacesListInOrganizationError::Status401(crate::adapters::to_json(github_response)?)),
+                403 => Err(CodespacesListInOrganizationError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodespacesListInOrganizationError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(CodespacesListInOrganizationError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List codespaces in a repository for the authenticated user
     ///
     /// Lists the codespaces associated to a specified repository and the authenticated user.
     /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for list_in_repository_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#list-codespaces-in-a-repository-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_in_repository_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#list-codespaces-in-a-repository-for-the-authenticated-user)
     ///
     /// ---
     pub async fn list_in_repository_for_authenticated_user_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesListInRepositoryForAuthenticatedUserParams>>) -> Result<GetCodespacesListForAuthenticatedUserResponse200, CodespacesListInRepositoryForAuthenticatedUserError> {
@@ -1939,9 +4289,9 @@ impl<'api> Codespaces<'api> {
     ///
     /// Lists the codespaces associated to a specified repository and the authenticated user.
     /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for list_in_repository_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#list-codespaces-in-a-repository-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_in_repository_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#list-codespaces-in-a-repository-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1985,12 +4335,199 @@ impl<'api> Codespaces<'api> {
 
     /// ---
     ///
+    /// # List organization secrets
+    ///
+    /// Lists all Codespaces development environment secrets available at the organization-level without revealing their encrypted
+    /// values.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_org_secrets](https://docs.github.com/rest/codespaces/organization-secrets#list-organization-secrets)
+    ///
+    /// ---
+    pub async fn list_org_secrets_async(&self, org: &str, query_params: Option<impl Into<CodespacesListOrgSecretsParams>>) -> Result<GetCodespacesListOrgSecretsResponse200, CodespacesListOrgSecretsError> {
+
+        let mut request_uri = format!("{}/orgs/{}/codespaces/secrets", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(CodespacesListOrgSecretsError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List organization secrets
+    ///
+    /// Lists all Codespaces development environment secrets available at the organization-level without revealing their encrypted
+    /// values.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_org_secrets](https://docs.github.com/rest/codespaces/organization-secrets#list-organization-secrets)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_org_secrets(&self, org: &str, query_params: Option<impl Into<CodespacesListOrgSecretsParams>>) -> Result<GetCodespacesListOrgSecretsResponse200, CodespacesListOrgSecretsError> {
+
+        let mut request_uri = format!("{}/orgs/{}/codespaces/secrets", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: CodespacesListOrgSecretsParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(CodespacesListOrgSecretsError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List repository secrets
+    ///
+    /// Lists all development environment secrets available in a repository without revealing their encrypted
+    /// values.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_repo_secrets](https://docs.github.com/rest/codespaces/repository-secrets#list-repository-secrets)
+    ///
+    /// ---
+    pub async fn list_repo_secrets_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesListRepoSecretsParams>>) -> Result<GetCodespacesListRepoSecretsResponse200, CodespacesListRepoSecretsError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/codespaces/secrets", super::GITHUB_BASE_API_URL, owner, repo);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(CodespacesListRepoSecretsError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List repository secrets
+    ///
+    /// Lists all development environment secrets available in a repository without revealing their encrypted
+    /// values.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_repo_secrets](https://docs.github.com/rest/codespaces/repository-secrets#list-repository-secrets)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_repo_secrets(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesListRepoSecretsParams>>) -> Result<GetCodespacesListRepoSecretsResponse200, CodespacesListRepoSecretsError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/codespaces/secrets", super::GITHUB_BASE_API_URL, owner, repo);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: CodespacesListRepoSecretsParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(CodespacesListRepoSecretsError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List selected repositories for a user secret
     ///
-    /// List the repositories that have been granted the ability to use a user's codespace secret.
-    /// You must authenticate using an access token with the `user` or `read:user` scope to use this endpoint. User must have Codespaces access to use this endpoint.
+    /// List the repositories that have been granted the ability to use a user's development environment secret.
     /// 
-    /// [GitHub API docs for list_repositories_for_secret_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#list-selected-repositories-for-a-user-secret)
+    /// The authenticated user must have Codespaces access to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_repositories_for_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#list-selected-repositories-for-a-user-secret)
     ///
     /// ---
     pub async fn list_repositories_for_secret_for_authenticated_user_async(&self, secret_name: &str) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, CodespacesListRepositoriesForSecretForAuthenticatedUserError> {
@@ -2030,10 +4567,13 @@ impl<'api> Codespaces<'api> {
     ///
     /// # List selected repositories for a user secret
     ///
-    /// List the repositories that have been granted the ability to use a user's codespace secret.
-    /// You must authenticate using an access token with the `user` or `read:user` scope to use this endpoint. User must have Codespaces access to use this endpoint.
+    /// List the repositories that have been granted the ability to use a user's development environment secret.
     /// 
-    /// [GitHub API docs for list_repositories_for_secret_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#list-selected-repositories-for-a-user-secret)
+    /// The authenticated user must have Codespaces access to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_repositories_for_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#list-selected-repositories-for-a-user-secret)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2074,11 +4614,14 @@ impl<'api> Codespaces<'api> {
     ///
     /// # List secrets for the authenticated user
     ///
-    /// Lists all secrets available for a user's Codespaces without revealing their
+    /// Lists all development environment secrets available for a user's codespaces without revealing their
     /// encrypted values.
-    /// You must authenticate using an access token with the `user` or `read:user` scope to use this endpoint. User must have Codespaces access to use this endpoint.
     /// 
-    /// [GitHub API docs for list_secrets_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#list-secrets-for-the-authenticated-user)
+    /// The authenticated user must have Codespaces access to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_secrets_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#list-secrets-for-the-authenticated-user)
     ///
     /// ---
     pub async fn list_secrets_for_authenticated_user_async(&self, query_params: Option<impl Into<CodespacesListSecretsForAuthenticatedUserParams>>) -> Result<GetCodespacesListSecretsForAuthenticatedUserResponse200, CodespacesListSecretsForAuthenticatedUserError> {
@@ -2118,11 +4661,14 @@ impl<'api> Codespaces<'api> {
     ///
     /// # List secrets for the authenticated user
     ///
-    /// Lists all secrets available for a user's Codespaces without revealing their
+    /// Lists all development environment secrets available for a user's codespaces without revealing their
     /// encrypted values.
-    /// You must authenticate using an access token with the `user` or `read:user` scope to use this endpoint. User must have Codespaces access to use this endpoint.
     /// 
-    /// [GitHub API docs for list_secrets_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#list-secrets-for-the-authenticated-user)
+    /// The authenticated user must have Codespaces access to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_secrets_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#list-secrets-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2162,12 +4708,302 @@ impl<'api> Codespaces<'api> {
 
     /// ---
     ///
+    /// # List selected repositories for an organization secret
+    ///
+    /// Lists all repositories that have been selected when the `visibility`
+    /// for repository access to a secret is set to `selected`.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_selected_repos_for_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#list-selected-repositories-for-an-organization-secret)
+    ///
+    /// ---
+    pub async fn list_selected_repos_for_org_secret_async(&self, org: &str, secret_name: &str, query_params: Option<impl Into<CodespacesListSelectedReposForOrgSecretParams>>) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, CodespacesListSelectedReposForOrgSecretError> {
+
+        let mut request_uri = format!("{}/orgs/{}/codespaces/secrets/{}/repositories", super::GITHUB_BASE_API_URL, org, secret_name);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(CodespacesListSelectedReposForOrgSecretError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodespacesListSelectedReposForOrgSecretError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List selected repositories for an organization secret
+    ///
+    /// Lists all repositories that have been selected when the `visibility`
+    /// for repository access to a secret is set to `selected`.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_selected_repos_for_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#list-selected-repositories-for-an-organization-secret)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_selected_repos_for_org_secret(&self, org: &str, secret_name: &str, query_params: Option<impl Into<CodespacesListSelectedReposForOrgSecretParams>>) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, CodespacesListSelectedReposForOrgSecretError> {
+
+        let mut request_uri = format!("{}/orgs/{}/codespaces/secrets/{}/repositories", super::GITHUB_BASE_API_URL, org, secret_name);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: CodespacesListSelectedReposForOrgSecretParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(CodespacesListSelectedReposForOrgSecretError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(CodespacesListSelectedReposForOrgSecretError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get default attributes for a codespace
+    ///
+    /// Gets the default attributes for codespaces created by the user with the repository.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for pre_flight_with_repo_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#get-default-attributes-for-a-codespace)
+    ///
+    /// ---
+    pub async fn pre_flight_with_repo_for_authenticated_user_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesPreFlightWithRepoForAuthenticatedUserParams<'api>>>) -> Result<GetCodespacesPreFlightWithRepoForAuthenticatedUserResponse200, CodespacesPreFlightWithRepoForAuthenticatedUserError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/codespaces/new", super::GITHUB_BASE_API_URL, owner, repo);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                401 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get default attributes for a codespace
+    ///
+    /// Gets the default attributes for codespaces created by the user with the repository.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for pre_flight_with_repo_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#get-default-attributes-for-a-codespace)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn pre_flight_with_repo_for_authenticated_user(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesPreFlightWithRepoForAuthenticatedUserParams<'api>>>) -> Result<GetCodespacesPreFlightWithRepoForAuthenticatedUserResponse200, CodespacesPreFlightWithRepoForAuthenticatedUserError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/codespaces/new", super::GITHUB_BASE_API_URL, owner, repo);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: CodespacesPreFlightWithRepoForAuthenticatedUserParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                401 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                403 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create a repository from an unpublished codespace
+    ///
+    /// Publishes an unpublished codespace, creating a new repository and assigning it to the codespace.
+    /// 
+    /// The codespace's token is granted write permissions to the repository, allowing the user to push their changes.
+    /// 
+    /// This will fail for a codespace that is already published, meaning it has an associated repository.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for publish_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#create-a-repository-from-an-unpublished-codespace)
+    ///
+    /// ---
+    pub async fn publish_for_authenticated_user_async(&self, codespace_name: &str, body: PostCodespacesPublishForAuthenticatedUser) -> Result<CodespaceWithFullRepository, CodespacesPublishForAuthenticatedUserError> {
+
+        let request_uri = format!("{}/user/codespaces/{}/publish", super::GITHUB_BASE_API_URL, codespace_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostCodespacesPublishForAuthenticatedUser::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                401 => Err(CodespacesPublishForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(CodespacesPublishForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodespacesPublishForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(CodespacesPublishForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodespacesPublishForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create a repository from an unpublished codespace
+    ///
+    /// Publishes an unpublished codespace, creating a new repository and assigning it to the codespace.
+    /// 
+    /// The codespace's token is granted write permissions to the repository, allowing the user to push their changes.
+    /// 
+    /// This will fail for a codespace that is already published, meaning it has an associated repository.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for publish_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#create-a-repository-from-an-unpublished-codespace)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn publish_for_authenticated_user(&self, codespace_name: &str, body: PostCodespacesPublishForAuthenticatedUser) -> Result<CodespaceWithFullRepository, CodespacesPublishForAuthenticatedUserError> {
+
+        let request_uri = format!("{}/user/codespaces/{}/publish", super::GITHUB_BASE_API_URL, codespace_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostCodespacesPublishForAuthenticatedUser::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                401 => Err(CodespacesPublishForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                403 => Err(CodespacesPublishForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodespacesPublishForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(CodespacesPublishForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(CodespacesPublishForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Remove a selected repository from a user secret
     ///
-    /// Removes a repository from the selected repositories for a user's codespace secret.
-    /// You must authenticate using an access token with the `user` or `read:user` scope to use this endpoint. User must have Codespaces access to use this endpoint.
+    /// Removes a repository from the selected repositories for a user's development environment secret.
     /// 
-    /// [GitHub API docs for remove_repository_for_secret_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#remove-a-selected-repository-from-a-user-secret)
+    /// The authenticated user must have Codespaces access to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for remove_repository_for_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#remove-a-selected-repository-from-a-user-secret)
     ///
     /// ---
     pub async fn remove_repository_for_secret_for_authenticated_user_async(&self, secret_name: &str, repository_id: i32) -> Result<(), CodespacesRemoveRepositoryForSecretForAuthenticatedUserError> {
@@ -2207,10 +5043,13 @@ impl<'api> Codespaces<'api> {
     ///
     /// # Remove a selected repository from a user secret
     ///
-    /// Removes a repository from the selected repositories for a user's codespace secret.
-    /// You must authenticate using an access token with the `user` or `read:user` scope to use this endpoint. User must have Codespaces access to use this endpoint.
+    /// Removes a repository from the selected repositories for a user's development environment secret.
     /// 
-    /// [GitHub API docs for remove_repository_for_secret_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#remove-a-selected-repository-from-a-user-secret)
+    /// The authenticated user must have Codespaces access to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for remove_repository_for_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#remove-a-selected-repository-from-a-user-secret)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2249,23 +5088,114 @@ impl<'api> Codespaces<'api> {
 
     /// ---
     ///
+    /// # Remove selected repository from an organization secret
+    ///
+    /// Removes a repository from an organization development environment secret when the `visibility`
+    /// for repository access is set to `selected`. The visibility is set when you [Create
+    /// or update an organization secret](https://docs.github.com/rest/codespaces/organization-secrets#create-or-update-an-organization-secret).
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for remove_selected_repo_from_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#remove-selected-repository-from-an-organization-secret)
+    ///
+    /// ---
+    pub async fn remove_selected_repo_from_org_secret_async(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), CodespacesRemoveSelectedRepoFromOrgSecretError> {
+
+        let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, secret_name, repository_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status409),
+                422 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove selected repository from an organization secret
+    ///
+    /// Removes a repository from an organization development environment secret when the `visibility`
+    /// for repository access is set to `selected`. The visibility is set when you [Create
+    /// or update an organization secret](https://docs.github.com/rest/codespaces/organization-secrets#create-or-update-an-organization-secret).
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for remove_selected_repo_from_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#remove-selected-repository-from-an-organization-secret)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn remove_selected_repo_from_org_secret(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), CodespacesRemoveSelectedRepoFromOrgSecretError> {
+
+        let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, secret_name, repository_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status404(crate::adapters::to_json(github_response)?)),
+                409 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status409),
+                422 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List available machine types for a repository
     ///
     /// List the machine types available for a given repository based on its configuration.
     /// 
-    /// Location is required.
-    /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for repo_machines_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#list-available-machine-types-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for repo_machines_for_authenticated_user](https://docs.github.com/rest/codespaces/machines#list-available-machine-types-for-a-repository)
     ///
     /// ---
-    pub async fn repo_machines_for_authenticated_user_async(&self, owner: &str, repo: &str, query_params: impl Into<CodespacesRepoMachinesForAuthenticatedUserParams<'api>>) -> Result<GetCodespacesCodespaceMachinesForAuthenticatedUserResponse200, CodespacesRepoMachinesForAuthenticatedUserError> {
+    pub async fn repo_machines_for_authenticated_user_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesRepoMachinesForAuthenticatedUserParams<'api>>>) -> Result<GetCodespacesCodespaceMachinesForAuthenticatedUserResponse200, CodespacesRepoMachinesForAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/codespaces/machines", super::GITHUB_BASE_API_URL, owner, repo);
 
-        request_uri.push_str("?");
-        request_uri.push_str(&serde_urlencoded::to_string(query_params.into())?);
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
 
         let req = GitHubRequest {
             uri: request_uri,
@@ -2302,21 +5232,21 @@ impl<'api> Codespaces<'api> {
     ///
     /// List the machine types available for a given repository based on its configuration.
     /// 
-    /// Location is required.
-    /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for repo_machines_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#list-available-machine-types-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for repo_machines_for_authenticated_user](https://docs.github.com/rest/codespaces/machines#list-available-machine-types-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn repo_machines_for_authenticated_user(&self, owner: &str, repo: &str, query_params: impl Into<CodespacesRepoMachinesForAuthenticatedUserParams<'api>>) -> Result<GetCodespacesCodespaceMachinesForAuthenticatedUserResponse200, CodespacesRepoMachinesForAuthenticatedUserError> {
+    pub fn repo_machines_for_authenticated_user(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesRepoMachinesForAuthenticatedUserParams<'api>>>) -> Result<GetCodespacesCodespaceMachinesForAuthenticatedUserResponse200, CodespacesRepoMachinesForAuthenticatedUserError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/codespaces/machines", super::GITHUB_BASE_API_URL, owner, repo);
 
-        request_uri.push_str("?");
-        let qp: CodespacesRepoMachinesForAuthenticatedUserParams = query_params.into();
-        request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: CodespacesRepoMachinesForAuthenticatedUserParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
 
         let req = GitHubRequest {
             uri: request_uri,
@@ -2349,12 +5279,201 @@ impl<'api> Codespaces<'api> {
 
     /// ---
     ///
+    /// # Manage access control for organization codespaces
+    ///
+    /// Sets which users can access codespaces in an organization. This is synonymous with granting or revoking codespaces access permissions for users according to the visibility.
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_codespaces_access](https://docs.github.com/rest/codespaces/organizations#manage-access-control-for-organization-codespaces)
+    ///
+    /// ---
+    pub async fn set_codespaces_access_async(&self, org: &str, body: PutCodespacesSetCodespacesAccess) -> Result<(), CodespacesSetCodespacesAccessError> {
+
+        let request_uri = format!("{}/orgs/{}/codespaces/access", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PutCodespacesSetCodespacesAccess::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(CodespacesSetCodespacesAccessError::Status304),
+                400 => Err(CodespacesSetCodespacesAccessError::Status400),
+                404 => Err(CodespacesSetCodespacesAccessError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(CodespacesSetCodespacesAccessError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                500 => Err(CodespacesSetCodespacesAccessError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodespacesSetCodespacesAccessError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Manage access control for organization codespaces
+    ///
+    /// Sets which users can access codespaces in an organization. This is synonymous with granting or revoking codespaces access permissions for users according to the visibility.
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_codespaces_access](https://docs.github.com/rest/codespaces/organizations#manage-access-control-for-organization-codespaces)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn set_codespaces_access(&self, org: &str, body: PutCodespacesSetCodespacesAccess) -> Result<(), CodespacesSetCodespacesAccessError> {
+
+        let request_uri = format!("{}/orgs/{}/codespaces/access", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PutCodespacesSetCodespacesAccess::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(CodespacesSetCodespacesAccessError::Status304),
+                400 => Err(CodespacesSetCodespacesAccessError::Status400),
+                404 => Err(CodespacesSetCodespacesAccessError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(CodespacesSetCodespacesAccessError::Status422(crate::adapters::to_json(github_response)?)),
+                500 => Err(CodespacesSetCodespacesAccessError::Status500(crate::adapters::to_json(github_response)?)),
+                code => Err(CodespacesSetCodespacesAccessError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Add users to Codespaces access for an organization
+    ///
+    /// Codespaces for the specified users will be billed to the organization.
+    /// 
+    /// To use this endpoint, the access settings for the organization must be set to `selected_members`.
+    /// For information on how to change this setting, see "[Manage access control for organization codespaces](https://docs.github.com/rest/codespaces/organizations#manage-access-control-for-organization-codespaces)."
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_codespaces_access_users](https://docs.github.com/rest/codespaces/organizations#add-users-to-codespaces-access-for-an-organization)
+    ///
+    /// ---
+    pub async fn set_codespaces_access_users_async(&self, org: &str, body: PostCodespacesSetCodespacesAccessUsers) -> Result<(), CodespacesSetCodespacesAccessUsersError> {
+
+        let request_uri = format!("{}/orgs/{}/codespaces/access/selected_users", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostCodespacesSetCodespacesAccessUsers::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(CodespacesSetCodespacesAccessUsersError::Status304),
+                400 => Err(CodespacesSetCodespacesAccessUsersError::Status400),
+                404 => Err(CodespacesSetCodespacesAccessUsersError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(CodespacesSetCodespacesAccessUsersError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                500 => Err(CodespacesSetCodespacesAccessUsersError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodespacesSetCodespacesAccessUsersError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Add users to Codespaces access for an organization
+    ///
+    /// Codespaces for the specified users will be billed to the organization.
+    /// 
+    /// To use this endpoint, the access settings for the organization must be set to `selected_members`.
+    /// For information on how to change this setting, see "[Manage access control for organization codespaces](https://docs.github.com/rest/codespaces/organizations#manage-access-control-for-organization-codespaces)."
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_codespaces_access_users](https://docs.github.com/rest/codespaces/organizations#add-users-to-codespaces-access-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn set_codespaces_access_users(&self, org: &str, body: PostCodespacesSetCodespacesAccessUsers) -> Result<(), CodespacesSetCodespacesAccessUsersError> {
+
+        let request_uri = format!("{}/orgs/{}/codespaces/access/selected_users", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostCodespacesSetCodespacesAccessUsers::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(CodespacesSetCodespacesAccessUsersError::Status304),
+                400 => Err(CodespacesSetCodespacesAccessUsersError::Status400),
+                404 => Err(CodespacesSetCodespacesAccessUsersError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(CodespacesSetCodespacesAccessUsersError::Status422(crate::adapters::to_json(github_response)?)),
+                500 => Err(CodespacesSetCodespacesAccessUsersError::Status500(crate::adapters::to_json(github_response)?)),
+                code => Err(CodespacesSetCodespacesAccessUsersError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Set selected repositories for a user secret
     ///
-    /// Select the repositories that will use a user's codespace secret.
-    /// You must authenticate using an access token with the `user` or `read:user` scope to use this endpoint. User must have Codespaces access to use this endpoint.
+    /// Select the repositories that will use a user's development environment secret.
     /// 
-    /// [GitHub API docs for set_repositories_for_secret_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#set-selected-repositories-for-a-user-secret)
+    /// The authenticated user must have Codespaces access to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_repositories_for_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#set-selected-repositories-for-a-user-secret)
     ///
     /// ---
     pub async fn set_repositories_for_secret_for_authenticated_user_async(&self, secret_name: &str, body: PutCodespacesSetRepositoriesForSecretForAuthenticatedUser) -> Result<(), CodespacesSetRepositoriesForSecretForAuthenticatedUserError> {
@@ -2394,10 +5513,13 @@ impl<'api> Codespaces<'api> {
     ///
     /// # Set selected repositories for a user secret
     ///
-    /// Select the repositories that will use a user's codespace secret.
-    /// You must authenticate using an access token with the `user` or `read:user` scope to use this endpoint. User must have Codespaces access to use this endpoint.
+    /// Select the repositories that will use a user's development environment secret.
     /// 
-    /// [GitHub API docs for set_repositories_for_secret_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#set-selected-repositories-for-a-user-secret)
+    /// The authenticated user must have Codespaces access to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` or `codespace:secrets` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_repositories_for_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#set-selected-repositories-for-a-user-secret)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2436,13 +5558,102 @@ impl<'api> Codespaces<'api> {
 
     /// ---
     ///
+    /// # Set selected repositories for an organization secret
+    ///
+    /// Replaces all repositories for an organization development environment secret when the `visibility`
+    /// for repository access is set to `selected`. The visibility is set when you [Create
+    /// or update an organization secret](https://docs.github.com/rest/codespaces/organization-secrets#create-or-update-an-organization-secret).
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_selected_repos_for_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#set-selected-repositories-for-an-organization-secret)
+    ///
+    /// ---
+    pub async fn set_selected_repos_for_org_secret_async(&self, org: &str, secret_name: &str, body: PutCodespacesSetSelectedReposForOrgSecret) -> Result<(), CodespacesSetSelectedReposForOrgSecretError> {
+
+        let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}/repositories", super::GITHUB_BASE_API_URL, org, secret_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PutCodespacesSetSelectedReposForOrgSecret::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(CodespacesSetSelectedReposForOrgSecretError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(CodespacesSetSelectedReposForOrgSecretError::Status409),
+                code => Err(CodespacesSetSelectedReposForOrgSecretError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Set selected repositories for an organization secret
+    ///
+    /// Replaces all repositories for an organization development environment secret when the `visibility`
+    /// for repository access is set to `selected`. The visibility is set when you [Create
+    /// or update an organization secret](https://docs.github.com/rest/codespaces/organization-secrets#create-or-update-an-organization-secret).
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_selected_repos_for_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#set-selected-repositories-for-an-organization-secret)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn set_selected_repos_for_org_secret(&self, org: &str, secret_name: &str, body: PutCodespacesSetSelectedReposForOrgSecret) -> Result<(), CodespacesSetSelectedReposForOrgSecretError> {
+
+        let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}/repositories", super::GITHUB_BASE_API_URL, org, secret_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PutCodespacesSetSelectedReposForOrgSecret::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(CodespacesSetSelectedReposForOrgSecretError::Status404(crate::adapters::to_json(github_response)?)),
+                409 => Err(CodespacesSetSelectedReposForOrgSecretError::Status409),
+                code => Err(CodespacesSetSelectedReposForOrgSecretError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Start a codespace for the authenticated user
     ///
     /// Starts a user's codespace.
     /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for start_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#start-a-codespace-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for start_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#start-a-codespace-for-the-authenticated-user)
     ///
     /// ---
     pub async fn start_for_authenticated_user_async(&self, codespace_name: &str) -> Result<Codespace, CodespacesStartForAuthenticatedUserError> {
@@ -2488,9 +5699,9 @@ impl<'api> Codespaces<'api> {
     ///
     /// Starts a user's codespace.
     /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for start_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#start-a-codespace-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for start_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#start-a-codespace-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2537,9 +5748,9 @@ impl<'api> Codespaces<'api> {
     ///
     /// Stops a user's codespace.
     /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for stop_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#stop-a-codespace-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for stop_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#stop-a-codespace-for-the-authenticated-user)
     ///
     /// ---
     pub async fn stop_for_authenticated_user_async(&self, codespace_name: &str) -> Result<Codespace, CodespacesStopForAuthenticatedUserError> {
@@ -2581,9 +5792,9 @@ impl<'api> Codespaces<'api> {
     ///
     /// Stops a user's codespace.
     /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for stop_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#stop-a-codespace-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for stop_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#stop-a-codespace-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2622,15 +5833,106 @@ impl<'api> Codespaces<'api> {
 
     /// ---
     ///
+    /// # Stop a codespace for an organization user
+    ///
+    /// Stops a user's codespace.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for stop_in_organization](https://docs.github.com/rest/codespaces/organizations#stop-a-codespace-for-an-organization-user)
+    ///
+    /// ---
+    pub async fn stop_in_organization_async(&self, org: &str, username: &str, codespace_name: &str) -> Result<Codespace, CodespacesStopInOrganizationError> {
+
+        let request_uri = format!("{}/orgs/{}/members/{}/codespaces/{}/stop", super::GITHUB_BASE_API_URL, org, username, codespace_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(CodespacesStopInOrganizationError::Status304),
+                500 => Err(CodespacesStopInOrganizationError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(CodespacesStopInOrganizationError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(CodespacesStopInOrganizationError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodespacesStopInOrganizationError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodespacesStopInOrganizationError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Stop a codespace for an organization user
+    ///
+    /// Stops a user's codespace.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for stop_in_organization](https://docs.github.com/rest/codespaces/organizations#stop-a-codespace-for-an-organization-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn stop_in_organization(&self, org: &str, username: &str, codespace_name: &str) -> Result<Codespace, CodespacesStopInOrganizationError> {
+
+        let request_uri = format!("{}/orgs/{}/members/{}/codespaces/{}/stop", super::GITHUB_BASE_API_URL, org, username, codespace_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(CodespacesStopInOrganizationError::Status304),
+                500 => Err(CodespacesStopInOrganizationError::Status500(crate::adapters::to_json(github_response)?)),
+                401 => Err(CodespacesStopInOrganizationError::Status401(crate::adapters::to_json(github_response)?)),
+                403 => Err(CodespacesStopInOrganizationError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodespacesStopInOrganizationError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(CodespacesStopInOrganizationError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Update a codespace for the authenticated user
     ///
-    /// Updates a codespace owned by the authenticated user. Currently only the codespace's machine type can be modified using this endpoint.
+    /// Updates a codespace owned by the authenticated user. Currently only the codespace's machine type and recent folders can be modified using this endpoint.
     /// 
-    /// Once you specify a new machine type it will be applied the next time your codespace is started.
+    /// If you specify a new machine type it will be applied the next time your codespace is started.
     /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for update_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#update-a-codespace-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for update_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#update-a-codespace-for-the-authenticated-user)
     ///
     /// ---
     pub async fn update_for_authenticated_user_async(&self, codespace_name: &str, body: PatchCodespacesUpdateForAuthenticatedUser) -> Result<Codespace, CodespacesUpdateForAuthenticatedUserError> {
@@ -2669,13 +5971,13 @@ impl<'api> Codespaces<'api> {
     ///
     /// # Update a codespace for the authenticated user
     ///
-    /// Updates a codespace owned by the authenticated user. Currently only the codespace's machine type can be modified using this endpoint.
+    /// Updates a codespace owned by the authenticated user. Currently only the codespace's machine type and recent folders can be modified using this endpoint.
     /// 
-    /// Once you specify a new machine type it will be applied the next time your codespace is started.
+    /// If you specify a new machine type it will be applied the next time your codespace is started.
     /// 
-    /// You must authenticate using an access token with the `codespace` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for update_for_authenticated_user](https://docs.github.com/rest/reference/codespaces#update-a-codespace-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `codespace` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for update_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#update-a-codespace-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

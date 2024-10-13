@@ -1,6 +1,6 @@
 //! Method, error and parameter types for the Issues endpoint.
 #![allow(
-    unused_imports,
+    clippy::all
 )]
 /* 
  * GitHub v3 REST API
@@ -61,9 +61,13 @@ pub enum IssuesAddLabelsError {
 
     // -- endpoint errors
 
+    #[error("Moved permanently")]
+    Status301(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -82,7 +86,26 @@ pub enum IssuesCheckUserCanBeAssignedError {
 
     // -- endpoint errors
 
-    #[error("Otherwise a &#x60;404&#x60; status code is returned.")]
+    #[error("Otherwise a `404` status code is returned.")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Check if a user can be assigned to a issue](Issues::check_user_can_be_assigned_to_issue_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum IssuesCheckUserCanBeAssignedToIssueError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Response if `assignee` can not be assigned to `issue_number`")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -101,12 +124,14 @@ pub enum IssuesCreateError {
 
     // -- endpoint errors
 
+    #[error("Bad Request")]
+    Status400(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Service unavailable")]
-    Status503(GetSearchUsersResponse503),
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Gone")]
@@ -132,7 +157,7 @@ pub enum IssuesCreateCommentError {
     Status403(BasicError),
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
     Status404(BasicError),
@@ -153,7 +178,7 @@ pub enum IssuesCreateLabelError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
     Status404(BasicError),
@@ -176,7 +201,7 @@ pub enum IssuesCreateMilestoneError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -353,7 +378,7 @@ pub enum IssuesListError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
     Status304,
@@ -416,7 +441,7 @@ pub enum IssuesListCommentsForRepoError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
     Status404(BasicError),
@@ -456,7 +481,7 @@ pub enum IssuesListEventsForRepoError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -538,7 +563,7 @@ pub enum IssuesListForRepoError {
 
     #[error("Moved permanently")]
     Status301(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
     Status404(BasicError),
@@ -595,6 +620,10 @@ pub enum IssuesListLabelsOnIssueError {
 
     // -- endpoint errors
 
+    #[error("Moved permanently")]
+    Status301(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
     #[error("Gone")]
     Status410(BasicError),
     #[error("Status code: {}", code)]
@@ -639,7 +668,7 @@ pub enum IssuesLockError {
     Status410(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -658,6 +687,10 @@ pub enum IssuesRemoveAllLabelsError {
 
     // -- endpoint errors
 
+    #[error("Moved permanently")]
+    Status301(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
     #[error("Gone")]
     Status410(BasicError),
     #[error("Status code: {}", code)]
@@ -694,6 +727,8 @@ pub enum IssuesRemoveLabelError {
 
     // -- endpoint errors
 
+    #[error("Moved permanently")]
+    Status301(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Gone")]
@@ -715,9 +750,13 @@ pub enum IssuesSetLabelsError {
 
     // -- endpoint errors
 
+    #[error("Moved permanently")]
+    Status301(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -757,10 +796,10 @@ pub enum IssuesUpdateError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Service unavailable")]
-    Status503(GetSearchUsersResponse503),
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Moved permanently")]
@@ -786,7 +825,7 @@ pub enum IssuesUpdateCommentError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -830,17 +869,17 @@ pub enum IssuesUpdateMilestoneError {
 /// Query parameters for the [List issues assigned to the authenticated user](Issues::list_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct IssuesListParams<'req> {
-    /// Indicates which sorts of issues to return. Can be one of:   \\* `assigned`: Issues assigned to you   \\* `created`: Issues created by you   \\* `mentioned`: Issues mentioning you   \\* `subscribed`: Issues you're subscribed to updates for   \\* `all` or `repos`: All issues the authenticated user can see, regardless of participation or creation
+    /// Indicates which sorts of issues to return. `assigned` means issues assigned to you. `created` means issues created by you. `mentioned` means issues mentioning you. `subscribed` means issues you're subscribed to updates for. `all` or `repos` means all issues you can see, regardless of participation or creation.
     filter: Option<&'req str>, 
-    /// Indicates the state of the issues to return. Can be either `open`, `closed`, or `all`.
+    /// Indicates the state of the issues to return.
     state: Option<&'req str>, 
     /// A list of comma separated label names. Example: `bug,ui,@high`
     labels: Option<&'req str>, 
-    /// What to sort results by. Can be either `created`, `updated`, `comments`.
+    /// What to sort results by.
     sort: Option<&'req str>, 
-    /// One of `asc` (ascending) or `desc` (descending).
+    /// The direction to sort the results by.
     direction: Option<&'req str>, 
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
     
     collab: Option<bool>, 
@@ -850,9 +889,9 @@ pub struct IssuesListParams<'req> {
     owned: Option<bool>, 
     
     pulls: Option<bool>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -861,9 +900,9 @@ impl<'req> IssuesListParams<'req> {
         Self::default()
     }
 
-    /// Indicates which sorts of issues to return. Can be one of:   \\* `assigned`: Issues assigned to you   \\* `created`: Issues created by you   \\* `mentioned`: Issues mentioning you   \\* `subscribed`: Issues you're subscribed to updates for   \\* `all` or `repos`: All issues the authenticated user can see, regardless of participation or creation
+    /// Indicates which sorts of issues to return. `assigned` means issues assigned to you. `created` means issues created by you. `mentioned` means issues mentioning you. `subscribed` means issues you're subscribed to updates for. `all` or `repos` means all issues you can see, regardless of participation or creation.
     pub fn filter(self, filter: &'req str) -> Self {
-        Self { 
+        Self {
             filter: Some(filter),
             state: self.state, 
             labels: self.labels, 
@@ -879,9 +918,9 @@ impl<'req> IssuesListParams<'req> {
         }
     }
 
-    /// Indicates the state of the issues to return. Can be either `open`, `closed`, or `all`.
+    /// Indicates the state of the issues to return.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: Some(state),
             labels: self.labels, 
@@ -899,7 +938,7 @@ impl<'req> IssuesListParams<'req> {
 
     /// A list of comma separated label names. Example: `bug,ui,@high`
     pub fn labels(self, labels: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: Some(labels),
@@ -915,9 +954,9 @@ impl<'req> IssuesListParams<'req> {
         }
     }
 
-    /// What to sort results by. Can be either `created`, `updated`, `comments`.
+    /// What to sort results by.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -933,9 +972,9 @@ impl<'req> IssuesListParams<'req> {
         }
     }
 
-    /// One of `asc` (ascending) or `desc` (descending).
+    /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -951,9 +990,9 @@ impl<'req> IssuesListParams<'req> {
         }
     }
 
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -971,7 +1010,7 @@ impl<'req> IssuesListParams<'req> {
 
     
     pub fn collab(self, collab: bool) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -989,7 +1028,7 @@ impl<'req> IssuesListParams<'req> {
 
     
     pub fn orgs(self, orgs: bool) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1007,7 +1046,7 @@ impl<'req> IssuesListParams<'req> {
 
     
     pub fn owned(self, owned: bool) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1025,7 +1064,7 @@ impl<'req> IssuesListParams<'req> {
 
     
     pub fn pulls(self, pulls: bool) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1041,9 +1080,9 @@ impl<'req> IssuesListParams<'req> {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1059,9 +1098,9 @@ impl<'req> IssuesListParams<'req> {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1090,9 +1129,9 @@ impl<'enc> From<&'enc PerPage> for IssuesListParams<'enc> {
 /// Query parameters for the [List assignees](Issues::list_assignees_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct IssuesListAssigneesParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1101,17 +1140,17 @@ impl IssuesListAssigneesParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1130,11 +1169,11 @@ impl<'enc> From<&'enc PerPage> for IssuesListAssigneesParams {
 /// Query parameters for the [List issue comments](Issues::list_comments_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct IssuesListCommentsParams {
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1143,27 +1182,27 @@ impl IssuesListCommentsParams {
         Self::default()
     }
 
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             since: Some(since),
             per_page: self.per_page, 
             page: self.page, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             since: self.since, 
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             since: self.since, 
             per_page: self.per_page, 
             page: Some(page),
@@ -1183,15 +1222,15 @@ impl<'enc> From<&'enc PerPage> for IssuesListCommentsParams {
 /// Query parameters for the [List issue comments for a repository](Issues::list_comments_for_repo_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct IssuesListCommentsForRepoParams<'req> {
-    /// One of `created` (when the repository was starred) or `updated` (when it was last pushed to).
+    /// The property to sort the results by.
     sort: Option<&'req str>, 
     /// Either `asc` or `desc`. Ignored without the `sort` parameter.
     direction: Option<&'req str>, 
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1200,9 +1239,9 @@ impl<'req> IssuesListCommentsForRepoParams<'req> {
         Self::default()
     }
 
-    /// One of `created` (when the repository was starred) or `updated` (when it was last pushed to).
+    /// The property to sort the results by.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             sort: Some(sort),
             direction: self.direction, 
             since: self.since, 
@@ -1213,7 +1252,7 @@ impl<'req> IssuesListCommentsForRepoParams<'req> {
 
     /// Either `asc` or `desc`. Ignored without the `sort` parameter.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: Some(direction),
             since: self.since, 
@@ -1222,9 +1261,9 @@ impl<'req> IssuesListCommentsForRepoParams<'req> {
         }
     }
 
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: self.direction, 
             since: Some(since),
@@ -1233,9 +1272,9 @@ impl<'req> IssuesListCommentsForRepoParams<'req> {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: self.direction, 
             since: self.since, 
@@ -1244,9 +1283,9 @@ impl<'req> IssuesListCommentsForRepoParams<'req> {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: self.direction, 
             since: self.since, 
@@ -1268,9 +1307,9 @@ impl<'enc> From<&'enc PerPage> for IssuesListCommentsForRepoParams<'enc> {
 /// Query parameters for the [List issue events](Issues::list_events_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct IssuesListEventsParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1279,17 +1318,17 @@ impl IssuesListEventsParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1308,9 +1347,9 @@ impl<'enc> From<&'enc PerPage> for IssuesListEventsParams {
 /// Query parameters for the [List issue events for a repository](Issues::list_events_for_repo_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct IssuesListEventsForRepoParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1319,17 +1358,17 @@ impl IssuesListEventsForRepoParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1348,9 +1387,9 @@ impl<'enc> From<&'enc PerPage> for IssuesListEventsForRepoParams {
 /// Query parameters for the [List timeline events for an issue](Issues::list_events_for_timeline_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct IssuesListEventsForTimelineParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1359,17 +1398,17 @@ impl IssuesListEventsForTimelineParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1388,21 +1427,21 @@ impl<'enc> From<&'enc PerPage> for IssuesListEventsForTimelineParams {
 /// Query parameters for the [List user account issues assigned to the authenticated user](Issues::list_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct IssuesListForAuthenticatedUserParams<'req> {
-    /// Indicates which sorts of issues to return. Can be one of:   \\* `assigned`: Issues assigned to you   \\* `created`: Issues created by you   \\* `mentioned`: Issues mentioning you   \\* `subscribed`: Issues you're subscribed to updates for   \\* `all` or `repos`: All issues the authenticated user can see, regardless of participation or creation
+    /// Indicates which sorts of issues to return. `assigned` means issues assigned to you. `created` means issues created by you. `mentioned` means issues mentioning you. `subscribed` means issues you're subscribed to updates for. `all` or `repos` means all issues you can see, regardless of participation or creation.
     filter: Option<&'req str>, 
-    /// Indicates the state of the issues to return. Can be either `open`, `closed`, or `all`.
+    /// Indicates the state of the issues to return.
     state: Option<&'req str>, 
     /// A list of comma separated label names. Example: `bug,ui,@high`
     labels: Option<&'req str>, 
-    /// What to sort results by. Can be either `created`, `updated`, `comments`.
+    /// What to sort results by.
     sort: Option<&'req str>, 
-    /// One of `asc` (ascending) or `desc` (descending).
+    /// The direction to sort the results by.
     direction: Option<&'req str>, 
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1411,9 +1450,9 @@ impl<'req> IssuesListForAuthenticatedUserParams<'req> {
         Self::default()
     }
 
-    /// Indicates which sorts of issues to return. Can be one of:   \\* `assigned`: Issues assigned to you   \\* `created`: Issues created by you   \\* `mentioned`: Issues mentioning you   \\* `subscribed`: Issues you're subscribed to updates for   \\* `all` or `repos`: All issues the authenticated user can see, regardless of participation or creation
+    /// Indicates which sorts of issues to return. `assigned` means issues assigned to you. `created` means issues created by you. `mentioned` means issues mentioning you. `subscribed` means issues you're subscribed to updates for. `all` or `repos` means all issues you can see, regardless of participation or creation.
     pub fn filter(self, filter: &'req str) -> Self {
-        Self { 
+        Self {
             filter: Some(filter),
             state: self.state, 
             labels: self.labels, 
@@ -1425,9 +1464,9 @@ impl<'req> IssuesListForAuthenticatedUserParams<'req> {
         }
     }
 
-    /// Indicates the state of the issues to return. Can be either `open`, `closed`, or `all`.
+    /// Indicates the state of the issues to return.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: Some(state),
             labels: self.labels, 
@@ -1441,7 +1480,7 @@ impl<'req> IssuesListForAuthenticatedUserParams<'req> {
 
     /// A list of comma separated label names. Example: `bug,ui,@high`
     pub fn labels(self, labels: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: Some(labels),
@@ -1453,9 +1492,9 @@ impl<'req> IssuesListForAuthenticatedUserParams<'req> {
         }
     }
 
-    /// What to sort results by. Can be either `created`, `updated`, `comments`.
+    /// What to sort results by.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1467,9 +1506,9 @@ impl<'req> IssuesListForAuthenticatedUserParams<'req> {
         }
     }
 
-    /// One of `asc` (ascending) or `desc` (descending).
+    /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1481,9 +1520,9 @@ impl<'req> IssuesListForAuthenticatedUserParams<'req> {
         }
     }
 
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1495,9 +1534,9 @@ impl<'req> IssuesListForAuthenticatedUserParams<'req> {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1509,9 +1548,9 @@ impl<'req> IssuesListForAuthenticatedUserParams<'req> {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1536,21 +1575,21 @@ impl<'enc> From<&'enc PerPage> for IssuesListForAuthenticatedUserParams<'enc> {
 /// Query parameters for the [List organization issues assigned to the authenticated user](Issues::list_for_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct IssuesListForOrgParams<'req> {
-    /// Indicates which sorts of issues to return. Can be one of:   \\* `assigned`: Issues assigned to you   \\* `created`: Issues created by you   \\* `mentioned`: Issues mentioning you   \\* `subscribed`: Issues you're subscribed to updates for   \\* `all` or `repos`: All issues the authenticated user can see, regardless of participation or creation
+    /// Indicates which sorts of issues to return. `assigned` means issues assigned to you. `created` means issues created by you. `mentioned` means issues mentioning you. `subscribed` means issues you're subscribed to updates for. `all` or `repos` means all issues you can see, regardless of participation or creation.
     filter: Option<&'req str>, 
-    /// Indicates the state of the issues to return. Can be either `open`, `closed`, or `all`.
+    /// Indicates the state of the issues to return.
     state: Option<&'req str>, 
     /// A list of comma separated label names. Example: `bug,ui,@high`
     labels: Option<&'req str>, 
-    /// What to sort results by. Can be either `created`, `updated`, `comments`.
+    /// What to sort results by.
     sort: Option<&'req str>, 
-    /// One of `asc` (ascending) or `desc` (descending).
+    /// The direction to sort the results by.
     direction: Option<&'req str>, 
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1559,9 +1598,9 @@ impl<'req> IssuesListForOrgParams<'req> {
         Self::default()
     }
 
-    /// Indicates which sorts of issues to return. Can be one of:   \\* `assigned`: Issues assigned to you   \\* `created`: Issues created by you   \\* `mentioned`: Issues mentioning you   \\* `subscribed`: Issues you're subscribed to updates for   \\* `all` or `repos`: All issues the authenticated user can see, regardless of participation or creation
+    /// Indicates which sorts of issues to return. `assigned` means issues assigned to you. `created` means issues created by you. `mentioned` means issues mentioning you. `subscribed` means issues you're subscribed to updates for. `all` or `repos` means all issues you can see, regardless of participation or creation.
     pub fn filter(self, filter: &'req str) -> Self {
-        Self { 
+        Self {
             filter: Some(filter),
             state: self.state, 
             labels: self.labels, 
@@ -1573,9 +1612,9 @@ impl<'req> IssuesListForOrgParams<'req> {
         }
     }
 
-    /// Indicates the state of the issues to return. Can be either `open`, `closed`, or `all`.
+    /// Indicates the state of the issues to return.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: Some(state),
             labels: self.labels, 
@@ -1589,7 +1628,7 @@ impl<'req> IssuesListForOrgParams<'req> {
 
     /// A list of comma separated label names. Example: `bug,ui,@high`
     pub fn labels(self, labels: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: Some(labels),
@@ -1601,9 +1640,9 @@ impl<'req> IssuesListForOrgParams<'req> {
         }
     }
 
-    /// What to sort results by. Can be either `created`, `updated`, `comments`.
+    /// What to sort results by.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1615,9 +1654,9 @@ impl<'req> IssuesListForOrgParams<'req> {
         }
     }
 
-    /// One of `asc` (ascending) or `desc` (descending).
+    /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1629,9 +1668,9 @@ impl<'req> IssuesListForOrgParams<'req> {
         }
     }
 
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1643,9 +1682,9 @@ impl<'req> IssuesListForOrgParams<'req> {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1657,9 +1696,9 @@ impl<'req> IssuesListForOrgParams<'req> {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             state: self.state, 
             labels: self.labels, 
@@ -1686,7 +1725,7 @@ impl<'enc> From<&'enc PerPage> for IssuesListForOrgParams<'enc> {
 pub struct IssuesListForRepoParams<'req> {
     /// If an `integer` is passed, it should refer to a milestone by its `number` field. If the string `*` is passed, issues with any milestone are accepted. If the string `none` is passed, issues without milestones are returned.
     milestone: Option<&'req str>, 
-    /// Indicates the state of the issues to return. Can be either `open`, `closed`, or `all`.
+    /// Indicates the state of the issues to return.
     state: Option<&'req str>, 
     /// Can be the name of a user. Pass in `none` for issues with no assigned user, and `*` for issues assigned to any user.
     assignee: Option<&'req str>, 
@@ -1696,15 +1735,15 @@ pub struct IssuesListForRepoParams<'req> {
     mentioned: Option<&'req str>, 
     /// A list of comma separated label names. Example: `bug,ui,@high`
     labels: Option<&'req str>, 
-    /// What to sort results by. Can be either `created`, `updated`, `comments`.
+    /// What to sort results by.
     sort: Option<&'req str>, 
-    /// One of `asc` (ascending) or `desc` (descending).
+    /// The direction to sort the results by.
     direction: Option<&'req str>, 
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1715,7 +1754,7 @@ impl<'req> IssuesListForRepoParams<'req> {
 
     /// If an `integer` is passed, it should refer to a milestone by its `number` field. If the string `*` is passed, issues with any milestone are accepted. If the string `none` is passed, issues without milestones are returned.
     pub fn milestone(self, milestone: &'req str) -> Self {
-        Self { 
+        Self {
             milestone: Some(milestone),
             state: self.state, 
             assignee: self.assignee, 
@@ -1730,9 +1769,9 @@ impl<'req> IssuesListForRepoParams<'req> {
         }
     }
 
-    /// Indicates the state of the issues to return. Can be either `open`, `closed`, or `all`.
+    /// Indicates the state of the issues to return.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             milestone: self.milestone, 
             state: Some(state),
             assignee: self.assignee, 
@@ -1749,7 +1788,7 @@ impl<'req> IssuesListForRepoParams<'req> {
 
     /// Can be the name of a user. Pass in `none` for issues with no assigned user, and `*` for issues assigned to any user.
     pub fn assignee(self, assignee: &'req str) -> Self {
-        Self { 
+        Self {
             milestone: self.milestone, 
             state: self.state, 
             assignee: Some(assignee),
@@ -1766,7 +1805,7 @@ impl<'req> IssuesListForRepoParams<'req> {
 
     /// The user that created the issue.
     pub fn creator(self, creator: &'req str) -> Self {
-        Self { 
+        Self {
             milestone: self.milestone, 
             state: self.state, 
             assignee: self.assignee, 
@@ -1783,7 +1822,7 @@ impl<'req> IssuesListForRepoParams<'req> {
 
     /// A user that's mentioned in the issue.
     pub fn mentioned(self, mentioned: &'req str) -> Self {
-        Self { 
+        Self {
             milestone: self.milestone, 
             state: self.state, 
             assignee: self.assignee, 
@@ -1800,7 +1839,7 @@ impl<'req> IssuesListForRepoParams<'req> {
 
     /// A list of comma separated label names. Example: `bug,ui,@high`
     pub fn labels(self, labels: &'req str) -> Self {
-        Self { 
+        Self {
             milestone: self.milestone, 
             state: self.state, 
             assignee: self.assignee, 
@@ -1815,9 +1854,9 @@ impl<'req> IssuesListForRepoParams<'req> {
         }
     }
 
-    /// What to sort results by. Can be either `created`, `updated`, `comments`.
+    /// What to sort results by.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             milestone: self.milestone, 
             state: self.state, 
             assignee: self.assignee, 
@@ -1832,9 +1871,9 @@ impl<'req> IssuesListForRepoParams<'req> {
         }
     }
 
-    /// One of `asc` (ascending) or `desc` (descending).
+    /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             milestone: self.milestone, 
             state: self.state, 
             assignee: self.assignee, 
@@ -1849,9 +1888,9 @@ impl<'req> IssuesListForRepoParams<'req> {
         }
     }
 
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             milestone: self.milestone, 
             state: self.state, 
             assignee: self.assignee, 
@@ -1866,9 +1905,9 @@ impl<'req> IssuesListForRepoParams<'req> {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             milestone: self.milestone, 
             state: self.state, 
             assignee: self.assignee, 
@@ -1883,9 +1922,9 @@ impl<'req> IssuesListForRepoParams<'req> {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             milestone: self.milestone, 
             state: self.state, 
             assignee: self.assignee, 
@@ -1913,9 +1952,9 @@ impl<'enc> From<&'enc PerPage> for IssuesListForRepoParams<'enc> {
 /// Query parameters for the [List labels for issues in a milestone](Issues::list_labels_for_milestone_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct IssuesListLabelsForMilestoneParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1924,17 +1963,17 @@ impl IssuesListLabelsForMilestoneParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1953,9 +1992,9 @@ impl<'enc> From<&'enc PerPage> for IssuesListLabelsForMilestoneParams {
 /// Query parameters for the [List labels for a repository](Issues::list_labels_for_repo_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct IssuesListLabelsForRepoParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1964,17 +2003,17 @@ impl IssuesListLabelsForRepoParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1993,9 +2032,9 @@ impl<'enc> From<&'enc PerPage> for IssuesListLabelsForRepoParams {
 /// Query parameters for the [List labels for an issue](Issues::list_labels_on_issue_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct IssuesListLabelsOnIssueParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -2004,17 +2043,17 @@ impl IssuesListLabelsOnIssueParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2039,9 +2078,9 @@ pub struct IssuesListMilestonesParams<'req> {
     sort: Option<&'req str>, 
     /// The direction of the sort. Either `asc` or `desc`.
     direction: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -2052,7 +2091,7 @@ impl<'req> IssuesListMilestonesParams<'req> {
 
     /// The state of the milestone. Either `open`, `closed`, or `all`.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             state: Some(state),
             sort: self.sort, 
             direction: self.direction, 
@@ -2063,7 +2102,7 @@ impl<'req> IssuesListMilestonesParams<'req> {
 
     /// What to sort results by. Either `due_on` or `completeness`.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             sort: Some(sort),
             direction: self.direction, 
@@ -2074,7 +2113,7 @@ impl<'req> IssuesListMilestonesParams<'req> {
 
     /// The direction of the sort. Either `asc` or `desc`.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             sort: self.sort, 
             direction: Some(direction),
@@ -2083,9 +2122,9 @@ impl<'req> IssuesListMilestonesParams<'req> {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             sort: self.sort, 
             direction: self.direction, 
@@ -2094,9 +2133,9 @@ impl<'req> IssuesListMilestonesParams<'req> {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             sort: self.sort, 
             direction: self.direction, 
@@ -2122,8 +2161,8 @@ impl<'api> Issues<'api> {
     /// # Add assignees to an issue
     ///
     /// Adds up to 10 assignees to an issue. Users already assigned to an issue are not replaced.
-    /// 
-    /// [GitHub API docs for add_assignees](https://docs.github.com/rest/reference/issues#add-assignees-to-an-issue)
+    ///
+    /// [GitHub API docs for add_assignees](https://docs.github.com/rest/issues/assignees#add-assignees-to-an-issue)
     ///
     /// ---
     pub async fn add_assignees_async(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesAddAssignees) -> Result<Issue, IssuesAddAssigneesError> {
@@ -2160,8 +2199,8 @@ impl<'api> Issues<'api> {
     /// # Add assignees to an issue
     ///
     /// Adds up to 10 assignees to an issue. Users already assigned to an issue are not replaced.
-    /// 
-    /// [GitHub API docs for add_assignees](https://docs.github.com/rest/reference/issues#add-assignees-to-an-issue)
+    ///
+    /// [GitHub API docs for add_assignees](https://docs.github.com/rest/issues/assignees#add-assignees-to-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2197,8 +2236,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Add labels to an issue
-    /// 
-    /// [GitHub API docs for add_labels](https://docs.github.com/rest/reference/issues#add-labels-to-an-issue)
+    ///
+    /// Adds labels to an issue. If you provide an empty array of labels, all labels are removed from the issue. 
+    ///
+    /// [GitHub API docs for add_labels](https://docs.github.com/rest/issues/labels#add-labels-to-an-issue)
     ///
     /// ---
     pub async fn add_labels_async(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesAddLabels) -> Result<Vec<Label>, IssuesAddLabelsError> {
@@ -2225,6 +2266,8 @@ impl<'api> Issues<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                301 => Err(IssuesAddLabelsError::Status301(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(IssuesAddLabelsError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 410 => Err(IssuesAddLabelsError::Status410(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(IssuesAddLabelsError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(IssuesAddLabelsError::Generic { code }),
@@ -2235,8 +2278,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Add labels to an issue
-    /// 
-    /// [GitHub API docs for add_labels](https://docs.github.com/rest/reference/issues#add-labels-to-an-issue)
+    ///
+    /// Adds labels to an issue. If you provide an empty array of labels, all labels are removed from the issue. 
+    ///
+    /// [GitHub API docs for add_labels](https://docs.github.com/rest/issues/labels#add-labels-to-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2264,6 +2309,8 @@ impl<'api> Issues<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                301 => Err(IssuesAddLabelsError::Status301(crate::adapters::to_json(github_response)?)),
+                404 => Err(IssuesAddLabelsError::Status404(crate::adapters::to_json(github_response)?)),
                 410 => Err(IssuesAddLabelsError::Status410(crate::adapters::to_json(github_response)?)),
                 422 => Err(IssuesAddLabelsError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(IssuesAddLabelsError::Generic { code }),
@@ -2280,8 +2327,8 @@ impl<'api> Issues<'api> {
     /// If the `assignee` can be assigned to issues in the repository, a `204` header with no content is returned.
     /// 
     /// Otherwise a `404` status code is returned.
-    /// 
-    /// [GitHub API docs for check_user_can_be_assigned](https://docs.github.com/rest/reference/issues#check-if-a-user-can-be-assigned)
+    ///
+    /// [GitHub API docs for check_user_can_be_assigned](https://docs.github.com/rest/issues/assignees#check-if-a-user-can-be-assigned)
     ///
     /// ---
     pub async fn check_user_can_be_assigned_async(&self, owner: &str, repo: &str, assignee: &str) -> Result<(), IssuesCheckUserCanBeAssignedError> {
@@ -2323,8 +2370,8 @@ impl<'api> Issues<'api> {
     /// If the `assignee` can be assigned to issues in the repository, a `204` header with no content is returned.
     /// 
     /// Otherwise a `404` status code is returned.
-    /// 
-    /// [GitHub API docs for check_user_can_be_assigned](https://docs.github.com/rest/reference/issues#check-if-a-user-can-be-assigned)
+    ///
+    /// [GitHub API docs for check_user_can_be_assigned](https://docs.github.com/rest/issues/assignees#check-if-a-user-can-be-assigned)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2360,13 +2407,108 @@ impl<'api> Issues<'api> {
 
     /// ---
     ///
+    /// # Check if a user can be assigned to a issue
+    ///
+    /// Checks if a user has permission to be assigned to a specific issue.
+    /// 
+    /// If the `assignee` can be assigned to this issue, a `204` status code with no content is returned.
+    /// 
+    /// Otherwise a `404` status code is returned.
+    ///
+    /// [GitHub API docs for check_user_can_be_assigned_to_issue](https://docs.github.com/rest/issues/assignees#check-if-a-user-can-be-assigned-to-a-issue)
+    ///
+    /// ---
+    pub async fn check_user_can_be_assigned_to_issue_async(&self, owner: &str, repo: &str, issue_number: i32, assignee: &str) -> Result<(), IssuesCheckUserCanBeAssignedToIssueError> {
+
+        let request_uri = format!("{}/repos/{}/{}/issues/{}/assignees/{}", super::GITHUB_BASE_API_URL, owner, repo, issue_number, assignee);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(IssuesCheckUserCanBeAssignedToIssueError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(IssuesCheckUserCanBeAssignedToIssueError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Check if a user can be assigned to a issue
+    ///
+    /// Checks if a user has permission to be assigned to a specific issue.
+    /// 
+    /// If the `assignee` can be assigned to this issue, a `204` status code with no content is returned.
+    /// 
+    /// Otherwise a `404` status code is returned.
+    ///
+    /// [GitHub API docs for check_user_can_be_assigned_to_issue](https://docs.github.com/rest/issues/assignees#check-if-a-user-can-be-assigned-to-a-issue)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn check_user_can_be_assigned_to_issue(&self, owner: &str, repo: &str, issue_number: i32, assignee: &str) -> Result<(), IssuesCheckUserCanBeAssignedToIssueError> {
+
+        let request_uri = format!("{}/repos/{}/{}/issues/{}/assignees/{}", super::GITHUB_BASE_API_URL, owner, repo, issue_number, assignee);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(IssuesCheckUserCanBeAssignedToIssueError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(IssuesCheckUserCanBeAssignedToIssueError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Create an issue
     ///
-    /// Any user with pull access to a repository can create an issue. If [issues are disabled in the repository](https://help.github.com/articles/disabling-issues/), the API returns a `410 Gone` status.
+    /// Any user with pull access to a repository can create an issue. If [issues are disabled in the repository](https://docs.github.com/articles/disabling-issues/), the API returns a `410 Gone` status.
     /// 
-    /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. See "[Secondary rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#secondary-rate-limits)" and "[Dealing with secondary rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-secondary-rate-limits)" for details.
+    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)"
+    /// and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
     /// 
-    /// [GitHub API docs for create](https://docs.github.com/rest/reference/issues#create-an-issue)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for create](https://docs.github.com/rest/issues/issues#create-an-issue)
     ///
     /// ---
     pub async fn create_async(&self, owner: &str, repo: &str, body: PostIssuesCreate) -> Result<Issue, IssuesCreateError> {
@@ -2393,6 +2535,7 @@ impl<'api> Issues<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                400 => Err(IssuesCreateError::Status400(crate::adapters::to_json_async(github_response).await?)),
                 403 => Err(IssuesCreateError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(IssuesCreateError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 503 => Err(IssuesCreateError::Status503(crate::adapters::to_json_async(github_response).await?)),
@@ -2407,11 +2550,19 @@ impl<'api> Issues<'api> {
     ///
     /// # Create an issue
     ///
-    /// Any user with pull access to a repository can create an issue. If [issues are disabled in the repository](https://help.github.com/articles/disabling-issues/), the API returns a `410 Gone` status.
+    /// Any user with pull access to a repository can create an issue. If [issues are disabled in the repository](https://docs.github.com/articles/disabling-issues/), the API returns a `410 Gone` status.
     /// 
-    /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. See "[Secondary rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#secondary-rate-limits)" and "[Dealing with secondary rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-secondary-rate-limits)" for details.
+    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)"
+    /// and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
     /// 
-    /// [GitHub API docs for create](https://docs.github.com/rest/reference/issues#create-an-issue)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for create](https://docs.github.com/rest/issues/issues#create-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2439,6 +2590,7 @@ impl<'api> Issues<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                400 => Err(IssuesCreateError::Status400(crate::adapters::to_json(github_response)?)),
                 403 => Err(IssuesCreateError::Status403(crate::adapters::to_json(github_response)?)),
                 422 => Err(IssuesCreateError::Status422(crate::adapters::to_json(github_response)?)),
                 503 => Err(IssuesCreateError::Status503(crate::adapters::to_json(github_response)?)),
@@ -2453,9 +2605,21 @@ impl<'api> Issues<'api> {
     ///
     /// # Create an issue comment
     ///
-    /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. See "[Secondary rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#secondary-rate-limits)" and "[Dealing with secondary rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-secondary-rate-limits)" for details.
+    /// You can use the REST API to create comments on issues and pull requests. Every pull request is an issue, but not every issue is a pull request.
     /// 
-    /// [GitHub API docs for create_comment](https://docs.github.com/rest/reference/issues#create-an-issue-comment)
+    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications).
+    /// Creating content too quickly using this endpoint may result in secondary rate limiting.
+    /// For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)"
+    /// and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
+    /// 
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for create_comment](https://docs.github.com/rest/issues/comments#create-an-issue-comment)
     ///
     /// ---
     pub async fn create_comment_async(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesCreateComment) -> Result<IssueComment, IssuesCreateCommentError> {
@@ -2495,9 +2659,21 @@ impl<'api> Issues<'api> {
     ///
     /// # Create an issue comment
     ///
-    /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. See "[Secondary rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#secondary-rate-limits)" and "[Dealing with secondary rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-secondary-rate-limits)" for details.
+    /// You can use the REST API to create comments on issues and pull requests. Every pull request is an issue, but not every issue is a pull request.
     /// 
-    /// [GitHub API docs for create_comment](https://docs.github.com/rest/reference/issues#create-an-issue-comment)
+    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications).
+    /// Creating content too quickly using this endpoint may result in secondary rate limiting.
+    /// For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)"
+    /// and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
+    /// 
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for create_comment](https://docs.github.com/rest/issues/comments#create-an-issue-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2537,8 +2713,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Create a label
-    /// 
-    /// [GitHub API docs for create_label](https://docs.github.com/rest/reference/issues#create-a-label)
+    ///
+    /// Creates a label for the specified repository with the given name and color. The name and color parameters are required. The color must be a valid [hexadecimal color code](http://www.color-hex.com/).
+    ///
+    /// [GitHub API docs for create_label](https://docs.github.com/rest/issues/labels#create-a-label)
     ///
     /// ---
     pub async fn create_label_async(&self, owner: &str, repo: &str, body: PostIssuesCreateLabel) -> Result<Label, IssuesCreateLabelError> {
@@ -2575,8 +2753,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Create a label
-    /// 
-    /// [GitHub API docs for create_label](https://docs.github.com/rest/reference/issues#create-a-label)
+    ///
+    /// Creates a label for the specified repository with the given name and color. The name and color parameters are required. The color must be a valid [hexadecimal color code](http://www.color-hex.com/).
+    ///
+    /// [GitHub API docs for create_label](https://docs.github.com/rest/issues/labels#create-a-label)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2614,8 +2794,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Create a milestone
-    /// 
-    /// [GitHub API docs for create_milestone](https://docs.github.com/rest/reference/issues#create-a-milestone)
+    ///
+    /// Creates a milestone.
+    ///
+    /// [GitHub API docs for create_milestone](https://docs.github.com/rest/issues/milestones#create-a-milestone)
     ///
     /// ---
     pub async fn create_milestone_async(&self, owner: &str, repo: &str, body: PostIssuesCreateMilestone) -> Result<Milestone, IssuesCreateMilestoneError> {
@@ -2652,8 +2834,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Create a milestone
-    /// 
-    /// [GitHub API docs for create_milestone](https://docs.github.com/rest/reference/issues#create-a-milestone)
+    ///
+    /// Creates a milestone.
+    ///
+    /// [GitHub API docs for create_milestone](https://docs.github.com/rest/issues/milestones#create-a-milestone)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2691,11 +2875,13 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Delete an issue comment
-    /// 
-    /// [GitHub API docs for delete_comment](https://docs.github.com/rest/reference/issues#delete-an-issue-comment)
+    ///
+    /// You can use the REST API to delete comments on issues and pull requests. Every pull request is an issue, but not every issue is a pull request.
+    ///
+    /// [GitHub API docs for delete_comment](https://docs.github.com/rest/issues/comments#delete-an-issue-comment)
     ///
     /// ---
-    pub async fn delete_comment_async(&self, owner: &str, repo: &str, comment_id: i32) -> Result<(), IssuesDeleteCommentError> {
+    pub async fn delete_comment_async(&self, owner: &str, repo: &str, comment_id: i64) -> Result<(), IssuesDeleteCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -2727,12 +2913,14 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Delete an issue comment
-    /// 
-    /// [GitHub API docs for delete_comment](https://docs.github.com/rest/reference/issues#delete-an-issue-comment)
+    ///
+    /// You can use the REST API to delete comments on issues and pull requests. Every pull request is an issue, but not every issue is a pull request.
+    ///
+    /// [GitHub API docs for delete_comment](https://docs.github.com/rest/issues/comments#delete-an-issue-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_comment(&self, owner: &str, repo: &str, comment_id: i32) -> Result<(), IssuesDeleteCommentError> {
+    pub fn delete_comment(&self, owner: &str, repo: &str, comment_id: i64) -> Result<(), IssuesDeleteCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -2764,8 +2952,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Delete a label
-    /// 
-    /// [GitHub API docs for delete_label](https://docs.github.com/rest/reference/issues#delete-a-label)
+    ///
+    /// Deletes a label using the given label name.
+    ///
+    /// [GitHub API docs for delete_label](https://docs.github.com/rest/issues/labels#delete-a-label)
     ///
     /// ---
     pub async fn delete_label_async(&self, owner: &str, repo: &str, name: &str) -> Result<(), IssuesDeleteLabelError> {
@@ -2800,8 +2990,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Delete a label
-    /// 
-    /// [GitHub API docs for delete_label](https://docs.github.com/rest/reference/issues#delete-a-label)
+    ///
+    /// Deletes a label using the given label name.
+    ///
+    /// [GitHub API docs for delete_label](https://docs.github.com/rest/issues/labels#delete-a-label)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2837,8 +3029,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Delete a milestone
-    /// 
-    /// [GitHub API docs for delete_milestone](https://docs.github.com/rest/reference/issues#delete-a-milestone)
+    ///
+    /// Deletes a milestone using the given milestone number.
+    ///
+    /// [GitHub API docs for delete_milestone](https://docs.github.com/rest/issues/milestones#delete-a-milestone)
     ///
     /// ---
     pub async fn delete_milestone_async(&self, owner: &str, repo: &str, milestone_number: i32) -> Result<(), IssuesDeleteMilestoneError> {
@@ -2874,8 +3068,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Delete a milestone
-    /// 
-    /// [GitHub API docs for delete_milestone](https://docs.github.com/rest/reference/issues#delete-a-milestone)
+    ///
+    /// Deletes a milestone using the given milestone number.
+    ///
+    /// [GitHub API docs for delete_milestone](https://docs.github.com/rest/issues/milestones#delete-a-milestone)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2913,19 +3109,24 @@ impl<'api> Issues<'api> {
     ///
     /// # Get an issue
     ///
-    /// The API returns a [`301 Moved Permanently` status](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-redirects-redirects) if the issue was
-    /// [transferred](https://help.github.com/articles/transferring-an-issue-to-another-repository/) to another repository. If
+    /// The API returns a [`301 Moved Permanently` status](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api#follow-redirects) if the issue was
+    /// [transferred](https://docs.github.com/articles/transferring-an-issue-to-another-repository/) to another repository. If
     /// the issue was transferred to or deleted from a repository where the authenticated user lacks read access, the API
     /// returns a `404 Not Found` status. If the issue was deleted from a repository where the authenticated user has read
     /// access, the API returns a `410 Gone` status. To receive webhook events for transferred and deleted issues, subscribe
     /// to the [`issues`](https://docs.github.com/webhooks/event-payloads/#issues) webhook.
     /// 
-    /// **Note**: GitHub's REST API v3 considers every pull request an issue, but not every issue is a pull request. For this
-    /// reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by
-    /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
-    /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
+    /// > [!NOTE]
+    /// > GitHub's REST API considers every pull request an issue, but not every issue is a pull request. For this reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull request id, use the "[List pull requests](https://docs.github.com/rest/pulls/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/issues#get-an-issue)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for get](https://docs.github.com/rest/issues/issues#get-an-issue)
     ///
     /// ---
     pub async fn get_async(&self, owner: &str, repo: &str, issue_number: i32) -> Result<Issue, IssuesGetError> {
@@ -2965,19 +3166,24 @@ impl<'api> Issues<'api> {
     ///
     /// # Get an issue
     ///
-    /// The API returns a [`301 Moved Permanently` status](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-redirects-redirects) if the issue was
-    /// [transferred](https://help.github.com/articles/transferring-an-issue-to-another-repository/) to another repository. If
+    /// The API returns a [`301 Moved Permanently` status](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api#follow-redirects) if the issue was
+    /// [transferred](https://docs.github.com/articles/transferring-an-issue-to-another-repository/) to another repository. If
     /// the issue was transferred to or deleted from a repository where the authenticated user lacks read access, the API
     /// returns a `404 Not Found` status. If the issue was deleted from a repository where the authenticated user has read
     /// access, the API returns a `410 Gone` status. To receive webhook events for transferred and deleted issues, subscribe
     /// to the [`issues`](https://docs.github.com/webhooks/event-payloads/#issues) webhook.
     /// 
-    /// **Note**: GitHub's REST API v3 considers every pull request an issue, but not every issue is a pull request. For this
-    /// reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by
-    /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
-    /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
+    /// > [!NOTE]
+    /// > GitHub's REST API considers every pull request an issue, but not every issue is a pull request. For this reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull request id, use the "[List pull requests](https://docs.github.com/rest/pulls/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/issues#get-an-issue)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for get](https://docs.github.com/rest/issues/issues#get-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3017,11 +3223,20 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Get an issue comment
+    ///
+    /// You can use the REST API to get comments on issues and pull requests. Every pull request is an issue, but not every issue is a pull request.
     /// 
-    /// [GitHub API docs for get_comment](https://docs.github.com/rest/reference/issues#get-an-issue-comment)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for get_comment](https://docs.github.com/rest/issues/comments#get-an-issue-comment)
     ///
     /// ---
-    pub async fn get_comment_async(&self, owner: &str, repo: &str, comment_id: i32) -> Result<IssueComment, IssuesGetCommentError> {
+    pub async fn get_comment_async(&self, owner: &str, repo: &str, comment_id: i64) -> Result<IssueComment, IssuesGetCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -3054,12 +3269,21 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Get an issue comment
+    ///
+    /// You can use the REST API to get comments on issues and pull requests. Every pull request is an issue, but not every issue is a pull request.
     /// 
-    /// [GitHub API docs for get_comment](https://docs.github.com/rest/reference/issues#get-an-issue-comment)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for get_comment](https://docs.github.com/rest/issues/comments#get-an-issue-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_comment(&self, owner: &str, repo: &str, comment_id: i32) -> Result<IssueComment, IssuesGetCommentError> {
+    pub fn get_comment(&self, owner: &str, repo: &str, comment_id: i64) -> Result<IssueComment, IssuesGetCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -3092,8 +3316,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Get an issue event
-    /// 
-    /// [GitHub API docs for get_event](https://docs.github.com/rest/reference/issues#get-an-issue-event)
+    ///
+    /// Gets a single event by the event id.
+    ///
+    /// [GitHub API docs for get_event](https://docs.github.com/rest/issues/events#get-an-issue-event)
     ///
     /// ---
     pub async fn get_event_async(&self, owner: &str, repo: &str, event_id: i32) -> Result<IssueEvent, IssuesGetEventError> {
@@ -3131,8 +3357,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Get an issue event
-    /// 
-    /// [GitHub API docs for get_event](https://docs.github.com/rest/reference/issues#get-an-issue-event)
+    ///
+    /// Gets a single event by the event id.
+    ///
+    /// [GitHub API docs for get_event](https://docs.github.com/rest/issues/events#get-an-issue-event)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3171,8 +3399,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Get a label
-    /// 
-    /// [GitHub API docs for get_label](https://docs.github.com/rest/reference/issues#get-a-label)
+    ///
+    /// Gets a label using the given name.
+    ///
+    /// [GitHub API docs for get_label](https://docs.github.com/rest/issues/labels#get-a-label)
     ///
     /// ---
     pub async fn get_label_async(&self, owner: &str, repo: &str, name: &str) -> Result<Label, IssuesGetLabelError> {
@@ -3208,8 +3438,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Get a label
-    /// 
-    /// [GitHub API docs for get_label](https://docs.github.com/rest/reference/issues#get-a-label)
+    ///
+    /// Gets a label using the given name.
+    ///
+    /// [GitHub API docs for get_label](https://docs.github.com/rest/issues/labels#get-a-label)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3246,8 +3478,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Get a milestone
-    /// 
-    /// [GitHub API docs for get_milestone](https://docs.github.com/rest/reference/issues#get-a-milestone)
+    ///
+    /// Gets a milestone using the given milestone number.
+    ///
+    /// [GitHub API docs for get_milestone](https://docs.github.com/rest/issues/milestones#get-a-milestone)
     ///
     /// ---
     pub async fn get_milestone_async(&self, owner: &str, repo: &str, milestone_number: i32) -> Result<Milestone, IssuesGetMilestoneError> {
@@ -3283,8 +3517,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Get a milestone
-    /// 
-    /// [GitHub API docs for get_milestone](https://docs.github.com/rest/reference/issues#get-a-milestone)
+    ///
+    /// Gets a milestone using the given milestone number.
+    ///
+    /// [GitHub API docs for get_milestone](https://docs.github.com/rest/issues/milestones#get-a-milestone)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3326,13 +3562,17 @@ impl<'api> Issues<'api> {
     /// repositories, and organization repositories. You can use the `filter` query parameter to fetch issues that are not
     /// necessarily assigned to you.
     /// 
+    /// > [!NOTE]
+    /// > GitHub's REST API considers every pull request an issue, but not every issue is a pull request. For this reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull request id, use the "[List pull requests](https://docs.github.com/rest/pulls/pulls#list-pull-requests)" endpoint.
     /// 
-    /// **Note**: GitHub's REST API v3 considers every pull request an issue, but not every issue is a pull request. For this
-    /// reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by
-    /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
-    /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
     /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/issues#list-issues-assigned-to-the-authenticated-user)
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for list](https://docs.github.com/rest/issues/issues#list-issues-assigned-to-the-authenticated-user)
     ///
     /// ---
     pub async fn list_async(&self, query_params: Option<impl Into<IssuesListParams<'api>>>) -> Result<Vec<Issue>, IssuesListError> {
@@ -3379,13 +3619,17 @@ impl<'api> Issues<'api> {
     /// repositories, and organization repositories. You can use the `filter` query parameter to fetch issues that are not
     /// necessarily assigned to you.
     /// 
+    /// > [!NOTE]
+    /// > GitHub's REST API considers every pull request an issue, but not every issue is a pull request. For this reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull request id, use the "[List pull requests](https://docs.github.com/rest/pulls/pulls#list-pull-requests)" endpoint.
     /// 
-    /// **Note**: GitHub's REST API v3 considers every pull request an issue, but not every issue is a pull request. For this
-    /// reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by
-    /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
-    /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
     /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/issues#list-issues-assigned-to-the-authenticated-user)
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for list](https://docs.github.com/rest/issues/issues#list-issues-assigned-to-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3430,9 +3674,9 @@ impl<'api> Issues<'api> {
     ///
     /// # List assignees
     ///
-    /// Lists the [available assignees](https://help.github.com/articles/assigning-issues-and-pull-requests-to-other-github-users/) for issues in a repository.
-    /// 
-    /// [GitHub API docs for list_assignees](https://docs.github.com/rest/reference/issues#list-assignees)
+    /// Lists the [available assignees](https://docs.github.com/articles/assigning-issues-and-pull-requests-to-other-github-users/) for issues in a repository.
+    ///
+    /// [GitHub API docs for list_assignees](https://docs.github.com/rest/issues/assignees#list-assignees)
     ///
     /// ---
     pub async fn list_assignees_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListAssigneesParams>>) -> Result<Vec<SimpleUser>, IssuesListAssigneesError> {
@@ -3473,9 +3717,9 @@ impl<'api> Issues<'api> {
     ///
     /// # List assignees
     ///
-    /// Lists the [available assignees](https://help.github.com/articles/assigning-issues-and-pull-requests-to-other-github-users/) for issues in a repository.
-    /// 
-    /// [GitHub API docs for list_assignees](https://docs.github.com/rest/reference/issues#list-assignees)
+    /// Lists the [available assignees](https://docs.github.com/articles/assigning-issues-and-pull-requests-to-other-github-users/) for issues in a repository.
+    ///
+    /// [GitHub API docs for list_assignees](https://docs.github.com/rest/issues/assignees#list-assignees)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3518,9 +3762,18 @@ impl<'api> Issues<'api> {
     ///
     /// # List issue comments
     ///
-    /// Issue Comments are ordered by ascending ID.
+    /// You can use the REST API to list comments on issues and pull requests. Every pull request is an issue, but not every issue is a pull request.
     /// 
-    /// [GitHub API docs for list_comments](https://docs.github.com/rest/reference/issues#list-issue-comments)
+    /// Issue comments are ordered by ascending ID.
+    /// 
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for list_comments](https://docs.github.com/rest/issues/comments#list-issue-comments)
     ///
     /// ---
     pub async fn list_comments_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListCommentsParams>>) -> Result<Vec<IssueComment>, IssuesListCommentsError> {
@@ -3562,9 +3815,18 @@ impl<'api> Issues<'api> {
     ///
     /// # List issue comments
     ///
-    /// Issue Comments are ordered by ascending ID.
+    /// You can use the REST API to list comments on issues and pull requests. Every pull request is an issue, but not every issue is a pull request.
     /// 
-    /// [GitHub API docs for list_comments](https://docs.github.com/rest/reference/issues#list-issue-comments)
+    /// Issue comments are ordered by ascending ID.
+    /// 
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for list_comments](https://docs.github.com/rest/issues/comments#list-issue-comments)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3608,9 +3870,18 @@ impl<'api> Issues<'api> {
     ///
     /// # List issue comments for a repository
     ///
-    /// By default, Issue Comments are ordered by ascending ID.
+    /// You can use the REST API to list comments on issues and pull requests for a repository. Every pull request is an issue, but not every issue is a pull request.
     /// 
-    /// [GitHub API docs for list_comments_for_repo](https://docs.github.com/rest/reference/issues#list-issue-comments-for-a-repository)
+    /// By default, issue comments are ordered by ascending ID.
+    /// 
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for list_comments_for_repo](https://docs.github.com/rest/issues/comments#list-issue-comments-for-a-repository)
     ///
     /// ---
     pub async fn list_comments_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListCommentsForRepoParams<'api>>>) -> Result<Vec<IssueComment>, IssuesListCommentsForRepoError> {
@@ -3652,9 +3923,18 @@ impl<'api> Issues<'api> {
     ///
     /// # List issue comments for a repository
     ///
-    /// By default, Issue Comments are ordered by ascending ID.
+    /// You can use the REST API to list comments on issues and pull requests for a repository. Every pull request is an issue, but not every issue is a pull request.
     /// 
-    /// [GitHub API docs for list_comments_for_repo](https://docs.github.com/rest/reference/issues#list-issue-comments-for-a-repository)
+    /// By default, issue comments are ordered by ascending ID.
+    /// 
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for list_comments_for_repo](https://docs.github.com/rest/issues/comments#list-issue-comments-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3697,8 +3977,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # List issue events
-    /// 
-    /// [GitHub API docs for list_events](https://docs.github.com/rest/reference/issues#list-issue-events)
+    ///
+    /// Lists all events for an issue.
+    ///
+    /// [GitHub API docs for list_events](https://docs.github.com/rest/issues/events#list-issue-events)
     ///
     /// ---
     pub async fn list_events_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListEventsParams>>) -> Result<Vec<IssueEventForIssue>, IssuesListEventsError> {
@@ -3738,8 +4020,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # List issue events
-    /// 
-    /// [GitHub API docs for list_events](https://docs.github.com/rest/reference/issues#list-issue-events)
+    ///
+    /// Lists all events for an issue.
+    ///
+    /// [GitHub API docs for list_events](https://docs.github.com/rest/issues/events#list-issue-events)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3781,8 +4065,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # List issue events for a repository
-    /// 
-    /// [GitHub API docs for list_events_for_repo](https://docs.github.com/rest/reference/issues#list-issue-events-for-a-repository)
+    ///
+    /// Lists events for a repository.
+    ///
+    /// [GitHub API docs for list_events_for_repo](https://docs.github.com/rest/issues/events#list-issue-events-for-a-repository)
     ///
     /// ---
     pub async fn list_events_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListEventsForRepoParams>>) -> Result<Vec<IssueEvent>, IssuesListEventsForRepoError> {
@@ -3822,8 +4108,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # List issue events for a repository
-    /// 
-    /// [GitHub API docs for list_events_for_repo](https://docs.github.com/rest/reference/issues#list-issue-events-for-a-repository)
+    ///
+    /// Lists events for a repository.
+    ///
+    /// [GitHub API docs for list_events_for_repo](https://docs.github.com/rest/issues/events#list-issue-events-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3865,8 +4153,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # List timeline events for an issue
-    /// 
-    /// [GitHub API docs for list_events_for_timeline](https://docs.github.com/rest/reference/issues#list-timeline-events-for-an-issue)
+    ///
+    /// List all timeline events for an issue.
+    ///
+    /// [GitHub API docs for list_events_for_timeline](https://docs.github.com/rest/issues/timeline#list-timeline-events-for-an-issue)
     ///
     /// ---
     pub async fn list_events_for_timeline_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListEventsForTimelineParams>>) -> Result<Vec<TimelineIssueEvents>, IssuesListEventsForTimelineError> {
@@ -3907,8 +4197,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # List timeline events for an issue
-    /// 
-    /// [GitHub API docs for list_events_for_timeline](https://docs.github.com/rest/reference/issues#list-timeline-events-for-an-issue)
+    ///
+    /// List all timeline events for an issue.
+    ///
+    /// [GitHub API docs for list_events_for_timeline](https://docs.github.com/rest/issues/timeline#list-timeline-events-for-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3954,12 +4246,17 @@ impl<'api> Issues<'api> {
     ///
     /// List issues across owned and member repositories assigned to the authenticated user.
     /// 
-    /// **Note**: GitHub's REST API v3 considers every pull request an issue, but not every issue is a pull request. For this
-    /// reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by
-    /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
-    /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
+    /// > [!NOTE]
+    /// > GitHub's REST API considers every pull request an issue, but not every issue is a pull request. For this reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull request id, use the "[List pull requests](https://docs.github.com/rest/pulls/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/issues#list-user-account-issues-assigned-to-the-authenticated-user)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/issues/issues#list-user-account-issues-assigned-to-the-authenticated-user)
     ///
     /// ---
     pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<IssuesListForAuthenticatedUserParams<'api>>>) -> Result<Vec<Issue>, IssuesListForAuthenticatedUserError> {
@@ -4003,12 +4300,17 @@ impl<'api> Issues<'api> {
     ///
     /// List issues across owned and member repositories assigned to the authenticated user.
     /// 
-    /// **Note**: GitHub's REST API v3 considers every pull request an issue, but not every issue is a pull request. For this
-    /// reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by
-    /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
-    /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
+    /// > [!NOTE]
+    /// > GitHub's REST API considers every pull request an issue, but not every issue is a pull request. For this reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull request id, use the "[List pull requests](https://docs.github.com/rest/pulls/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/issues#list-user-account-issues-assigned-to-the-authenticated-user)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/issues/issues#list-user-account-issues-assigned-to-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4054,12 +4356,17 @@ impl<'api> Issues<'api> {
     ///
     /// List issues in an organization assigned to the authenticated user.
     /// 
-    /// **Note**: GitHub's REST API v3 considers every pull request an issue, but not every issue is a pull request. For this
-    /// reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by
-    /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
-    /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
+    /// > [!NOTE]
+    /// > GitHub's REST API considers every pull request an issue, but not every issue is a pull request. For this reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull request id, use the "[List pull requests](https://docs.github.com/rest/pulls/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/issues#list-organization-issues-assigned-to-the-authenticated-user)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/issues/issues#list-organization-issues-assigned-to-the-authenticated-user)
     ///
     /// ---
     pub async fn list_for_org_async(&self, org: &str, query_params: Option<impl Into<IssuesListForOrgParams<'api>>>) -> Result<Vec<Issue>, IssuesListForOrgError> {
@@ -4102,12 +4409,17 @@ impl<'api> Issues<'api> {
     ///
     /// List issues in an organization assigned to the authenticated user.
     /// 
-    /// **Note**: GitHub's REST API v3 considers every pull request an issue, but not every issue is a pull request. For this
-    /// reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by
-    /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
-    /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
+    /// > [!NOTE]
+    /// > GitHub's REST API considers every pull request an issue, but not every issue is a pull request. For this reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull request id, use the "[List pull requests](https://docs.github.com/rest/pulls/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/issues#list-organization-issues-assigned-to-the-authenticated-user)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/issues/issues#list-organization-issues-assigned-to-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4150,14 +4462,19 @@ impl<'api> Issues<'api> {
     ///
     /// # List repository issues
     ///
-    /// List issues in a repository.
+    /// List issues in a repository. Only open issues will be listed.
     /// 
-    /// **Note**: GitHub's REST API v3 considers every pull request an issue, but not every issue is a pull request. For this
-    /// reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by
-    /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
-    /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
+    /// > [!NOTE]
+    /// > GitHub's REST API considers every pull request an issue, but not every issue is a pull request. For this reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull request id, use the "[List pull requests](https://docs.github.com/rest/pulls/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/reference/issues#list-repository-issues)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/issues/issues#list-repository-issues)
     ///
     /// ---
     pub async fn list_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListForRepoParams<'api>>>) -> Result<Vec<Issue>, IssuesListForRepoError> {
@@ -4200,14 +4517,19 @@ impl<'api> Issues<'api> {
     ///
     /// # List repository issues
     ///
-    /// List issues in a repository.
+    /// List issues in a repository. Only open issues will be listed.
     /// 
-    /// **Note**: GitHub's REST API v3 considers every pull request an issue, but not every issue is a pull request. For this
-    /// reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by
-    /// the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull
-    /// request id, use the "[List pull requests](https://docs.github.com/rest/reference/pulls#list-pull-requests)" endpoint.
+    /// > [!NOTE]
+    /// > GitHub's REST API considers every pull request an issue, but not every issue is a pull request. For this reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by the `pull_request` key. Be aware that the `id` of a pull request returned from "Issues" endpoints will be an _issue id_. To find out the pull request id, use the "[List pull requests](https://docs.github.com/rest/pulls/pulls#list-pull-requests)" endpoint.
     /// 
-    /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/reference/issues#list-repository-issues)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/issues/issues#list-repository-issues)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4251,8 +4573,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # List labels for issues in a milestone
-    /// 
-    /// [GitHub API docs for list_labels_for_milestone](https://docs.github.com/rest/reference/issues#list-labels-for-issues-in-a-milestone)
+    ///
+    /// Lists labels for issues in a milestone.
+    ///
+    /// [GitHub API docs for list_labels_for_milestone](https://docs.github.com/rest/issues/labels#list-labels-for-issues-in-a-milestone)
     ///
     /// ---
     pub async fn list_labels_for_milestone_async(&self, owner: &str, repo: &str, milestone_number: i32, query_params: Option<impl Into<IssuesListLabelsForMilestoneParams>>) -> Result<Vec<Label>, IssuesListLabelsForMilestoneError> {
@@ -4291,8 +4615,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # List labels for issues in a milestone
-    /// 
-    /// [GitHub API docs for list_labels_for_milestone](https://docs.github.com/rest/reference/issues#list-labels-for-issues-in-a-milestone)
+    ///
+    /// Lists labels for issues in a milestone.
+    ///
+    /// [GitHub API docs for list_labels_for_milestone](https://docs.github.com/rest/issues/labels#list-labels-for-issues-in-a-milestone)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4333,8 +4659,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # List labels for a repository
-    /// 
-    /// [GitHub API docs for list_labels_for_repo](https://docs.github.com/rest/reference/issues#list-labels-for-a-repository)
+    ///
+    /// Lists all labels for a repository.
+    ///
+    /// [GitHub API docs for list_labels_for_repo](https://docs.github.com/rest/issues/labels#list-labels-for-a-repository)
     ///
     /// ---
     pub async fn list_labels_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListLabelsForRepoParams>>) -> Result<Vec<Label>, IssuesListLabelsForRepoError> {
@@ -4374,8 +4702,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # List labels for a repository
-    /// 
-    /// [GitHub API docs for list_labels_for_repo](https://docs.github.com/rest/reference/issues#list-labels-for-a-repository)
+    ///
+    /// Lists all labels for a repository.
+    ///
+    /// [GitHub API docs for list_labels_for_repo](https://docs.github.com/rest/issues/labels#list-labels-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4417,8 +4747,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # List labels for an issue
-    /// 
-    /// [GitHub API docs for list_labels_on_issue](https://docs.github.com/rest/reference/issues#list-labels-for-an-issue)
+    ///
+    /// Lists all labels for an issue.
+    ///
+    /// [GitHub API docs for list_labels_on_issue](https://docs.github.com/rest/issues/labels#list-labels-for-an-issue)
     ///
     /// ---
     pub async fn list_labels_on_issue_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListLabelsOnIssueParams>>) -> Result<Vec<Label>, IssuesListLabelsOnIssueError> {
@@ -4449,6 +4781,8 @@ impl<'api> Issues<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                301 => Err(IssuesListLabelsOnIssueError::Status301(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(IssuesListLabelsOnIssueError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 410 => Err(IssuesListLabelsOnIssueError::Status410(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(IssuesListLabelsOnIssueError::Generic { code }),
             }
@@ -4458,8 +4792,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # List labels for an issue
-    /// 
-    /// [GitHub API docs for list_labels_on_issue](https://docs.github.com/rest/reference/issues#list-labels-for-an-issue)
+    ///
+    /// Lists all labels for an issue.
+    ///
+    /// [GitHub API docs for list_labels_on_issue](https://docs.github.com/rest/issues/labels#list-labels-for-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4492,6 +4828,8 @@ impl<'api> Issues<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                301 => Err(IssuesListLabelsOnIssueError::Status301(crate::adapters::to_json(github_response)?)),
+                404 => Err(IssuesListLabelsOnIssueError::Status404(crate::adapters::to_json(github_response)?)),
                 410 => Err(IssuesListLabelsOnIssueError::Status410(crate::adapters::to_json(github_response)?)),
                 code => Err(IssuesListLabelsOnIssueError::Generic { code }),
             }
@@ -4501,8 +4839,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # List milestones
-    /// 
-    /// [GitHub API docs for list_milestones](https://docs.github.com/rest/reference/issues#list-milestones)
+    ///
+    /// Lists milestones for a repository.
+    ///
+    /// [GitHub API docs for list_milestones](https://docs.github.com/rest/issues/milestones#list-milestones)
     ///
     /// ---
     pub async fn list_milestones_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListMilestonesParams<'api>>>) -> Result<Vec<Milestone>, IssuesListMilestonesError> {
@@ -4542,8 +4882,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # List milestones
-    /// 
-    /// [GitHub API docs for list_milestones](https://docs.github.com/rest/reference/issues#list-milestones)
+    ///
+    /// Lists milestones for a repository.
+    ///
+    /// [GitHub API docs for list_milestones](https://docs.github.com/rest/issues/milestones#list-milestones)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4588,9 +4930,9 @@ impl<'api> Issues<'api> {
     ///
     /// Users with push access can lock an issue or pull request's conversation.
     /// 
-    /// Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
-    /// 
-    /// [GitHub API docs for lock](https://docs.github.com/rest/reference/issues#lock-an-issue)
+    /// Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP method](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
+    ///
+    /// [GitHub API docs for lock](https://docs.github.com/rest/issues/issues#lock-an-issue)
     ///
     /// ---
     pub async fn lock_async(&self, owner: &str, repo: &str, issue_number: i32, body: PutIssuesLock) -> Result<(), IssuesLockError> {
@@ -4632,9 +4974,9 @@ impl<'api> Issues<'api> {
     ///
     /// Users with push access can lock an issue or pull request's conversation.
     /// 
-    /// Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
-    /// 
-    /// [GitHub API docs for lock](https://docs.github.com/rest/reference/issues#lock-an-issue)
+    /// Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP method](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
+    ///
+    /// [GitHub API docs for lock](https://docs.github.com/rest/issues/issues#lock-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4674,8 +5016,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Remove all labels from an issue
-    /// 
-    /// [GitHub API docs for remove_all_labels](https://docs.github.com/rest/reference/issues#remove-all-labels-from-an-issue)
+    ///
+    /// Removes all labels from an issue.
+    ///
+    /// [GitHub API docs for remove_all_labels](https://docs.github.com/rest/issues/labels#remove-all-labels-from-an-issue)
     ///
     /// ---
     pub async fn remove_all_labels_async(&self, owner: &str, repo: &str, issue_number: i32) -> Result<(), IssuesRemoveAllLabelsError> {
@@ -4702,6 +5046,8 @@ impl<'api> Issues<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                301 => Err(IssuesRemoveAllLabelsError::Status301(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(IssuesRemoveAllLabelsError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 410 => Err(IssuesRemoveAllLabelsError::Status410(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(IssuesRemoveAllLabelsError::Generic { code }),
             }
@@ -4711,8 +5057,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Remove all labels from an issue
-    /// 
-    /// [GitHub API docs for remove_all_labels](https://docs.github.com/rest/reference/issues#remove-all-labels-from-an-issue)
+    ///
+    /// Removes all labels from an issue.
+    ///
+    /// [GitHub API docs for remove_all_labels](https://docs.github.com/rest/issues/labels#remove-all-labels-from-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4740,6 +5088,8 @@ impl<'api> Issues<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                301 => Err(IssuesRemoveAllLabelsError::Status301(crate::adapters::to_json(github_response)?)),
+                404 => Err(IssuesRemoveAllLabelsError::Status404(crate::adapters::to_json(github_response)?)),
                 410 => Err(IssuesRemoveAllLabelsError::Status410(crate::adapters::to_json(github_response)?)),
                 code => Err(IssuesRemoveAllLabelsError::Generic { code }),
             }
@@ -4751,8 +5101,8 @@ impl<'api> Issues<'api> {
     /// # Remove assignees from an issue
     ///
     /// Removes one or more assignees from an issue.
-    /// 
-    /// [GitHub API docs for remove_assignees](https://docs.github.com/rest/reference/issues#remove-assignees-from-an-issue)
+    ///
+    /// [GitHub API docs for remove_assignees](https://docs.github.com/rest/issues/assignees#remove-assignees-from-an-issue)
     ///
     /// ---
     pub async fn remove_assignees_async(&self, owner: &str, repo: &str, issue_number: i32, body: DeleteIssuesRemoveAssignees) -> Result<Issue, IssuesRemoveAssigneesError> {
@@ -4789,8 +5139,8 @@ impl<'api> Issues<'api> {
     /// # Remove assignees from an issue
     ///
     /// Removes one or more assignees from an issue.
-    /// 
-    /// [GitHub API docs for remove_assignees](https://docs.github.com/rest/reference/issues#remove-assignees-from-an-issue)
+    ///
+    /// [GitHub API docs for remove_assignees](https://docs.github.com/rest/issues/assignees#remove-assignees-from-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4828,8 +5178,8 @@ impl<'api> Issues<'api> {
     /// # Remove a label from an issue
     ///
     /// Removes the specified label from the issue, and returns the remaining labels on the issue. This endpoint returns a `404 Not Found` status if the label does not exist.
-    /// 
-    /// [GitHub API docs for remove_label](https://docs.github.com/rest/reference/issues#remove-a-label-from-an-issue)
+    ///
+    /// [GitHub API docs for remove_label](https://docs.github.com/rest/issues/labels#remove-a-label-from-an-issue)
     ///
     /// ---
     pub async fn remove_label_async(&self, owner: &str, repo: &str, issue_number: i32, name: &str) -> Result<Vec<Label>, IssuesRemoveLabelError> {
@@ -4856,6 +5206,7 @@ impl<'api> Issues<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                301 => Err(IssuesRemoveLabelError::Status301(crate::adapters::to_json_async(github_response).await?)),
                 404 => Err(IssuesRemoveLabelError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 410 => Err(IssuesRemoveLabelError::Status410(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(IssuesRemoveLabelError::Generic { code }),
@@ -4868,8 +5219,8 @@ impl<'api> Issues<'api> {
     /// # Remove a label from an issue
     ///
     /// Removes the specified label from the issue, and returns the remaining labels on the issue. This endpoint returns a `404 Not Found` status if the label does not exist.
-    /// 
-    /// [GitHub API docs for remove_label](https://docs.github.com/rest/reference/issues#remove-a-label-from-an-issue)
+    ///
+    /// [GitHub API docs for remove_label](https://docs.github.com/rest/issues/labels#remove-a-label-from-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4897,6 +5248,7 @@ impl<'api> Issues<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                301 => Err(IssuesRemoveLabelError::Status301(crate::adapters::to_json(github_response)?)),
                 404 => Err(IssuesRemoveLabelError::Status404(crate::adapters::to_json(github_response)?)),
                 410 => Err(IssuesRemoveLabelError::Status410(crate::adapters::to_json(github_response)?)),
                 code => Err(IssuesRemoveLabelError::Generic { code }),
@@ -4909,8 +5261,8 @@ impl<'api> Issues<'api> {
     /// # Set labels for an issue
     ///
     /// Removes any previous labels and sets the new labels for an issue.
-    /// 
-    /// [GitHub API docs for set_labels](https://docs.github.com/rest/reference/issues#set-labels-for-an-issue)
+    ///
+    /// [GitHub API docs for set_labels](https://docs.github.com/rest/issues/labels#set-labels-for-an-issue)
     ///
     /// ---
     pub async fn set_labels_async(&self, owner: &str, repo: &str, issue_number: i32, body: PutIssuesSetLabels) -> Result<Vec<Label>, IssuesSetLabelsError> {
@@ -4937,6 +5289,8 @@ impl<'api> Issues<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                301 => Err(IssuesSetLabelsError::Status301(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(IssuesSetLabelsError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 410 => Err(IssuesSetLabelsError::Status410(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(IssuesSetLabelsError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(IssuesSetLabelsError::Generic { code }),
@@ -4949,8 +5303,8 @@ impl<'api> Issues<'api> {
     /// # Set labels for an issue
     ///
     /// Removes any previous labels and sets the new labels for an issue.
-    /// 
-    /// [GitHub API docs for set_labels](https://docs.github.com/rest/reference/issues#set-labels-for-an-issue)
+    ///
+    /// [GitHub API docs for set_labels](https://docs.github.com/rest/issues/labels#set-labels-for-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4978,6 +5332,8 @@ impl<'api> Issues<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                301 => Err(IssuesSetLabelsError::Status301(crate::adapters::to_json(github_response)?)),
+                404 => Err(IssuesSetLabelsError::Status404(crate::adapters::to_json(github_response)?)),
                 410 => Err(IssuesSetLabelsError::Status410(crate::adapters::to_json(github_response)?)),
                 422 => Err(IssuesSetLabelsError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(IssuesSetLabelsError::Generic { code }),
@@ -4990,8 +5346,8 @@ impl<'api> Issues<'api> {
     /// # Unlock an issue
     ///
     /// Users with push access can unlock an issue's conversation.
-    /// 
-    /// [GitHub API docs for unlock](https://docs.github.com/rest/reference/issues#unlock-an-issue)
+    ///
+    /// [GitHub API docs for unlock](https://docs.github.com/rest/issues/issues#unlock-an-issue)
     ///
     /// ---
     pub async fn unlock_async(&self, owner: &str, repo: &str, issue_number: i32) -> Result<(), IssuesUnlockError> {
@@ -5030,8 +5386,8 @@ impl<'api> Issues<'api> {
     /// # Unlock an issue
     ///
     /// Users with push access can unlock an issue's conversation.
-    /// 
-    /// [GitHub API docs for unlock](https://docs.github.com/rest/reference/issues#unlock-an-issue)
+    ///
+    /// [GitHub API docs for unlock](https://docs.github.com/rest/issues/issues#unlock-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5070,9 +5426,16 @@ impl<'api> Issues<'api> {
     ///
     /// # Update an issue
     ///
-    /// Issue owners and users with push access can edit an issue.
+    /// Issue owners and users with push access or Triage role can edit an issue.
     /// 
-    /// [GitHub API docs for update](https://docs.github.com/rest/reference/issues/#update-an-issue)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for update](https://docs.github.com/rest/issues/issues#update-an-issue)
     ///
     /// ---
     pub async fn update_async(&self, owner: &str, repo: &str, issue_number: i32, body: PatchIssuesUpdate) -> Result<Issue, IssuesUpdateError> {
@@ -5114,9 +5477,16 @@ impl<'api> Issues<'api> {
     ///
     /// # Update an issue
     ///
-    /// Issue owners and users with push access can edit an issue.
+    /// Issue owners and users with push access or Triage role can edit an issue.
     /// 
-    /// [GitHub API docs for update](https://docs.github.com/rest/reference/issues/#update-an-issue)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for update](https://docs.github.com/rest/issues/issues#update-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5158,11 +5528,20 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Update an issue comment
+    ///
+    /// You can use the REST API to update comments on issues and pull requests. Every pull request is an issue, but not every issue is a pull request.
     /// 
-    /// [GitHub API docs for update_comment](https://docs.github.com/rest/reference/issues#update-an-issue-comment)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for update_comment](https://docs.github.com/rest/issues/comments#update-an-issue-comment)
     ///
     /// ---
-    pub async fn update_comment_async(&self, owner: &str, repo: &str, comment_id: i32, body: PatchIssuesUpdateComment) -> Result<IssueComment, IssuesUpdateCommentError> {
+    pub async fn update_comment_async(&self, owner: &str, repo: &str, comment_id: i64, body: PatchIssuesUpdateComment) -> Result<IssueComment, IssuesUpdateCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -5195,12 +5574,21 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Update an issue comment
+    ///
+    /// You can use the REST API to update comments on issues and pull requests. Every pull request is an issue, but not every issue is a pull request.
     /// 
-    /// [GitHub API docs for update_comment](https://docs.github.com/rest/reference/issues#update-an-issue-comment)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for update_comment](https://docs.github.com/rest/issues/comments#update-an-issue-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_comment(&self, owner: &str, repo: &str, comment_id: i32, body: PatchIssuesUpdateComment) -> Result<IssueComment, IssuesUpdateCommentError> {
+    pub fn update_comment(&self, owner: &str, repo: &str, comment_id: i64, body: PatchIssuesUpdateComment) -> Result<IssueComment, IssuesUpdateCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -5233,8 +5621,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Update a label
-    /// 
-    /// [GitHub API docs for update_label](https://docs.github.com/rest/reference/issues#update-a-label)
+    ///
+    /// Updates a label using the given label name.
+    ///
+    /// [GitHub API docs for update_label](https://docs.github.com/rest/issues/labels#update-a-label)
     ///
     /// ---
     pub async fn update_label_async(&self, owner: &str, repo: &str, name: &str, body: PatchIssuesUpdateLabel) -> Result<Label, IssuesUpdateLabelError> {
@@ -5269,8 +5659,10 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Update a label
-    /// 
-    /// [GitHub API docs for update_label](https://docs.github.com/rest/reference/issues#update-a-label)
+    ///
+    /// Updates a label using the given label name.
+    ///
+    /// [GitHub API docs for update_label](https://docs.github.com/rest/issues/labels#update-a-label)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5306,8 +5698,8 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Update a milestone
-    /// 
-    /// [GitHub API docs for update_milestone](https://docs.github.com/rest/reference/issues#update-a-milestone)
+    ///
+    /// [GitHub API docs for update_milestone](https://docs.github.com/rest/issues/milestones#update-a-milestone)
     ///
     /// ---
     pub async fn update_milestone_async(&self, owner: &str, repo: &str, milestone_number: i32, body: PatchIssuesUpdateMilestone) -> Result<Milestone, IssuesUpdateMilestoneError> {
@@ -5342,8 +5734,8 @@ impl<'api> Issues<'api> {
     /// ---
     ///
     /// # Update a milestone
-    /// 
-    /// [GitHub API docs for update_milestone](https://docs.github.com/rest/reference/issues#update-a-milestone)
+    ///
+    /// [GitHub API docs for update_milestone](https://docs.github.com/rest/issues/milestones#update-a-milestone)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

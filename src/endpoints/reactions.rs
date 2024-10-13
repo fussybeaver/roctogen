@@ -1,6 +1,6 @@
 //! Method, error and parameter types for the Reactions endpoint.
 #![allow(
-    unused_imports,
+    clippy::all
 )]
 /* 
  * GitHub v3 REST API
@@ -46,9 +46,7 @@ pub enum ReactionsCreateForCommitCommentError {
 
     #[error("Reaction created")]
     Status201(Reaction),
-    #[error("Preview header missing")]
-    Status415(PostProjectsCreateForAuthenticatedUserResponse415),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -69,7 +67,7 @@ pub enum ReactionsCreateForIssueError {
 
     #[error("Response")]
     Status201(Reaction),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -90,7 +88,7 @@ pub enum ReactionsCreateForIssueCommentError {
 
     #[error("Reaction created")]
     Status201(Reaction),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -111,7 +109,7 @@ pub enum ReactionsCreateForPullRequestReviewCommentError {
 
     #[error("Reaction created")]
     Status201(Reaction),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -132,7 +130,7 @@ pub enum ReactionsCreateForReleaseError {
 
     #[error("Reaction created")]
     Status201(Reaction),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -278,6 +276,23 @@ pub enum ReactionsDeleteForPullRequestCommentError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Delete a release reaction](Reactions::delete_for_release_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ReactionsDeleteForReleaseError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Delete team discussion reaction](Reactions::delete_for_team_discussion_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsDeleteForTeamDiscussionError {
@@ -308,31 +323,6 @@ pub enum ReactionsDeleteForTeamDiscussionCommentError {
 
     // -- endpoint errors
 
-    #[error("Status code: {}", code)]
-    Generic { code: u16 },
-}
-
-/// Errors for the [Delete a reaction (Legacy)](Reactions::delete_legacy_async()) endpoint.
-#[derive(Debug, thiserror::Error)]
-pub enum ReactionsDeleteLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
-    #[error("Not modified")]
-    Status304,
-    #[error("Forbidden")]
-    Status403(BasicError),
-    #[error("Requires authentication")]
-    Status401(BasicError),
-    #[error("Gone")]
-    Status410(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -399,6 +389,25 @@ pub enum ReactionsListForIssueCommentError {
 /// Errors for the [List reactions for a pull request review comment](Reactions::list_for_pull_request_review_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsListForPullRequestReviewCommentError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List reactions for a release](Reactions::list_for_release_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ReactionsListForReleaseError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -487,11 +496,11 @@ pub enum ReactionsListForTeamDiscussionLegacyError {
 /// Query parameters for the [List reactions for a commit comment](Reactions::list_for_commit_comment_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReactionsListForCommitCommentParams<'req> {
-    /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to a commit comment.
+    /// Returns a single [reaction type](https://docs.github.com/rest/reactions/reactions#about-reactions). Omit this parameter to list all reactions to a commit comment.
     content: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -500,27 +509,27 @@ impl<'req> ReactionsListForCommitCommentParams<'req> {
         Self::default()
     }
 
-    /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to a commit comment.
+    /// Returns a single [reaction type](https://docs.github.com/rest/reactions/reactions#about-reactions). Omit this parameter to list all reactions to a commit comment.
     pub fn content(self, content: &'req str) -> Self {
-        Self { 
+        Self {
             content: Some(content),
             per_page: self.per_page, 
             page: self.page, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             content: self.content, 
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             content: self.content, 
             per_page: self.per_page, 
             page: Some(page),
@@ -540,11 +549,11 @@ impl<'enc> From<&'enc PerPage> for ReactionsListForCommitCommentParams<'enc> {
 /// Query parameters for the [List reactions for an issue](Reactions::list_for_issue_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReactionsListForIssueParams<'req> {
-    /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to an issue.
+    /// Returns a single [reaction type](https://docs.github.com/rest/reactions/reactions#about-reactions). Omit this parameter to list all reactions to an issue.
     content: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -553,27 +562,27 @@ impl<'req> ReactionsListForIssueParams<'req> {
         Self::default()
     }
 
-    /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to an issue.
+    /// Returns a single [reaction type](https://docs.github.com/rest/reactions/reactions#about-reactions). Omit this parameter to list all reactions to an issue.
     pub fn content(self, content: &'req str) -> Self {
-        Self { 
+        Self {
             content: Some(content),
             per_page: self.per_page, 
             page: self.page, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             content: self.content, 
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             content: self.content, 
             per_page: self.per_page, 
             page: Some(page),
@@ -593,11 +602,11 @@ impl<'enc> From<&'enc PerPage> for ReactionsListForIssueParams<'enc> {
 /// Query parameters for the [List reactions for an issue comment](Reactions::list_for_issue_comment_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReactionsListForIssueCommentParams<'req> {
-    /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to an issue comment.
+    /// Returns a single [reaction type](https://docs.github.com/rest/reactions/reactions#about-reactions). Omit this parameter to list all reactions to an issue comment.
     content: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -606,27 +615,27 @@ impl<'req> ReactionsListForIssueCommentParams<'req> {
         Self::default()
     }
 
-    /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to an issue comment.
+    /// Returns a single [reaction type](https://docs.github.com/rest/reactions/reactions#about-reactions). Omit this parameter to list all reactions to an issue comment.
     pub fn content(self, content: &'req str) -> Self {
-        Self { 
+        Self {
             content: Some(content),
             per_page: self.per_page, 
             page: self.page, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             content: self.content, 
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             content: self.content, 
             per_page: self.per_page, 
             page: Some(page),
@@ -646,11 +655,11 @@ impl<'enc> From<&'enc PerPage> for ReactionsListForIssueCommentParams<'enc> {
 /// Query parameters for the [List reactions for a pull request review comment](Reactions::list_for_pull_request_review_comment_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReactionsListForPullRequestReviewCommentParams<'req> {
-    /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to a pull request review comment.
+    /// Returns a single [reaction type](https://docs.github.com/rest/reactions/reactions#about-reactions). Omit this parameter to list all reactions to a pull request review comment.
     content: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -659,27 +668,27 @@ impl<'req> ReactionsListForPullRequestReviewCommentParams<'req> {
         Self::default()
     }
 
-    /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to a pull request review comment.
+    /// Returns a single [reaction type](https://docs.github.com/rest/reactions/reactions#about-reactions). Omit this parameter to list all reactions to a pull request review comment.
     pub fn content(self, content: &'req str) -> Self {
-        Self { 
+        Self {
             content: Some(content),
             per_page: self.per_page, 
             page: self.page, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             content: self.content, 
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             content: self.content, 
             per_page: self.per_page, 
             page: Some(page),
@@ -696,14 +705,67 @@ impl<'enc> From<&'enc PerPage> for ReactionsListForPullRequestReviewCommentParam
         }
     }
 }
+/// Query parameters for the [List reactions for a release](Reactions::list_for_release_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct ReactionsListForReleaseParams<'req> {
+    /// Returns a single [reaction type](https://docs.github.com/rest/reactions/reactions#about-reactions). Omit this parameter to list all reactions to a release.
+    content: Option<&'req str>, 
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl<'req> ReactionsListForReleaseParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Returns a single [reaction type](https://docs.github.com/rest/reactions/reactions#about-reactions). Omit this parameter to list all reactions to a release.
+    pub fn content(self, content: &'req str) -> Self {
+        Self {
+            content: Some(content),
+            per_page: self.per_page, 
+            page: self.page, 
+        }
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            content: self.content, 
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            content: self.content, 
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for ReactionsListForReleaseParams<'enc> {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [List reactions for a team discussion comment](Reactions::list_for_team_discussion_comment_in_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReactionsListForTeamDiscussionCommentInOrgParams<'req> {
-    /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to a team discussion comment.
+    /// Returns a single [reaction type](https://docs.github.com/rest/reactions/reactions#about-reactions). Omit this parameter to list all reactions to a team discussion comment.
     content: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -712,27 +774,27 @@ impl<'req> ReactionsListForTeamDiscussionCommentInOrgParams<'req> {
         Self::default()
     }
 
-    /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to a team discussion comment.
+    /// Returns a single [reaction type](https://docs.github.com/rest/reactions/reactions#about-reactions). Omit this parameter to list all reactions to a team discussion comment.
     pub fn content(self, content: &'req str) -> Self {
-        Self { 
+        Self {
             content: Some(content),
             per_page: self.per_page, 
             page: self.page, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             content: self.content, 
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             content: self.content, 
             per_page: self.per_page, 
             page: Some(page),
@@ -752,11 +814,11 @@ impl<'enc> From<&'enc PerPage> for ReactionsListForTeamDiscussionCommentInOrgPar
 /// Query parameters for the [List reactions for a team discussion comment (Legacy)](Reactions::list_for_team_discussion_comment_legacy_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReactionsListForTeamDiscussionCommentLegacyParams<'req> {
-    /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to a team discussion comment.
+    /// Returns a single [reaction type](https://docs.github.com/rest/reactions/reactions#about-reactions). Omit this parameter to list all reactions to a team discussion comment.
     content: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -765,27 +827,27 @@ impl<'req> ReactionsListForTeamDiscussionCommentLegacyParams<'req> {
         Self::default()
     }
 
-    /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to a team discussion comment.
+    /// Returns a single [reaction type](https://docs.github.com/rest/reactions/reactions#about-reactions). Omit this parameter to list all reactions to a team discussion comment.
     pub fn content(self, content: &'req str) -> Self {
-        Self { 
+        Self {
             content: Some(content),
             per_page: self.per_page, 
             page: self.page, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             content: self.content, 
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             content: self.content, 
             per_page: self.per_page, 
             page: Some(page),
@@ -805,11 +867,11 @@ impl<'enc> From<&'enc PerPage> for ReactionsListForTeamDiscussionCommentLegacyPa
 /// Query parameters for the [List reactions for a team discussion](Reactions::list_for_team_discussion_in_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReactionsListForTeamDiscussionInOrgParams<'req> {
-    /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to a team discussion.
+    /// Returns a single [reaction type](https://docs.github.com/rest/reactions/reactions#about-reactions). Omit this parameter to list all reactions to a team discussion.
     content: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -818,27 +880,27 @@ impl<'req> ReactionsListForTeamDiscussionInOrgParams<'req> {
         Self::default()
     }
 
-    /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to a team discussion.
+    /// Returns a single [reaction type](https://docs.github.com/rest/reactions/reactions#about-reactions). Omit this parameter to list all reactions to a team discussion.
     pub fn content(self, content: &'req str) -> Self {
-        Self { 
+        Self {
             content: Some(content),
             per_page: self.per_page, 
             page: self.page, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             content: self.content, 
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             content: self.content, 
             per_page: self.per_page, 
             page: Some(page),
@@ -858,11 +920,11 @@ impl<'enc> From<&'enc PerPage> for ReactionsListForTeamDiscussionInOrgParams<'en
 /// Query parameters for the [List reactions for a team discussion (Legacy)](Reactions::list_for_team_discussion_legacy_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ReactionsListForTeamDiscussionLegacyParams<'req> {
-    /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to a team discussion.
+    /// Returns a single [reaction type](https://docs.github.com/rest/reactions/reactions#about-reactions). Omit this parameter to list all reactions to a team discussion.
     content: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -871,27 +933,27 @@ impl<'req> ReactionsListForTeamDiscussionLegacyParams<'req> {
         Self::default()
     }
 
-    /// Returns a single [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types). Omit this parameter to list all reactions to a team discussion.
+    /// Returns a single [reaction type](https://docs.github.com/rest/reactions/reactions#about-reactions). Omit this parameter to list all reactions to a team discussion.
     pub fn content(self, content: &'req str) -> Self {
-        Self { 
+        Self {
             content: Some(content),
             per_page: self.per_page, 
             page: self.page, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             content: self.content, 
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             content: self.content, 
             per_page: self.per_page, 
             page: Some(page),
@@ -914,12 +976,12 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for a commit comment
     ///
-    /// Create a reaction to a [commit comment](https://docs.github.com/rest/reference/repos#comments). A response with an HTTP `200` status means that you already added the reaction type to this commit comment.
-    /// 
-    /// [GitHub API docs for create_for_commit_comment](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-commit-comment)
+    /// Create a reaction to a [commit comment](https://docs.github.com/rest/commits/comments#get-a-commit-comment). A response with an HTTP `200` status means that you already added the reaction type to this commit comment.
+    ///
+    /// [GitHub API docs for create_for_commit_comment](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-commit-comment)
     ///
     /// ---
-    pub async fn create_for_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i32, body: PostReactionsCreateForCommitComment) -> Result<Reaction, ReactionsCreateForCommitCommentError> {
+    pub async fn create_for_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i64, body: PostReactionsCreateForCommitComment) -> Result<Reaction, ReactionsCreateForCommitCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -944,7 +1006,6 @@ impl<'api> Reactions<'api> {
         } else {
             match github_response.status_code() {
                 201 => Err(ReactionsCreateForCommitCommentError::Status201(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(ReactionsCreateForCommitCommentError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(ReactionsCreateForCommitCommentError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ReactionsCreateForCommitCommentError::Generic { code }),
             }
@@ -955,13 +1016,13 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for a commit comment
     ///
-    /// Create a reaction to a [commit comment](https://docs.github.com/rest/reference/repos#comments). A response with an HTTP `200` status means that you already added the reaction type to this commit comment.
-    /// 
-    /// [GitHub API docs for create_for_commit_comment](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-commit-comment)
+    /// Create a reaction to a [commit comment](https://docs.github.com/rest/commits/comments#get-a-commit-comment). A response with an HTTP `200` status means that you already added the reaction type to this commit comment.
+    ///
+    /// [GitHub API docs for create_for_commit_comment](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-commit-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_for_commit_comment(&self, owner: &str, repo: &str, comment_id: i32, body: PostReactionsCreateForCommitComment) -> Result<Reaction, ReactionsCreateForCommitCommentError> {
+    pub fn create_for_commit_comment(&self, owner: &str, repo: &str, comment_id: i64, body: PostReactionsCreateForCommitComment) -> Result<Reaction, ReactionsCreateForCommitCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -986,7 +1047,6 @@ impl<'api> Reactions<'api> {
         } else {
             match github_response.status_code() {
                 201 => Err(ReactionsCreateForCommitCommentError::Status201(crate::adapters::to_json(github_response)?)),
-                415 => Err(ReactionsCreateForCommitCommentError::Status415(crate::adapters::to_json(github_response)?)),
                 422 => Err(ReactionsCreateForCommitCommentError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ReactionsCreateForCommitCommentError::Generic { code }),
             }
@@ -997,9 +1057,9 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for an issue
     ///
-    /// Create a reaction to an [issue](https://docs.github.com/rest/reference/issues/). A response with an HTTP `200` status means that you already added the reaction type to this issue.
-    /// 
-    /// [GitHub API docs for create_for_issue](https://docs.github.com/rest/reference/reactions#create-reaction-for-an-issue)
+    /// Create a reaction to an [issue](https://docs.github.com/rest/issues/issues#get-an-issue). A response with an HTTP `200` status means that you already added the reaction type to this issue.
+    ///
+    /// [GitHub API docs for create_for_issue](https://docs.github.com/rest/reactions/reactions#create-reaction-for-an-issue)
     ///
     /// ---
     pub async fn create_for_issue_async(&self, owner: &str, repo: &str, issue_number: i32, body: PostReactionsCreateForIssue) -> Result<Reaction, ReactionsCreateForIssueError> {
@@ -1037,9 +1097,9 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for an issue
     ///
-    /// Create a reaction to an [issue](https://docs.github.com/rest/reference/issues/). A response with an HTTP `200` status means that you already added the reaction type to this issue.
-    /// 
-    /// [GitHub API docs for create_for_issue](https://docs.github.com/rest/reference/reactions#create-reaction-for-an-issue)
+    /// Create a reaction to an [issue](https://docs.github.com/rest/issues/issues#get-an-issue). A response with an HTTP `200` status means that you already added the reaction type to this issue.
+    ///
+    /// [GitHub API docs for create_for_issue](https://docs.github.com/rest/reactions/reactions#create-reaction-for-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1078,12 +1138,12 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for an issue comment
     ///
-    /// Create a reaction to an [issue comment](https://docs.github.com/rest/reference/issues#comments). A response with an HTTP `200` status means that you already added the reaction type to this issue comment.
-    /// 
-    /// [GitHub API docs for create_for_issue_comment](https://docs.github.com/rest/reference/reactions#create-reaction-for-an-issue-comment)
+    /// Create a reaction to an [issue comment](https://docs.github.com/rest/issues/comments#get-an-issue-comment). A response with an HTTP `200` status means that you already added the reaction type to this issue comment.
+    ///
+    /// [GitHub API docs for create_for_issue_comment](https://docs.github.com/rest/reactions/reactions#create-reaction-for-an-issue-comment)
     ///
     /// ---
-    pub async fn create_for_issue_comment_async(&self, owner: &str, repo: &str, comment_id: i32, body: PostReactionsCreateForIssueComment) -> Result<Reaction, ReactionsCreateForIssueCommentError> {
+    pub async fn create_for_issue_comment_async(&self, owner: &str, repo: &str, comment_id: i64, body: PostReactionsCreateForIssueComment) -> Result<Reaction, ReactionsCreateForIssueCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -1118,13 +1178,13 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for an issue comment
     ///
-    /// Create a reaction to an [issue comment](https://docs.github.com/rest/reference/issues#comments). A response with an HTTP `200` status means that you already added the reaction type to this issue comment.
-    /// 
-    /// [GitHub API docs for create_for_issue_comment](https://docs.github.com/rest/reference/reactions#create-reaction-for-an-issue-comment)
+    /// Create a reaction to an [issue comment](https://docs.github.com/rest/issues/comments#get-an-issue-comment). A response with an HTTP `200` status means that you already added the reaction type to this issue comment.
+    ///
+    /// [GitHub API docs for create_for_issue_comment](https://docs.github.com/rest/reactions/reactions#create-reaction-for-an-issue-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_for_issue_comment(&self, owner: &str, repo: &str, comment_id: i32, body: PostReactionsCreateForIssueComment) -> Result<Reaction, ReactionsCreateForIssueCommentError> {
+    pub fn create_for_issue_comment(&self, owner: &str, repo: &str, comment_id: i64, body: PostReactionsCreateForIssueComment) -> Result<Reaction, ReactionsCreateForIssueCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -1159,12 +1219,12 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for a pull request review comment
     ///
-    /// Create a reaction to a [pull request review comment](https://docs.github.com/rest/reference/pulls#comments). A response with an HTTP `200` status means that you already added the reaction type to this pull request review comment.
-    /// 
-    /// [GitHub API docs for create_for_pull_request_review_comment](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-pull-request-review-comment)
+    /// Create a reaction to a [pull request review comment](https://docs.github.com/rest/pulls/comments#get-a-review-comment-for-a-pull-request). A response with an HTTP `200` status means that you already added the reaction type to this pull request review comment.
+    ///
+    /// [GitHub API docs for create_for_pull_request_review_comment](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-pull-request-review-comment)
     ///
     /// ---
-    pub async fn create_for_pull_request_review_comment_async(&self, owner: &str, repo: &str, comment_id: i32, body: PostReactionsCreateForPullRequestReviewComment) -> Result<Reaction, ReactionsCreateForPullRequestReviewCommentError> {
+    pub async fn create_for_pull_request_review_comment_async(&self, owner: &str, repo: &str, comment_id: i64, body: PostReactionsCreateForPullRequestReviewComment) -> Result<Reaction, ReactionsCreateForPullRequestReviewCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -1199,13 +1259,13 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for a pull request review comment
     ///
-    /// Create a reaction to a [pull request review comment](https://docs.github.com/rest/reference/pulls#comments). A response with an HTTP `200` status means that you already added the reaction type to this pull request review comment.
-    /// 
-    /// [GitHub API docs for create_for_pull_request_review_comment](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-pull-request-review-comment)
+    /// Create a reaction to a [pull request review comment](https://docs.github.com/rest/pulls/comments#get-a-review-comment-for-a-pull-request). A response with an HTTP `200` status means that you already added the reaction type to this pull request review comment.
+    ///
+    /// [GitHub API docs for create_for_pull_request_review_comment](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-pull-request-review-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_for_pull_request_review_comment(&self, owner: &str, repo: &str, comment_id: i32, body: PostReactionsCreateForPullRequestReviewComment) -> Result<Reaction, ReactionsCreateForPullRequestReviewCommentError> {
+    pub fn create_for_pull_request_review_comment(&self, owner: &str, repo: &str, comment_id: i64, body: PostReactionsCreateForPullRequestReviewComment) -> Result<Reaction, ReactionsCreateForPullRequestReviewCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -1240,9 +1300,9 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for a release
     ///
-    /// Create a reaction to a [release](https://docs.github.com/rest/reference/repos#releases). A response with a `Status: 200 OK` means that you already added the reaction type to this release.
-    /// 
-    /// [GitHub API docs for create_for_release](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-release)
+    /// Create a reaction to a [release](https://docs.github.com/rest/releases/releases#get-a-release). A response with a `Status: 200 OK` means that you already added the reaction type to this release.
+    ///
+    /// [GitHub API docs for create_for_release](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-release)
     ///
     /// ---
     pub async fn create_for_release_async(&self, owner: &str, repo: &str, release_id: i32, body: PostReactionsCreateForRelease) -> Result<Reaction, ReactionsCreateForReleaseError> {
@@ -1280,9 +1340,9 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for a release
     ///
-    /// Create a reaction to a [release](https://docs.github.com/rest/reference/repos#releases). A response with a `Status: 200 OK` means that you already added the reaction type to this release.
-    /// 
-    /// [GitHub API docs for create_for_release](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-release)
+    /// Create a reaction to a [release](https://docs.github.com/rest/releases/releases#get-a-release). A response with a `Status: 200 OK` means that you already added the reaction type to this release.
+    ///
+    /// [GitHub API docs for create_for_release](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-release)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1321,11 +1381,16 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for a team discussion comment
     ///
-    /// Create a reaction to a [team discussion comment](https://docs.github.com/rest/reference/teams#discussion-comments). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with an HTTP `200` status means that you already added the reaction type to this team discussion comment.
+    /// Create a reaction to a [team discussion comment](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment).
     /// 
-    /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `POST /organizations/:org_id/team/:team_id/discussions/:discussion_number/comments/:comment_number/reactions`.
+    /// A response with an HTTP `200` status means that you already added the reaction type to this team discussion comment.
     /// 
-    /// [GitHub API docs for create_for_team_discussion_comment_in_org](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-team-discussion-comment)
+    /// > [!NOTE]
+    /// > You can also specify a team by `org_id` and `team_id` using the route `POST /organizations/:org_id/team/:team_id/discussions/:discussion_number/comments/:comment_number/reactions`.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_for_team_discussion_comment_in_org](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion-comment)
     ///
     /// ---
     pub async fn create_for_team_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, body: PostReactionsCreateForTeamDiscussionCommentInOrg) -> Result<Reaction, ReactionsCreateForTeamDiscussionCommentInOrgError> {
@@ -1362,11 +1427,16 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for a team discussion comment
     ///
-    /// Create a reaction to a [team discussion comment](https://docs.github.com/rest/reference/teams#discussion-comments). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with an HTTP `200` status means that you already added the reaction type to this team discussion comment.
+    /// Create a reaction to a [team discussion comment](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment).
     /// 
-    /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `POST /organizations/:org_id/team/:team_id/discussions/:discussion_number/comments/:comment_number/reactions`.
+    /// A response with an HTTP `200` status means that you already added the reaction type to this team discussion comment.
     /// 
-    /// [GitHub API docs for create_for_team_discussion_comment_in_org](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-team-discussion-comment)
+    /// > [!NOTE]
+    /// > You can also specify a team by `org_id` and `team_id` using the route `POST /organizations/:org_id/team/:team_id/discussions/:discussion_number/comments/:comment_number/reactions`.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_for_team_discussion_comment_in_org](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1404,11 +1474,16 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for a team discussion comment (Legacy)
     ///
-    /// **Deprecation Notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new "[Create reaction for a team discussion comment](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-team-discussion-comment)" endpoint.
+    /// > [!WARNING]
+    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new "[Create reaction for a team discussion comment](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion-comment)" endpoint.
     /// 
-    /// Create a reaction to a [team discussion comment](https://docs.github.com/rest/reference/teams#discussion-comments). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with an HTTP `200` status means that you already added the reaction type to this team discussion comment.
+    /// Create a reaction to a [team discussion comment](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment).
     /// 
-    /// [GitHub API docs for create_for_team_discussion_comment_legacy](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion-comment-legacy)
+    /// A response with an HTTP `200` status means that you already added the reaction type to this team discussion comment.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_for_team_discussion_comment_legacy](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion-comment-legacy)
     ///
     /// ---
     pub async fn create_for_team_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, comment_number: i32, body: PostReactionsCreateForTeamDiscussionCommentLegacy) -> Result<Reaction, ReactionsCreateForTeamDiscussionCommentLegacyError> {
@@ -1444,11 +1519,16 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for a team discussion comment (Legacy)
     ///
-    /// **Deprecation Notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new "[Create reaction for a team discussion comment](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-team-discussion-comment)" endpoint.
+    /// > [!WARNING]
+    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new "[Create reaction for a team discussion comment](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion-comment)" endpoint.
     /// 
-    /// Create a reaction to a [team discussion comment](https://docs.github.com/rest/reference/teams#discussion-comments). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with an HTTP `200` status means that you already added the reaction type to this team discussion comment.
+    /// Create a reaction to a [team discussion comment](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment).
     /// 
-    /// [GitHub API docs for create_for_team_discussion_comment_legacy](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion-comment-legacy)
+    /// A response with an HTTP `200` status means that you already added the reaction type to this team discussion comment.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_for_team_discussion_comment_legacy](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion-comment-legacy)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1485,11 +1565,16 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for a team discussion
     ///
-    /// Create a reaction to a [team discussion](https://docs.github.com/rest/reference/teams#discussions). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with an HTTP `200` status means that you already added the reaction type to this team discussion.
+    /// Create a reaction to a [team discussion](https://docs.github.com/rest/teams/discussions#get-a-discussion).
     /// 
-    /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `POST /organizations/:org_id/team/:team_id/discussions/:discussion_number/reactions`.
+    /// A response with an HTTP `200` status means that you already added the reaction type to this team discussion.
     /// 
-    /// [GitHub API docs for create_for_team_discussion_in_org](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-team-discussion)
+    /// > [!NOTE]
+    /// > You can also specify a team by `org_id` and `team_id` using the route `POST /organizations/:org_id/team/:team_id/discussions/:discussion_number/reactions`.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_for_team_discussion_in_org](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion)
     ///
     /// ---
     pub async fn create_for_team_discussion_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, body: PostReactionsCreateForTeamDiscussionInOrg) -> Result<Reaction, ReactionsCreateForTeamDiscussionInOrgError> {
@@ -1526,11 +1611,16 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for a team discussion
     ///
-    /// Create a reaction to a [team discussion](https://docs.github.com/rest/reference/teams#discussions). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with an HTTP `200` status means that you already added the reaction type to this team discussion.
+    /// Create a reaction to a [team discussion](https://docs.github.com/rest/teams/discussions#get-a-discussion).
     /// 
-    /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `POST /organizations/:org_id/team/:team_id/discussions/:discussion_number/reactions`.
+    /// A response with an HTTP `200` status means that you already added the reaction type to this team discussion.
     /// 
-    /// [GitHub API docs for create_for_team_discussion_in_org](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-team-discussion)
+    /// > [!NOTE]
+    /// > You can also specify a team by `org_id` and `team_id` using the route `POST /organizations/:org_id/team/:team_id/discussions/:discussion_number/reactions`.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_for_team_discussion_in_org](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1568,11 +1658,16 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for a team discussion (Legacy)
     ///
-    /// **Deprecation Notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`Create reaction for a team discussion`](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-team-discussion) endpoint.
+    /// > [!WARNING]
+    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`Create reaction for a team discussion`](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion) endpoint.
     /// 
-    /// Create a reaction to a [team discussion](https://docs.github.com/rest/reference/teams#discussions). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with an HTTP `200` status means that you already added the reaction type to this team discussion.
+    /// Create a reaction to a [team discussion](https://docs.github.com/rest/teams/discussions#get-a-discussion).
     /// 
-    /// [GitHub API docs for create_for_team_discussion_legacy](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion-legacy)
+    /// A response with an HTTP `200` status means that you already added the reaction type to this team discussion.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_for_team_discussion_legacy](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion-legacy)
     ///
     /// ---
     pub async fn create_for_team_discussion_legacy_async(&self, team_id: i32, discussion_number: i32, body: PostReactionsCreateForTeamDiscussionLegacy) -> Result<Reaction, ReactionsCreateForTeamDiscussionLegacyError> {
@@ -1608,11 +1703,16 @@ impl<'api> Reactions<'api> {
     ///
     /// # Create reaction for a team discussion (Legacy)
     ///
-    /// **Deprecation Notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`Create reaction for a team discussion`](https://docs.github.com/rest/reference/reactions#create-reaction-for-a-team-discussion) endpoint.
+    /// > [!WARNING]
+    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`Create reaction for a team discussion`](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion) endpoint.
     /// 
-    /// Create a reaction to a [team discussion](https://docs.github.com/rest/reference/teams#discussions). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/). A response with an HTTP `200` status means that you already added the reaction type to this team discussion.
+    /// Create a reaction to a [team discussion](https://docs.github.com/rest/teams/discussions#get-a-discussion).
     /// 
-    /// [GitHub API docs for create_for_team_discussion_legacy](https://docs.github.com/rest/reference/reactions/#create-reaction-for-a-team-discussion-legacy)
+    /// A response with an HTTP `200` status means that you already added the reaction type to this team discussion.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_for_team_discussion_legacy](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion-legacy)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1649,14 +1749,15 @@ impl<'api> Reactions<'api> {
     ///
     /// # Delete a commit comment reaction
     ///
-    /// **Note:** You can also specify a repository by `repository_id` using the route `DELETE /repositories/:repository_id/comments/:comment_id/reactions/:reaction_id`.
+    /// > [!NOTE]
+    /// > You can also specify a repository by `repository_id` using the route `DELETE /repositories/:repository_id/comments/:comment_id/reactions/:reaction_id`.
     /// 
-    /// Delete a reaction to a [commit comment](https://docs.github.com/rest/reference/repos#comments).
-    /// 
-    /// [GitHub API docs for delete_for_commit_comment](https://docs.github.com/rest/reference/reactions#delete-a-commit-comment-reaction)
+    /// Delete a reaction to a [commit comment](https://docs.github.com/rest/commits/comments#get-a-commit-comment).
+    ///
+    /// [GitHub API docs for delete_for_commit_comment](https://docs.github.com/rest/reactions/reactions#delete-a-commit-comment-reaction)
     ///
     /// ---
-    pub async fn delete_for_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForCommitCommentError> {
+    pub async fn delete_for_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i64, reaction_id: i32) -> Result<(), ReactionsDeleteForCommitCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/comments/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id, reaction_id);
 
@@ -1689,15 +1790,16 @@ impl<'api> Reactions<'api> {
     ///
     /// # Delete a commit comment reaction
     ///
-    /// **Note:** You can also specify a repository by `repository_id` using the route `DELETE /repositories/:repository_id/comments/:comment_id/reactions/:reaction_id`.
+    /// > [!NOTE]
+    /// > You can also specify a repository by `repository_id` using the route `DELETE /repositories/:repository_id/comments/:comment_id/reactions/:reaction_id`.
     /// 
-    /// Delete a reaction to a [commit comment](https://docs.github.com/rest/reference/repos#comments).
-    /// 
-    /// [GitHub API docs for delete_for_commit_comment](https://docs.github.com/rest/reference/reactions#delete-a-commit-comment-reaction)
+    /// Delete a reaction to a [commit comment](https://docs.github.com/rest/commits/comments#get-a-commit-comment).
+    ///
+    /// [GitHub API docs for delete_for_commit_comment](https://docs.github.com/rest/reactions/reactions#delete-a-commit-comment-reaction)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_for_commit_comment(&self, owner: &str, repo: &str, comment_id: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForCommitCommentError> {
+    pub fn delete_for_commit_comment(&self, owner: &str, repo: &str, comment_id: i64, reaction_id: i32) -> Result<(), ReactionsDeleteForCommitCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/comments/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id, reaction_id);
 
@@ -1730,11 +1832,12 @@ impl<'api> Reactions<'api> {
     ///
     /// # Delete an issue reaction
     ///
-    /// **Note:** You can also specify a repository by `repository_id` using the route `DELETE /repositories/:repository_id/issues/:issue_number/reactions/:reaction_id`.
+    /// > [!NOTE]
+    /// > You can also specify a repository by `repository_id` using the route `DELETE /repositories/:repository_id/issues/:issue_number/reactions/:reaction_id`.
     /// 
-    /// Delete a reaction to an [issue](https://docs.github.com/rest/reference/issues/).
-    /// 
-    /// [GitHub API docs for delete_for_issue](https://docs.github.com/rest/reference/reactions#delete-an-issue-reaction)
+    /// Delete a reaction to an [issue](https://docs.github.com/rest/issues/issues#get-an-issue).
+    ///
+    /// [GitHub API docs for delete_for_issue](https://docs.github.com/rest/reactions/reactions#delete-an-issue-reaction)
     ///
     /// ---
     pub async fn delete_for_issue_async(&self, owner: &str, repo: &str, issue_number: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForIssueError> {
@@ -1770,11 +1873,12 @@ impl<'api> Reactions<'api> {
     ///
     /// # Delete an issue reaction
     ///
-    /// **Note:** You can also specify a repository by `repository_id` using the route `DELETE /repositories/:repository_id/issues/:issue_number/reactions/:reaction_id`.
+    /// > [!NOTE]
+    /// > You can also specify a repository by `repository_id` using the route `DELETE /repositories/:repository_id/issues/:issue_number/reactions/:reaction_id`.
     /// 
-    /// Delete a reaction to an [issue](https://docs.github.com/rest/reference/issues/).
-    /// 
-    /// [GitHub API docs for delete_for_issue](https://docs.github.com/rest/reference/reactions#delete-an-issue-reaction)
+    /// Delete a reaction to an [issue](https://docs.github.com/rest/issues/issues#get-an-issue).
+    ///
+    /// [GitHub API docs for delete_for_issue](https://docs.github.com/rest/reactions/reactions#delete-an-issue-reaction)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1811,14 +1915,15 @@ impl<'api> Reactions<'api> {
     ///
     /// # Delete an issue comment reaction
     ///
-    /// **Note:** You can also specify a repository by `repository_id` using the route `DELETE delete /repositories/:repository_id/issues/comments/:comment_id/reactions/:reaction_id`.
+    /// > [!NOTE]
+    /// > You can also specify a repository by `repository_id` using the route `DELETE delete /repositories/:repository_id/issues/comments/:comment_id/reactions/:reaction_id`.
     /// 
-    /// Delete a reaction to an [issue comment](https://docs.github.com/rest/reference/issues#comments).
-    /// 
-    /// [GitHub API docs for delete_for_issue_comment](https://docs.github.com/rest/reference/reactions#delete-an-issue-comment-reaction)
+    /// Delete a reaction to an [issue comment](https://docs.github.com/rest/issues/comments#get-an-issue-comment).
+    ///
+    /// [GitHub API docs for delete_for_issue_comment](https://docs.github.com/rest/reactions/reactions#delete-an-issue-comment-reaction)
     ///
     /// ---
-    pub async fn delete_for_issue_comment_async(&self, owner: &str, repo: &str, comment_id: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForIssueCommentError> {
+    pub async fn delete_for_issue_comment_async(&self, owner: &str, repo: &str, comment_id: i64, reaction_id: i32) -> Result<(), ReactionsDeleteForIssueCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id, reaction_id);
 
@@ -1851,15 +1956,16 @@ impl<'api> Reactions<'api> {
     ///
     /// # Delete an issue comment reaction
     ///
-    /// **Note:** You can also specify a repository by `repository_id` using the route `DELETE delete /repositories/:repository_id/issues/comments/:comment_id/reactions/:reaction_id`.
+    /// > [!NOTE]
+    /// > You can also specify a repository by `repository_id` using the route `DELETE delete /repositories/:repository_id/issues/comments/:comment_id/reactions/:reaction_id`.
     /// 
-    /// Delete a reaction to an [issue comment](https://docs.github.com/rest/reference/issues#comments).
-    /// 
-    /// [GitHub API docs for delete_for_issue_comment](https://docs.github.com/rest/reference/reactions#delete-an-issue-comment-reaction)
+    /// Delete a reaction to an [issue comment](https://docs.github.com/rest/issues/comments#get-an-issue-comment).
+    ///
+    /// [GitHub API docs for delete_for_issue_comment](https://docs.github.com/rest/reactions/reactions#delete-an-issue-comment-reaction)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_for_issue_comment(&self, owner: &str, repo: &str, comment_id: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForIssueCommentError> {
+    pub fn delete_for_issue_comment(&self, owner: &str, repo: &str, comment_id: i64, reaction_id: i32) -> Result<(), ReactionsDeleteForIssueCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id, reaction_id);
 
@@ -1892,14 +1998,15 @@ impl<'api> Reactions<'api> {
     ///
     /// # Delete a pull request comment reaction
     ///
-    /// **Note:** You can also specify a repository by `repository_id` using the route `DELETE /repositories/:repository_id/pulls/comments/:comment_id/reactions/:reaction_id.`
+    /// > [!NOTE]
+    /// > You can also specify a repository by `repository_id` using the route `DELETE /repositories/:repository_id/pulls/comments/:comment_id/reactions/:reaction_id.`
     /// 
-    /// Delete a reaction to a [pull request review comment](https://docs.github.com/rest/reference/pulls#review-comments).
-    /// 
-    /// [GitHub API docs for delete_for_pull_request_comment](https://docs.github.com/rest/reference/reactions#delete-a-pull-request-comment-reaction)
+    /// Delete a reaction to a [pull request review comment](https://docs.github.com/rest/pulls/comments#get-a-review-comment-for-a-pull-request).
+    ///
+    /// [GitHub API docs for delete_for_pull_request_comment](https://docs.github.com/rest/reactions/reactions#delete-a-pull-request-comment-reaction)
     ///
     /// ---
-    pub async fn delete_for_pull_request_comment_async(&self, owner: &str, repo: &str, comment_id: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForPullRequestCommentError> {
+    pub async fn delete_for_pull_request_comment_async(&self, owner: &str, repo: &str, comment_id: i64, reaction_id: i32) -> Result<(), ReactionsDeleteForPullRequestCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id, reaction_id);
 
@@ -1932,15 +2039,16 @@ impl<'api> Reactions<'api> {
     ///
     /// # Delete a pull request comment reaction
     ///
-    /// **Note:** You can also specify a repository by `repository_id` using the route `DELETE /repositories/:repository_id/pulls/comments/:comment_id/reactions/:reaction_id.`
+    /// > [!NOTE]
+    /// > You can also specify a repository by `repository_id` using the route `DELETE /repositories/:repository_id/pulls/comments/:comment_id/reactions/:reaction_id.`
     /// 
-    /// Delete a reaction to a [pull request review comment](https://docs.github.com/rest/reference/pulls#review-comments).
-    /// 
-    /// [GitHub API docs for delete_for_pull_request_comment](https://docs.github.com/rest/reference/reactions#delete-a-pull-request-comment-reaction)
+    /// Delete a reaction to a [pull request review comment](https://docs.github.com/rest/pulls/comments#get-a-review-comment-for-a-pull-request).
+    ///
+    /// [GitHub API docs for delete_for_pull_request_comment](https://docs.github.com/rest/reactions/reactions#delete-a-pull-request-comment-reaction)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_for_pull_request_comment(&self, owner: &str, repo: &str, comment_id: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForPullRequestCommentError> {
+    pub fn delete_for_pull_request_comment(&self, owner: &str, repo: &str, comment_id: i64, reaction_id: i32) -> Result<(), ReactionsDeleteForPullRequestCommentError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id, reaction_id);
 
@@ -1971,13 +2079,99 @@ impl<'api> Reactions<'api> {
 
     /// ---
     ///
+    /// # Delete a release reaction
+    ///
+    /// > [!NOTE]
+    /// > You can also specify a repository by `repository_id` using the route `DELETE delete /repositories/:repository_id/releases/:release_id/reactions/:reaction_id`.
+    /// 
+    /// Delete a reaction to a [release](https://docs.github.com/rest/releases/releases#get-a-release).
+    ///
+    /// [GitHub API docs for delete_for_release](https://docs.github.com/rest/reactions/reactions#delete-a-release-reaction)
+    ///
+    /// ---
+    pub async fn delete_for_release_async(&self, owner: &str, repo: &str, release_id: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForReleaseError> {
+
+        let request_uri = format!("{}/repos/{}/{}/releases/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, release_id, reaction_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ReactionsDeleteForReleaseError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete a release reaction
+    ///
+    /// > [!NOTE]
+    /// > You can also specify a repository by `repository_id` using the route `DELETE delete /repositories/:repository_id/releases/:release_id/reactions/:reaction_id`.
+    /// 
+    /// Delete a reaction to a [release](https://docs.github.com/rest/releases/releases#get-a-release).
+    ///
+    /// [GitHub API docs for delete_for_release](https://docs.github.com/rest/reactions/reactions#delete-a-release-reaction)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn delete_for_release(&self, owner: &str, repo: &str, release_id: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForReleaseError> {
+
+        let request_uri = format!("{}/repos/{}/{}/releases/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, release_id, reaction_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ReactionsDeleteForReleaseError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Delete team discussion reaction
     ///
-    /// **Note:** You can also specify a team or organization with `team_id` and `org_id` using the route `DELETE /organizations/:org_id/team/:team_id/discussions/:discussion_number/reactions/:reaction_id`.
+    /// > [!NOTE]
+    /// > You can also specify a team or organization with `team_id` and `org_id` using the route `DELETE /organizations/:org_id/team/:team_id/discussions/:discussion_number/reactions/:reaction_id`.
     /// 
-    /// Delete a reaction to a [team discussion](https://docs.github.com/rest/reference/teams#discussions). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// Delete a reaction to a [team discussion](https://docs.github.com/rest/teams/discussions#get-a-discussion).
     /// 
-    /// [GitHub API docs for delete_for_team_discussion](https://docs.github.com/rest/reference/reactions#delete-team-discussion-reaction)
+    /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_for_team_discussion](https://docs.github.com/rest/reactions/reactions#delete-team-discussion-reaction)
     ///
     /// ---
     pub async fn delete_for_team_discussion_async(&self, org: &str, team_slug: &str, discussion_number: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForTeamDiscussionError> {
@@ -2013,11 +2207,14 @@ impl<'api> Reactions<'api> {
     ///
     /// # Delete team discussion reaction
     ///
-    /// **Note:** You can also specify a team or organization with `team_id` and `org_id` using the route `DELETE /organizations/:org_id/team/:team_id/discussions/:discussion_number/reactions/:reaction_id`.
+    /// > [!NOTE]
+    /// > You can also specify a team or organization with `team_id` and `org_id` using the route `DELETE /organizations/:org_id/team/:team_id/discussions/:discussion_number/reactions/:reaction_id`.
     /// 
-    /// Delete a reaction to a [team discussion](https://docs.github.com/rest/reference/teams#discussions). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// Delete a reaction to a [team discussion](https://docs.github.com/rest/teams/discussions#get-a-discussion).
     /// 
-    /// [GitHub API docs for delete_for_team_discussion](https://docs.github.com/rest/reference/reactions#delete-team-discussion-reaction)
+    /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_for_team_discussion](https://docs.github.com/rest/reactions/reactions#delete-team-discussion-reaction)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2054,11 +2251,14 @@ impl<'api> Reactions<'api> {
     ///
     /// # Delete team discussion comment reaction
     ///
-    /// **Note:** You can also specify a team or organization with `team_id` and `org_id` using the route `DELETE /organizations/:org_id/team/:team_id/discussions/:discussion_number/comments/:comment_number/reactions/:reaction_id`.
+    /// > [!NOTE]
+    /// > You can also specify a team or organization with `team_id` and `org_id` using the route `DELETE /organizations/:org_id/team/:team_id/discussions/:discussion_number/comments/:comment_number/reactions/:reaction_id`.
     /// 
-    /// Delete a reaction to a [team discussion comment](https://docs.github.com/rest/reference/teams#discussion-comments). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// Delete a reaction to a [team discussion comment](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment).
     /// 
-    /// [GitHub API docs for delete_for_team_discussion_comment](https://docs.github.com/rest/reference/reactions#delete-team-discussion-comment-reaction)
+    /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_for_team_discussion_comment](https://docs.github.com/rest/reactions/reactions#delete-team-discussion-comment-reaction)
     ///
     /// ---
     pub async fn delete_for_team_discussion_comment_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForTeamDiscussionCommentError> {
@@ -2094,11 +2294,14 @@ impl<'api> Reactions<'api> {
     ///
     /// # Delete team discussion comment reaction
     ///
-    /// **Note:** You can also specify a team or organization with `team_id` and `org_id` using the route `DELETE /organizations/:org_id/team/:team_id/discussions/:discussion_number/comments/:comment_number/reactions/:reaction_id`.
+    /// > [!NOTE]
+    /// > You can also specify a team or organization with `team_id` and `org_id` using the route `DELETE /organizations/:org_id/team/:team_id/discussions/:discussion_number/comments/:comment_number/reactions/:reaction_id`.
     /// 
-    /// Delete a reaction to a [team discussion comment](https://docs.github.com/rest/reference/teams#discussion-comments). OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// Delete a reaction to a [team discussion comment](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment).
     /// 
-    /// [GitHub API docs for delete_for_team_discussion_comment](https://docs.github.com/rest/reference/reactions#delete-team-discussion-comment-reaction)
+    /// OAuth app tokens and personal access tokens (classic) need the `write:discussion` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_for_team_discussion_comment](https://docs.github.com/rest/reactions/reactions#delete-team-discussion-comment-reaction)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2133,103 +2336,14 @@ impl<'api> Reactions<'api> {
 
     /// ---
     ///
-    /// # Delete a reaction (Legacy)
-    ///
-    /// **Deprecation Notice:** This endpoint route is deprecated and will be removed from the Reactions API. We recommend migrating your existing code to use the new delete reactions endpoints. For more information, see this [blog post](https://developer.github.com/changes/2020-02-26-new-delete-reactions-endpoints/).
-    /// 
-    /// OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/), when deleting a [team discussion](https://docs.github.com/rest/reference/teams#discussions) or [team discussion comment](https://docs.github.com/rest/reference/teams#discussion-comments).
-    /// 
-    /// [GitHub API docs for delete_legacy](https://docs.github.com/rest/reference/reactions/#delete-a-reaction-legacy)
-    ///
-    /// ---
-    pub async fn delete_legacy_async(&self, reaction_id: i32) -> Result<(), ReactionsDeleteLegacyError> {
-
-        let request_uri = format!("{}/reactions/{}", super::GITHUB_BASE_API_URL, reaction_id);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "DELETE",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch_async(request).await?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
-        } else {
-            match github_response.status_code() {
-                304 => Err(ReactionsDeleteLegacyError::Status304),
-                403 => Err(ReactionsDeleteLegacyError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(ReactionsDeleteLegacyError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                410 => Err(ReactionsDeleteLegacyError::Status410(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ReactionsDeleteLegacyError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Delete a reaction (Legacy)
-    ///
-    /// **Deprecation Notice:** This endpoint route is deprecated and will be removed from the Reactions API. We recommend migrating your existing code to use the new delete reactions endpoints. For more information, see this [blog post](https://developer.github.com/changes/2020-02-26-new-delete-reactions-endpoints/).
-    /// 
-    /// OAuth access tokens require the `write:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/), when deleting a [team discussion](https://docs.github.com/rest/reference/teams#discussions) or [team discussion comment](https://docs.github.com/rest/reference/teams#discussion-comments).
-    /// 
-    /// [GitHub API docs for delete_legacy](https://docs.github.com/rest/reference/reactions/#delete-a-reaction-legacy)
-    ///
-    /// ---
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_legacy(&self, reaction_id: i32) -> Result<(), ReactionsDeleteLegacyError> {
-
-        let request_uri = format!("{}/reactions/{}", super::GITHUB_BASE_API_URL, reaction_id);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "DELETE",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch(request)?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
-        } else {
-            match github_response.status_code() {
-                304 => Err(ReactionsDeleteLegacyError::Status304),
-                403 => Err(ReactionsDeleteLegacyError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(ReactionsDeleteLegacyError::Status401(crate::adapters::to_json(github_response)?)),
-                410 => Err(ReactionsDeleteLegacyError::Status410(crate::adapters::to_json(github_response)?)),
-                code => Err(ReactionsDeleteLegacyError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
     /// # List reactions for a commit comment
     ///
-    /// List the reactions to a [commit comment](https://docs.github.com/rest/reference/repos#comments).
-    /// 
-    /// [GitHub API docs for list_for_commit_comment](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-commit-comment)
+    /// List the reactions to a [commit comment](https://docs.github.com/rest/commits/comments#get-a-commit-comment).
+    ///
+    /// [GitHub API docs for list_for_commit_comment](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-commit-comment)
     ///
     /// ---
-    pub async fn list_for_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i32, query_params: Option<impl Into<ReactionsListForCommitCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForCommitCommentError> {
+    pub async fn list_for_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i64, query_params: Option<impl Into<ReactionsListForCommitCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForCommitCommentError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -2267,13 +2381,13 @@ impl<'api> Reactions<'api> {
     ///
     /// # List reactions for a commit comment
     ///
-    /// List the reactions to a [commit comment](https://docs.github.com/rest/reference/repos#comments).
-    /// 
-    /// [GitHub API docs for list_for_commit_comment](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-commit-comment)
+    /// List the reactions to a [commit comment](https://docs.github.com/rest/commits/comments#get-a-commit-comment).
+    ///
+    /// [GitHub API docs for list_for_commit_comment](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-commit-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_commit_comment(&self, owner: &str, repo: &str, comment_id: i32, query_params: Option<impl Into<ReactionsListForCommitCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForCommitCommentError> {
+    pub fn list_for_commit_comment(&self, owner: &str, repo: &str, comment_id: i64, query_params: Option<impl Into<ReactionsListForCommitCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForCommitCommentError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -2312,9 +2426,9 @@ impl<'api> Reactions<'api> {
     ///
     /// # List reactions for an issue
     ///
-    /// List the reactions to an [issue](https://docs.github.com/rest/reference/issues).
-    /// 
-    /// [GitHub API docs for list_for_issue](https://docs.github.com/rest/reference/reactions#list-reactions-for-an-issue)
+    /// List the reactions to an [issue](https://docs.github.com/rest/issues/issues#get-an-issue).
+    ///
+    /// [GitHub API docs for list_for_issue](https://docs.github.com/rest/reactions/reactions#list-reactions-for-an-issue)
     ///
     /// ---
     pub async fn list_for_issue_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<ReactionsListForIssueParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForIssueError> {
@@ -2356,9 +2470,9 @@ impl<'api> Reactions<'api> {
     ///
     /// # List reactions for an issue
     ///
-    /// List the reactions to an [issue](https://docs.github.com/rest/reference/issues).
-    /// 
-    /// [GitHub API docs for list_for_issue](https://docs.github.com/rest/reference/reactions#list-reactions-for-an-issue)
+    /// List the reactions to an [issue](https://docs.github.com/rest/issues/issues#get-an-issue).
+    ///
+    /// [GitHub API docs for list_for_issue](https://docs.github.com/rest/reactions/reactions#list-reactions-for-an-issue)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2402,12 +2516,12 @@ impl<'api> Reactions<'api> {
     ///
     /// # List reactions for an issue comment
     ///
-    /// List the reactions to an [issue comment](https://docs.github.com/rest/reference/issues#comments).
-    /// 
-    /// [GitHub API docs for list_for_issue_comment](https://docs.github.com/rest/reference/reactions#list-reactions-for-an-issue-comment)
+    /// List the reactions to an [issue comment](https://docs.github.com/rest/issues/comments#get-an-issue-comment).
+    ///
+    /// [GitHub API docs for list_for_issue_comment](https://docs.github.com/rest/reactions/reactions#list-reactions-for-an-issue-comment)
     ///
     /// ---
-    pub async fn list_for_issue_comment_async(&self, owner: &str, repo: &str, comment_id: i32, query_params: Option<impl Into<ReactionsListForIssueCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForIssueCommentError> {
+    pub async fn list_for_issue_comment_async(&self, owner: &str, repo: &str, comment_id: i64, query_params: Option<impl Into<ReactionsListForIssueCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForIssueCommentError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -2445,13 +2559,13 @@ impl<'api> Reactions<'api> {
     ///
     /// # List reactions for an issue comment
     ///
-    /// List the reactions to an [issue comment](https://docs.github.com/rest/reference/issues#comments).
-    /// 
-    /// [GitHub API docs for list_for_issue_comment](https://docs.github.com/rest/reference/reactions#list-reactions-for-an-issue-comment)
+    /// List the reactions to an [issue comment](https://docs.github.com/rest/issues/comments#get-an-issue-comment).
+    ///
+    /// [GitHub API docs for list_for_issue_comment](https://docs.github.com/rest/reactions/reactions#list-reactions-for-an-issue-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_issue_comment(&self, owner: &str, repo: &str, comment_id: i32, query_params: Option<impl Into<ReactionsListForIssueCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForIssueCommentError> {
+    pub fn list_for_issue_comment(&self, owner: &str, repo: &str, comment_id: i64, query_params: Option<impl Into<ReactionsListForIssueCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForIssueCommentError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -2490,12 +2604,12 @@ impl<'api> Reactions<'api> {
     ///
     /// # List reactions for a pull request review comment
     ///
-    /// List the reactions to a [pull request review comment](https://docs.github.com/rest/reference/pulls#review-comments).
-    /// 
-    /// [GitHub API docs for list_for_pull_request_review_comment](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-pull-request-review-comment)
+    /// List the reactions to a [pull request review comment](https://docs.github.com/rest/pulls/comments#get-a-review-comment-for-a-pull-request).
+    ///
+    /// [GitHub API docs for list_for_pull_request_review_comment](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-pull-request-review-comment)
     ///
     /// ---
-    pub async fn list_for_pull_request_review_comment_async(&self, owner: &str, repo: &str, comment_id: i32, query_params: Option<impl Into<ReactionsListForPullRequestReviewCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForPullRequestReviewCommentError> {
+    pub async fn list_for_pull_request_review_comment_async(&self, owner: &str, repo: &str, comment_id: i64, query_params: Option<impl Into<ReactionsListForPullRequestReviewCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForPullRequestReviewCommentError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -2533,13 +2647,13 @@ impl<'api> Reactions<'api> {
     ///
     /// # List reactions for a pull request review comment
     ///
-    /// List the reactions to a [pull request review comment](https://docs.github.com/rest/reference/pulls#review-comments).
-    /// 
-    /// [GitHub API docs for list_for_pull_request_review_comment](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-pull-request-review-comment)
+    /// List the reactions to a [pull request review comment](https://docs.github.com/rest/pulls/comments#get-a-review-comment-for-a-pull-request).
+    ///
+    /// [GitHub API docs for list_for_pull_request_review_comment](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-pull-request-review-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_pull_request_review_comment(&self, owner: &str, repo: &str, comment_id: i32, query_params: Option<impl Into<ReactionsListForPullRequestReviewCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForPullRequestReviewCommentError> {
+    pub fn list_for_pull_request_review_comment(&self, owner: &str, repo: &str, comment_id: i64, query_params: Option<impl Into<ReactionsListForPullRequestReviewCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForPullRequestReviewCommentError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -2576,13 +2690,104 @@ impl<'api> Reactions<'api> {
 
     /// ---
     ///
+    /// # List reactions for a release
+    ///
+    /// List the reactions to a [release](https://docs.github.com/rest/releases/releases#get-a-release).
+    ///
+    /// [GitHub API docs for list_for_release](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-release)
+    ///
+    /// ---
+    pub async fn list_for_release_async(&self, owner: &str, repo: &str, release_id: i32, query_params: Option<impl Into<ReactionsListForReleaseParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForReleaseError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/releases/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, release_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ReactionsListForReleaseError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ReactionsListForReleaseError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List reactions for a release
+    ///
+    /// List the reactions to a [release](https://docs.github.com/rest/releases/releases#get-a-release).
+    ///
+    /// [GitHub API docs for list_for_release](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-release)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_for_release(&self, owner: &str, repo: &str, release_id: i32, query_params: Option<impl Into<ReactionsListForReleaseParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForReleaseError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/releases/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, release_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: ReactionsListForReleaseParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ReactionsListForReleaseError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(ReactionsListForReleaseError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List reactions for a team discussion comment
     ///
-    /// List the reactions to a [team discussion comment](https://docs.github.com/rest/reference/teams#discussion-comments/). OAuth access tokens require the `read:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// List the reactions to a [team discussion comment](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment).
     /// 
-    /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/:org_id/team/:team_id/discussions/:discussion_number/comments/:comment_number/reactions`.
+    /// > [!NOTE]
+    /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/:org_id/team/:team_id/discussions/:discussion_number/comments/:comment_number/reactions`.
     /// 
-    /// [GitHub API docs for list_for_team_discussion_comment_in_org](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-team-discussion-comment)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_for_team_discussion_comment_in_org](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion-comment)
     ///
     /// ---
     pub async fn list_for_team_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionCommentInOrgParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionCommentInOrgError> {
@@ -2622,11 +2827,14 @@ impl<'api> Reactions<'api> {
     ///
     /// # List reactions for a team discussion comment
     ///
-    /// List the reactions to a [team discussion comment](https://docs.github.com/rest/reference/teams#discussion-comments/). OAuth access tokens require the `read:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// List the reactions to a [team discussion comment](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment).
     /// 
-    /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/:org_id/team/:team_id/discussions/:discussion_number/comments/:comment_number/reactions`.
+    /// > [!NOTE]
+    /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/:org_id/team/:team_id/discussions/:discussion_number/comments/:comment_number/reactions`.
     /// 
-    /// [GitHub API docs for list_for_team_discussion_comment_in_org](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-team-discussion-comment)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_for_team_discussion_comment_in_org](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion-comment)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2668,11 +2876,14 @@ impl<'api> Reactions<'api> {
     ///
     /// # List reactions for a team discussion comment (Legacy)
     ///
-    /// **Deprecation Notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List reactions for a team discussion comment`](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-team-discussion-comment) endpoint.
+    /// > [!WARNING]
+    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List reactions for a team discussion comment`](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion-comment) endpoint.
     /// 
-    /// List the reactions to a [team discussion comment](https://docs.github.com/rest/reference/teams#discussion-comments). OAuth access tokens require the `read:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// List the reactions to a [team discussion comment](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment).
     /// 
-    /// [GitHub API docs for list_for_team_discussion_comment_legacy](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-team-discussion-comment-legacy)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_for_team_discussion_comment_legacy](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion-comment-legacy)
     ///
     /// ---
     pub async fn list_for_team_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, comment_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionCommentLegacyParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionCommentLegacyError> {
@@ -2712,11 +2923,14 @@ impl<'api> Reactions<'api> {
     ///
     /// # List reactions for a team discussion comment (Legacy)
     ///
-    /// **Deprecation Notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List reactions for a team discussion comment`](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-team-discussion-comment) endpoint.
+    /// > [!WARNING]
+    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List reactions for a team discussion comment`](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion-comment) endpoint.
     /// 
-    /// List the reactions to a [team discussion comment](https://docs.github.com/rest/reference/teams#discussion-comments). OAuth access tokens require the `read:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// List the reactions to a [team discussion comment](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment).
     /// 
-    /// [GitHub API docs for list_for_team_discussion_comment_legacy](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-team-discussion-comment-legacy)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_for_team_discussion_comment_legacy](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion-comment-legacy)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2758,11 +2972,14 @@ impl<'api> Reactions<'api> {
     ///
     /// # List reactions for a team discussion
     ///
-    /// List the reactions to a [team discussion](https://docs.github.com/rest/reference/teams#discussions). OAuth access tokens require the `read:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// List the reactions to a [team discussion](https://docs.github.com/rest/teams/discussions#get-a-discussion).
     /// 
-    /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/:org_id/team/:team_id/discussions/:discussion_number/reactions`.
+    /// > [!NOTE]
+    /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/:org_id/team/:team_id/discussions/:discussion_number/reactions`.
     /// 
-    /// [GitHub API docs for list_for_team_discussion_in_org](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-team-discussion)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_for_team_discussion_in_org](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion)
     ///
     /// ---
     pub async fn list_for_team_discussion_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionInOrgParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionInOrgError> {
@@ -2802,11 +3019,14 @@ impl<'api> Reactions<'api> {
     ///
     /// # List reactions for a team discussion
     ///
-    /// List the reactions to a [team discussion](https://docs.github.com/rest/reference/teams#discussions). OAuth access tokens require the `read:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// List the reactions to a [team discussion](https://docs.github.com/rest/teams/discussions#get-a-discussion).
     /// 
-    /// **Note:** You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/:org_id/team/:team_id/discussions/:discussion_number/reactions`.
+    /// > [!NOTE]
+    /// > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/:org_id/team/:team_id/discussions/:discussion_number/reactions`.
     /// 
-    /// [GitHub API docs for list_for_team_discussion_in_org](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-team-discussion)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_for_team_discussion_in_org](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2848,11 +3068,14 @@ impl<'api> Reactions<'api> {
     ///
     /// # List reactions for a team discussion (Legacy)
     ///
-    /// **Deprecation Notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List reactions for a team discussion`](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-team-discussion) endpoint.
+    /// > [!WARNING]
+    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List reactions for a team discussion`](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion) endpoint.
     /// 
-    /// List the reactions to a [team discussion](https://docs.github.com/rest/reference/teams#discussions). OAuth access tokens require the `read:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// List the reactions to a [team discussion](https://docs.github.com/rest/teams/discussions#get-a-discussion).
     /// 
-    /// [GitHub API docs for list_for_team_discussion_legacy](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-team-discussion-legacy)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_for_team_discussion_legacy](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion-legacy)
     ///
     /// ---
     pub async fn list_for_team_discussion_legacy_async(&self, team_id: i32, discussion_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionLegacyParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionLegacyError> {
@@ -2892,11 +3115,14 @@ impl<'api> Reactions<'api> {
     ///
     /// # List reactions for a team discussion (Legacy)
     ///
-    /// **Deprecation Notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List reactions for a team discussion`](https://docs.github.com/rest/reference/reactions#list-reactions-for-a-team-discussion) endpoint.
+    /// > [!WARNING]
+    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List reactions for a team discussion`](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion) endpoint.
     /// 
-    /// List the reactions to a [team discussion](https://docs.github.com/rest/reference/teams#discussions). OAuth access tokens require the `read:discussion` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// List the reactions to a [team discussion](https://docs.github.com/rest/teams/discussions#get-a-discussion).
     /// 
-    /// [GitHub API docs for list_for_team_discussion_legacy](https://docs.github.com/rest/reference/reactions/#list-reactions-for-a-team-discussion-legacy)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:discussion` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_for_team_discussion_legacy](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion-legacy)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

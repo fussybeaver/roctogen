@@ -1,6 +1,6 @@
 //! Method, error and parameter types for the Actions endpoint.
 #![allow(
-    unused_imports,
+    clippy::all
 )]
 /* 
  * GitHub v3 REST API
@@ -46,7 +46,7 @@ pub enum ActionsAddCustomLabelsToSelfHostedRunnerForOrgError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -67,25 +67,8 @@ pub enum ActionsAddCustomLabelsToSelfHostedRunnerForRepoError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
-    #[error("Status code: {}", code)]
-    Generic { code: u16 },
-}
-
-/// Errors for the [Add repository access to a self-hosted runner group in an organization](Actions::add_repo_access_to_self_hosted_runner_group_in_org_async()) endpoint.
-#[derive(Debug, thiserror::Error)]
-pub enum ActionsAddRepoAccessToSelfHostedRunnerGroupInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -109,9 +92,9 @@ pub enum ActionsAddSelectedRepoToOrgSecretError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Add a self-hosted runner to a group for an organization](Actions::add_self_hosted_runner_to_group_for_org_async()) endpoint.
+/// Errors for the [Add selected repository to an organization variable](Actions::add_selected_repo_to_org_variable_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum ActionsAddSelfHostedRunnerToGroupForOrgError {
+pub enum ActionsAddSelectedRepoToOrgVariableError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -122,6 +105,8 @@ pub enum ActionsAddSelfHostedRunnerToGroupForOrgError {
 
     // -- endpoint errors
 
+    #[error("Response when the visibility of the variable is not set to `selected`")]
+    Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -150,6 +135,25 @@ pub enum ActionsApproveWorkflowRunError {
 /// Errors for the [Cancel a workflow run](Actions::cancel_workflow_run_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsCancelWorkflowRunError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Conflict")]
+    Status409(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Create an environment variable](Actions::create_environment_variable_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsCreateEnvironmentVariableError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -217,6 +221,23 @@ pub enum ActionsCreateOrUpdateRepoSecretError {
 
     #[error("Response when updating a secret")]
     Status204,
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Create an organization variable](Actions::create_org_variable_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsCreateOrgVariableError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -289,9 +310,9 @@ pub enum ActionsCreateRemoveTokenForRepoError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Create a self-hosted runner group for an organization](Actions::create_self_hosted_runner_group_for_org_async()) endpoint.
+/// Errors for the [Create a repository variable](Actions::create_repo_variable_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum ActionsCreateSelfHostedRunnerGroupForOrgError {
+pub enum ActionsCreateRepoVariableError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -309,6 +330,40 @@ pub enum ActionsCreateSelfHostedRunnerGroupForOrgError {
 /// Errors for the [Create a workflow dispatch event](Actions::create_workflow_dispatch_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsCreateWorkflowDispatchError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Delete a GitHub Actions cache for a repository (using a cache ID)](Actions::delete_actions_cache_by_id_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsDeleteActionsCacheByIdError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Delete GitHub Actions caches for a repository (using a cache key)](Actions::delete_actions_cache_by_key_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsDeleteActionsCacheByKeyError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -357,6 +412,23 @@ pub enum ActionsDeleteEnvironmentSecretError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Delete an environment variable](Actions::delete_environment_variable_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsDeleteEnvironmentVariableError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Delete an organization secret](Actions::delete_org_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsDeleteOrgSecretError {
@@ -374,9 +446,43 @@ pub enum ActionsDeleteOrgSecretError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Delete an organization variable](Actions::delete_org_variable_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsDeleteOrgVariableError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Delete a repository secret](Actions::delete_repo_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsDeleteRepoSecretError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Delete a repository variable](Actions::delete_repo_variable_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsDeleteRepoVariableError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -425,23 +531,6 @@ pub enum ActionsDeleteSelfHostedRunnerFromRepoError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Delete a self-hosted runner group from an organization](Actions::delete_self_hosted_runner_group_from_org_async()) endpoint.
-#[derive(Debug, thiserror::Error)]
-pub enum ActionsDeleteSelfHostedRunnerGroupFromOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
-    #[error("Status code: {}", code)]
-    Generic { code: u16 },
-}
-
 /// Errors for the [Delete a workflow run](Actions::delete_workflow_run_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsDeleteWorkflowRunError {
@@ -472,6 +561,10 @@ pub enum ActionsDeleteWorkflowRunLogsError {
 
     // -- endpoint errors
 
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Internal Error")]
+    Status500(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -525,6 +618,8 @@ pub enum ActionsDownloadArtifactError {
 
     #[error("Response")]
     Status302,
+    #[error("Gone")]
+    Status410(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -620,7 +715,136 @@ pub enum ActionsEnableWorkflowError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Get allowed actions for an organization](Actions::get_allowed_actions_organization_async()) endpoint.
+/// Errors for the [Force cancel a workflow run](Actions::force_cancel_workflow_run_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsForceCancelWorkflowRunError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Conflict")]
+    Status409(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Create configuration for a just-in-time runner for an organization](Actions::generate_runner_jitconfig_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsGenerateRunnerJitconfigForOrgError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationErrorSimple),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Create configuration for a just-in-time runner for a repository](Actions::generate_runner_jitconfig_for_repo_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsGenerateRunnerJitconfigForRepoError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationErrorSimple),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List GitHub Actions caches for a repository](Actions::get_actions_cache_list_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsGetActionsCacheListError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get GitHub Actions cache usage for a repository](Actions::get_actions_cache_usage_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsGetActionsCacheUsageError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List repositories with GitHub Actions cache usage for an organization](Actions::get_actions_cache_usage_by_repo_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsGetActionsCacheUsageByRepoForOrgError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get GitHub Actions cache usage for an organization](Actions::get_actions_cache_usage_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsGetActionsCacheUsageForOrgError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get allowed actions and reusable workflows for an organization](Actions::get_allowed_actions_organization_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetAllowedActionsOrganizationError {
     #[error(transparent)]
@@ -637,7 +861,7 @@ pub enum ActionsGetAllowedActionsOrganizationError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Get allowed actions for a repository](Actions::get_allowed_actions_repository_async()) endpoint.
+/// Errors for the [Get allowed actions and reusable workflows for a repository](Actions::get_allowed_actions_repository_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetAllowedActionsRepositoryError {
     #[error(transparent)]
@@ -671,6 +895,27 @@ pub enum ActionsGetArtifactError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Get the customization template for an OIDC subject claim for a repository](Actions::get_custom_oidc_sub_claim_for_repo_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsGetCustomOidcSubClaimForRepoError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Bad Request")]
+    Status400(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Get an environment public key](Actions::get_environment_public_key_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetEnvironmentPublicKeyError {
@@ -691,6 +936,57 @@ pub enum ActionsGetEnvironmentPublicKeyError {
 /// Errors for the [Get an environment secret](Actions::get_environment_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetEnvironmentSecretError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get an environment variable](Actions::get_environment_variable_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsGetEnvironmentVariableError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get default workflow permissions for an organization](Actions::get_github_actions_default_workflow_permissions_organization_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsGetGithubActionsDefaultWorkflowPermissionsOrganizationError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get default workflow permissions for a repository](Actions::get_github_actions_default_workflow_permissions_repository_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsGetGithubActionsDefaultWorkflowPermissionsRepositoryError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -790,6 +1086,23 @@ pub enum ActionsGetOrgSecretError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Get an organization variable](Actions::get_org_variable_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsGetOrgVariableError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Get pending deployments for a workflow run](Actions::get_pending_deployments_for_run_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetPendingDeploymentsForRunError {
@@ -827,6 +1140,23 @@ pub enum ActionsGetRepoPublicKeyError {
 /// Errors for the [Get a repository secret](Actions::get_repo_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetRepoSecretError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get a repository variable](Actions::get_repo_variable_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsGetRepoVariableError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -892,9 +1222,9 @@ pub enum ActionsGetSelfHostedRunnerForRepoError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Get a self-hosted runner group for an organization](Actions::get_self_hosted_runner_group_for_org_async()) endpoint.
+/// Errors for the [Get a workflow](Actions::get_workflow_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum ActionsGetSelfHostedRunnerGroupForOrgError {
+pub enum ActionsGetWorkflowError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -909,9 +1239,9 @@ pub enum ActionsGetSelfHostedRunnerGroupForOrgError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Get a workflow](Actions::get_workflow_async()) endpoint.
+/// Errors for the [Get the level of access for workflows outside of the repository](Actions::get_workflow_access_to_repository_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum ActionsGetWorkflowError {
+pub enum ActionsGetWorkflowAccessToRepositoryError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -1028,6 +1358,23 @@ pub enum ActionsListEnvironmentSecretsError {
     Generic { code: u16 },
 }
 
+/// Errors for the [List environment variables](Actions::list_environment_variables_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsListEnvironmentVariablesError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [List jobs for a workflow run](Actions::list_jobs_for_workflow_run_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListJobsForWorkflowRunError {
@@ -1119,9 +1466,43 @@ pub enum ActionsListOrgSecretsError {
     Generic { code: u16 },
 }
 
-/// Errors for the [List repository access to a self-hosted runner group in an organization](Actions::list_repo_access_to_self_hosted_runner_group_in_org_async()) endpoint.
+/// Errors for the [List organization variables](Actions::list_org_variables_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum ActionsListRepoAccessToSelfHostedRunnerGroupInOrgError {
+pub enum ActionsListOrgVariablesError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List repository organization secrets](Actions::list_repo_organization_secrets_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsListRepoOrganizationSecretsError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List repository organization variables](Actions::list_repo_organization_variables_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsListRepoOrganizationVariablesError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -1139,6 +1520,23 @@ pub enum ActionsListRepoAccessToSelfHostedRunnerGroupInOrgError {
 /// Errors for the [List repository secrets](Actions::list_repo_secrets_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListRepoSecretsError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List repository variables](Actions::list_repo_variables_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsListRepoVariablesError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -1221,9 +1619,9 @@ pub enum ActionsListSelectedReposForOrgSecretError {
     Generic { code: u16 },
 }
 
-/// Errors for the [List selected repositories enabled for GitHub Actions in an organization](Actions::list_selected_repositories_enabled_github_actions_organization_async()) endpoint.
+/// Errors for the [List selected repositories for an organization variable](Actions::list_selected_repos_for_org_variable_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationError {
+pub enum ActionsListSelectedReposForOrgVariableError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -1234,13 +1632,15 @@ pub enum ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationError {
 
     // -- endpoint errors
 
+    #[error("Response when the visibility of the variable is not set to `selected`")]
+    Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
-/// Errors for the [List self-hosted runner groups for an organization](Actions::list_self_hosted_runner_groups_for_org_async()) endpoint.
+/// Errors for the [List selected repositories enabled for GitHub Actions in an organization](Actions::list_selected_repositories_enabled_github_actions_organization_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum ActionsListSelfHostedRunnerGroupsForOrgError {
+pub enum ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -1289,23 +1689,6 @@ pub enum ActionsListSelfHostedRunnersForRepoError {
     Generic { code: u16 },
 }
 
-/// Errors for the [List self-hosted runners in a group for an organization](Actions::list_self_hosted_runners_in_group_for_org_async()) endpoint.
-#[derive(Debug, thiserror::Error)]
-pub enum ActionsListSelfHostedRunnersInGroupForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
-    #[error("Status code: {}", code)]
-    Generic { code: u16 },
-}
-
 /// Errors for the [List workflow run artifacts](Actions::list_workflow_run_artifacts_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListWorkflowRunArtifactsError {
@@ -1323,7 +1706,7 @@ pub enum ActionsListWorkflowRunArtifactsError {
     Generic { code: u16 },
 }
 
-/// Errors for the [List workflow runs](Actions::list_workflow_runs_async()) endpoint.
+/// Errors for the [List workflow runs for a workflow](Actions::list_workflow_runs_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListWorkflowRunsError {
     #[error(transparent)]
@@ -1357,9 +1740,45 @@ pub enum ActionsListWorkflowRunsForRepoError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Re-run a job from a workflow run](Actions::re_run_job_for_workflow_run_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsReRunJobForWorkflowRunError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Re-run a workflow](Actions::re_run_workflow_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsReRunWorkflowError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Re-run failed jobs from a workflow run](Actions::re_run_workflow_failed_jobs_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsReRunWorkflowFailedJobsError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -1427,7 +1846,7 @@ pub enum ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1448,25 +1867,8 @@ pub enum ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
-    #[error("Status code: {}", code)]
-    Generic { code: u16 },
-}
-
-/// Errors for the [Remove repository access to a self-hosted runner group in an organization](Actions::remove_repo_access_to_self_hosted_runner_group_in_org_async()) endpoint.
-#[derive(Debug, thiserror::Error)]
-pub enum ActionsRemoveRepoAccessToSelfHostedRunnerGroupInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1490,9 +1892,28 @@ pub enum ActionsRemoveSelectedRepoFromOrgSecretError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Remove a self-hosted runner from a group for an organization](Actions::remove_self_hosted_runner_from_group_for_org_async()) endpoint.
+/// Errors for the [Remove selected repository from an organization variable](Actions::remove_selected_repo_from_org_variable_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum ActionsRemoveSelfHostedRunnerFromGroupForOrgError {
+pub enum ActionsRemoveSelectedRepoFromOrgVariableError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Response when the visibility of the variable is not set to `selected`")]
+    Status409,
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Review custom deployment protection rules for a workflow run](Actions::review_custom_gates_for_run_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsReviewCustomGatesForRunError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -1524,7 +1945,7 @@ pub enum ActionsReviewPendingDeploymentsForRunError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Set allowed actions for an organization](Actions::set_allowed_actions_organization_async()) endpoint.
+/// Errors for the [Set allowed actions and reusable workflows for an organization](Actions::set_allowed_actions_organization_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsSetAllowedActionsOrganizationError {
     #[error(transparent)]
@@ -1541,7 +1962,7 @@ pub enum ActionsSetAllowedActionsOrganizationError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Set allowed actions for a repository](Actions::set_allowed_actions_repository_async()) endpoint.
+/// Errors for the [Set allowed actions and reusable workflows for a repository](Actions::set_allowed_actions_repository_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsSetAllowedActionsRepositoryError {
     #[error(transparent)]
@@ -1573,7 +1994,7 @@ pub enum ActionsSetCustomLabelsForSelfHostedRunnerForOrgError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -1594,8 +2015,67 @@ pub enum ActionsSetCustomLabelsForSelfHostedRunnerForRepoError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Set the customization template for an OIDC subject claim for a repository](Actions::set_custom_oidc_sub_claim_for_repo_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsSetCustomOidcSubClaimForRepoError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Bad Request")]
+    Status400(BasicError),
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationErrorSimple),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Set default workflow permissions for an organization](Actions::set_github_actions_default_workflow_permissions_organization_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsSetGithubActionsDefaultWorkflowPermissionsOrganizationError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Set default workflow permissions for a repository](Actions::set_github_actions_default_workflow_permissions_repository_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Conflict response when changing a setting is prevented by the owning organization")]
+    Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1634,9 +2114,9 @@ pub enum ActionsSetGithubActionsPermissionsRepositoryError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Set repository access for a self-hosted runner group in an organization](Actions::set_repo_access_to_self_hosted_runner_group_in_org_async()) endpoint.
+/// Errors for the [Set selected repositories for an organization secret](Actions::set_selected_repos_for_org_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum ActionsSetRepoAccessToSelfHostedRunnerGroupInOrgError {
+pub enum ActionsSetSelectedReposForOrgSecretError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -1651,9 +2131,9 @@ pub enum ActionsSetRepoAccessToSelfHostedRunnerGroupInOrgError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Set selected repositories for an organization secret](Actions::set_selected_repos_for_org_secret_async()) endpoint.
+/// Errors for the [Set selected repositories for an organization variable](Actions::set_selected_repos_for_org_variable_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum ActionsSetSelectedReposForOrgSecretError {
+pub enum ActionsSetSelectedReposForOrgVariableError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -1664,6 +2144,8 @@ pub enum ActionsSetSelectedReposForOrgSecretError {
 
     // -- endpoint errors
 
+    #[error("Response when the visibility of the variable is not set to `selected`")]
+    Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1685,9 +2167,9 @@ pub enum ActionsSetSelectedRepositoriesEnabledGithubActionsOrganizationError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Set self-hosted runners in a group for an organization](Actions::set_self_hosted_runners_in_group_for_org_async()) endpoint.
+/// Errors for the [Set the level of access for workflows outside of the repository](Actions::set_workflow_access_to_repository_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum ActionsSetSelfHostedRunnersInGroupForOrgError {
+pub enum ActionsSetWorkflowAccessToRepositoryError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -1702,9 +2184,43 @@ pub enum ActionsSetSelfHostedRunnersInGroupForOrgError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Update a self-hosted runner group for an organization](Actions::update_self_hosted_runner_group_for_org_async()) endpoint.
+/// Errors for the [Update an environment variable](Actions::update_environment_variable_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum ActionsUpdateSelfHostedRunnerGroupForOrgError {
+pub enum ActionsUpdateEnvironmentVariableError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Update an organization variable](Actions::update_org_variable_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsUpdateOrgVariableError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Update a repository variable](Actions::update_repo_variable_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsUpdateRepoVariableError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -1720,6 +2236,181 @@ pub enum ActionsUpdateSelfHostedRunnerGroupForOrgError {
 }
 
 
+/// Query parameters for the [Delete GitHub Actions caches for a repository (using a cache key)](Actions::delete_actions_cache_by_key_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct ActionsDeleteActionsCacheByKeyParams<'req> {
+    /// A key for identifying the cache.
+    key: &'req str, 
+    /// The full Git reference for narrowing down the cache. The `ref` for a branch should be formatted as `refs/heads/<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
+    git_ref: Option<&'req str>
+}
+
+impl<'req> ActionsDeleteActionsCacheByKeyParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// A key for identifying the cache.
+    pub fn key(self, key: &'req str) -> Self {
+        Self {
+            key: key,
+            git_ref: self.git_ref, 
+        }
+    }
+
+    /// The full Git reference for narrowing down the cache. The `ref` for a branch should be formatted as `refs/heads/<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
+    pub fn git_ref(self, git_ref: &'req str) -> Self {
+        Self {
+            key: self.key, 
+            git_ref: Some(git_ref),
+        }
+    }
+}
+
+/// Query parameters for the [List GitHub Actions caches for a repository](Actions::get_actions_cache_list_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct ActionsGetActionsCacheListParams<'req> {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>, 
+    /// The full Git reference for narrowing down the cache. The `ref` for a branch should be formatted as `refs/heads/<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
+    git_ref: Option<&'req str>, 
+    /// An explicit key or prefix for identifying the cache
+    key: Option<&'req str>, 
+    /// The property to sort the results by. `created_at` means when the cache was created. `last_accessed_at` means when the cache was last accessed. `size_in_bytes` is the size of the cache in bytes.
+    sort: Option<&'req str>, 
+    /// The direction to sort the results by.
+    direction: Option<&'req str>
+}
+
+impl<'req> ActionsGetActionsCacheListParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+            git_ref: self.git_ref, 
+            key: self.key, 
+            sort: self.sort, 
+            direction: self.direction, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+            git_ref: self.git_ref, 
+            key: self.key, 
+            sort: self.sort, 
+            direction: self.direction, 
+        }
+    }
+
+    /// The full Git reference for narrowing down the cache. The `ref` for a branch should be formatted as `refs/heads/<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
+    pub fn git_ref(self, git_ref: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            git_ref: Some(git_ref),
+            key: self.key, 
+            sort: self.sort, 
+            direction: self.direction, 
+        }
+    }
+
+    /// An explicit key or prefix for identifying the cache
+    pub fn key(self, key: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            git_ref: self.git_ref, 
+            key: Some(key),
+            sort: self.sort, 
+            direction: self.direction, 
+        }
+    }
+
+    /// The property to sort the results by. `created_at` means when the cache was created. `last_accessed_at` means when the cache was last accessed. `size_in_bytes` is the size of the cache in bytes.
+    pub fn sort(self, sort: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            git_ref: self.git_ref, 
+            key: self.key, 
+            sort: Some(sort),
+            direction: self.direction, 
+        }
+    }
+
+    /// The direction to sort the results by.
+    pub fn direction(self, direction: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            git_ref: self.git_ref, 
+            key: self.key, 
+            sort: self.sort, 
+            direction: Some(direction),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for ActionsGetActionsCacheListParams<'enc> {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [List repositories with GitHub Actions cache usage for an organization](Actions::get_actions_cache_usage_by_repo_for_org_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct ActionsGetActionsCacheUsageByRepoForOrgParams {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl ActionsGetActionsCacheUsageByRepoForOrgParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for ActionsGetActionsCacheUsageByRepoForOrgParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [Get a workflow run](Actions::get_workflow_run_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsGetWorkflowRunParams {
@@ -1734,7 +2425,7 @@ impl ActionsGetWorkflowRunParams {
 
     /// If `true` pull requests are omitted from the response (empty array).
     pub fn exclude_pull_requests(self, exclude_pull_requests: bool) -> Self {
-        Self { 
+        Self {
             exclude_pull_requests: Some(exclude_pull_requests),
         }
     }
@@ -1754,7 +2445,7 @@ impl ActionsGetWorkflowRunAttemptParams {
 
     /// If `true` pull requests are omitted from the response (empty array).
     pub fn exclude_pull_requests(self, exclude_pull_requests: bool) -> Self {
-        Self { 
+        Self {
             exclude_pull_requests: Some(exclude_pull_requests),
         }
     }
@@ -1762,36 +2453,49 @@ impl ActionsGetWorkflowRunAttemptParams {
 
 /// Query parameters for the [List artifacts for a repository](Actions::list_artifacts_for_repo_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct ActionsListArtifactsForRepoParams {
-    /// Results per page (max 100)
+pub struct ActionsListArtifactsForRepoParams<'req> {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
-    page: Option<u16>
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>, 
+    /// The name field of an artifact. When specified, only artifacts with this name will be returned.
+    name: Option<&'req str>
 }
 
-impl ActionsListArtifactsForRepoParams {
+impl<'req> ActionsListArtifactsForRepoParams<'req> {
     pub fn new() -> Self {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
+            name: self.name, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
+            name: self.name, 
+        }
+    }
+
+    /// The name field of an artifact. When specified, only artifacts with this name will be returned.
+    pub fn name(self, name: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            name: Some(name),
         }
     }
 }
 
-impl<'enc> From<&'enc PerPage> for ActionsListArtifactsForRepoParams {
+impl<'enc> From<&'enc PerPage> for ActionsListArtifactsForRepoParams<'enc> {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -1803,9 +2507,9 @@ impl<'enc> From<&'enc PerPage> for ActionsListArtifactsForRepoParams {
 /// Query parameters for the [List environment secrets](Actions::list_environment_secrets_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsListEnvironmentSecretsParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1814,17 +2518,17 @@ impl ActionsListEnvironmentSecretsParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1840,14 +2544,54 @@ impl<'enc> From<&'enc PerPage> for ActionsListEnvironmentSecretsParams {
         }
     }
 }
+/// Query parameters for the [List environment variables](Actions::list_environment_variables_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct ActionsListEnvironmentVariablesParams {
+    /// The number of results per page (max 30). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl ActionsListEnvironmentVariablesParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 30). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for ActionsListEnvironmentVariablesParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [List jobs for a workflow run](Actions::list_jobs_for_workflow_run_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsListJobsForWorkflowRunParams<'req> {
-    /// Filters jobs by their `completed_at` timestamp. Can be one of:   \\* `latest`: Returns jobs from the most recent execution of the workflow run.   \\* `all`: Returns all jobs for a workflow run, including from old executions of the workflow run.
+    /// Filters jobs by their `completed_at` timestamp. `latest` returns jobs from the most recent execution of the workflow run. `all` returns all jobs for a workflow run, including from old executions of the workflow run.
     filter: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1856,27 +2600,27 @@ impl<'req> ActionsListJobsForWorkflowRunParams<'req> {
         Self::default()
     }
 
-    /// Filters jobs by their `completed_at` timestamp. Can be one of:   \\* `latest`: Returns jobs from the most recent execution of the workflow run.   \\* `all`: Returns all jobs for a workflow run, including from old executions of the workflow run.
+    /// Filters jobs by their `completed_at` timestamp. `latest` returns jobs from the most recent execution of the workflow run. `all` returns all jobs for a workflow run, including from old executions of the workflow run.
     pub fn filter(self, filter: &'req str) -> Self {
-        Self { 
+        Self {
             filter: Some(filter),
             per_page: self.per_page, 
             page: self.page, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             per_page: self.per_page, 
             page: Some(page),
@@ -1896,9 +2640,9 @@ impl<'enc> From<&'enc PerPage> for ActionsListJobsForWorkflowRunParams<'enc> {
 /// Query parameters for the [List jobs for a workflow run attempt](Actions::list_jobs_for_workflow_run_attempt_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsListJobsForWorkflowRunAttemptParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1907,17 +2651,17 @@ impl ActionsListJobsForWorkflowRunAttemptParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1936,9 +2680,9 @@ impl<'enc> From<&'enc PerPage> for ActionsListJobsForWorkflowRunAttemptParams {
 /// Query parameters for the [List organization secrets](Actions::list_org_secrets_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsListOrgSecretsParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1947,17 +2691,17 @@ impl ActionsListOrgSecretsParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1973,38 +2717,118 @@ impl<'enc> From<&'enc PerPage> for ActionsListOrgSecretsParams {
         }
     }
 }
-/// Query parameters for the [List repository access to a self-hosted runner group in an organization](Actions::list_repo_access_to_self_hosted_runner_group_in_org_async()) endpoint.
+/// Query parameters for the [List organization variables](Actions::list_org_variables_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct ActionsListRepoAccessToSelfHostedRunnerGroupInOrgParams {
-    /// Page number of the results to fetch.
-    page: Option<u16>, 
-    /// Results per page (max 100)
-    per_page: Option<u16>
+pub struct ActionsListOrgVariablesParams {
+    /// The number of results per page (max 30). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
 }
 
-impl ActionsListRepoAccessToSelfHostedRunnerGroupInOrgParams {
+impl ActionsListOrgVariablesParams {
     pub fn new() -> Self {
         Self::default()
     }
 
-    /// Page number of the results to fetch.
-    pub fn page(self, page: u16) -> Self {
-        Self { 
-            page: Some(page),
-            per_page: self.per_page, 
+    /// The number of results per page (max 30). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
         }
     }
 
-    /// Results per page (max 100)
-    pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
-            page: self.page, 
-            per_page: Some(per_page),
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
         }
     }
 }
 
-impl<'enc> From<&'enc PerPage> for ActionsListRepoAccessToSelfHostedRunnerGroupInOrgParams {
+impl<'enc> From<&'enc PerPage> for ActionsListOrgVariablesParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [List repository organization secrets](Actions::list_repo_organization_secrets_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct ActionsListRepoOrganizationSecretsParams {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl ActionsListRepoOrganizationSecretsParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for ActionsListRepoOrganizationSecretsParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [List repository organization variables](Actions::list_repo_organization_variables_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct ActionsListRepoOrganizationVariablesParams {
+    /// The number of results per page (max 30). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl ActionsListRepoOrganizationVariablesParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 30). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for ActionsListRepoOrganizationVariablesParams {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -2016,9 +2840,9 @@ impl<'enc> From<&'enc PerPage> for ActionsListRepoAccessToSelfHostedRunnerGroupI
 /// Query parameters for the [List repository secrets](Actions::list_repo_secrets_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsListRepoSecretsParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -2027,17 +2851,17 @@ impl ActionsListRepoSecretsParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2053,12 +2877,52 @@ impl<'enc> From<&'enc PerPage> for ActionsListRepoSecretsParams {
         }
     }
 }
+/// Query parameters for the [List repository variables](Actions::list_repo_variables_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct ActionsListRepoVariablesParams {
+    /// The number of results per page (max 30). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl ActionsListRepoVariablesParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 30). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for ActionsListRepoVariablesParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [List repository workflows](Actions::list_repo_workflows_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsListRepoWorkflowsParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -2067,17 +2931,17 @@ impl ActionsListRepoWorkflowsParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2096,9 +2960,9 @@ impl<'enc> From<&'enc PerPage> for ActionsListRepoWorkflowsParams {
 /// Query parameters for the [List selected repositories for an organization secret](Actions::list_selected_repos_for_org_secret_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsListSelectedReposForOrgSecretParams {
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>
 }
 
@@ -2107,17 +2971,17 @@ impl ActionsListSelectedReposForOrgSecretParams {
         Self::default()
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             page: Some(page),
             per_page: self.per_page, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             page: self.page, 
             per_page: Some(per_page),
         }
@@ -2133,12 +2997,52 @@ impl<'enc> From<&'enc PerPage> for ActionsListSelectedReposForOrgSecretParams {
         }
     }
 }
+/// Query parameters for the [List selected repositories for an organization variable](Actions::list_selected_repos_for_org_variable_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct ActionsListSelectedReposForOrgVariableParams {
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>, 
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>
+}
+
+impl ActionsListSelectedReposForOrgVariableParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            page: Some(page),
+            per_page: self.per_page, 
+        }
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            page: self.page, 
+            per_page: Some(per_page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for ActionsListSelectedReposForOrgVariableParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [List selected repositories enabled for GitHub Actions in an organization](Actions::list_selected_repositories_enabled_github_actions_organization_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -2147,17 +3051,17 @@ impl ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -2173,78 +3077,51 @@ impl<'enc> From<&'enc PerPage> for ActionsListSelectedRepositoriesEnabledGithubA
         }
     }
 }
-/// Query parameters for the [List self-hosted runner groups for an organization](Actions::list_self_hosted_runner_groups_for_org_async()) endpoint.
-#[derive(Default, Serialize)]
-pub struct ActionsListSelfHostedRunnerGroupsForOrgParams {
-    /// Results per page (max 100)
-    per_page: Option<u16>, 
-    /// Page number of the results to fetch.
-    page: Option<u16>
-}
-
-impl ActionsListSelfHostedRunnerGroupsForOrgParams {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    /// Results per page (max 100)
-    pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
-            per_page: Some(per_page),
-            page: self.page, 
-        }
-    }
-
-    /// Page number of the results to fetch.
-    pub fn page(self, page: u16) -> Self {
-        Self { 
-            per_page: self.per_page, 
-            page: Some(page),
-        }
-    }
-}
-
-impl<'enc> From<&'enc PerPage> for ActionsListSelfHostedRunnerGroupsForOrgParams {
-    fn from(per_page: &'enc PerPage) -> Self {
-        Self {
-            per_page: Some(per_page.per_page),
-            page: Some(per_page.page),
-            ..Default::default()
-        }
-    }
-}
 /// Query parameters for the [List self-hosted runners for an organization](Actions::list_self_hosted_runners_for_org_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct ActionsListSelfHostedRunnersForOrgParams {
-    /// Results per page (max 100)
+pub struct ActionsListSelfHostedRunnersForOrgParams<'req> {
+    /// The name of a self-hosted runner.
+    name: Option<&'req str>, 
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
-impl ActionsListSelfHostedRunnersForOrgParams {
+impl<'req> ActionsListSelfHostedRunnersForOrgParams<'req> {
     pub fn new() -> Self {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The name of a self-hosted runner.
+    pub fn name(self, name: &'req str) -> Self {
+        Self {
+            name: Some(name),
+            per_page: self.per_page, 
+            page: self.page, 
+        }
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
+            name: self.name, 
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
+            name: self.name, 
             per_page: self.per_page, 
             page: Some(page),
         }
     }
 }
 
-impl<'enc> From<&'enc PerPage> for ActionsListSelfHostedRunnersForOrgParams {
+impl<'enc> From<&'enc PerPage> for ActionsListSelfHostedRunnersForOrgParams<'enc> {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -2255,76 +3132,49 @@ impl<'enc> From<&'enc PerPage> for ActionsListSelfHostedRunnersForOrgParams {
 }
 /// Query parameters for the [List self-hosted runners for a repository](Actions::list_self_hosted_runners_for_repo_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct ActionsListSelfHostedRunnersForRepoParams {
-    /// Results per page (max 100)
+pub struct ActionsListSelfHostedRunnersForRepoParams<'req> {
+    /// The name of a self-hosted runner.
+    name: Option<&'req str>, 
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
-impl ActionsListSelfHostedRunnersForRepoParams {
+impl<'req> ActionsListSelfHostedRunnersForRepoParams<'req> {
     pub fn new() -> Self {
         Self::default()
     }
 
-    /// Results per page (max 100)
-    pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
-            per_page: Some(per_page),
-            page: self.page, 
-        }
-    }
-
-    /// Page number of the results to fetch.
-    pub fn page(self, page: u16) -> Self {
-        Self { 
-            per_page: self.per_page, 
-            page: Some(page),
-        }
-    }
-}
-
-impl<'enc> From<&'enc PerPage> for ActionsListSelfHostedRunnersForRepoParams {
-    fn from(per_page: &'enc PerPage) -> Self {
+    /// The name of a self-hosted runner.
+    pub fn name(self, name: &'req str) -> Self {
         Self {
-            per_page: Some(per_page.per_page),
-            page: Some(per_page.page),
-            ..Default::default()
+            name: Some(name),
+            per_page: self.per_page, 
+            page: self.page, 
         }
     }
-}
-/// Query parameters for the [List self-hosted runners in a group for an organization](Actions::list_self_hosted_runners_in_group_for_org_async()) endpoint.
-#[derive(Default, Serialize)]
-pub struct ActionsListSelfHostedRunnersInGroupForOrgParams {
-    /// Results per page (max 100)
-    per_page: Option<u16>, 
-    /// Page number of the results to fetch.
-    page: Option<u16>
-}
 
-impl ActionsListSelfHostedRunnersInGroupForOrgParams {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
+            name: self.name, 
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
+            name: self.name, 
             per_page: self.per_page, 
             page: Some(page),
         }
     }
 }
 
-impl<'enc> From<&'enc PerPage> for ActionsListSelfHostedRunnersInGroupForOrgParams {
+impl<'enc> From<&'enc PerPage> for ActionsListSelfHostedRunnersForRepoParams<'enc> {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -2335,36 +3185,49 @@ impl<'enc> From<&'enc PerPage> for ActionsListSelfHostedRunnersInGroupForOrgPara
 }
 /// Query parameters for the [List workflow run artifacts](Actions::list_workflow_run_artifacts_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct ActionsListWorkflowRunArtifactsParams {
-    /// Results per page (max 100)
+pub struct ActionsListWorkflowRunArtifactsParams<'req> {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
-    page: Option<u16>
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>, 
+    /// The name field of an artifact. When specified, only artifacts with this name will be returned.
+    name: Option<&'req str>
 }
 
-impl ActionsListWorkflowRunArtifactsParams {
+impl<'req> ActionsListWorkflowRunArtifactsParams<'req> {
     pub fn new() -> Self {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
+            name: self.name, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
+            name: self.name, 
+        }
+    }
+
+    /// The name field of an artifact. When specified, only artifacts with this name will be returned.
+    pub fn name(self, name: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            name: Some(name),
         }
     }
 }
 
-impl<'enc> From<&'enc PerPage> for ActionsListWorkflowRunArtifactsParams {
+impl<'enc> From<&'enc PerPage> for ActionsListWorkflowRunArtifactsParams<'enc> {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -2373,25 +3236,29 @@ impl<'enc> From<&'enc PerPage> for ActionsListWorkflowRunArtifactsParams {
         }
     }
 }
-/// Query parameters for the [List workflow runs](Actions::list_workflow_runs_async()) endpoint.
+/// Query parameters for the [List workflow runs for a workflow](Actions::list_workflow_runs_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsListWorkflowRunsParams<'req> {
     /// Returns someone's workflow runs. Use the login for the user who created the `push` associated with the check suite or workflow run.
     actor: Option<&'req str>, 
     /// Returns workflow runs associated with a branch. Use the name of the branch of the `push`.
     branch: Option<&'req str>, 
-    /// Returns workflow run triggered by the event you specify. For example, `push`, `pull_request` or `issue`. For more information, see \"[Events that trigger workflows](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/events-that-trigger-workflows).\"
+    /// Returns workflow run triggered by the event you specify. For example, `push`, `pull_request` or `issue`. For more information, see \"[Events that trigger workflows](https://docs.github.com/actions/automating-your-workflow-with-github-actions/events-that-trigger-workflows).\"
     event: Option<&'req str>, 
-    /// Returns workflow runs with the check run `status` or `conclusion` that you specify. For example, a conclusion can be `success` or a status can be `in_progress`. Only GitHub can set a status of `waiting` or `requested`. For a list of the possible `status` and `conclusion` options, see \"[Create a check run](https://docs.github.com/rest/reference/checks#create-a-check-run).\"
+    /// Returns workflow runs with the check run `status` or `conclusion` that you specify. For example, a conclusion can be `success` or a status can be `in_progress`. Only GitHub Actions can set a status of `waiting`, `pending`, or `requested`.
     status: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>, 
-    
+    /// Returns workflow runs created within the given date-time range. For more information on the syntax, see \"[Understanding the search syntax](https://docs.github.com/search-github/getting-started-with-searching-on-github/understanding-the-search-syntax#query-for-dates).\"
     created: Option<chrono::DateTime<chrono::Utc>>, 
     /// If `true` pull requests are omitted from the response (empty array).
-    exclude_pull_requests: Option<bool>
+    exclude_pull_requests: Option<bool>, 
+    /// Returns workflow runs with the `check_suite_id` that you specify.
+    check_suite_id: Option<i32>, 
+    /// Only returns workflow runs that are associated with the specified `head_sha`.
+    head_sha: Option<&'req str>
 }
 
 impl<'req> ActionsListWorkflowRunsParams<'req> {
@@ -2401,7 +3268,7 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
 
     /// Returns someone's workflow runs. Use the login for the user who created the `push` associated with the check suite or workflow run.
     pub fn actor(self, actor: &'req str) -> Self {
-        Self { 
+        Self {
             actor: Some(actor),
             branch: self.branch, 
             event: self.event, 
@@ -2410,12 +3277,14 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
             page: self.page, 
             created: self.created, 
             exclude_pull_requests: self.exclude_pull_requests, 
+            check_suite_id: self.check_suite_id, 
+            head_sha: self.head_sha, 
         }
     }
 
     /// Returns workflow runs associated with a branch. Use the name of the branch of the `push`.
     pub fn branch(self, branch: &'req str) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: Some(branch),
             event: self.event, 
@@ -2424,12 +3293,14 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
             page: self.page, 
             created: self.created, 
             exclude_pull_requests: self.exclude_pull_requests, 
+            check_suite_id: self.check_suite_id, 
+            head_sha: self.head_sha, 
         }
     }
 
-    /// Returns workflow run triggered by the event you specify. For example, `push`, `pull_request` or `issue`. For more information, see \"[Events that trigger workflows](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/events-that-trigger-workflows).\"
+    /// Returns workflow run triggered by the event you specify. For example, `push`, `pull_request` or `issue`. For more information, see \"[Events that trigger workflows](https://docs.github.com/actions/automating-your-workflow-with-github-actions/events-that-trigger-workflows).\"
     pub fn event(self, event: &'req str) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: Some(event),
@@ -2438,12 +3309,14 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
             page: self.page, 
             created: self.created, 
             exclude_pull_requests: self.exclude_pull_requests, 
+            check_suite_id: self.check_suite_id, 
+            head_sha: self.head_sha, 
         }
     }
 
-    /// Returns workflow runs with the check run `status` or `conclusion` that you specify. For example, a conclusion can be `success` or a status can be `in_progress`. Only GitHub can set a status of `waiting` or `requested`. For a list of the possible `status` and `conclusion` options, see \"[Create a check run](https://docs.github.com/rest/reference/checks#create-a-check-run).\"
+    /// Returns workflow runs with the check run `status` or `conclusion` that you specify. For example, a conclusion can be `success` or a status can be `in_progress`. Only GitHub Actions can set a status of `waiting`, `pending`, or `requested`.
     pub fn status(self, status: &'req str) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -2452,12 +3325,14 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
             page: self.page, 
             created: self.created, 
             exclude_pull_requests: self.exclude_pull_requests, 
+            check_suite_id: self.check_suite_id, 
+            head_sha: self.head_sha, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -2466,12 +3341,14 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
             page: self.page, 
             created: self.created, 
             exclude_pull_requests: self.exclude_pull_requests, 
+            check_suite_id: self.check_suite_id, 
+            head_sha: self.head_sha, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -2480,12 +3357,14 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
             page: Some(page),
             created: self.created, 
             exclude_pull_requests: self.exclude_pull_requests, 
+            check_suite_id: self.check_suite_id, 
+            head_sha: self.head_sha, 
         }
     }
 
-    
+    /// Returns workflow runs created within the given date-time range. For more information on the syntax, see \"[Understanding the search syntax](https://docs.github.com/search-github/getting-started-with-searching-on-github/understanding-the-search-syntax#query-for-dates).\"
     pub fn created(self, created: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -2494,12 +3373,14 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
             page: self.page, 
             created: Some(created),
             exclude_pull_requests: self.exclude_pull_requests, 
+            check_suite_id: self.check_suite_id, 
+            head_sha: self.head_sha, 
         }
     }
 
     /// If `true` pull requests are omitted from the response (empty array).
     pub fn exclude_pull_requests(self, exclude_pull_requests: bool) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -2508,6 +3389,40 @@ impl<'req> ActionsListWorkflowRunsParams<'req> {
             page: self.page, 
             created: self.created, 
             exclude_pull_requests: Some(exclude_pull_requests),
+            check_suite_id: self.check_suite_id, 
+            head_sha: self.head_sha, 
+        }
+    }
+
+    /// Returns workflow runs with the `check_suite_id` that you specify.
+    pub fn check_suite_id(self, check_suite_id: i32) -> Self {
+        Self {
+            actor: self.actor, 
+            branch: self.branch, 
+            event: self.event, 
+            status: self.status, 
+            per_page: self.per_page, 
+            page: self.page, 
+            created: self.created, 
+            exclude_pull_requests: self.exclude_pull_requests, 
+            check_suite_id: Some(check_suite_id),
+            head_sha: self.head_sha, 
+        }
+    }
+
+    /// Only returns workflow runs that are associated with the specified `head_sha`.
+    pub fn head_sha(self, head_sha: &'req str) -> Self {
+        Self {
+            actor: self.actor, 
+            branch: self.branch, 
+            event: self.event, 
+            status: self.status, 
+            per_page: self.per_page, 
+            page: self.page, 
+            created: self.created, 
+            exclude_pull_requests: self.exclude_pull_requests, 
+            check_suite_id: self.check_suite_id, 
+            head_sha: Some(head_sha),
         }
     }
 }
@@ -2528,18 +3443,22 @@ pub struct ActionsListWorkflowRunsForRepoParams<'req> {
     actor: Option<&'req str>, 
     /// Returns workflow runs associated with a branch. Use the name of the branch of the `push`.
     branch: Option<&'req str>, 
-    /// Returns workflow run triggered by the event you specify. For example, `push`, `pull_request` or `issue`. For more information, see \"[Events that trigger workflows](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/events-that-trigger-workflows).\"
+    /// Returns workflow run triggered by the event you specify. For example, `push`, `pull_request` or `issue`. For more information, see \"[Events that trigger workflows](https://docs.github.com/actions/automating-your-workflow-with-github-actions/events-that-trigger-workflows).\"
     event: Option<&'req str>, 
-    /// Returns workflow runs with the check run `status` or `conclusion` that you specify. For example, a conclusion can be `success` or a status can be `in_progress`. Only GitHub can set a status of `waiting` or `requested`. For a list of the possible `status` and `conclusion` options, see \"[Create a check run](https://docs.github.com/rest/reference/checks#create-a-check-run).\"
+    /// Returns workflow runs with the check run `status` or `conclusion` that you specify. For example, a conclusion can be `success` or a status can be `in_progress`. Only GitHub Actions can set a status of `waiting`, `pending`, or `requested`.
     status: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>, 
-    
+    /// Returns workflow runs created within the given date-time range. For more information on the syntax, see \"[Understanding the search syntax](https://docs.github.com/search-github/getting-started-with-searching-on-github/understanding-the-search-syntax#query-for-dates).\"
     created: Option<chrono::DateTime<chrono::Utc>>, 
     /// If `true` pull requests are omitted from the response (empty array).
-    exclude_pull_requests: Option<bool>
+    exclude_pull_requests: Option<bool>, 
+    /// Returns workflow runs with the `check_suite_id` that you specify.
+    check_suite_id: Option<i32>, 
+    /// Only returns workflow runs that are associated with the specified `head_sha`.
+    head_sha: Option<&'req str>
 }
 
 impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
@@ -2549,7 +3468,7 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
 
     /// Returns someone's workflow runs. Use the login for the user who created the `push` associated with the check suite or workflow run.
     pub fn actor(self, actor: &'req str) -> Self {
-        Self { 
+        Self {
             actor: Some(actor),
             branch: self.branch, 
             event: self.event, 
@@ -2558,12 +3477,14 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
             page: self.page, 
             created: self.created, 
             exclude_pull_requests: self.exclude_pull_requests, 
+            check_suite_id: self.check_suite_id, 
+            head_sha: self.head_sha, 
         }
     }
 
     /// Returns workflow runs associated with a branch. Use the name of the branch of the `push`.
     pub fn branch(self, branch: &'req str) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: Some(branch),
             event: self.event, 
@@ -2572,12 +3493,14 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
             page: self.page, 
             created: self.created, 
             exclude_pull_requests: self.exclude_pull_requests, 
+            check_suite_id: self.check_suite_id, 
+            head_sha: self.head_sha, 
         }
     }
 
-    /// Returns workflow run triggered by the event you specify. For example, `push`, `pull_request` or `issue`. For more information, see \"[Events that trigger workflows](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/events-that-trigger-workflows).\"
+    /// Returns workflow run triggered by the event you specify. For example, `push`, `pull_request` or `issue`. For more information, see \"[Events that trigger workflows](https://docs.github.com/actions/automating-your-workflow-with-github-actions/events-that-trigger-workflows).\"
     pub fn event(self, event: &'req str) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: Some(event),
@@ -2586,12 +3509,14 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
             page: self.page, 
             created: self.created, 
             exclude_pull_requests: self.exclude_pull_requests, 
+            check_suite_id: self.check_suite_id, 
+            head_sha: self.head_sha, 
         }
     }
 
-    /// Returns workflow runs with the check run `status` or `conclusion` that you specify. For example, a conclusion can be `success` or a status can be `in_progress`. Only GitHub can set a status of `waiting` or `requested`. For a list of the possible `status` and `conclusion` options, see \"[Create a check run](https://docs.github.com/rest/reference/checks#create-a-check-run).\"
+    /// Returns workflow runs with the check run `status` or `conclusion` that you specify. For example, a conclusion can be `success` or a status can be `in_progress`. Only GitHub Actions can set a status of `waiting`, `pending`, or `requested`.
     pub fn status(self, status: &'req str) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -2600,12 +3525,14 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
             page: self.page, 
             created: self.created, 
             exclude_pull_requests: self.exclude_pull_requests, 
+            check_suite_id: self.check_suite_id, 
+            head_sha: self.head_sha, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -2614,12 +3541,14 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
             page: self.page, 
             created: self.created, 
             exclude_pull_requests: self.exclude_pull_requests, 
+            check_suite_id: self.check_suite_id, 
+            head_sha: self.head_sha, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -2628,12 +3557,14 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
             page: Some(page),
             created: self.created, 
             exclude_pull_requests: self.exclude_pull_requests, 
+            check_suite_id: self.check_suite_id, 
+            head_sha: self.head_sha, 
         }
     }
 
-    
+    /// Returns workflow runs created within the given date-time range. For more information on the syntax, see \"[Understanding the search syntax](https://docs.github.com/search-github/getting-started-with-searching-on-github/understanding-the-search-syntax#query-for-dates).\"
     pub fn created(self, created: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -2642,12 +3573,14 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
             page: self.page, 
             created: Some(created),
             exclude_pull_requests: self.exclude_pull_requests, 
+            check_suite_id: self.check_suite_id, 
+            head_sha: self.head_sha, 
         }
     }
 
     /// If `true` pull requests are omitted from the response (empty array).
     pub fn exclude_pull_requests(self, exclude_pull_requests: bool) -> Self {
-        Self { 
+        Self {
             actor: self.actor, 
             branch: self.branch, 
             event: self.event, 
@@ -2656,6 +3589,40 @@ impl<'req> ActionsListWorkflowRunsForRepoParams<'req> {
             page: self.page, 
             created: self.created, 
             exclude_pull_requests: Some(exclude_pull_requests),
+            check_suite_id: self.check_suite_id, 
+            head_sha: self.head_sha, 
+        }
+    }
+
+    /// Returns workflow runs with the `check_suite_id` that you specify.
+    pub fn check_suite_id(self, check_suite_id: i32) -> Self {
+        Self {
+            actor: self.actor, 
+            branch: self.branch, 
+            event: self.event, 
+            status: self.status, 
+            per_page: self.per_page, 
+            page: self.page, 
+            created: self.created, 
+            exclude_pull_requests: self.exclude_pull_requests, 
+            check_suite_id: Some(check_suite_id),
+            head_sha: self.head_sha, 
+        }
+    }
+
+    /// Only returns workflow runs that are associated with the specified `head_sha`.
+    pub fn head_sha(self, head_sha: &'req str) -> Self {
+        Self {
+            actor: self.actor, 
+            branch: self.branch, 
+            event: self.event, 
+            status: self.status, 
+            per_page: self.per_page, 
+            page: self.page, 
+            created: self.created, 
+            exclude_pull_requests: self.exclude_pull_requests, 
+            check_suite_id: self.check_suite_id, 
+            head_sha: Some(head_sha),
         }
     }
 }
@@ -2675,11 +3642,13 @@ impl<'api> Actions<'api> {
     ///
     /// # Add custom labels to a self-hosted runner for an organization
     ///
-    /// Add custom labels to a self-hosted runner configured in an organization.
+    /// Adds custom labels to a self-hosted runner configured in an organization.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for add_custom_labels_to_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#add-custom-labels-to-a-self-hosted-runner-for-an-organization)
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for add_custom_labels_to_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#add-custom-labels-to-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
     pub async fn add_custom_labels_to_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32, body: PostActionsAddCustomLabelsToSelfHostedRunnerForOrg) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsAddCustomLabelsToSelfHostedRunnerForOrgError> {
@@ -2717,11 +3686,13 @@ impl<'api> Actions<'api> {
     ///
     /// # Add custom labels to a self-hosted runner for an organization
     ///
-    /// Add custom labels to a self-hosted runner configured in an organization.
+    /// Adds custom labels to a self-hosted runner configured in an organization.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for add_custom_labels_to_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#add-custom-labels-to-a-self-hosted-runner-for-an-organization)
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for add_custom_labels_to_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#add-custom-labels-to-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2760,12 +3731,13 @@ impl<'api> Actions<'api> {
     ///
     /// # Add custom labels to a self-hosted runner for a repository
     ///
-    /// Add custom labels to a self-hosted runner configured in a repository.
+    /// Adds custom labels to a self-hosted runner configured in a repository.
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this
-    /// endpoint.
+    /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for add_custom_labels_to_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#add-custom-labels-to-a-self-hosted-runner-for-a-repository)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for add_custom_labels_to_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#add-custom-labels-to-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
     pub async fn add_custom_labels_to_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32, body: PostActionsAddCustomLabelsToSelfHostedRunnerForRepo) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsAddCustomLabelsToSelfHostedRunnerForRepoError> {
@@ -2803,12 +3775,13 @@ impl<'api> Actions<'api> {
     ///
     /// # Add custom labels to a self-hosted runner for a repository
     ///
-    /// Add custom labels to a self-hosted runner configured in a repository.
+    /// Adds custom labels to a self-hosted runner configured in a repository.
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this
-    /// endpoint.
+    /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for add_custom_labels_to_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#add-custom-labels-to-a-self-hosted-runner-for-a-repository)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for add_custom_labels_to_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#add-custom-labels-to-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2845,100 +3818,17 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # Add repository access to a self-hosted runner group in an organization
-    ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
-    /// 
-    /// 
-    /// Adds a repository to the list of selected repositories that can access a self-hosted runner group. The runner group must have `visibility` set to `selected`. For more information, see "[Create a self-hosted runner group for an organization](#create-a-self-hosted-runner-group-for-an-organization)."
-    /// 
-    /// You must authenticate using an access token with the `admin:org`
-    /// scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for add_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/reference/actions#add-repository-acess-to-a-self-hosted-runner-group-in-an-organization)
-    ///
-    /// ---
-    pub async fn add_repo_access_to_self_hosted_runner_group_in_org_async(&self, org: &str, runner_group_id: i32, repository_id: i32) -> Result<(), ActionsAddRepoAccessToSelfHostedRunnerGroupInOrgError> {
-
-        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, runner_group_id, repository_id);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "PUT",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch_async(request).await?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
-        } else {
-            match github_response.status_code() {
-                code => Err(ActionsAddRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Add repository access to a self-hosted runner group in an organization
-    ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
-    /// 
-    /// 
-    /// Adds a repository to the list of selected repositories that can access a self-hosted runner group. The runner group must have `visibility` set to `selected`. For more information, see "[Create a self-hosted runner group for an organization](#create-a-self-hosted-runner-group-for-an-organization)."
-    /// 
-    /// You must authenticate using an access token with the `admin:org`
-    /// scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for add_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/reference/actions#add-repository-acess-to-a-self-hosted-runner-group-in-an-organization)
-    ///
-    /// ---
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_repo_access_to_self_hosted_runner_group_in_org(&self, org: &str, runner_group_id: i32, repository_id: i32) -> Result<(), ActionsAddRepoAccessToSelfHostedRunnerGroupInOrgError> {
-
-        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, runner_group_id, repository_id);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "PUT",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch(request)?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
-        } else {
-            match github_response.status_code() {
-                code => Err(ActionsAddRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
     /// # Add selected repository to an organization secret
     ///
-    /// Adds a repository to an organization secret when the `visibility` for repository access is set to `selected`. The visibility is set when you [Create or update an organization secret](https://docs.github.com/rest/reference/actions#create-or-update-an-organization-secret). You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
+    /// Adds a repository to an organization secret when the `visibility` for
+    /// repository access is set to `selected`. For more information about setting the visibility, see [Create or
+    /// update an organization secret](https://docs.github.com/rest/actions/secrets#create-or-update-an-organization-secret).
     /// 
-    /// [GitHub API docs for add_selected_repo_to_org_secret](https://docs.github.com/rest/reference/actions#add-selected-repository-to-an-organization-secret)
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for add_selected_repo_to_org_secret](https://docs.github.com/rest/actions/secrets#add-selected-repository-to-an-organization-secret)
     ///
     /// ---
     pub async fn add_selected_repo_to_org_secret_async(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), ActionsAddSelectedRepoToOrgSecretError> {
@@ -2975,9 +3865,15 @@ impl<'api> Actions<'api> {
     ///
     /// # Add selected repository to an organization secret
     ///
-    /// Adds a repository to an organization secret when the `visibility` for repository access is set to `selected`. The visibility is set when you [Create or update an organization secret](https://docs.github.com/rest/reference/actions#create-or-update-an-organization-secret). You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
+    /// Adds a repository to an organization secret when the `visibility` for
+    /// repository access is set to `selected`. For more information about setting the visibility, see [Create or
+    /// update an organization secret](https://docs.github.com/rest/actions/secrets#create-or-update-an-organization-secret).
     /// 
-    /// [GitHub API docs for add_selected_repo_to_org_secret](https://docs.github.com/rest/reference/actions#add-selected-repository-to-an-organization-secret)
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for add_selected_repo_to_org_secret](https://docs.github.com/rest/actions/secrets#add-selected-repository-to-an-organization-secret)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3013,22 +3909,21 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # Add a self-hosted runner to a group for an organization
+    /// # Add selected repository to an organization variable
     ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
+    /// Adds a repository to an organization variable that is available to selected repositories.
+    /// Organization variables that are available to selected repositories have their `visibility` field set to `selected`.
     /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
-    /// Adds a self-hosted runner to a runner group configured in an organization.
-    /// 
-    /// You must authenticate using an access token with the `admin:org`
-    /// scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for add_self_hosted_runner_to_group_for_org](https://docs.github.com/rest/reference/actions#add-a-self-hosted-runner-to-a-group-for-an-organization)
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for add_selected_repo_to_org_variable](https://docs.github.com/rest/actions/variables#add-selected-repository-to-an-organization-variable)
     ///
     /// ---
-    pub async fn add_self_hosted_runner_to_group_for_org_async(&self, org: &str, runner_group_id: i32, runner_id: i32) -> Result<(), ActionsAddSelfHostedRunnerToGroupForOrgError> {
+    pub async fn add_selected_repo_to_org_variable_async(&self, org: &str, name: &str, repository_id: i32) -> Result<(), ActionsAddSelectedRepoToOrgVariableError> {
 
-        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/runners/{}", super::GITHUB_BASE_API_URL, org, runner_group_id, runner_id);
+        let request_uri = format!("{}/orgs/{}/actions/variables/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, name, repository_id);
 
 
         let req = GitHubRequest {
@@ -3050,30 +3945,30 @@ impl<'api> Actions<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsAddSelfHostedRunnerToGroupForOrgError::Generic { code }),
+                409 => Err(ActionsAddSelectedRepoToOrgVariableError::Status409),
+                code => Err(ActionsAddSelectedRepoToOrgVariableError::Generic { code }),
             }
         }
     }
 
     /// ---
     ///
-    /// # Add a self-hosted runner to a group for an organization
+    /// # Add selected repository to an organization variable
     ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
+    /// Adds a repository to an organization variable that is available to selected repositories.
+    /// Organization variables that are available to selected repositories have their `visibility` field set to `selected`.
     /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
-    /// Adds a self-hosted runner to a runner group configured in an organization.
-    /// 
-    /// You must authenticate using an access token with the `admin:org`
-    /// scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for add_self_hosted_runner_to_group_for_org](https://docs.github.com/rest/reference/actions#add-a-self-hosted-runner-to-a-group-for-an-organization)
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for add_selected_repo_to_org_variable](https://docs.github.com/rest/actions/variables#add-selected-repository-to-an-organization-variable)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_self_hosted_runner_to_group_for_org(&self, org: &str, runner_group_id: i32, runner_id: i32) -> Result<(), ActionsAddSelfHostedRunnerToGroupForOrgError> {
+    pub fn add_selected_repo_to_org_variable(&self, org: &str, name: &str, repository_id: i32) -> Result<(), ActionsAddSelectedRepoToOrgVariableError> {
 
-        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/runners/{}", super::GITHUB_BASE_API_URL, org, runner_group_id, runner_id);
+        let request_uri = format!("{}/orgs/{}/actions/variables/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, name, repository_id);
 
 
         let req = GitHubRequest {
@@ -3095,7 +3990,8 @@ impl<'api> Actions<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsAddSelfHostedRunnerToGroupForOrgError::Generic { code }),
+                409 => Err(ActionsAddSelectedRepoToOrgVariableError::Status409),
+                code => Err(ActionsAddSelectedRepoToOrgVariableError::Generic { code }),
             }
         }
     }
@@ -3106,9 +4002,9 @@ impl<'api> Actions<'api> {
     ///
     /// Approves a workflow run for a pull request from a public fork of a first time contributor. For more information, see ["Approving workflow runs from public forks](https://docs.github.com/actions/managing-workflow-runs/approving-workflow-runs-from-public-forks)."
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
-    /// 
-    /// [GitHub API docs for approve_workflow_run](https://docs.github.com/rest/reference/actions#approve-a-workflow-run-for-a-fork-pull-request)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for approve_workflow_run](https://docs.github.com/rest/actions/workflow-runs#approve-a-workflow-run-for-a-fork-pull-request)
     ///
     /// ---
     pub async fn approve_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<EmptyObject, ActionsApproveWorkflowRunError> {
@@ -3148,9 +4044,9 @@ impl<'api> Actions<'api> {
     ///
     /// Approves a workflow run for a pull request from a public fork of a first time contributor. For more information, see ["Approving workflow runs from public forks](https://docs.github.com/actions/managing-workflow-runs/approving-workflow-runs-from-public-forks)."
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
-    /// 
-    /// [GitHub API docs for approve_workflow_run](https://docs.github.com/rest/reference/actions#approve-a-workflow-run-for-a-fork-pull-request)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for approve_workflow_run](https://docs.github.com/rest/actions/workflow-runs#approve-a-workflow-run-for-a-fork-pull-request)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3189,12 +4085,14 @@ impl<'api> Actions<'api> {
     ///
     /// # Cancel a workflow run
     ///
-    /// Cancels a workflow run using its `id`. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
+    /// Cancels a workflow run using its `id`.
     /// 
-    /// [GitHub API docs for cancel_workflow_run](https://docs.github.com/rest/reference/actions#cancel-a-workflow-run)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for cancel_workflow_run](https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run)
     ///
     /// ---
-    pub async fn cancel_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<HashMap<String, Value>, ActionsCancelWorkflowRunError> {
+    pub async fn cancel_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<EmptyObject, ActionsCancelWorkflowRunError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/cancel", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
@@ -3218,6 +4116,7 @@ impl<'api> Actions<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                409 => Err(ActionsCancelWorkflowRunError::Status409(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ActionsCancelWorkflowRunError::Generic { code }),
             }
         }
@@ -3227,13 +4126,15 @@ impl<'api> Actions<'api> {
     ///
     /// # Cancel a workflow run
     ///
-    /// Cancels a workflow run using its `id`. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
+    /// Cancels a workflow run using its `id`.
     /// 
-    /// [GitHub API docs for cancel_workflow_run](https://docs.github.com/rest/reference/actions#cancel-a-workflow-run)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for cancel_workflow_run](https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn cancel_workflow_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<HashMap<String, Value>, ActionsCancelWorkflowRunError> {
+    pub fn cancel_workflow_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<EmptyObject, ActionsCancelWorkflowRunError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/cancel", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
@@ -3257,7 +4158,93 @@ impl<'api> Actions<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                409 => Err(ActionsCancelWorkflowRunError::Status409(crate::adapters::to_json(github_response)?)),
                 code => Err(ActionsCancelWorkflowRunError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create an environment variable
+    ///
+    /// Create an environment variable that you can reference in a GitHub Actions workflow.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_environment_variable](https://docs.github.com/rest/actions/variables#create-an-environment-variable)
+    ///
+    /// ---
+    pub async fn create_environment_variable_async(&self, owner: &str, repo: &str, environment_name: &str, body: PostActionsCreateEnvironmentVariable) -> Result<EmptyObject, ActionsCreateEnvironmentVariableError> {
+
+        let request_uri = format!("{}/repos/{}/{}/environments/{}/variables", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostActionsCreateEnvironmentVariable::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsCreateEnvironmentVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create an environment variable
+    ///
+    /// Create an environment variable that you can reference in a GitHub Actions workflow.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_environment_variable](https://docs.github.com/rest/actions/variables#create-an-environment-variable)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn create_environment_variable(&self, owner: &str, repo: &str, environment_name: &str, body: PostActionsCreateEnvironmentVariable) -> Result<EmptyObject, ActionsCreateEnvironmentVariableError> {
+
+        let request_uri = format!("{}/repos/{}/{}/environments/{}/variables", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostActionsCreateEnvironmentVariable::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsCreateEnvironmentVariableError::Generic { code }),
             }
         }
     }
@@ -3267,87 +4254,18 @@ impl<'api> Actions<'api> {
     /// # Create or update an environment secret
     ///
     /// Creates or updates an environment secret with an encrypted value. Encrypt your secret using
-    /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). You must authenticate using an access
-    /// token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use
-    /// this endpoint.
+    /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). For more information, see "[Encrypting secrets for the REST API](https://docs.github.com/rest/guides/encrypting-secrets-for-the-rest-api)."
     /// 
-    /// #### Example encrypting a secret using Node.js
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
-    /// Encrypt your secret using the [tweetsodium](https://github.com/github/tweetsodium) library.
-    /// 
-    /// ```nocompile
-    /// const sodium = require('tweetsodium');
-    /// 
-    /// const key = "base64-encoded-public-key";
-    /// const value = "plain-text-secret";
-    /// 
-    /// // Convert the message and key to Uint8Array's (Buffer implements that interface)
-    /// const messageBytes = Buffer.from(value);
-    /// const keyBytes = Buffer.from(key, 'base64');
-    /// 
-    /// // Encrypt using LibSodium.
-    /// const encryptedBytes = sodium.seal(messageBytes, keyBytes);
-    /// 
-    /// // Base64 the encrypted secret
-    /// const encrypted = Buffer.from(encryptedBytes).toString('base64');
-    /// 
-    /// console.log(encrypted);
-    /// ```
-    /// 
-    /// 
-    /// #### Example encrypting a secret using Python
-    /// 
-    /// Encrypt your secret using [pynacl](https://pynacl.readthedocs.io/en/stable/public/#nacl-public-sealedbox) with Python 3.
-    /// 
-    /// ```nocompile
-    /// from base64 import b64encode
-    /// from nacl import encoding, public
-    /// 
-    /// def encrypt(public_key: str, secret_value: str) -> str:
-    ///   """Encrypt a Unicode string using the public key."""
-    ///   public_key = public.PublicKey(public_key.encode("utf-8"), encoding.Base64Encoder())
-    ///   sealed_box = public.SealedBox(public_key)
-    ///   encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
-    ///   return b64encode(encrypted).decode("utf-8")
-    /// ```
-    /// 
-    /// #### Example encrypting a secret using C#
-    /// 
-    /// Encrypt your secret using the [Sodium.Core](https://www.nuget.org/packages/Sodium.Core/) package.
-    /// 
-    /// ```nocompile
-    /// var secretValue = System.Text.Encoding.UTF8.GetBytes("mySecret");
-    /// var publicKey = Convert.FromBase64String("2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=");
-    /// 
-    /// var sealedPublicKeyBox = Sodium.SealedPublicKeyBox.Create(secretValue, publicKey);
-    /// 
-    /// Console.WriteLine(Convert.ToBase64String(sealedPublicKeyBox));
-    /// ```
-    /// 
-    /// #### Example encrypting a secret using Ruby
-    /// 
-    /// Encrypt your secret using the [rbnacl](https://github.com/RubyCrypto/rbnacl) gem.
-    /// 
-    /// ```ruby,nocompile
-    /// require "rbnacl"
-    /// require "base64"
-    /// 
-    /// key = Base64.decode64("+ZYvJDZMHUfBkJdyq5Zm9SKqeuBQ4sj+6sfjlH4CgG0=")
-    /// public_key = RbNaCl::PublicKey.new(key)
-    /// 
-    /// box = RbNaCl::Boxes::Sealed.from_public_key(public_key)
-    /// encrypted_secret = box.encrypt("my_secret")
-    /// 
-    /// # Print the base64 encoded secret
-    /// puts Base64.strict_encode64(encrypted_secret)
-    /// ```
-    /// 
-    /// [GitHub API docs for create_or_update_environment_secret](https://docs.github.com/rest/reference/actions#create-or-update-an-environment-secret)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_or_update_environment_secret](https://docs.github.com/rest/actions/secrets#create-or-update-an-environment-secret)
     ///
     /// ---
-    pub async fn create_or_update_environment_secret_async(&self, repository_id: i32, environment_name: &str, secret_name: &str, body: PutActionsCreateOrUpdateEnvironmentSecret) -> Result<EmptyObject, ActionsCreateOrUpdateEnvironmentSecretError> {
+    pub async fn create_or_update_environment_secret_async(&self, owner: &str, repo: &str, environment_name: &str, secret_name: &str, body: PutActionsCreateOrUpdateEnvironmentSecret) -> Result<EmptyObject, ActionsCreateOrUpdateEnvironmentSecretError> {
 
-        let request_uri = format!("{}/repositories/{}/environments/{}/secrets/{}", super::GITHUB_BASE_API_URL, repository_id, environment_name, secret_name);
+        let request_uri = format!("{}/repos/{}/{}/environments/{}/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, secret_name);
 
 
         let req = GitHubRequest {
@@ -3380,88 +4298,19 @@ impl<'api> Actions<'api> {
     /// # Create or update an environment secret
     ///
     /// Creates or updates an environment secret with an encrypted value. Encrypt your secret using
-    /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). You must authenticate using an access
-    /// token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use
-    /// this endpoint.
+    /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). For more information, see "[Encrypting secrets for the REST API](https://docs.github.com/rest/guides/encrypting-secrets-for-the-rest-api)."
     /// 
-    /// #### Example encrypting a secret using Node.js
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
-    /// Encrypt your secret using the [tweetsodium](https://github.com/github/tweetsodium) library.
-    /// 
-    /// ```nocompile
-    /// const sodium = require('tweetsodium');
-    /// 
-    /// const key = "base64-encoded-public-key";
-    /// const value = "plain-text-secret";
-    /// 
-    /// // Convert the message and key to Uint8Array's (Buffer implements that interface)
-    /// const messageBytes = Buffer.from(value);
-    /// const keyBytes = Buffer.from(key, 'base64');
-    /// 
-    /// // Encrypt using LibSodium.
-    /// const encryptedBytes = sodium.seal(messageBytes, keyBytes);
-    /// 
-    /// // Base64 the encrypted secret
-    /// const encrypted = Buffer.from(encryptedBytes).toString('base64');
-    /// 
-    /// console.log(encrypted);
-    /// ```
-    /// 
-    /// 
-    /// #### Example encrypting a secret using Python
-    /// 
-    /// Encrypt your secret using [pynacl](https://pynacl.readthedocs.io/en/stable/public/#nacl-public-sealedbox) with Python 3.
-    /// 
-    /// ```nocompile
-    /// from base64 import b64encode
-    /// from nacl import encoding, public
-    /// 
-    /// def encrypt(public_key: str, secret_value: str) -> str:
-    ///   """Encrypt a Unicode string using the public key."""
-    ///   public_key = public.PublicKey(public_key.encode("utf-8"), encoding.Base64Encoder())
-    ///   sealed_box = public.SealedBox(public_key)
-    ///   encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
-    ///   return b64encode(encrypted).decode("utf-8")
-    /// ```
-    /// 
-    /// #### Example encrypting a secret using C#
-    /// 
-    /// Encrypt your secret using the [Sodium.Core](https://www.nuget.org/packages/Sodium.Core/) package.
-    /// 
-    /// ```nocompile
-    /// var secretValue = System.Text.Encoding.UTF8.GetBytes("mySecret");
-    /// var publicKey = Convert.FromBase64String("2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=");
-    /// 
-    /// var sealedPublicKeyBox = Sodium.SealedPublicKeyBox.Create(secretValue, publicKey);
-    /// 
-    /// Console.WriteLine(Convert.ToBase64String(sealedPublicKeyBox));
-    /// ```
-    /// 
-    /// #### Example encrypting a secret using Ruby
-    /// 
-    /// Encrypt your secret using the [rbnacl](https://github.com/RubyCrypto/rbnacl) gem.
-    /// 
-    /// ```ruby,nocompile
-    /// require "rbnacl"
-    /// require "base64"
-    /// 
-    /// key = Base64.decode64("+ZYvJDZMHUfBkJdyq5Zm9SKqeuBQ4sj+6sfjlH4CgG0=")
-    /// public_key = RbNaCl::PublicKey.new(key)
-    /// 
-    /// box = RbNaCl::Boxes::Sealed.from_public_key(public_key)
-    /// encrypted_secret = box.encrypt("my_secret")
-    /// 
-    /// # Print the base64 encoded secret
-    /// puts Base64.strict_encode64(encrypted_secret)
-    /// ```
-    /// 
-    /// [GitHub API docs for create_or_update_environment_secret](https://docs.github.com/rest/reference/actions#create-or-update-an-environment-secret)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_or_update_environment_secret](https://docs.github.com/rest/actions/secrets#create-or-update-an-environment-secret)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_or_update_environment_secret(&self, repository_id: i32, environment_name: &str, secret_name: &str, body: PutActionsCreateOrUpdateEnvironmentSecret) -> Result<EmptyObject, ActionsCreateOrUpdateEnvironmentSecretError> {
+    pub fn create_or_update_environment_secret(&self, owner: &str, repo: &str, environment_name: &str, secret_name: &str, body: PutActionsCreateOrUpdateEnvironmentSecret) -> Result<EmptyObject, ActionsCreateOrUpdateEnvironmentSecretError> {
 
-        let request_uri = format!("{}/repositories/{}/environments/{}/secrets/{}", super::GITHUB_BASE_API_URL, repository_id, environment_name, secret_name);
+        let request_uri = format!("{}/repos/{}/{}/environments/{}/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, secret_name);
 
 
         let req = GitHubRequest {
@@ -3494,82 +4343,13 @@ impl<'api> Actions<'api> {
     /// # Create or update an organization secret
     ///
     /// Creates or updates an organization secret with an encrypted value. Encrypt your secret using
-    /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). You must authenticate using an access
-    /// token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to
-    /// use this endpoint.
+    /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). For more information, see "[Encrypting secrets for the REST API](https://docs.github.com/rest/guides/encrypting-secrets-for-the-rest-api)."
     /// 
-    /// #### Example encrypting a secret using Node.js
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
-    /// Encrypt your secret using the [tweetsodium](https://github.com/github/tweetsodium) library.
-    /// 
-    /// ```nocompile
-    /// const sodium = require('tweetsodium');
-    /// 
-    /// const key = "base64-encoded-public-key";
-    /// const value = "plain-text-secret";
-    /// 
-    /// // Convert the message and key to Uint8Array's (Buffer implements that interface)
-    /// const messageBytes = Buffer.from(value);
-    /// const keyBytes = Buffer.from(key, 'base64');
-    /// 
-    /// // Encrypt using LibSodium.
-    /// const encryptedBytes = sodium.seal(messageBytes, keyBytes);
-    /// 
-    /// // Base64 the encrypted secret
-    /// const encrypted = Buffer.from(encryptedBytes).toString('base64');
-    /// 
-    /// console.log(encrypted);
-    /// ```
-    /// 
-    /// 
-    /// #### Example encrypting a secret using Python
-    /// 
-    /// Encrypt your secret using [pynacl](https://pynacl.readthedocs.io/en/stable/public/#nacl-public-sealedbox) with Python 3.
-    /// 
-    /// ```nocompile
-    /// from base64 import b64encode
-    /// from nacl import encoding, public
-    /// 
-    /// def encrypt(public_key: str, secret_value: str) -> str:
-    ///   """Encrypt a Unicode string using the public key."""
-    ///   public_key = public.PublicKey(public_key.encode("utf-8"), encoding.Base64Encoder())
-    ///   sealed_box = public.SealedBox(public_key)
-    ///   encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
-    ///   return b64encode(encrypted).decode("utf-8")
-    /// ```
-    /// 
-    /// #### Example encrypting a secret using C#
-    /// 
-    /// Encrypt your secret using the [Sodium.Core](https://www.nuget.org/packages/Sodium.Core/) package.
-    /// 
-    /// ```nocompile
-    /// var secretValue = System.Text.Encoding.UTF8.GetBytes("mySecret");
-    /// var publicKey = Convert.FromBase64String("2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=");
-    /// 
-    /// var sealedPublicKeyBox = Sodium.SealedPublicKeyBox.Create(secretValue, publicKey);
-    /// 
-    /// Console.WriteLine(Convert.ToBase64String(sealedPublicKeyBox));
-    /// ```
-    /// 
-    /// #### Example encrypting a secret using Ruby
-    /// 
-    /// Encrypt your secret using the [rbnacl](https://github.com/RubyCrypto/rbnacl) gem.
-    /// 
-    /// ```ruby,nocompile
-    /// require "rbnacl"
-    /// require "base64"
-    /// 
-    /// key = Base64.decode64("+ZYvJDZMHUfBkJdyq5Zm9SKqeuBQ4sj+6sfjlH4CgG0=")
-    /// public_key = RbNaCl::PublicKey.new(key)
-    /// 
-    /// box = RbNaCl::Boxes::Sealed.from_public_key(public_key)
-    /// encrypted_secret = box.encrypt("my_secret")
-    /// 
-    /// # Print the base64 encoded secret
-    /// puts Base64.strict_encode64(encrypted_secret)
-    /// ```
-    /// 
-    /// [GitHub API docs for create_or_update_org_secret](https://docs.github.com/rest/reference/actions#create-or-update-an-organization-secret)
+    /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_or_update_org_secret](https://docs.github.com/rest/actions/secrets#create-or-update-an-organization-secret)
     ///
     /// ---
     pub async fn create_or_update_org_secret_async(&self, org: &str, secret_name: &str, body: PutActionsCreateOrUpdateOrgSecret) -> Result<EmptyObject, ActionsCreateOrUpdateOrgSecretError> {
@@ -3607,82 +4387,13 @@ impl<'api> Actions<'api> {
     /// # Create or update an organization secret
     ///
     /// Creates or updates an organization secret with an encrypted value. Encrypt your secret using
-    /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). You must authenticate using an access
-    /// token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to
-    /// use this endpoint.
+    /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). For more information, see "[Encrypting secrets for the REST API](https://docs.github.com/rest/guides/encrypting-secrets-for-the-rest-api)."
     /// 
-    /// #### Example encrypting a secret using Node.js
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
-    /// Encrypt your secret using the [tweetsodium](https://github.com/github/tweetsodium) library.
-    /// 
-    /// ```nocompile
-    /// const sodium = require('tweetsodium');
-    /// 
-    /// const key = "base64-encoded-public-key";
-    /// const value = "plain-text-secret";
-    /// 
-    /// // Convert the message and key to Uint8Array's (Buffer implements that interface)
-    /// const messageBytes = Buffer.from(value);
-    /// const keyBytes = Buffer.from(key, 'base64');
-    /// 
-    /// // Encrypt using LibSodium.
-    /// const encryptedBytes = sodium.seal(messageBytes, keyBytes);
-    /// 
-    /// // Base64 the encrypted secret
-    /// const encrypted = Buffer.from(encryptedBytes).toString('base64');
-    /// 
-    /// console.log(encrypted);
-    /// ```
-    /// 
-    /// 
-    /// #### Example encrypting a secret using Python
-    /// 
-    /// Encrypt your secret using [pynacl](https://pynacl.readthedocs.io/en/stable/public/#nacl-public-sealedbox) with Python 3.
-    /// 
-    /// ```nocompile
-    /// from base64 import b64encode
-    /// from nacl import encoding, public
-    /// 
-    /// def encrypt(public_key: str, secret_value: str) -> str:
-    ///   """Encrypt a Unicode string using the public key."""
-    ///   public_key = public.PublicKey(public_key.encode("utf-8"), encoding.Base64Encoder())
-    ///   sealed_box = public.SealedBox(public_key)
-    ///   encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
-    ///   return b64encode(encrypted).decode("utf-8")
-    /// ```
-    /// 
-    /// #### Example encrypting a secret using C#
-    /// 
-    /// Encrypt your secret using the [Sodium.Core](https://www.nuget.org/packages/Sodium.Core/) package.
-    /// 
-    /// ```nocompile
-    /// var secretValue = System.Text.Encoding.UTF8.GetBytes("mySecret");
-    /// var publicKey = Convert.FromBase64String("2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=");
-    /// 
-    /// var sealedPublicKeyBox = Sodium.SealedPublicKeyBox.Create(secretValue, publicKey);
-    /// 
-    /// Console.WriteLine(Convert.ToBase64String(sealedPublicKeyBox));
-    /// ```
-    /// 
-    /// #### Example encrypting a secret using Ruby
-    /// 
-    /// Encrypt your secret using the [rbnacl](https://github.com/RubyCrypto/rbnacl) gem.
-    /// 
-    /// ```ruby,nocompile
-    /// require "rbnacl"
-    /// require "base64"
-    /// 
-    /// key = Base64.decode64("+ZYvJDZMHUfBkJdyq5Zm9SKqeuBQ4sj+6sfjlH4CgG0=")
-    /// public_key = RbNaCl::PublicKey.new(key)
-    /// 
-    /// box = RbNaCl::Boxes::Sealed.from_public_key(public_key)
-    /// encrypted_secret = box.encrypt("my_secret")
-    /// 
-    /// # Print the base64 encoded secret
-    /// puts Base64.strict_encode64(encrypted_secret)
-    /// ```
-    /// 
-    /// [GitHub API docs for create_or_update_org_secret](https://docs.github.com/rest/reference/actions#create-or-update-an-organization-secret)
+    /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_or_update_org_secret](https://docs.github.com/rest/actions/secrets#create-or-update-an-organization-secret)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3721,85 +4432,16 @@ impl<'api> Actions<'api> {
     /// # Create or update a repository secret
     ///
     /// Creates or updates a repository secret with an encrypted value. Encrypt your secret using
-    /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). You must authenticate using an access
-    /// token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use
-    /// this endpoint.
+    /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). For more information, see "[Encrypting secrets for the REST API](https://docs.github.com/rest/guides/encrypting-secrets-for-the-rest-api)."
     /// 
-    /// #### Example encrypting a secret using Node.js
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
-    /// Encrypt your secret using the [tweetsodium](https://github.com/github/tweetsodium) library.
-    /// 
-    /// ```nocompile
-    /// const sodium = require('tweetsodium');
-    /// 
-    /// const key = "base64-encoded-public-key";
-    /// const value = "plain-text-secret";
-    /// 
-    /// // Convert the message and key to Uint8Array's (Buffer implements that interface)
-    /// const messageBytes = Buffer.from(value);
-    /// const keyBytes = Buffer.from(key, 'base64');
-    /// 
-    /// // Encrypt using LibSodium.
-    /// const encryptedBytes = sodium.seal(messageBytes, keyBytes);
-    /// 
-    /// // Base64 the encrypted secret
-    /// const encrypted = Buffer.from(encryptedBytes).toString('base64');
-    /// 
-    /// console.log(encrypted);
-    /// ```
-    /// 
-    /// 
-    /// #### Example encrypting a secret using Python
-    /// 
-    /// Encrypt your secret using [pynacl](https://pynacl.readthedocs.io/en/stable/public/#nacl-public-sealedbox) with Python 3.
-    /// 
-    /// ```nocompile
-    /// from base64 import b64encode
-    /// from nacl import encoding, public
-    /// 
-    /// def encrypt(public_key: str, secret_value: str) -> str:
-    ///   """Encrypt a Unicode string using the public key."""
-    ///   public_key = public.PublicKey(public_key.encode("utf-8"), encoding.Base64Encoder())
-    ///   sealed_box = public.SealedBox(public_key)
-    ///   encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
-    ///   return b64encode(encrypted).decode("utf-8")
-    /// ```
-    /// 
-    /// #### Example encrypting a secret using C#
-    /// 
-    /// Encrypt your secret using the [Sodium.Core](https://www.nuget.org/packages/Sodium.Core/) package.
-    /// 
-    /// ```nocompile
-    /// var secretValue = System.Text.Encoding.UTF8.GetBytes("mySecret");
-    /// var publicKey = Convert.FromBase64String("2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=");
-    /// 
-    /// var sealedPublicKeyBox = Sodium.SealedPublicKeyBox.Create(secretValue, publicKey);
-    /// 
-    /// Console.WriteLine(Convert.ToBase64String(sealedPublicKeyBox));
-    /// ```
-    /// 
-    /// #### Example encrypting a secret using Ruby
-    /// 
-    /// Encrypt your secret using the [rbnacl](https://github.com/RubyCrypto/rbnacl) gem.
-    /// 
-    /// ```ruby,nocompile
-    /// require "rbnacl"
-    /// require "base64"
-    /// 
-    /// key = Base64.decode64("+ZYvJDZMHUfBkJdyq5Zm9SKqeuBQ4sj+6sfjlH4CgG0=")
-    /// public_key = RbNaCl::PublicKey.new(key)
-    /// 
-    /// box = RbNaCl::Boxes::Sealed.from_public_key(public_key)
-    /// encrypted_secret = box.encrypt("my_secret")
-    /// 
-    /// # Print the base64 encoded secret
-    /// puts Base64.strict_encode64(encrypted_secret)
-    /// ```
-    /// 
-    /// [GitHub API docs for create_or_update_repo_secret](https://docs.github.com/rest/reference/actions#create-or-update-a-repository-secret)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_or_update_repo_secret](https://docs.github.com/rest/actions/secrets#create-or-update-a-repository-secret)
     ///
     /// ---
-    pub async fn create_or_update_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str, body: PutActionsCreateOrUpdateRepoSecret) -> Result<HashMap<String, Value>, ActionsCreateOrUpdateRepoSecretError> {
+    pub async fn create_or_update_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str, body: PutActionsCreateOrUpdateRepoSecret) -> Result<EmptyObject, ActionsCreateOrUpdateRepoSecretError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
 
@@ -3834,86 +4476,17 @@ impl<'api> Actions<'api> {
     /// # Create or update a repository secret
     ///
     /// Creates or updates a repository secret with an encrypted value. Encrypt your secret using
-    /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). You must authenticate using an access
-    /// token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use
-    /// this endpoint.
+    /// [LibSodium](https://libsodium.gitbook.io/doc/bindings_for_other_languages). For more information, see "[Encrypting secrets for the REST API](https://docs.github.com/rest/guides/encrypting-secrets-for-the-rest-api)."
     /// 
-    /// #### Example encrypting a secret using Node.js
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
     /// 
-    /// Encrypt your secret using the [tweetsodium](https://github.com/github/tweetsodium) library.
-    /// 
-    /// ```nocompile
-    /// const sodium = require('tweetsodium');
-    /// 
-    /// const key = "base64-encoded-public-key";
-    /// const value = "plain-text-secret";
-    /// 
-    /// // Convert the message and key to Uint8Array's (Buffer implements that interface)
-    /// const messageBytes = Buffer.from(value);
-    /// const keyBytes = Buffer.from(key, 'base64');
-    /// 
-    /// // Encrypt using LibSodium.
-    /// const encryptedBytes = sodium.seal(messageBytes, keyBytes);
-    /// 
-    /// // Base64 the encrypted secret
-    /// const encrypted = Buffer.from(encryptedBytes).toString('base64');
-    /// 
-    /// console.log(encrypted);
-    /// ```
-    /// 
-    /// 
-    /// #### Example encrypting a secret using Python
-    /// 
-    /// Encrypt your secret using [pynacl](https://pynacl.readthedocs.io/en/stable/public/#nacl-public-sealedbox) with Python 3.
-    /// 
-    /// ```nocompile
-    /// from base64 import b64encode
-    /// from nacl import encoding, public
-    /// 
-    /// def encrypt(public_key: str, secret_value: str) -> str:
-    ///   """Encrypt a Unicode string using the public key."""
-    ///   public_key = public.PublicKey(public_key.encode("utf-8"), encoding.Base64Encoder())
-    ///   sealed_box = public.SealedBox(public_key)
-    ///   encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
-    ///   return b64encode(encrypted).decode("utf-8")
-    /// ```
-    /// 
-    /// #### Example encrypting a secret using C#
-    /// 
-    /// Encrypt your secret using the [Sodium.Core](https://www.nuget.org/packages/Sodium.Core/) package.
-    /// 
-    /// ```nocompile
-    /// var secretValue = System.Text.Encoding.UTF8.GetBytes("mySecret");
-    /// var publicKey = Convert.FromBase64String("2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=");
-    /// 
-    /// var sealedPublicKeyBox = Sodium.SealedPublicKeyBox.Create(secretValue, publicKey);
-    /// 
-    /// Console.WriteLine(Convert.ToBase64String(sealedPublicKeyBox));
-    /// ```
-    /// 
-    /// #### Example encrypting a secret using Ruby
-    /// 
-    /// Encrypt your secret using the [rbnacl](https://github.com/RubyCrypto/rbnacl) gem.
-    /// 
-    /// ```ruby,nocompile
-    /// require "rbnacl"
-    /// require "base64"
-    /// 
-    /// key = Base64.decode64("+ZYvJDZMHUfBkJdyq5Zm9SKqeuBQ4sj+6sfjlH4CgG0=")
-    /// public_key = RbNaCl::PublicKey.new(key)
-    /// 
-    /// box = RbNaCl::Boxes::Sealed.from_public_key(public_key)
-    /// encrypted_secret = box.encrypt("my_secret")
-    /// 
-    /// # Print the base64 encoded secret
-    /// puts Base64.strict_encode64(encrypted_secret)
-    /// ```
-    /// 
-    /// [GitHub API docs for create_or_update_repo_secret](https://docs.github.com/rest/reference/actions#create-or-update-a-repository-secret)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_or_update_repo_secret](https://docs.github.com/rest/actions/secrets#create-or-update-a-repository-secret)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_or_update_repo_secret(&self, owner: &str, repo: &str, secret_name: &str, body: PutActionsCreateOrUpdateRepoSecret) -> Result<HashMap<String, Value>, ActionsCreateOrUpdateRepoSecretError> {
+    pub fn create_or_update_repo_secret(&self, owner: &str, repo: &str, secret_name: &str, body: PutActionsCreateOrUpdateRepoSecret) -> Result<EmptyObject, ActionsCreateOrUpdateRepoSecretError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
 
@@ -3945,21 +4518,106 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
+    /// # Create an organization variable
+    ///
+    /// Creates an organization variable that you can reference in a GitHub Actions workflow.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_org_variable](https://docs.github.com/rest/actions/variables#create-an-organization-variable)
+    ///
+    /// ---
+    pub async fn create_org_variable_async(&self, org: &str, body: PostActionsCreateOrgVariable) -> Result<EmptyObject, ActionsCreateOrgVariableError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/variables", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostActionsCreateOrgVariable::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsCreateOrgVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create an organization variable
+    ///
+    /// Creates an organization variable that you can reference in a GitHub Actions workflow.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_org_variable](https://docs.github.com/rest/actions/variables#create-an-organization-variable)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn create_org_variable(&self, org: &str, body: PostActionsCreateOrgVariable) -> Result<EmptyObject, ActionsCreateOrgVariableError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/variables", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostActionsCreateOrgVariable::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsCreateOrgVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Create a registration token for an organization
     ///
     /// Returns a token that you can pass to the `config` script. The token expires after one hour.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// #### Example using registration token
-    /// 
-    /// Configure your self-hosted runner, replacing `TOKEN` with the registration token provided by this endpoint.
+    /// For example, you can replace `TOKEN` in the following example with the registration token provided by this endpoint to configure your self-hosted runner:
     /// 
     /// ```nocompile
     /// ./config.sh --url https://github.com/octo-org --token TOKEN
     /// ```
     /// 
-    /// [GitHub API docs for create_registration_token_for_org](https://docs.github.com/rest/reference/actions#create-a-registration-token-for-an-organization)
+    /// Authenticated users must have admin access to the organization to use this endpoint.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_registration_token_for_org](https://docs.github.com/rest/actions/self-hosted-runners#create-a-registration-token-for-an-organization)
     ///
     /// ---
     pub async fn create_registration_token_for_org_async(&self, org: &str) -> Result<AuthenticationToken, ActionsCreateRegistrationTokenForOrgError> {
@@ -3997,17 +4655,17 @@ impl<'api> Actions<'api> {
     ///
     /// Returns a token that you can pass to the `config` script. The token expires after one hour.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// #### Example using registration token
-    /// 
-    /// Configure your self-hosted runner, replacing `TOKEN` with the registration token provided by this endpoint.
+    /// For example, you can replace `TOKEN` in the following example with the registration token provided by this endpoint to configure your self-hosted runner:
     /// 
     /// ```nocompile
     /// ./config.sh --url https://github.com/octo-org --token TOKEN
     /// ```
     /// 
-    /// [GitHub API docs for create_registration_token_for_org](https://docs.github.com/rest/reference/actions#create-a-registration-token-for-an-organization)
+    /// Authenticated users must have admin access to the organization to use this endpoint.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_registration_token_for_org](https://docs.github.com/rest/actions/self-hosted-runners#create-a-registration-token-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4044,18 +4702,19 @@ impl<'api> Actions<'api> {
     ///
     /// # Create a registration token for a repository
     ///
-    /// Returns a token that you can pass to the `config` script. The token expires after one hour. You must authenticate
-    /// using an access token with the `repo` scope to use this endpoint.
+    /// Returns a token that you can pass to the `config` script. The token expires after one hour.
     /// 
-    /// #### Example using registration token
-    ///  
-    /// Configure your self-hosted runner, replacing `TOKEN` with the registration token provided by this endpoint.
+    /// For example, you can replace `TOKEN` in the following example with the registration token provided by this endpoint to configure your self-hosted runner:
     /// 
     /// ```nocompile
-    /// ./config.sh --url https://github.com/octo-org/octo-repo-artifacts --token TOKEN
+    /// ./config.sh --url https://github.com/octo-org --token TOKEN
     /// ```
     /// 
-    /// [GitHub API docs for create_registration_token_for_repo](https://docs.github.com/rest/reference/actions#create-a-registration-token-for-a-repository)
+    /// Authenticated users must have admin access to the repository to use this endpoint.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_registration_token_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#create-a-registration-token-for-a-repository)
     ///
     /// ---
     pub async fn create_registration_token_for_repo_async(&self, owner: &str, repo: &str) -> Result<AuthenticationToken, ActionsCreateRegistrationTokenForRepoError> {
@@ -4091,18 +4750,19 @@ impl<'api> Actions<'api> {
     ///
     /// # Create a registration token for a repository
     ///
-    /// Returns a token that you can pass to the `config` script. The token expires after one hour. You must authenticate
-    /// using an access token with the `repo` scope to use this endpoint.
+    /// Returns a token that you can pass to the `config` script. The token expires after one hour.
     /// 
-    /// #### Example using registration token
-    ///  
-    /// Configure your self-hosted runner, replacing `TOKEN` with the registration token provided by this endpoint.
+    /// For example, you can replace `TOKEN` in the following example with the registration token provided by this endpoint to configure your self-hosted runner:
     /// 
     /// ```nocompile
-    /// ./config.sh --url https://github.com/octo-org/octo-repo-artifacts --token TOKEN
+    /// ./config.sh --url https://github.com/octo-org --token TOKEN
     /// ```
     /// 
-    /// [GitHub API docs for create_registration_token_for_repo](https://docs.github.com/rest/reference/actions#create-a-registration-token-for-a-repository)
+    /// Authenticated users must have admin access to the repository to use this endpoint.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_registration_token_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#create-a-registration-token-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4141,18 +4801,17 @@ impl<'api> Actions<'api> {
     ///
     /// Returns a token that you can pass to the `config` script to remove a self-hosted runner from an organization. The token expires after one hour.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// #### Example using remove token
-    /// 
-    /// To remove your self-hosted runner from an organization, replace `TOKEN` with the remove token provided by this
-    /// endpoint.
+    /// For example, you can replace `TOKEN` in the following example with the registration token provided by this endpoint to remove your self-hosted runner from an organization:
     /// 
     /// ```nocompile
     /// ./config.sh remove --token TOKEN
     /// ```
     /// 
-    /// [GitHub API docs for create_remove_token_for_org](https://docs.github.com/rest/reference/actions#create-a-remove-token-for-an-organization)
+    /// Authenticated users must have admin access to the organization to use this endpoint.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_remove_token_for_org](https://docs.github.com/rest/actions/self-hosted-runners#create-a-remove-token-for-an-organization)
     ///
     /// ---
     pub async fn create_remove_token_for_org_async(&self, org: &str) -> Result<AuthenticationToken, ActionsCreateRemoveTokenForOrgError> {
@@ -4190,18 +4849,17 @@ impl<'api> Actions<'api> {
     ///
     /// Returns a token that you can pass to the `config` script to remove a self-hosted runner from an organization. The token expires after one hour.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// #### Example using remove token
-    /// 
-    /// To remove your self-hosted runner from an organization, replace `TOKEN` with the remove token provided by this
-    /// endpoint.
+    /// For example, you can replace `TOKEN` in the following example with the registration token provided by this endpoint to remove your self-hosted runner from an organization:
     /// 
     /// ```nocompile
     /// ./config.sh remove --token TOKEN
     /// ```
     /// 
-    /// [GitHub API docs for create_remove_token_for_org](https://docs.github.com/rest/reference/actions#create-a-remove-token-for-an-organization)
+    /// Authenticated users must have admin access to the organization to use this endpoint.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_remove_token_for_org](https://docs.github.com/rest/actions/self-hosted-runners#create-a-remove-token-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4238,18 +4896,19 @@ impl<'api> Actions<'api> {
     ///
     /// # Create a remove token for a repository
     ///
-    /// Returns a token that you can pass to remove a self-hosted runner from a repository. The token expires after one hour.
-    /// You must authenticate using an access token with the `repo` scope to use this endpoint.
+    /// Returns a token that you can pass to the `config` script to remove a self-hosted runner from an repository. The token expires after one hour.
     /// 
-    /// #### Example using remove token
-    ///  
-    /// To remove your self-hosted runner from a repository, replace TOKEN with the remove token provided by this endpoint.
+    /// For example, you can replace `TOKEN` in the following example with the registration token provided by this endpoint to remove your self-hosted runner from an organization:
     /// 
     /// ```nocompile
     /// ./config.sh remove --token TOKEN
     /// ```
     /// 
-    /// [GitHub API docs for create_remove_token_for_repo](https://docs.github.com/rest/reference/actions#create-a-remove-token-for-a-repository)
+    /// Authenticated users must have admin access to the repository to use this endpoint.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_remove_token_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#create-a-remove-token-for-a-repository)
     ///
     /// ---
     pub async fn create_remove_token_for_repo_async(&self, owner: &str, repo: &str) -> Result<AuthenticationToken, ActionsCreateRemoveTokenForRepoError> {
@@ -4285,18 +4944,19 @@ impl<'api> Actions<'api> {
     ///
     /// # Create a remove token for a repository
     ///
-    /// Returns a token that you can pass to remove a self-hosted runner from a repository. The token expires after one hour.
-    /// You must authenticate using an access token with the `repo` scope to use this endpoint.
+    /// Returns a token that you can pass to the `config` script to remove a self-hosted runner from an repository. The token expires after one hour.
     /// 
-    /// #### Example using remove token
-    ///  
-    /// To remove your self-hosted runner from a repository, replace TOKEN with the remove token provided by this endpoint.
+    /// For example, you can replace `TOKEN` in the following example with the registration token provided by this endpoint to remove your self-hosted runner from an organization:
     /// 
     /// ```nocompile
     /// ./config.sh remove --token TOKEN
     /// ```
     /// 
-    /// [GitHub API docs for create_remove_token_for_repo](https://docs.github.com/rest/reference/actions#create-a-remove-token-for-a-repository)
+    /// Authenticated users must have admin access to the repository to use this endpoint.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_remove_token_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#create-a-remove-token-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4331,25 +4991,25 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # Create a self-hosted runner group for an organization
+    /// # Create a repository variable
     ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud and GitHub Enterprise Server. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
+    /// Creates a repository variable that you can reference in a GitHub Actions workflow.
     /// 
-    /// Creates a new self-hosted runner group for an organization.
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for create_self_hosted_runner_group_for_org](https://docs.github.com/rest/reference/actions#create-a-self-hosted-runner-group-for-an-organization)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_repo_variable](https://docs.github.com/rest/actions/variables#create-a-repository-variable)
     ///
     /// ---
-    pub async fn create_self_hosted_runner_group_for_org_async(&self, org: &str, body: PostActionsCreateSelfHostedRunnerGroupForOrg) -> Result<RunnerGroupsOrg, ActionsCreateSelfHostedRunnerGroupForOrgError> {
+    pub async fn create_repo_variable_async(&self, owner: &str, repo: &str, body: PostActionsCreateRepoVariable) -> Result<EmptyObject, ActionsCreateRepoVariableError> {
 
-        let request_uri = format!("{}/orgs/{}/actions/runner-groups", super::GITHUB_BASE_API_URL, org);
+        let request_uri = format!("{}/repos/{}/{}/actions/variables", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsCreateSelfHostedRunnerGroupForOrg::from_json(body)?),
+            body: Some(PostActionsCreateRepoVariable::from_json(body)?),
             method: "POST",
             headers: vec![]
         };
@@ -4366,33 +5026,33 @@ impl<'api> Actions<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsCreateSelfHostedRunnerGroupForOrgError::Generic { code }),
+                code => Err(ActionsCreateRepoVariableError::Generic { code }),
             }
         }
     }
 
     /// ---
     ///
-    /// # Create a self-hosted runner group for an organization
+    /// # Create a repository variable
     ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud and GitHub Enterprise Server. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
+    /// Creates a repository variable that you can reference in a GitHub Actions workflow.
     /// 
-    /// Creates a new self-hosted runner group for an organization.
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for create_self_hosted_runner_group_for_org](https://docs.github.com/rest/reference/actions#create-a-self-hosted-runner-group-for-an-organization)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_repo_variable](https://docs.github.com/rest/actions/variables#create-a-repository-variable)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_self_hosted_runner_group_for_org(&self, org: &str, body: PostActionsCreateSelfHostedRunnerGroupForOrg) -> Result<RunnerGroupsOrg, ActionsCreateSelfHostedRunnerGroupForOrgError> {
+    pub fn create_repo_variable(&self, owner: &str, repo: &str, body: PostActionsCreateRepoVariable) -> Result<EmptyObject, ActionsCreateRepoVariableError> {
 
-        let request_uri = format!("{}/orgs/{}/actions/runner-groups", super::GITHUB_BASE_API_URL, org);
+        let request_uri = format!("{}/repos/{}/{}/actions/variables", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsCreateSelfHostedRunnerGroupForOrg::from_json(body)?),
+            body: Some(PostActionsCreateRepoVariable::from_json(body)?),
             method: "POST",
             headers: vec![]
         };
@@ -4409,7 +5069,7 @@ impl<'api> Actions<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsCreateSelfHostedRunnerGroupForOrgError::Generic { code }),
+                code => Err(ActionsCreateRepoVariableError::Generic { code }),
             }
         }
     }
@@ -4422,9 +5082,9 @@ impl<'api> Actions<'api> {
     /// 
     /// You must configure your GitHub Actions workflow to run when the [`workflow_dispatch` webhook](/developers/webhooks-and-events/webhook-events-and-payloads#workflow_dispatch) event occurs. The `inputs` are configured in the workflow file. For more information about how to configure the `workflow_dispatch` event in the workflow file, see "[Events that trigger workflows](/actions/reference/events-that-trigger-workflows#workflow_dispatch)."
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint. For more information, see "[Creating a personal access token for the command line](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line)."
-    /// 
-    /// [GitHub API docs for create_workflow_dispatch](https://docs.github.com/rest/reference/actions#create-a-workflow-dispatch-event)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_workflow_dispatch](https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event)
     ///
     /// ---
     pub async fn create_workflow_dispatch_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId, body: PostActionsCreateWorkflowDispatch) -> Result<(), ActionsCreateWorkflowDispatchError> {
@@ -4464,9 +5124,9 @@ impl<'api> Actions<'api> {
     /// 
     /// You must configure your GitHub Actions workflow to run when the [`workflow_dispatch` webhook](/developers/webhooks-and-events/webhook-events-and-payloads#workflow_dispatch) event occurs. The `inputs` are configured in the workflow file. For more information about how to configure the `workflow_dispatch` event in the workflow file, see "[Events that trigger workflows](/actions/reference/events-that-trigger-workflows#workflow_dispatch)."
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint. For more information, see "[Creating a personal access token for the command line](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line)."
-    /// 
-    /// [GitHub API docs for create_workflow_dispatch](https://docs.github.com/rest/reference/actions#create-a-workflow-dispatch-event)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_workflow_dispatch](https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4501,11 +5161,179 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
+    /// # Delete a GitHub Actions cache for a repository (using a cache ID)
+    ///
+    /// Deletes a GitHub Actions cache for a repository, using a cache ID.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_actions_cache_by_id](https://docs.github.com/rest/actions/cache#delete-a-github-actions-cache-for-a-repository-using-a-cache-id)
+    ///
+    /// ---
+    pub async fn delete_actions_cache_by_id_async(&self, owner: &str, repo: &str, cache_id: i32) -> Result<(), ActionsDeleteActionsCacheByIdError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/caches/{}", super::GITHUB_BASE_API_URL, owner, repo, cache_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsDeleteActionsCacheByIdError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete a GitHub Actions cache for a repository (using a cache ID)
+    ///
+    /// Deletes a GitHub Actions cache for a repository, using a cache ID.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_actions_cache_by_id](https://docs.github.com/rest/actions/cache#delete-a-github-actions-cache-for-a-repository-using-a-cache-id)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn delete_actions_cache_by_id(&self, owner: &str, repo: &str, cache_id: i32) -> Result<(), ActionsDeleteActionsCacheByIdError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/caches/{}", super::GITHUB_BASE_API_URL, owner, repo, cache_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsDeleteActionsCacheByIdError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete GitHub Actions caches for a repository (using a cache key)
+    ///
+    /// Deletes one or more GitHub Actions caches for a repository, using a complete cache key. By default, all caches that match the provided key are deleted, but you can optionally provide a Git ref to restrict deletions to caches that match both the provided key and the Git ref.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_actions_cache_by_key](https://docs.github.com/rest/actions/cache#delete-github-actions-caches-for-a-repository-using-a-cache-key)
+    ///
+    /// ---
+    pub async fn delete_actions_cache_by_key_async(&self, owner: &str, repo: &str, query_params: impl Into<ActionsDeleteActionsCacheByKeyParams<'api>>) -> Result<ActionsCacheList, ActionsDeleteActionsCacheByKeyError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/actions/caches", super::GITHUB_BASE_API_URL, owner, repo);
+
+        request_uri.push_str("?");
+        request_uri.push_str(&serde_urlencoded::to_string(query_params.into())?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsDeleteActionsCacheByKeyError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete GitHub Actions caches for a repository (using a cache key)
+    ///
+    /// Deletes one or more GitHub Actions caches for a repository, using a complete cache key. By default, all caches that match the provided key are deleted, but you can optionally provide a Git ref to restrict deletions to caches that match both the provided key and the Git ref.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_actions_cache_by_key](https://docs.github.com/rest/actions/cache#delete-github-actions-caches-for-a-repository-using-a-cache-key)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn delete_actions_cache_by_key(&self, owner: &str, repo: &str, query_params: impl Into<ActionsDeleteActionsCacheByKeyParams<'api>>) -> Result<ActionsCacheList, ActionsDeleteActionsCacheByKeyError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/actions/caches", super::GITHUB_BASE_API_URL, owner, repo);
+
+        request_uri.push_str("?");
+        let qp: ActionsDeleteActionsCacheByKeyParams = query_params.into();
+        request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsDeleteActionsCacheByKeyError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Delete an artifact
     ///
-    /// Deletes an artifact for a workflow run. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
-    /// 
-    /// [GitHub API docs for delete_artifact](https://docs.github.com/rest/reference/actions#delete-an-artifact)
+    /// Deletes an artifact for a workflow run.
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_artifact](https://docs.github.com/rest/actions/artifacts#delete-an-artifact)
     ///
     /// ---
     pub async fn delete_artifact_async(&self, owner: &str, repo: &str, artifact_id: i32) -> Result<(), ActionsDeleteArtifactError> {
@@ -4541,9 +5369,10 @@ impl<'api> Actions<'api> {
     ///
     /// # Delete an artifact
     ///
-    /// Deletes an artifact for a workflow run. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
-    /// 
-    /// [GitHub API docs for delete_artifact](https://docs.github.com/rest/reference/actions#delete-an-artifact)
+    /// Deletes an artifact for a workflow run.
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_artifact](https://docs.github.com/rest/actions/artifacts#delete-an-artifact)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4580,14 +5409,18 @@ impl<'api> Actions<'api> {
     ///
     /// # Delete an environment secret
     ///
-    /// Deletes a secret in an environment using the secret name. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
+    /// Deletes a secret in an environment using the secret name.
     /// 
-    /// [GitHub API docs for delete_environment_secret](https://docs.github.com/rest/reference/actions#delete-an-environment-secret)
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_environment_secret](https://docs.github.com/rest/actions/secrets#delete-an-environment-secret)
     ///
     /// ---
-    pub async fn delete_environment_secret_async(&self, repository_id: i32, environment_name: &str, secret_name: &str) -> Result<(), ActionsDeleteEnvironmentSecretError> {
+    pub async fn delete_environment_secret_async(&self, owner: &str, repo: &str, environment_name: &str, secret_name: &str) -> Result<(), ActionsDeleteEnvironmentSecretError> {
 
-        let request_uri = format!("{}/repositories/{}/environments/{}/secrets/{}", super::GITHUB_BASE_API_URL, repository_id, environment_name, secret_name);
+        let request_uri = format!("{}/repos/{}/{}/environments/{}/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, secret_name);
 
 
         let req = GitHubRequest {
@@ -4618,15 +5451,19 @@ impl<'api> Actions<'api> {
     ///
     /// # Delete an environment secret
     ///
-    /// Deletes a secret in an environment using the secret name. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
+    /// Deletes a secret in an environment using the secret name.
     /// 
-    /// [GitHub API docs for delete_environment_secret](https://docs.github.com/rest/reference/actions#delete-an-environment-secret)
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_environment_secret](https://docs.github.com/rest/actions/secrets#delete-an-environment-secret)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_environment_secret(&self, repository_id: i32, environment_name: &str, secret_name: &str) -> Result<(), ActionsDeleteEnvironmentSecretError> {
+    pub fn delete_environment_secret(&self, owner: &str, repo: &str, environment_name: &str, secret_name: &str) -> Result<(), ActionsDeleteEnvironmentSecretError> {
 
-        let request_uri = format!("{}/repositories/{}/environments/{}/secrets/{}", super::GITHUB_BASE_API_URL, repository_id, environment_name, secret_name);
+        let request_uri = format!("{}/repos/{}/{}/environments/{}/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, secret_name);
 
 
         let req = GitHubRequest {
@@ -4655,11 +5492,100 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
+    /// # Delete an environment variable
+    ///
+    /// Deletes an environment variable using the variable name.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_environment_variable](https://docs.github.com/rest/actions/variables#delete-an-environment-variable)
+    ///
+    /// ---
+    pub async fn delete_environment_variable_async(&self, owner: &str, repo: &str, name: &str, environment_name: &str) -> Result<(), ActionsDeleteEnvironmentVariableError> {
+
+        let request_uri = format!("{}/repos/{}/{}/environments/{}/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, name, environment_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsDeleteEnvironmentVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete an environment variable
+    ///
+    /// Deletes an environment variable using the variable name.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_environment_variable](https://docs.github.com/rest/actions/variables#delete-an-environment-variable)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn delete_environment_variable(&self, owner: &str, repo: &str, name: &str, environment_name: &str) -> Result<(), ActionsDeleteEnvironmentVariableError> {
+
+        let request_uri = format!("{}/repos/{}/{}/environments/{}/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, name, environment_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsDeleteEnvironmentVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Delete an organization secret
     ///
-    /// Deletes a secret in an organization using the secret name. You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
+    /// Deletes a secret in an organization using the secret name.
     /// 
-    /// [GitHub API docs for delete_org_secret](https://docs.github.com/rest/reference/actions#delete-an-organization-secret)
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_org_secret](https://docs.github.com/rest/actions/secrets#delete-an-organization-secret)
     ///
     /// ---
     pub async fn delete_org_secret_async(&self, org: &str, secret_name: &str) -> Result<(), ActionsDeleteOrgSecretError> {
@@ -4695,9 +5621,13 @@ impl<'api> Actions<'api> {
     ///
     /// # Delete an organization secret
     ///
-    /// Deletes a secret in an organization using the secret name. You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
+    /// Deletes a secret in an organization using the secret name.
     /// 
-    /// [GitHub API docs for delete_org_secret](https://docs.github.com/rest/reference/actions#delete-an-organization-secret)
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_org_secret](https://docs.github.com/rest/actions/secrets#delete-an-organization-secret)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4732,11 +5662,100 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
+    /// # Delete an organization variable
+    ///
+    /// Deletes an organization variable using the variable name.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_org_variable](https://docs.github.com/rest/actions/variables#delete-an-organization-variable)
+    ///
+    /// ---
+    pub async fn delete_org_variable_async(&self, org: &str, name: &str) -> Result<(), ActionsDeleteOrgVariableError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, org, name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsDeleteOrgVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete an organization variable
+    ///
+    /// Deletes an organization variable using the variable name.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_org_variable](https://docs.github.com/rest/actions/variables#delete-an-organization-variable)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn delete_org_variable(&self, org: &str, name: &str) -> Result<(), ActionsDeleteOrgVariableError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, org, name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsDeleteOrgVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Delete a repository secret
     ///
-    /// Deletes a secret in a repository using the secret name. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
+    /// Deletes a secret in a repository using the secret name.
     /// 
-    /// [GitHub API docs for delete_repo_secret](https://docs.github.com/rest/reference/actions#delete-a-repository-secret)
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_repo_secret](https://docs.github.com/rest/actions/secrets#delete-a-repository-secret)
     ///
     /// ---
     pub async fn delete_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str) -> Result<(), ActionsDeleteRepoSecretError> {
@@ -4772,9 +5791,13 @@ impl<'api> Actions<'api> {
     ///
     /// # Delete a repository secret
     ///
-    /// Deletes a secret in a repository using the secret name. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
+    /// Deletes a secret in a repository using the secret name.
     /// 
-    /// [GitHub API docs for delete_repo_secret](https://docs.github.com/rest/reference/actions#delete-a-repository-secret)
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_repo_secret](https://docs.github.com/rest/actions/secrets#delete-a-repository-secret)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4809,13 +5832,100 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
+    /// # Delete a repository variable
+    ///
+    /// Deletes a repository variable using the variable name.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_repo_variable](https://docs.github.com/rest/actions/variables#delete-a-repository-variable)
+    ///
+    /// ---
+    pub async fn delete_repo_variable_async(&self, owner: &str, repo: &str, name: &str) -> Result<(), ActionsDeleteRepoVariableError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsDeleteRepoVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete a repository variable
+    ///
+    /// Deletes a repository variable using the variable name.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_repo_variable](https://docs.github.com/rest/actions/variables#delete-a-repository-variable)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn delete_repo_variable(&self, owner: &str, repo: &str, name: &str) -> Result<(), ActionsDeleteRepoVariableError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsDeleteRepoVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Delete a self-hosted runner from an organization
     ///
     /// Forces the removal of a self-hosted runner from an organization. You can use this endpoint to completely remove the runner when the machine you were using no longer exists.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for delete_self_hosted_runner_from_org](https://docs.github.com/rest/reference/actions#delete-a-self-hosted-runner-from-an-organization)
+    /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_self_hosted_runner_from_org](https://docs.github.com/rest/actions/self-hosted-runners#delete-a-self-hosted-runner-from-an-organization)
     ///
     /// ---
     pub async fn delete_self_hosted_runner_from_org_async(&self, org: &str, runner_id: i32) -> Result<(), ActionsDeleteSelfHostedRunnerFromOrgError> {
@@ -4853,9 +5963,11 @@ impl<'api> Actions<'api> {
     ///
     /// Forces the removal of a self-hosted runner from an organization. You can use this endpoint to completely remove the runner when the machine you were using no longer exists.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for delete_self_hosted_runner_from_org](https://docs.github.com/rest/reference/actions#delete-a-self-hosted-runner-from-an-organization)
+    /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_self_hosted_runner_from_org](https://docs.github.com/rest/actions/self-hosted-runners#delete-a-self-hosted-runner-from-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4894,10 +6006,11 @@ impl<'api> Actions<'api> {
     ///
     /// Forces the removal of a self-hosted runner from a repository. You can use this endpoint to completely remove the runner when the machine you were using no longer exists.
     /// 
-    /// You must authenticate using an access token with the `repo`
-    /// scope to use this endpoint.
+    /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
-    /// [GitHub API docs for delete_self_hosted_runner_from_repo](https://docs.github.com/rest/reference/actions#delete-a-self-hosted-runner-from-a-repository)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_self_hosted_runner_from_repo](https://docs.github.com/rest/actions/self-hosted-runners#delete-a-self-hosted-runner-from-a-repository)
     ///
     /// ---
     pub async fn delete_self_hosted_runner_from_repo_async(&self, owner: &str, repo: &str, runner_id: i32) -> Result<(), ActionsDeleteSelfHostedRunnerFromRepoError> {
@@ -4935,10 +6048,11 @@ impl<'api> Actions<'api> {
     ///
     /// Forces the removal of a self-hosted runner from a repository. You can use this endpoint to completely remove the runner when the machine you were using no longer exists.
     /// 
-    /// You must authenticate using an access token with the `repo`
-    /// scope to use this endpoint.
+    /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
-    /// [GitHub API docs for delete_self_hosted_runner_from_repo](https://docs.github.com/rest/reference/actions#delete-a-self-hosted-runner-from-a-repository)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_self_hosted_runner_from_repo](https://docs.github.com/rest/actions/self-hosted-runners#delete-a-self-hosted-runner-from-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4973,98 +6087,15 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # Delete a self-hosted runner group from an organization
-    ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
-    /// 
-    /// Deletes a self-hosted runner group for an organization.
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for delete_self_hosted_runner_group_from_org](https://docs.github.com/rest/reference/actions#delete-a-self-hosted-runner-group-from-an-organization)
-    ///
-    /// ---
-    pub async fn delete_self_hosted_runner_group_from_org_async(&self, org: &str, runner_group_id: i32) -> Result<(), ActionsDeleteSelfHostedRunnerGroupFromOrgError> {
-
-        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}", super::GITHUB_BASE_API_URL, org, runner_group_id);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "DELETE",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch_async(request).await?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
-        } else {
-            match github_response.status_code() {
-                code => Err(ActionsDeleteSelfHostedRunnerGroupFromOrgError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Delete a self-hosted runner group from an organization
-    ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
-    /// 
-    /// Deletes a self-hosted runner group for an organization.
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for delete_self_hosted_runner_group_from_org](https://docs.github.com/rest/reference/actions#delete-a-self-hosted-runner-group-from-an-organization)
-    ///
-    /// ---
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_self_hosted_runner_group_from_org(&self, org: &str, runner_group_id: i32) -> Result<(), ActionsDeleteSelfHostedRunnerGroupFromOrgError> {
-
-        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}", super::GITHUB_BASE_API_URL, org, runner_group_id);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "DELETE",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch(request)?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
-        } else {
-            match github_response.status_code() {
-                code => Err(ActionsDeleteSelfHostedRunnerGroupFromOrgError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
     /// # Delete a workflow run
     ///
-    /// Delete a specific workflow run. Anyone with write access to the repository can use this endpoint. If the repository is
-    /// private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:write` permission to use
-    /// this endpoint.
+    /// Deletes a specific workflow run.
     /// 
-    /// [GitHub API docs for delete_workflow_run](https://docs.github.com/rest/reference/actions#delete-a-workflow-run)
+    /// Anyone with write access to the repository can use this endpoint.
+    /// 
+    /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_workflow_run](https://docs.github.com/rest/actions/workflow-runs#delete-a-workflow-run)
     ///
     /// ---
     pub async fn delete_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), ActionsDeleteWorkflowRunError> {
@@ -5100,11 +6131,13 @@ impl<'api> Actions<'api> {
     ///
     /// # Delete a workflow run
     ///
-    /// Delete a specific workflow run. Anyone with write access to the repository can use this endpoint. If the repository is
-    /// private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:write` permission to use
-    /// this endpoint.
+    /// Deletes a specific workflow run.
     /// 
-    /// [GitHub API docs for delete_workflow_run](https://docs.github.com/rest/reference/actions#delete-a-workflow-run)
+    /// Anyone with write access to the repository can use this endpoint.
+    /// 
+    /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_workflow_run](https://docs.github.com/rest/actions/workflow-runs#delete-a-workflow-run)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5141,9 +6174,11 @@ impl<'api> Actions<'api> {
     ///
     /// # Delete workflow run logs
     ///
-    /// Deletes all logs for a workflow run. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
+    /// Deletes all logs for a workflow run.
     /// 
-    /// [GitHub API docs for delete_workflow_run_logs](https://docs.github.com/rest/reference/actions#delete-workflow-run-logs)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_workflow_run_logs](https://docs.github.com/rest/actions/workflow-runs#delete-workflow-run-logs)
     ///
     /// ---
     pub async fn delete_workflow_run_logs_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), ActionsDeleteWorkflowRunLogsError> {
@@ -5170,6 +6205,8 @@ impl<'api> Actions<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                403 => Err(ActionsDeleteWorkflowRunLogsError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                500 => Err(ActionsDeleteWorkflowRunLogsError::Status500(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ActionsDeleteWorkflowRunLogsError::Generic { code }),
             }
         }
@@ -5179,9 +6216,11 @@ impl<'api> Actions<'api> {
     ///
     /// # Delete workflow run logs
     ///
-    /// Deletes all logs for a workflow run. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
+    /// Deletes all logs for a workflow run.
     /// 
-    /// [GitHub API docs for delete_workflow_run_logs](https://docs.github.com/rest/reference/actions#delete-workflow-run-logs)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_workflow_run_logs](https://docs.github.com/rest/actions/workflow-runs#delete-workflow-run-logs)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5209,6 +6248,8 @@ impl<'api> Actions<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                403 => Err(ActionsDeleteWorkflowRunLogsError::Status403(crate::adapters::to_json(github_response)?)),
+                500 => Err(ActionsDeleteWorkflowRunLogsError::Status500(crate::adapters::to_json(github_response)?)),
                 code => Err(ActionsDeleteWorkflowRunLogsError::Generic { code }),
             }
         }
@@ -5220,9 +6261,9 @@ impl<'api> Actions<'api> {
     ///
     /// Removes a repository from the list of selected repositories that are enabled for GitHub Actions in an organization. To use this endpoint, the organization permission policy for `enabled_repositories` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
-    /// 
-    /// [GitHub API docs for disable_selected_repository_github_actions_organization](https://docs.github.com/rest/reference/actions#disable-a-selected-repository-for-github-actions-in-an-organization)
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for disable_selected_repository_github_actions_organization](https://docs.github.com/rest/actions/permissions#disable-a-selected-repository-for-github-actions-in-an-organization)
     ///
     /// ---
     pub async fn disable_selected_repository_github_actions_organization_async(&self, org: &str, repository_id: i32) -> Result<(), ActionsDisableSelectedRepositoryGithubActionsOrganizationError> {
@@ -5260,9 +6301,9 @@ impl<'api> Actions<'api> {
     ///
     /// Removes a repository from the list of selected repositories that are enabled for GitHub Actions in an organization. To use this endpoint, the organization permission policy for `enabled_repositories` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
-    /// 
-    /// [GitHub API docs for disable_selected_repository_github_actions_organization](https://docs.github.com/rest/reference/actions#disable-a-selected-repository-for-github-actions-in-an-organization)
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for disable_selected_repository_github_actions_organization](https://docs.github.com/rest/actions/permissions#disable-a-selected-repository-for-github-actions-in-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5301,9 +6342,9 @@ impl<'api> Actions<'api> {
     ///
     /// Disables a workflow and sets the `state` of the workflow to `disabled_manually`. You can replace `workflow_id` with the workflow file name. For example, you could use `main.yaml`.
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
-    /// 
-    /// [GitHub API docs for disable_workflow](https://docs.github.com/rest/reference/actions#disable-a-workflow)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for disable_workflow](https://docs.github.com/rest/actions/workflows#disable-a-workflow)
     ///
     /// ---
     pub async fn disable_workflow_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<(), ActionsDisableWorkflowError> {
@@ -5341,9 +6382,9 @@ impl<'api> Actions<'api> {
     ///
     /// Disables a workflow and sets the `state` of the workflow to `disabled_manually`. You can replace `workflow_id` with the workflow file name. For example, you could use `main.yaml`.
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
-    /// 
-    /// [GitHub API docs for disable_workflow](https://docs.github.com/rest/reference/actions#disable-a-workflow)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for disable_workflow](https://docs.github.com/rest/actions/workflows#disable-a-workflow)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5381,11 +6422,11 @@ impl<'api> Actions<'api> {
     /// # Download an artifact
     ///
     /// Gets a redirect URL to download an archive for a repository. This URL expires after 1 minute. Look for `Location:` in
-    /// the response header to find the URL for the download. The `:archive_format` must be `zip`. Anyone with read access to
-    /// the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope.
-    /// GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// the response header to find the URL for the download. The `:archive_format` must be `zip`.
     /// 
-    /// [GitHub API docs for download_artifact](https://docs.github.com/rest/reference/actions#download-an-artifact)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for download_artifact](https://docs.github.com/rest/actions/artifacts#download-an-artifact)
     ///
     /// ---
     pub async fn download_artifact_async(&self, owner: &str, repo: &str, artifact_id: i32, archive_format: &str) -> Result<(), ActionsDownloadArtifactError> {
@@ -5413,6 +6454,7 @@ impl<'api> Actions<'api> {
         } else {
             match github_response.status_code() {
                 302 => Err(ActionsDownloadArtifactError::Status302),
+                410 => Err(ActionsDownloadArtifactError::Status410(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ActionsDownloadArtifactError::Generic { code }),
             }
         }
@@ -5423,11 +6465,11 @@ impl<'api> Actions<'api> {
     /// # Download an artifact
     ///
     /// Gets a redirect URL to download an archive for a repository. This URL expires after 1 minute. Look for `Location:` in
-    /// the response header to find the URL for the download. The `:archive_format` must be `zip`. Anyone with read access to
-    /// the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope.
-    /// GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// the response header to find the URL for the download. The `:archive_format` must be `zip`.
     /// 
-    /// [GitHub API docs for download_artifact](https://docs.github.com/rest/reference/actions#download-an-artifact)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for download_artifact](https://docs.github.com/rest/actions/artifacts#download-an-artifact)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5456,6 +6498,7 @@ impl<'api> Actions<'api> {
         } else {
             match github_response.status_code() {
                 302 => Err(ActionsDownloadArtifactError::Status302),
+                410 => Err(ActionsDownloadArtifactError::Status410(crate::adapters::to_json(github_response)?)),
                 code => Err(ActionsDownloadArtifactError::Generic { code }),
             }
         }
@@ -5466,11 +6509,13 @@ impl<'api> Actions<'api> {
     /// # Download job logs for a workflow run
     ///
     /// Gets a redirect URL to download a plain text file of logs for a workflow job. This link expires after 1 minute. Look
-    /// for `Location:` in the response header to find the URL for the download. Anyone with read access to the repository can
-    /// use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must
-    /// have the `actions:read` permission to use this endpoint.
+    /// for `Location:` in the response header to find the URL for the download.
     /// 
-    /// [GitHub API docs for download_job_logs_for_workflow_run](https://docs.github.com/rest/reference/actions#download-job-logs-for-a-workflow-run)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for download_job_logs_for_workflow_run](https://docs.github.com/rest/actions/workflow-jobs#download-job-logs-for-a-workflow-run)
     ///
     /// ---
     pub async fn download_job_logs_for_workflow_run_async(&self, owner: &str, repo: &str, job_id: i32) -> Result<(), ActionsDownloadJobLogsForWorkflowRunError> {
@@ -5508,11 +6553,13 @@ impl<'api> Actions<'api> {
     /// # Download job logs for a workflow run
     ///
     /// Gets a redirect URL to download a plain text file of logs for a workflow job. This link expires after 1 minute. Look
-    /// for `Location:` in the response header to find the URL for the download. Anyone with read access to the repository can
-    /// use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must
-    /// have the `actions:read` permission to use this endpoint.
+    /// for `Location:` in the response header to find the URL for the download.
     /// 
-    /// [GitHub API docs for download_job_logs_for_workflow_run](https://docs.github.com/rest/reference/actions#download-job-logs-for-a-workflow-run)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for download_job_logs_for_workflow_run](https://docs.github.com/rest/actions/workflow-jobs#download-job-logs-for-a-workflow-run)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5551,11 +6598,13 @@ impl<'api> Actions<'api> {
     /// # Download workflow run attempt logs
     ///
     /// Gets a redirect URL to download an archive of log files for a specific workflow run attempt. This link expires after
-    /// 1 minute. Look for `Location:` in the response header to find the URL for the download. Anyone with read access to
-    /// the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope.
-    /// GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// 1 minute. Look for `Location:` in the response header to find the URL for the download.
     /// 
-    /// [GitHub API docs for download_workflow_run_attempt_logs](https://docs.github.com/rest/reference/actions#download-workflow-run-attempt-logs)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for download_workflow_run_attempt_logs](https://docs.github.com/rest/actions/workflow-runs#download-workflow-run-attempt-logs)
     ///
     /// ---
     pub async fn download_workflow_run_attempt_logs_async(&self, owner: &str, repo: &str, run_id: i32, attempt_number: i32) -> Result<(), ActionsDownloadWorkflowRunAttemptLogsError> {
@@ -5593,11 +6642,13 @@ impl<'api> Actions<'api> {
     /// # Download workflow run attempt logs
     ///
     /// Gets a redirect URL to download an archive of log files for a specific workflow run attempt. This link expires after
-    /// 1 minute. Look for `Location:` in the response header to find the URL for the download. Anyone with read access to
-    /// the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope.
-    /// GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// 1 minute. Look for `Location:` in the response header to find the URL for the download.
     /// 
-    /// [GitHub API docs for download_workflow_run_attempt_logs](https://docs.github.com/rest/reference/actions#download-workflow-run-attempt-logs)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for download_workflow_run_attempt_logs](https://docs.github.com/rest/actions/workflow-runs#download-workflow-run-attempt-logs)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5636,11 +6687,13 @@ impl<'api> Actions<'api> {
     /// # Download workflow run logs
     ///
     /// Gets a redirect URL to download an archive of log files for a workflow run. This link expires after 1 minute. Look for
-    /// `Location:` in the response header to find the URL for the download. Anyone with read access to the repository can use
-    /// this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have
-    /// the `actions:read` permission to use this endpoint.
+    /// `Location:` in the response header to find the URL for the download.
     /// 
-    /// [GitHub API docs for download_workflow_run_logs](https://docs.github.com/rest/reference/actions#download-workflow-run-logs)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for download_workflow_run_logs](https://docs.github.com/rest/actions/workflow-runs#download-workflow-run-logs)
     ///
     /// ---
     pub async fn download_workflow_run_logs_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), ActionsDownloadWorkflowRunLogsError> {
@@ -5678,11 +6731,13 @@ impl<'api> Actions<'api> {
     /// # Download workflow run logs
     ///
     /// Gets a redirect URL to download an archive of log files for a workflow run. This link expires after 1 minute. Look for
-    /// `Location:` in the response header to find the URL for the download. Anyone with read access to the repository can use
-    /// this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have
-    /// the `actions:read` permission to use this endpoint.
+    /// `Location:` in the response header to find the URL for the download.
     /// 
-    /// [GitHub API docs for download_workflow_run_logs](https://docs.github.com/rest/reference/actions#download-workflow-run-logs)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for download_workflow_run_logs](https://docs.github.com/rest/actions/workflow-runs#download-workflow-run-logs)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5722,9 +6777,9 @@ impl<'api> Actions<'api> {
     ///
     /// Adds a repository to the list of selected repositories that are enabled for GitHub Actions in an organization. To use this endpoint, the organization permission policy for `enabled_repositories` must be must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
-    /// 
-    /// [GitHub API docs for enable_selected_repository_github_actions_organization](https://docs.github.com/rest/reference/actions#enable-a-selected-repository-for-github-actions-in-an-organization)
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for enable_selected_repository_github_actions_organization](https://docs.github.com/rest/actions/permissions#enable-a-selected-repository-for-github-actions-in-an-organization)
     ///
     /// ---
     pub async fn enable_selected_repository_github_actions_organization_async(&self, org: &str, repository_id: i32) -> Result<(), ActionsEnableSelectedRepositoryGithubActionsOrganizationError> {
@@ -5762,9 +6817,9 @@ impl<'api> Actions<'api> {
     ///
     /// Adds a repository to the list of selected repositories that are enabled for GitHub Actions in an organization. To use this endpoint, the organization permission policy for `enabled_repositories` must be must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
-    /// 
-    /// [GitHub API docs for enable_selected_repository_github_actions_organization](https://docs.github.com/rest/reference/actions#enable-a-selected-repository-for-github-actions-in-an-organization)
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for enable_selected_repository_github_actions_organization](https://docs.github.com/rest/actions/permissions#enable-a-selected-repository-for-github-actions-in-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5803,9 +6858,9 @@ impl<'api> Actions<'api> {
     ///
     /// Enables a workflow and sets the `state` of the workflow to `active`. You can replace `workflow_id` with the workflow file name. For example, you could use `main.yaml`.
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
-    /// 
-    /// [GitHub API docs for enable_workflow](https://docs.github.com/rest/reference/actions#enable-a-workflow)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for enable_workflow](https://docs.github.com/rest/actions/workflows#enable-a-workflow)
     ///
     /// ---
     pub async fn enable_workflow_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<(), ActionsEnableWorkflowError> {
@@ -5843,9 +6898,9 @@ impl<'api> Actions<'api> {
     ///
     /// Enables a workflow and sets the `state` of the workflow to `active`. You can replace `workflow_id` with the workflow file name. For example, you could use `main.yaml`.
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
-    /// 
-    /// [GitHub API docs for enable_workflow](https://docs.github.com/rest/reference/actions#enable-a-workflow)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for enable_workflow](https://docs.github.com/rest/actions/workflows#enable-a-workflow)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5880,13 +6935,628 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # Get allowed actions for an organization
+    /// # Force cancel a workflow run
     ///
-    /// Gets the selected actions that are allowed in an organization. To use this endpoint, the organization permission policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization).""
+    /// Cancels a workflow run and bypasses conditions that would otherwise cause a workflow execution to continue, such as an `always()` condition on a job.
+    /// You should only use this endpoint to cancel a workflow run when the workflow run is not responding to [`POST /repos/{owner}/{repo}/actions/runs/{run_id}/cancel`](/rest/actions/workflow-runs#cancel-a-workflow-run).
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for force_cancel_workflow_run](https://docs.github.com/rest/actions/workflow-runs#force-cancel-a-workflow-run)
+    ///
+    /// ---
+    pub async fn force_cancel_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<EmptyObject, ActionsForceCancelWorkflowRunError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/force-cancel", super::GITHUB_BASE_API_URL, owner, repo, run_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                409 => Err(ActionsForceCancelWorkflowRunError::Status409(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ActionsForceCancelWorkflowRunError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Force cancel a workflow run
+    ///
+    /// Cancels a workflow run and bypasses conditions that would otherwise cause a workflow execution to continue, such as an `always()` condition on a job.
+    /// You should only use this endpoint to cancel a workflow run when the workflow run is not responding to [`POST /repos/{owner}/{repo}/actions/runs/{run_id}/cancel`](/rest/actions/workflow-runs#cancel-a-workflow-run).
     /// 
-    /// [GitHub API docs for get_allowed_actions_organization](https://docs.github.com/rest/reference/actions#get-allowed-actions-for-an-organization)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for force_cancel_workflow_run](https://docs.github.com/rest/actions/workflow-runs#force-cancel-a-workflow-run)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn force_cancel_workflow_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<EmptyObject, ActionsForceCancelWorkflowRunError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/force-cancel", super::GITHUB_BASE_API_URL, owner, repo, run_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                409 => Err(ActionsForceCancelWorkflowRunError::Status409(crate::adapters::to_json(github_response)?)),
+                code => Err(ActionsForceCancelWorkflowRunError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create configuration for a just-in-time runner for an organization
+    ///
+    /// Generates a configuration that can be passed to the runner application at startup.
+    /// 
+    /// The authenticated user must have admin access to the organization.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for generate_runner_jitconfig_for_org](https://docs.github.com/rest/actions/self-hosted-runners#create-configuration-for-a-just-in-time-runner-for-an-organization)
+    ///
+    /// ---
+    pub async fn generate_runner_jitconfig_for_org_async(&self, org: &str, body: PostActionsGenerateRunnerJitconfigForOrg) -> Result<PostActionsGenerateRunnerJitconfigForRepoResponse201, ActionsGenerateRunnerJitconfigForOrgError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runners/generate-jitconfig", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostActionsGenerateRunnerJitconfigForOrg::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsGenerateRunnerJitconfigForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ActionsGenerateRunnerJitconfigForOrgError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ActionsGenerateRunnerJitconfigForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create configuration for a just-in-time runner for an organization
+    ///
+    /// Generates a configuration that can be passed to the runner application at startup.
+    /// 
+    /// The authenticated user must have admin access to the organization.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for generate_runner_jitconfig_for_org](https://docs.github.com/rest/actions/self-hosted-runners#create-configuration-for-a-just-in-time-runner-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn generate_runner_jitconfig_for_org(&self, org: &str, body: PostActionsGenerateRunnerJitconfigForOrg) -> Result<PostActionsGenerateRunnerJitconfigForRepoResponse201, ActionsGenerateRunnerJitconfigForOrgError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runners/generate-jitconfig", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostActionsGenerateRunnerJitconfigForOrg::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsGenerateRunnerJitconfigForOrgError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(ActionsGenerateRunnerJitconfigForOrgError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(ActionsGenerateRunnerJitconfigForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create configuration for a just-in-time runner for a repository
+    ///
+    /// Generates a configuration that can be passed to the runner application at startup.
+    /// 
+    /// The authenticated user must have admin access to the repository.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the`repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for generate_runner_jitconfig_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#create-configuration-for-a-just-in-time-runner-for-a-repository)
+    ///
+    /// ---
+    pub async fn generate_runner_jitconfig_for_repo_async(&self, owner: &str, repo: &str, body: PostActionsGenerateRunnerJitconfigForRepo) -> Result<PostActionsGenerateRunnerJitconfigForRepoResponse201, ActionsGenerateRunnerJitconfigForRepoError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/runners/generate-jitconfig", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostActionsGenerateRunnerJitconfigForRepo::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsGenerateRunnerJitconfigForRepoError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ActionsGenerateRunnerJitconfigForRepoError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ActionsGenerateRunnerJitconfigForRepoError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create configuration for a just-in-time runner for a repository
+    ///
+    /// Generates a configuration that can be passed to the runner application at startup.
+    /// 
+    /// The authenticated user must have admin access to the repository.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the`repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for generate_runner_jitconfig_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#create-configuration-for-a-just-in-time-runner-for-a-repository)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn generate_runner_jitconfig_for_repo(&self, owner: &str, repo: &str, body: PostActionsGenerateRunnerJitconfigForRepo) -> Result<PostActionsGenerateRunnerJitconfigForRepoResponse201, ActionsGenerateRunnerJitconfigForRepoError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/runners/generate-jitconfig", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostActionsGenerateRunnerJitconfigForRepo::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsGenerateRunnerJitconfigForRepoError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(ActionsGenerateRunnerJitconfigForRepoError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(ActionsGenerateRunnerJitconfigForRepoError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List GitHub Actions caches for a repository
+    ///
+    /// Lists the GitHub Actions caches for a repository.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_actions_cache_list](https://docs.github.com/rest/actions/cache#list-github-actions-caches-for-a-repository)
+    ///
+    /// ---
+    pub async fn get_actions_cache_list_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsGetActionsCacheListParams<'api>>>) -> Result<ActionsCacheList, ActionsGetActionsCacheListError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/actions/caches", super::GITHUB_BASE_API_URL, owner, repo);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetActionsCacheListError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List GitHub Actions caches for a repository
+    ///
+    /// Lists the GitHub Actions caches for a repository.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_actions_cache_list](https://docs.github.com/rest/actions/cache#list-github-actions-caches-for-a-repository)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_actions_cache_list(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsGetActionsCacheListParams<'api>>>) -> Result<ActionsCacheList, ActionsGetActionsCacheListError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/actions/caches", super::GITHUB_BASE_API_URL, owner, repo);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: ActionsGetActionsCacheListParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetActionsCacheListError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get GitHub Actions cache usage for a repository
+    ///
+    /// Gets GitHub Actions cache usage for a repository.
+    /// The data fetched using this API is refreshed approximately every 5 minutes, so values returned from this endpoint may take at least 5 minutes to get updated.
+    /// 
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_actions_cache_usage](https://docs.github.com/rest/actions/cache#get-github-actions-cache-usage-for-a-repository)
+    ///
+    /// ---
+    pub async fn get_actions_cache_usage_async(&self, owner: &str, repo: &str) -> Result<ActionsCacheUsageByRepository, ActionsGetActionsCacheUsageError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/cache/usage", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetActionsCacheUsageError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get GitHub Actions cache usage for a repository
+    ///
+    /// Gets GitHub Actions cache usage for a repository.
+    /// The data fetched using this API is refreshed approximately every 5 minutes, so values returned from this endpoint may take at least 5 minutes to get updated.
+    /// 
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_actions_cache_usage](https://docs.github.com/rest/actions/cache#get-github-actions-cache-usage-for-a-repository)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_actions_cache_usage(&self, owner: &str, repo: &str) -> Result<ActionsCacheUsageByRepository, ActionsGetActionsCacheUsageError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/cache/usage", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetActionsCacheUsageError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List repositories with GitHub Actions cache usage for an organization
+    ///
+    /// Lists repositories and their GitHub Actions cache usage for an organization.
+    /// The data fetched using this API is refreshed approximately every 5 minutes, so values returned from this endpoint may take at least 5 minutes to get updated.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `read:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_actions_cache_usage_by_repo_for_org](https://docs.github.com/rest/actions/cache#list-repositories-with-github-actions-cache-usage-for-an-organization)
+    ///
+    /// ---
+    pub async fn get_actions_cache_usage_by_repo_for_org_async(&self, org: &str, query_params: Option<impl Into<ActionsGetActionsCacheUsageByRepoForOrgParams>>) -> Result<GetActionsGetActionsCacheUsageByRepoForOrgResponse200, ActionsGetActionsCacheUsageByRepoForOrgError> {
+
+        let mut request_uri = format!("{}/orgs/{}/actions/cache/usage-by-repository", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetActionsCacheUsageByRepoForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List repositories with GitHub Actions cache usage for an organization
+    ///
+    /// Lists repositories and their GitHub Actions cache usage for an organization.
+    /// The data fetched using this API is refreshed approximately every 5 minutes, so values returned from this endpoint may take at least 5 minutes to get updated.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `read:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_actions_cache_usage_by_repo_for_org](https://docs.github.com/rest/actions/cache#list-repositories-with-github-actions-cache-usage-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_actions_cache_usage_by_repo_for_org(&self, org: &str, query_params: Option<impl Into<ActionsGetActionsCacheUsageByRepoForOrgParams>>) -> Result<GetActionsGetActionsCacheUsageByRepoForOrgResponse200, ActionsGetActionsCacheUsageByRepoForOrgError> {
+
+        let mut request_uri = format!("{}/orgs/{}/actions/cache/usage-by-repository", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: ActionsGetActionsCacheUsageByRepoForOrgParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetActionsCacheUsageByRepoForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get GitHub Actions cache usage for an organization
+    ///
+    /// Gets the total GitHub Actions cache usage for an organization.
+    /// The data fetched using this API is refreshed approximately every 5 minutes, so values returned from this endpoint may take at least 5 minutes to get updated.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `read:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_actions_cache_usage_for_org](https://docs.github.com/rest/actions/cache#get-github-actions-cache-usage-for-an-organization)
+    ///
+    /// ---
+    pub async fn get_actions_cache_usage_for_org_async(&self, org: &str) -> Result<ActionsCacheUsageOrgEnterprise, ActionsGetActionsCacheUsageForOrgError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/cache/usage", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetActionsCacheUsageForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get GitHub Actions cache usage for an organization
+    ///
+    /// Gets the total GitHub Actions cache usage for an organization.
+    /// The data fetched using this API is refreshed approximately every 5 minutes, so values returned from this endpoint may take at least 5 minutes to get updated.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `read:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_actions_cache_usage_for_org](https://docs.github.com/rest/actions/cache#get-github-actions-cache-usage-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_actions_cache_usage_for_org(&self, org: &str) -> Result<ActionsCacheUsageOrgEnterprise, ActionsGetActionsCacheUsageForOrgError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/cache/usage", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetActionsCacheUsageForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get allowed actions and reusable workflows for an organization
+    ///
+    /// Gets the selected actions and reusable workflows that are allowed in an organization. To use this endpoint, the organization permission policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_allowed_actions_organization](https://docs.github.com/rest/actions/permissions#get-allowed-actions-and-reusable-workflows-for-an-organization)
     ///
     /// ---
     pub async fn get_allowed_actions_organization_async(&self, org: &str) -> Result<PutActionsSetAllowedActionsRepository, ActionsGetAllowedActionsOrganizationError> {
@@ -5920,13 +7590,13 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # Get allowed actions for an organization
+    /// # Get allowed actions and reusable workflows for an organization
     ///
-    /// Gets the selected actions that are allowed in an organization. To use this endpoint, the organization permission policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization).""
+    /// Gets the selected actions and reusable workflows that are allowed in an organization. To use this endpoint, the organization permission policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
-    /// 
-    /// [GitHub API docs for get_allowed_actions_organization](https://docs.github.com/rest/reference/actions#get-allowed-actions-for-an-organization)
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_allowed_actions_organization](https://docs.github.com/rest/actions/permissions#get-allowed-actions-and-reusable-workflows-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5961,13 +7631,13 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # Get allowed actions for a repository
+    /// # Get allowed actions and reusable workflows for a repository
     ///
-    /// Gets the settings for selected actions that are allowed in a repository. To use this endpoint, the repository policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for a repository](#set-github-actions-permissions-for-a-repository)."
+    /// Gets the settings for selected actions and reusable workflows that are allowed in a repository. To use this endpoint, the repository policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for a repository](#set-github-actions-permissions-for-a-repository)."
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `administration` repository permission to use this API.
-    /// 
-    /// [GitHub API docs for get_allowed_actions_repository](https://docs.github.com/rest/reference/actions#get-allowed-actions-for-a-repository)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_allowed_actions_repository](https://docs.github.com/rest/actions/permissions#get-allowed-actions-and-reusable-workflows-for-a-repository)
     ///
     /// ---
     pub async fn get_allowed_actions_repository_async(&self, owner: &str, repo: &str) -> Result<PutActionsSetAllowedActionsRepository, ActionsGetAllowedActionsRepositoryError> {
@@ -6001,13 +7671,13 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # Get allowed actions for a repository
+    /// # Get allowed actions and reusable workflows for a repository
     ///
-    /// Gets the settings for selected actions that are allowed in a repository. To use this endpoint, the repository policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for a repository](#set-github-actions-permissions-for-a-repository)."
+    /// Gets the settings for selected actions and reusable workflows that are allowed in a repository. To use this endpoint, the repository policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for a repository](#set-github-actions-permissions-for-a-repository)."
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `administration` repository permission to use this API.
-    /// 
-    /// [GitHub API docs for get_allowed_actions_repository](https://docs.github.com/rest/reference/actions#get-allowed-actions-for-a-repository)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_allowed_actions_repository](https://docs.github.com/rest/actions/permissions#get-allowed-actions-and-reusable-workflows-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -6044,9 +7714,13 @@ impl<'api> Actions<'api> {
     ///
     /// # Get an artifact
     ///
-    /// Gets a specific artifact for a workflow run. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// Gets a specific artifact for a workflow run.
     /// 
-    /// [GitHub API docs for get_artifact](https://docs.github.com/rest/reference/actions#get-an-artifact)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_artifact](https://docs.github.com/rest/actions/artifacts#get-an-artifact)
     ///
     /// ---
     pub async fn get_artifact_async(&self, owner: &str, repo: &str, artifact_id: i32) -> Result<Artifact, ActionsGetArtifactError> {
@@ -6082,9 +7756,13 @@ impl<'api> Actions<'api> {
     ///
     /// # Get an artifact
     ///
-    /// Gets a specific artifact for a workflow run. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// Gets a specific artifact for a workflow run.
     /// 
-    /// [GitHub API docs for get_artifact](https://docs.github.com/rest/reference/actions#get-an-artifact)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_artifact](https://docs.github.com/rest/actions/artifacts#get-an-artifact)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -6119,16 +7797,106 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # Get an environment public key
+    /// # Get the customization template for an OIDC subject claim for a repository
     ///
-    /// Get the public key for an environment, which you need to encrypt environment secrets. You need to encrypt a secret before you can create or update secrets. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `secrets` repository permission to use this endpoint.
+    /// Gets the customization template for an OpenID Connect (OIDC) subject claim.
     /// 
-    /// [GitHub API docs for get_environment_public_key](https://docs.github.com/rest/reference/actions#get-an-environment-public-key)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_custom_oidc_sub_claim_for_repo](https://docs.github.com/rest/actions/oidc#get-the-customization-template-for-an-oidc-subject-claim-for-a-repository)
     ///
     /// ---
-    pub async fn get_environment_public_key_async(&self, repository_id: i32, environment_name: &str) -> Result<ActionsPublicKey, ActionsGetEnvironmentPublicKeyError> {
+    pub async fn get_custom_oidc_sub_claim_for_repo_async(&self, owner: &str, repo: &str) -> Result<OidcCustomSubRepo, ActionsGetCustomOidcSubClaimForRepoError> {
 
-        let request_uri = format!("{}/repositories/{}/environments/{}/secrets/public-key", super::GITHUB_BASE_API_URL, repository_id, environment_name);
+        let request_uri = format!("{}/repos/{}/{}/actions/oidc/customization/sub", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(ActionsGetCustomOidcSubClaimForRepoError::Status400(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ActionsGetCustomOidcSubClaimForRepoError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ActionsGetCustomOidcSubClaimForRepoError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get the customization template for an OIDC subject claim for a repository
+    ///
+    /// Gets the customization template for an OpenID Connect (OIDC) subject claim.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_custom_oidc_sub_claim_for_repo](https://docs.github.com/rest/actions/oidc#get-the-customization-template-for-an-oidc-subject-claim-for-a-repository)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_custom_oidc_sub_claim_for_repo(&self, owner: &str, repo: &str) -> Result<OidcCustomSubRepo, ActionsGetCustomOidcSubClaimForRepoError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/oidc/customization/sub", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(ActionsGetCustomOidcSubClaimForRepoError::Status400(crate::adapters::to_json(github_response)?)),
+                404 => Err(ActionsGetCustomOidcSubClaimForRepoError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(ActionsGetCustomOidcSubClaimForRepoError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get an environment public key
+    ///
+    /// Get the public key for an environment, which you need to encrypt environment
+    /// secrets. You need to encrypt a secret before you can create or update secrets.
+    /// 
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_environment_public_key](https://docs.github.com/rest/actions/secrets#get-an-environment-public-key)
+    ///
+    /// ---
+    pub async fn get_environment_public_key_async(&self, owner: &str, repo: &str, environment_name: &str) -> Result<ActionsPublicKey, ActionsGetEnvironmentPublicKeyError> {
+
+        let request_uri = format!("{}/repos/{}/{}/environments/{}/secrets/public-key", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
 
 
         let req = GitHubRequest {
@@ -6159,15 +7927,20 @@ impl<'api> Actions<'api> {
     ///
     /// # Get an environment public key
     ///
-    /// Get the public key for an environment, which you need to encrypt environment secrets. You need to encrypt a secret before you can create or update secrets. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `secrets` repository permission to use this endpoint.
+    /// Get the public key for an environment, which you need to encrypt environment
+    /// secrets. You need to encrypt a secret before you can create or update secrets.
     /// 
-    /// [GitHub API docs for get_environment_public_key](https://docs.github.com/rest/reference/actions#get-an-environment-public-key)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_environment_public_key](https://docs.github.com/rest/actions/secrets#get-an-environment-public-key)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_environment_public_key(&self, repository_id: i32, environment_name: &str) -> Result<ActionsPublicKey, ActionsGetEnvironmentPublicKeyError> {
+    pub fn get_environment_public_key(&self, owner: &str, repo: &str, environment_name: &str) -> Result<ActionsPublicKey, ActionsGetEnvironmentPublicKeyError> {
 
-        let request_uri = format!("{}/repositories/{}/environments/{}/secrets/public-key", super::GITHUB_BASE_API_URL, repository_id, environment_name);
+        let request_uri = format!("{}/repos/{}/{}/environments/{}/secrets/public-key", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
 
 
         let req = GitHubRequest {
@@ -6198,14 +7971,18 @@ impl<'api> Actions<'api> {
     ///
     /// # Get an environment secret
     ///
-    /// Gets a single environment secret without revealing its encrypted value. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
+    /// Gets a single environment secret without revealing its encrypted value.
     /// 
-    /// [GitHub API docs for get_environment_secret](https://docs.github.com/rest/reference/actions#get-an-environment-secret)
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_environment_secret](https://docs.github.com/rest/actions/secrets#get-an-environment-secret)
     ///
     /// ---
-    pub async fn get_environment_secret_async(&self, repository_id: i32, environment_name: &str, secret_name: &str) -> Result<ActionsSecret, ActionsGetEnvironmentSecretError> {
+    pub async fn get_environment_secret_async(&self, owner: &str, repo: &str, environment_name: &str, secret_name: &str) -> Result<ActionsSecret, ActionsGetEnvironmentSecretError> {
 
-        let request_uri = format!("{}/repositories/{}/environments/{}/secrets/{}", super::GITHUB_BASE_API_URL, repository_id, environment_name, secret_name);
+        let request_uri = format!("{}/repos/{}/{}/environments/{}/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, secret_name);
 
 
         let req = GitHubRequest {
@@ -6236,15 +8013,19 @@ impl<'api> Actions<'api> {
     ///
     /// # Get an environment secret
     ///
-    /// Gets a single environment secret without revealing its encrypted value. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
+    /// Gets a single environment secret without revealing its encrypted value.
     /// 
-    /// [GitHub API docs for get_environment_secret](https://docs.github.com/rest/reference/actions#get-an-environment-secret)
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_environment_secret](https://docs.github.com/rest/actions/secrets#get-an-environment-secret)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_environment_secret(&self, repository_id: i32, environment_name: &str, secret_name: &str) -> Result<ActionsSecret, ActionsGetEnvironmentSecretError> {
+    pub fn get_environment_secret(&self, owner: &str, repo: &str, environment_name: &str, secret_name: &str) -> Result<ActionsSecret, ActionsGetEnvironmentSecretError> {
 
-        let request_uri = format!("{}/repositories/{}/environments/{}/secrets/{}", super::GITHUB_BASE_API_URL, repository_id, environment_name, secret_name);
+        let request_uri = format!("{}/repos/{}/{}/environments/{}/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, secret_name);
 
 
         let req = GitHubRequest {
@@ -6267,6 +8048,261 @@ impl<'api> Actions<'api> {
         } else {
             match github_response.status_code() {
                 code => Err(ActionsGetEnvironmentSecretError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get an environment variable
+    ///
+    /// Gets a specific variable in an environment.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_environment_variable](https://docs.github.com/rest/actions/variables#get-an-environment-variable)
+    ///
+    /// ---
+    pub async fn get_environment_variable_async(&self, owner: &str, repo: &str, environment_name: &str, name: &str) -> Result<ActionsVariable, ActionsGetEnvironmentVariableError> {
+
+        let request_uri = format!("{}/repos/{}/{}/environments/{}/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetEnvironmentVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get an environment variable
+    ///
+    /// Gets a specific variable in an environment.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_environment_variable](https://docs.github.com/rest/actions/variables#get-an-environment-variable)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_environment_variable(&self, owner: &str, repo: &str, environment_name: &str, name: &str) -> Result<ActionsVariable, ActionsGetEnvironmentVariableError> {
+
+        let request_uri = format!("{}/repos/{}/{}/environments/{}/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetEnvironmentVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get default workflow permissions for an organization
+    ///
+    /// Gets the default workflow permissions granted to the `GITHUB_TOKEN` when running workflows in an organization,
+    /// as well as whether GitHub Actions can submit approving pull request reviews. For more information, see
+    /// "[Setting the permissions of the GITHUB_TOKEN for your organization](https://docs.github.com/organizations/managing-organization-settings/disabling-or-limiting-github-actions-for-your-organization#setting-the-permissions-of-the-github_token-for-your-organization)."
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_github_actions_default_workflow_permissions_organization](https://docs.github.com/rest/actions/permissions#get-default-workflow-permissions-for-an-organization)
+    ///
+    /// ---
+    pub async fn get_github_actions_default_workflow_permissions_organization_async(&self, org: &str) -> Result<ActionsGetDefaultWorkflowPermissions, ActionsGetGithubActionsDefaultWorkflowPermissionsOrganizationError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/permissions/workflow", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetGithubActionsDefaultWorkflowPermissionsOrganizationError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get default workflow permissions for an organization
+    ///
+    /// Gets the default workflow permissions granted to the `GITHUB_TOKEN` when running workflows in an organization,
+    /// as well as whether GitHub Actions can submit approving pull request reviews. For more information, see
+    /// "[Setting the permissions of the GITHUB_TOKEN for your organization](https://docs.github.com/organizations/managing-organization-settings/disabling-or-limiting-github-actions-for-your-organization#setting-the-permissions-of-the-github_token-for-your-organization)."
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_github_actions_default_workflow_permissions_organization](https://docs.github.com/rest/actions/permissions#get-default-workflow-permissions-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_github_actions_default_workflow_permissions_organization(&self, org: &str) -> Result<ActionsGetDefaultWorkflowPermissions, ActionsGetGithubActionsDefaultWorkflowPermissionsOrganizationError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/permissions/workflow", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetGithubActionsDefaultWorkflowPermissionsOrganizationError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get default workflow permissions for a repository
+    ///
+    /// Gets the default workflow permissions granted to the `GITHUB_TOKEN` when running workflows in a repository,
+    /// as well as if GitHub Actions can submit approving pull request reviews.
+    /// For more information, see "[Setting the permissions of the GITHUB_TOKEN for your repository](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#setting-the-permissions-of-the-github_token-for-your-repository)."
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_github_actions_default_workflow_permissions_repository](https://docs.github.com/rest/actions/permissions#get-default-workflow-permissions-for-a-repository)
+    ///
+    /// ---
+    pub async fn get_github_actions_default_workflow_permissions_repository_async(&self, owner: &str, repo: &str) -> Result<ActionsGetDefaultWorkflowPermissions, ActionsGetGithubActionsDefaultWorkflowPermissionsRepositoryError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/permissions/workflow", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetGithubActionsDefaultWorkflowPermissionsRepositoryError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get default workflow permissions for a repository
+    ///
+    /// Gets the default workflow permissions granted to the `GITHUB_TOKEN` when running workflows in a repository,
+    /// as well as if GitHub Actions can submit approving pull request reviews.
+    /// For more information, see "[Setting the permissions of the GITHUB_TOKEN for your repository](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#setting-the-permissions-of-the-github_token-for-your-repository)."
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_github_actions_default_workflow_permissions_repository](https://docs.github.com/rest/actions/permissions#get-default-workflow-permissions-for-a-repository)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_github_actions_default_workflow_permissions_repository(&self, owner: &str, repo: &str) -> Result<ActionsGetDefaultWorkflowPermissions, ActionsGetGithubActionsDefaultWorkflowPermissionsRepositoryError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/permissions/workflow", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetGithubActionsDefaultWorkflowPermissionsRepositoryError::Generic { code }),
             }
         }
     }
@@ -6275,11 +8311,11 @@ impl<'api> Actions<'api> {
     ///
     /// # Get GitHub Actions permissions for an organization
     ///
-    /// Gets the GitHub Actions permissions policy for repositories and allowed actions in an organization.
+    /// Gets the GitHub Actions permissions policy for repositories and allowed actions and reusable workflows in an organization.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
-    /// 
-    /// [GitHub API docs for get_github_actions_permissions_organization](https://docs.github.com/rest/reference/actions#get-github-actions-permissions-for-an-organization)
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_github_actions_permissions_organization](https://docs.github.com/rest/actions/permissions#get-github-actions-permissions-for-an-organization)
     ///
     /// ---
     pub async fn get_github_actions_permissions_organization_async(&self, org: &str) -> Result<ActionsOrganizationPermissions, ActionsGetGithubActionsPermissionsOrganizationError> {
@@ -6315,11 +8351,11 @@ impl<'api> Actions<'api> {
     ///
     /// # Get GitHub Actions permissions for an organization
     ///
-    /// Gets the GitHub Actions permissions policy for repositories and allowed actions in an organization.
+    /// Gets the GitHub Actions permissions policy for repositories and allowed actions and reusable workflows in an organization.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
-    /// 
-    /// [GitHub API docs for get_github_actions_permissions_organization](https://docs.github.com/rest/reference/actions#get-github-actions-permissions-for-an-organization)
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_github_actions_permissions_organization](https://docs.github.com/rest/actions/permissions#get-github-actions-permissions-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -6356,12 +8392,11 @@ impl<'api> Actions<'api> {
     ///
     /// # Get GitHub Actions permissions for a repository
     ///
-    /// Gets the GitHub Actions permissions policy for a repository, including whether GitHub Actions is enabled and the actions allowed to run in the repository.
+    /// Gets the GitHub Actions permissions policy for a repository, including whether GitHub Actions is enabled and the actions and reusable workflows allowed to run in the repository.
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this
-    /// endpoint. GitHub Apps must have the `administration` repository permission to use this API.
-    /// 
-    /// [GitHub API docs for get_github_actions_permissions_repository](https://docs.github.com/rest/reference/actions#get-github-actions-permissions-for-a-repository)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_github_actions_permissions_repository](https://docs.github.com/rest/actions/permissions#get-github-actions-permissions-for-a-repository)
     ///
     /// ---
     pub async fn get_github_actions_permissions_repository_async(&self, owner: &str, repo: &str) -> Result<ActionsRepositoryPermissions, ActionsGetGithubActionsPermissionsRepositoryError> {
@@ -6397,12 +8432,11 @@ impl<'api> Actions<'api> {
     ///
     /// # Get GitHub Actions permissions for a repository
     ///
-    /// Gets the GitHub Actions permissions policy for a repository, including whether GitHub Actions is enabled and the actions allowed to run in the repository.
+    /// Gets the GitHub Actions permissions policy for a repository, including whether GitHub Actions is enabled and the actions and reusable workflows allowed to run in the repository.
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this
-    /// endpoint. GitHub Apps must have the `administration` repository permission to use this API.
-    /// 
-    /// [GitHub API docs for get_github_actions_permissions_repository](https://docs.github.com/rest/reference/actions#get-github-actions-permissions-for-a-repository)
+    /// OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_github_actions_permissions_repository](https://docs.github.com/rest/actions/permissions#get-github-actions-permissions-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -6439,9 +8473,13 @@ impl<'api> Actions<'api> {
     ///
     /// # Get a job for a workflow run
     ///
-    /// Gets a specific job in a workflow run. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// Gets a specific job in a workflow run.
     /// 
-    /// [GitHub API docs for get_job_for_workflow_run](https://docs.github.com/rest/reference/actions#get-a-job-for-a-workflow-run)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_job_for_workflow_run](https://docs.github.com/rest/actions/workflow-jobs#get-a-job-for-a-workflow-run)
     ///
     /// ---
     pub async fn get_job_for_workflow_run_async(&self, owner: &str, repo: &str, job_id: i32) -> Result<Job, ActionsGetJobForWorkflowRunError> {
@@ -6477,9 +8515,13 @@ impl<'api> Actions<'api> {
     ///
     /// # Get a job for a workflow run
     ///
-    /// Gets a specific job in a workflow run. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// Gets a specific job in a workflow run.
     /// 
-    /// [GitHub API docs for get_job_for_workflow_run](https://docs.github.com/rest/reference/actions#get-a-job-for-a-workflow-run)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_job_for_workflow_run](https://docs.github.com/rest/actions/workflow-jobs#get-a-job-for-a-workflow-run)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -6516,9 +8558,14 @@ impl<'api> Actions<'api> {
     ///
     /// # Get an organization public key
     ///
-    /// Gets your public key, which you need to encrypt secrets. You need to encrypt a secret before you can create or update secrets. You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
+    /// Gets your public key, which you need to encrypt secrets. You need to
+    /// encrypt a secret before you can create or update secrets.
     /// 
-    /// [GitHub API docs for get_org_public_key](https://docs.github.com/rest/reference/actions#get-an-organization-public-key)
+    /// The authenticated user must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_org_public_key](https://docs.github.com/rest/actions/secrets#get-an-organization-public-key)
     ///
     /// ---
     pub async fn get_org_public_key_async(&self, org: &str) -> Result<ActionsPublicKey, ActionsGetOrgPublicKeyError> {
@@ -6554,9 +8601,14 @@ impl<'api> Actions<'api> {
     ///
     /// # Get an organization public key
     ///
-    /// Gets your public key, which you need to encrypt secrets. You need to encrypt a secret before you can create or update secrets. You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
+    /// Gets your public key, which you need to encrypt secrets. You need to
+    /// encrypt a secret before you can create or update secrets.
     /// 
-    /// [GitHub API docs for get_org_public_key](https://docs.github.com/rest/reference/actions#get-an-organization-public-key)
+    /// The authenticated user must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_org_public_key](https://docs.github.com/rest/actions/secrets#get-an-organization-public-key)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -6593,9 +8645,13 @@ impl<'api> Actions<'api> {
     ///
     /// # Get an organization secret
     ///
-    /// Gets a single organization secret without revealing its encrypted value. You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
+    /// Gets a single organization secret without revealing its encrypted value.
     /// 
-    /// [GitHub API docs for get_org_secret](https://docs.github.com/rest/reference/actions#get-an-organization-secret)
+    /// The authenticated user must have collaborator access to a repository to create, update, or read secrets
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_org_secret](https://docs.github.com/rest/actions/secrets#get-an-organization-secret)
     ///
     /// ---
     pub async fn get_org_secret_async(&self, org: &str, secret_name: &str) -> Result<OrganizationActionsSecret, ActionsGetOrgSecretError> {
@@ -6631,9 +8687,13 @@ impl<'api> Actions<'api> {
     ///
     /// # Get an organization secret
     ///
-    /// Gets a single organization secret without revealing its encrypted value. You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
+    /// Gets a single organization secret without revealing its encrypted value.
     /// 
-    /// [GitHub API docs for get_org_secret](https://docs.github.com/rest/reference/actions#get-an-organization-secret)
+    /// The authenticated user must have collaborator access to a repository to create, update, or read secrets
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_org_secret](https://docs.github.com/rest/actions/secrets#get-an-organization-secret)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -6668,13 +8728,100 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
+    /// # Get an organization variable
+    ///
+    /// Gets a specific variable in an organization.
+    /// 
+    /// The authenticated user must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_org_variable](https://docs.github.com/rest/actions/variables#get-an-organization-variable)
+    ///
+    /// ---
+    pub async fn get_org_variable_async(&self, org: &str, name: &str) -> Result<OrganizationActionsVariable, ActionsGetOrgVariableError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, org, name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetOrgVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get an organization variable
+    ///
+    /// Gets a specific variable in an organization.
+    /// 
+    /// The authenticated user must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the`admin:org` scope to use this endpoint. If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_org_variable](https://docs.github.com/rest/actions/variables#get-an-organization-variable)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_org_variable(&self, org: &str, name: &str) -> Result<OrganizationActionsVariable, ActionsGetOrgVariableError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, org, name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetOrgVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Get pending deployments for a workflow run
     ///
     /// Get all deployment environments for a workflow run that are waiting for protection rules to pass.
     /// 
-    /// Anyone with read access to the repository can use this endpoint. If the repository is private, you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// Anyone with read access to the repository can use this endpoint.
     /// 
-    /// [GitHub API docs for get_pending_deployments_for_run](https://docs.github.com/rest/reference/actions#get-pending-deployments-for-a-workflow-run)
+    /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_pending_deployments_for_run](https://docs.github.com/rest/actions/workflow-runs#get-pending-deployments-for-a-workflow-run)
     ///
     /// ---
     pub async fn get_pending_deployments_for_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<Vec<PendingDeployment>, ActionsGetPendingDeploymentsForRunError> {
@@ -6712,9 +8859,11 @@ impl<'api> Actions<'api> {
     ///
     /// Get all deployment environments for a workflow run that are waiting for protection rules to pass.
     /// 
-    /// Anyone with read access to the repository can use this endpoint. If the repository is private, you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// Anyone with read access to the repository can use this endpoint.
     /// 
-    /// [GitHub API docs for get_pending_deployments_for_run](https://docs.github.com/rest/reference/actions#get-pending-deployments-for-a-workflow-run)
+    /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_pending_deployments_for_run](https://docs.github.com/rest/actions/workflow-runs#get-pending-deployments-for-a-workflow-run)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -6751,9 +8900,14 @@ impl<'api> Actions<'api> {
     ///
     /// # Get a repository public key
     ///
-    /// Gets your public key, which you need to encrypt secrets. You need to encrypt a secret before you can create or update secrets. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `secrets` repository permission to use this endpoint.
+    /// Gets your public key, which you need to encrypt secrets. You need to
+    /// encrypt a secret before you can create or update secrets.
     /// 
-    /// [GitHub API docs for get_repo_public_key](https://docs.github.com/rest/reference/actions#get-a-repository-public-key)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_repo_public_key](https://docs.github.com/rest/actions/secrets#get-a-repository-public-key)
     ///
     /// ---
     pub async fn get_repo_public_key_async(&self, owner: &str, repo: &str) -> Result<ActionsPublicKey, ActionsGetRepoPublicKeyError> {
@@ -6789,9 +8943,14 @@ impl<'api> Actions<'api> {
     ///
     /// # Get a repository public key
     ///
-    /// Gets your public key, which you need to encrypt secrets. You need to encrypt a secret before you can create or update secrets. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `secrets` repository permission to use this endpoint.
+    /// Gets your public key, which you need to encrypt secrets. You need to
+    /// encrypt a secret before you can create or update secrets.
     /// 
-    /// [GitHub API docs for get_repo_public_key](https://docs.github.com/rest/reference/actions#get-a-repository-public-key)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// If the repository is private, OAuth tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_repo_public_key](https://docs.github.com/rest/actions/secrets#get-a-repository-public-key)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -6828,9 +8987,13 @@ impl<'api> Actions<'api> {
     ///
     /// # Get a repository secret
     ///
-    /// Gets a single repository secret without revealing its encrypted value. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
+    /// Gets a single repository secret without revealing its encrypted value.
     /// 
-    /// [GitHub API docs for get_repo_secret](https://docs.github.com/rest/reference/actions#get-a-repository-secret)
+    /// The authenticated user must have collaborator access to the repository to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_repo_secret](https://docs.github.com/rest/actions/secrets#get-a-repository-secret)
     ///
     /// ---
     pub async fn get_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str) -> Result<ActionsSecret, ActionsGetRepoSecretError> {
@@ -6866,9 +9029,13 @@ impl<'api> Actions<'api> {
     ///
     /// # Get a repository secret
     ///
-    /// Gets a single repository secret without revealing its encrypted value. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
+    /// Gets a single repository secret without revealing its encrypted value.
     /// 
-    /// [GitHub API docs for get_repo_secret](https://docs.github.com/rest/reference/actions#get-a-repository-secret)
+    /// The authenticated user must have collaborator access to the repository to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_repo_secret](https://docs.github.com/rest/actions/secrets#get-a-repository-secret)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -6903,11 +9070,98 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
+    /// # Get a repository variable
+    ///
+    /// Gets a specific variable in a repository.
+    /// 
+    /// The authenticated user must have collaborator access to the repository to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_repo_variable](https://docs.github.com/rest/actions/variables#get-a-repository-variable)
+    ///
+    /// ---
+    pub async fn get_repo_variable_async(&self, owner: &str, repo: &str, name: &str) -> Result<ActionsVariable, ActionsGetRepoVariableError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetRepoVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get a repository variable
+    ///
+    /// Gets a specific variable in a repository.
+    /// 
+    /// The authenticated user must have collaborator access to the repository to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_repo_variable](https://docs.github.com/rest/actions/variables#get-a-repository-variable)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_repo_variable(&self, owner: &str, repo: &str, name: &str) -> Result<ActionsVariable, ActionsGetRepoVariableError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetRepoVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Get the review history for a workflow run
     ///
-    /// Anyone with read access to the repository can use this endpoint. If the repository is private, you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// Anyone with read access to the repository can use this endpoint.
     /// 
-    /// [GitHub API docs for get_reviews_for_run](https://docs.github.com/rest/reference/actions#get-the-review-history-for-a-workflow-run)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for get_reviews_for_run](https://docs.github.com/rest/actions/workflow-runs#get-the-review-history-for-a-workflow-run)
     ///
     /// ---
     pub async fn get_reviews_for_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<Vec<EnvironmentApprovals>, ActionsGetReviewsForRunError> {
@@ -6943,9 +9197,11 @@ impl<'api> Actions<'api> {
     ///
     /// # Get the review history for a workflow run
     ///
-    /// Anyone with read access to the repository can use this endpoint. If the repository is private, you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// Anyone with read access to the repository can use this endpoint.
     /// 
-    /// [GitHub API docs for get_reviews_for_run](https://docs.github.com/rest/reference/actions#get-the-review-history-for-a-workflow-run)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for get_reviews_for_run](https://docs.github.com/rest/actions/workflow-runs#get-the-review-history-for-a-workflow-run)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -6984,9 +9240,11 @@ impl<'api> Actions<'api> {
     ///
     /// Gets a specific self-hosted runner configured in an organization.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for get_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#get-a-self-hosted-runner-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for get_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#get-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
     pub async fn get_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32) -> Result<Runner, ActionsGetSelfHostedRunnerForOrgError> {
@@ -7024,9 +9282,11 @@ impl<'api> Actions<'api> {
     ///
     /// Gets a specific self-hosted runner configured in an organization.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for get_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#get-a-self-hosted-runner-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for get_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#get-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -7065,10 +9325,11 @@ impl<'api> Actions<'api> {
     ///
     /// Gets a specific self-hosted runner configured in a repository.
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this
-    /// endpoint.
+    /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
-    /// [GitHub API docs for get_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#get-a-self-hosted-runner-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#get-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
     pub async fn get_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32) -> Result<Runner, ActionsGetSelfHostedRunnerForRepoError> {
@@ -7106,10 +9367,11 @@ impl<'api> Actions<'api> {
     ///
     /// Gets a specific self-hosted runner configured in a repository.
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this
-    /// endpoint.
+    /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
-    /// [GitHub API docs for get_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#get-a-self-hosted-runner-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#get-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -7144,96 +9406,16 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # Get a self-hosted runner group for an organization
-    ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
-    /// 
-    /// Gets a specific self-hosted runner group for an organization.
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for get_self_hosted_runner_group_for_org](https://docs.github.com/rest/reference/actions#get-a-self-hosted-runner-group-for-an-organization)
-    ///
-    /// ---
-    pub async fn get_self_hosted_runner_group_for_org_async(&self, org: &str, runner_group_id: i32) -> Result<RunnerGroupsOrg, ActionsGetSelfHostedRunnerGroupForOrgError> {
-
-        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}", super::GITHUB_BASE_API_URL, org, runner_group_id);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch_async(request).await?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
-        } else {
-            match github_response.status_code() {
-                code => Err(ActionsGetSelfHostedRunnerGroupForOrgError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Get a self-hosted runner group for an organization
-    ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
-    /// 
-    /// Gets a specific self-hosted runner group for an organization.
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for get_self_hosted_runner_group_for_org](https://docs.github.com/rest/reference/actions#get-a-self-hosted-runner-group-for-an-organization)
-    ///
-    /// ---
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_self_hosted_runner_group_for_org(&self, org: &str, runner_group_id: i32) -> Result<RunnerGroupsOrg, ActionsGetSelfHostedRunnerGroupForOrgError> {
-
-        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}", super::GITHUB_BASE_API_URL, org, runner_group_id);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch(request)?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
-        } else {
-            match github_response.status_code() {
-                code => Err(ActionsGetSelfHostedRunnerGroupForOrgError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
     /// # Get a workflow
     ///
-    /// Gets a specific workflow. You can replace `workflow_id` with the workflow file name. For example, you could use `main.yaml`. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// Gets a specific workflow. You can replace `workflow_id` with the workflow
+    /// file name. For example, you could use `main.yaml`.
     /// 
-    /// [GitHub API docs for get_workflow](https://docs.github.com/rest/reference/actions#get-a-workflow)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for get_workflow](https://docs.github.com/rest/actions/workflows#get-a-workflow)
     ///
     /// ---
     pub async fn get_workflow_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<Workflow, ActionsGetWorkflowError> {
@@ -7269,9 +9451,14 @@ impl<'api> Actions<'api> {
     ///
     /// # Get a workflow
     ///
-    /// Gets a specific workflow. You can replace `workflow_id` with the workflow file name. For example, you could use `main.yaml`. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// Gets a specific workflow. You can replace `workflow_id` with the workflow
+    /// file name. For example, you could use `main.yaml`.
     /// 
-    /// [GitHub API docs for get_workflow](https://docs.github.com/rest/reference/actions#get-a-workflow)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for get_workflow](https://docs.github.com/rest/actions/workflows#get-a-workflow)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -7306,11 +9493,100 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
+    /// # Get the level of access for workflows outside of the repository
+    ///
+    /// Gets the level of access that workflows outside of the repository have to actions and reusable workflows in the repository.
+    /// This endpoint only applies to private repositories.
+    /// For more information, see "[Allowing access to components in a private repository](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#allowing-access-to-components-in-a-private-repository)."
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_workflow_access_to_repository](https://docs.github.com/rest/actions/permissions#get-the-level-of-access-for-workflows-outside-of-the-repository)
+    ///
+    /// ---
+    pub async fn get_workflow_access_to_repository_async(&self, owner: &str, repo: &str) -> Result<ActionsWorkflowAccessToRepository, ActionsGetWorkflowAccessToRepositoryError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/permissions/access", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetWorkflowAccessToRepositoryError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get the level of access for workflows outside of the repository
+    ///
+    /// Gets the level of access that workflows outside of the repository have to actions and reusable workflows in the repository.
+    /// This endpoint only applies to private repositories.
+    /// For more information, see "[Allowing access to components in a private repository](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#allowing-access-to-components-in-a-private-repository)."
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_workflow_access_to_repository](https://docs.github.com/rest/actions/permissions#get-the-level-of-access-for-workflows-outside-of-the-repository)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_workflow_access_to_repository(&self, owner: &str, repo: &str) -> Result<ActionsWorkflowAccessToRepository, ActionsGetWorkflowAccessToRepositoryError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/permissions/access", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetWorkflowAccessToRepositoryError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Get a workflow run
     ///
-    /// Gets a specific workflow run. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// Gets a specific workflow run.
     /// 
-    /// [GitHub API docs for get_workflow_run](https://docs.github.com/rest/reference/actions#get-a-workflow-run)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for get_workflow_run](https://docs.github.com/rest/actions/workflow-runs#get-a-workflow-run)
     ///
     /// ---
     pub async fn get_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsGetWorkflowRunParams>>) -> Result<WorkflowRun, ActionsGetWorkflowRunError> {
@@ -7350,9 +9626,13 @@ impl<'api> Actions<'api> {
     ///
     /// # Get a workflow run
     ///
-    /// Gets a specific workflow run. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// Gets a specific workflow run.
     /// 
-    /// [GitHub API docs for get_workflow_run](https://docs.github.com/rest/reference/actions#get-a-workflow-run)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for get_workflow_run](https://docs.github.com/rest/actions/workflow-runs#get-a-workflow-run)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -7394,12 +9674,13 @@ impl<'api> Actions<'api> {
     ///
     /// # Get a workflow run attempt
     ///
-    /// Gets a specific workflow run attempt. Anyone with read access to the repository
-    /// can use this endpoint. If the repository is private you must use an access token
-    /// with the `repo` scope. GitHub Apps must have the `actions:read` permission to
-    /// use this endpoint.
+    /// Gets a specific workflow run attempt.
     /// 
-    /// [GitHub API docs for get_workflow_run_attempt](https://docs.github.com/rest/reference/actions#get-a-workflow-run-attempt)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for get_workflow_run_attempt](https://docs.github.com/rest/actions/workflow-runs#get-a-workflow-run-attempt)
     ///
     /// ---
     pub async fn get_workflow_run_attempt_async(&self, owner: &str, repo: &str, run_id: i32, attempt_number: i32, query_params: Option<impl Into<ActionsGetWorkflowRunAttemptParams>>) -> Result<WorkflowRun, ActionsGetWorkflowRunAttemptError> {
@@ -7439,12 +9720,13 @@ impl<'api> Actions<'api> {
     ///
     /// # Get a workflow run attempt
     ///
-    /// Gets a specific workflow run attempt. Anyone with read access to the repository
-    /// can use this endpoint. If the repository is private you must use an access token
-    /// with the `repo` scope. GitHub Apps must have the `actions:read` permission to
-    /// use this endpoint.
+    /// Gets a specific workflow run attempt.
     /// 
-    /// [GitHub API docs for get_workflow_run_attempt](https://docs.github.com/rest/reference/actions#get-a-workflow-run-attempt)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for get_workflow_run_attempt](https://docs.github.com/rest/actions/workflow-runs#get-a-workflow-run-attempt)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -7486,11 +9768,13 @@ impl<'api> Actions<'api> {
     ///
     /// # Get workflow run usage
     ///
-    /// Gets the number of billable minutes and total run time for a specific workflow run. Billable minutes only apply to workflows in private repositories that use GitHub-hosted runners. Usage is listed for each GitHub-hosted runner operating system in milliseconds. Any job re-runs are also included in the usage. The usage does not include the multiplier for macOS and Windows runners and is not rounded up to the nearest whole minute. For more information, see "[Managing billing for GitHub Actions](https://help.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-actions)".
+    /// Gets the number of billable minutes and total run time for a specific workflow run. Billable minutes only apply to workflows in private repositories that use GitHub-hosted runners. Usage is listed for each GitHub-hosted runner operating system in milliseconds. Any job re-runs are also included in the usage. The usage does not include the multiplier for macOS and Windows runners and is not rounded up to the nearest whole minute. For more information, see "[Managing billing for GitHub Actions](https://docs.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-actions)".
     /// 
-    /// Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// Anyone with read access to the repository can use this endpoint.
     /// 
-    /// [GitHub API docs for get_workflow_run_usage](https://docs.github.com/rest/reference/actions#get-workflow-run-usage)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for get_workflow_run_usage](https://docs.github.com/rest/actions/workflow-runs#get-workflow-run-usage)
     ///
     /// ---
     pub async fn get_workflow_run_usage_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<WorkflowRunUsage, ActionsGetWorkflowRunUsageError> {
@@ -7526,11 +9810,13 @@ impl<'api> Actions<'api> {
     ///
     /// # Get workflow run usage
     ///
-    /// Gets the number of billable minutes and total run time for a specific workflow run. Billable minutes only apply to workflows in private repositories that use GitHub-hosted runners. Usage is listed for each GitHub-hosted runner operating system in milliseconds. Any job re-runs are also included in the usage. The usage does not include the multiplier for macOS and Windows runners and is not rounded up to the nearest whole minute. For more information, see "[Managing billing for GitHub Actions](https://help.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-actions)".
+    /// Gets the number of billable minutes and total run time for a specific workflow run. Billable minutes only apply to workflows in private repositories that use GitHub-hosted runners. Usage is listed for each GitHub-hosted runner operating system in milliseconds. Any job re-runs are also included in the usage. The usage does not include the multiplier for macOS and Windows runners and is not rounded up to the nearest whole minute. For more information, see "[Managing billing for GitHub Actions](https://docs.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-actions)".
     /// 
-    /// Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// Anyone with read access to the repository can use this endpoint.
     /// 
-    /// [GitHub API docs for get_workflow_run_usage](https://docs.github.com/rest/reference/actions#get-workflow-run-usage)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for get_workflow_run_usage](https://docs.github.com/rest/actions/workflow-runs#get-workflow-run-usage)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -7567,11 +9853,15 @@ impl<'api> Actions<'api> {
     ///
     /// # Get workflow usage
     ///
-    /// Gets the number of billable minutes used by a specific workflow during the current billing cycle. Billable minutes only apply to workflows in private repositories that use GitHub-hosted runners. Usage is listed for each GitHub-hosted runner operating system in milliseconds. Any job re-runs are also included in the usage. The usage does not include the multiplier for macOS and Windows runners and is not rounded up to the nearest whole minute. For more information, see "[Managing billing for GitHub Actions](https://help.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-actions)".
+    /// Gets the number of billable minutes used by a specific workflow during the current billing cycle. Billable minutes only apply to workflows in private repositories that use GitHub-hosted runners. Usage is listed for each GitHub-hosted runner operating system in milliseconds. Any job re-runs are also included in the usage. The usage does not include the multiplier for macOS and Windows runners and is not rounded up to the nearest whole minute. For more information, see "[Managing billing for GitHub Actions](https://docs.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-actions)".
     /// 
-    /// You can replace `workflow_id` with the workflow file name. For example, you could use `main.yaml`. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// You can replace `workflow_id` with the workflow file name. For example, you could use `main.yaml`.
     /// 
-    /// [GitHub API docs for get_workflow_usage](https://docs.github.com/rest/reference/actions#get-workflow-usage)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for get_workflow_usage](https://docs.github.com/rest/actions/workflows#get-workflow-usage)
     ///
     /// ---
     pub async fn get_workflow_usage_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<WorkflowUsage, ActionsGetWorkflowUsageError> {
@@ -7607,11 +9897,15 @@ impl<'api> Actions<'api> {
     ///
     /// # Get workflow usage
     ///
-    /// Gets the number of billable minutes used by a specific workflow during the current billing cycle. Billable minutes only apply to workflows in private repositories that use GitHub-hosted runners. Usage is listed for each GitHub-hosted runner operating system in milliseconds. Any job re-runs are also included in the usage. The usage does not include the multiplier for macOS and Windows runners and is not rounded up to the nearest whole minute. For more information, see "[Managing billing for GitHub Actions](https://help.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-actions)".
+    /// Gets the number of billable minutes used by a specific workflow during the current billing cycle. Billable minutes only apply to workflows in private repositories that use GitHub-hosted runners. Usage is listed for each GitHub-hosted runner operating system in milliseconds. Any job re-runs are also included in the usage. The usage does not include the multiplier for macOS and Windows runners and is not rounded up to the nearest whole minute. For more information, see "[Managing billing for GitHub Actions](https://docs.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-actions)".
     /// 
-    /// You can replace `workflow_id` with the workflow file name. For example, you could use `main.yaml`. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// You can replace `workflow_id` with the workflow file name. For example, you could use `main.yaml`.
     /// 
-    /// [GitHub API docs for get_workflow_usage](https://docs.github.com/rest/reference/actions#get-workflow-usage)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for get_workflow_usage](https://docs.github.com/rest/actions/workflows#get-workflow-usage)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -7648,12 +9942,16 @@ impl<'api> Actions<'api> {
     ///
     /// # List artifacts for a repository
     ///
-    /// Lists all artifacts for a repository. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// Lists all artifacts for a repository.
     /// 
-    /// [GitHub API docs for list_artifacts_for_repo](https://docs.github.com/rest/reference/actions#list-artifacts-for-a-repository)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for list_artifacts_for_repo](https://docs.github.com/rest/actions/artifacts#list-artifacts-for-a-repository)
     ///
     /// ---
-    pub async fn list_artifacts_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListArtifactsForRepoParams>>) -> Result<GetActionsListWorkflowRunArtifactsResponse200, ActionsListArtifactsForRepoError> {
+    pub async fn list_artifacts_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListArtifactsForRepoParams<'api>>>) -> Result<GetActionsListWorkflowRunArtifactsResponse200, ActionsListArtifactsForRepoError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/artifacts", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -7690,13 +9988,17 @@ impl<'api> Actions<'api> {
     ///
     /// # List artifacts for a repository
     ///
-    /// Lists all artifacts for a repository. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// Lists all artifacts for a repository.
     /// 
-    /// [GitHub API docs for list_artifacts_for_repo](https://docs.github.com/rest/reference/actions#list-artifacts-for-a-repository)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for list_artifacts_for_repo](https://docs.github.com/rest/actions/artifacts#list-artifacts-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_artifacts_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListArtifactsForRepoParams>>) -> Result<GetActionsListWorkflowRunArtifactsResponse200, ActionsListArtifactsForRepoError> {
+    pub fn list_artifacts_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListArtifactsForRepoParams<'api>>>) -> Result<GetActionsListWorkflowRunArtifactsResponse200, ActionsListArtifactsForRepoError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/artifacts", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -7734,14 +10036,19 @@ impl<'api> Actions<'api> {
     ///
     /// # List environment secrets
     ///
-    /// Lists all secrets available in an environment without revealing their encrypted values. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
+    /// Lists all secrets available in an environment without revealing their
+    /// encrypted values.
     /// 
-    /// [GitHub API docs for list_environment_secrets](https://docs.github.com/rest/reference/actions#list-environment-secrets)
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_environment_secrets](https://docs.github.com/rest/actions/secrets#list-environment-secrets)
     ///
     /// ---
-    pub async fn list_environment_secrets_async(&self, repository_id: i32, environment_name: &str, query_params: Option<impl Into<ActionsListEnvironmentSecretsParams>>) -> Result<GetActionsListEnvironmentSecretsResponse200, ActionsListEnvironmentSecretsError> {
+    pub async fn list_environment_secrets_async(&self, owner: &str, repo: &str, environment_name: &str, query_params: Option<impl Into<ActionsListEnvironmentSecretsParams>>) -> Result<GetActionsListEnvironmentSecretsResponse200, ActionsListEnvironmentSecretsError> {
 
-        let mut request_uri = format!("{}/repositories/{}/environments/{}/secrets", super::GITHUB_BASE_API_URL, repository_id, environment_name);
+        let mut request_uri = format!("{}/repos/{}/{}/environments/{}/secrets", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
 
         if let Some(params) = query_params {
             request_uri.push_str("?");
@@ -7776,15 +10083,20 @@ impl<'api> Actions<'api> {
     ///
     /// # List environment secrets
     ///
-    /// Lists all secrets available in an environment without revealing their encrypted values. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
+    /// Lists all secrets available in an environment without revealing their
+    /// encrypted values.
     /// 
-    /// [GitHub API docs for list_environment_secrets](https://docs.github.com/rest/reference/actions#list-environment-secrets)
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_environment_secrets](https://docs.github.com/rest/actions/secrets#list-environment-secrets)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_environment_secrets(&self, repository_id: i32, environment_name: &str, query_params: Option<impl Into<ActionsListEnvironmentSecretsParams>>) -> Result<GetActionsListEnvironmentSecretsResponse200, ActionsListEnvironmentSecretsError> {
+    pub fn list_environment_secrets(&self, owner: &str, repo: &str, environment_name: &str, query_params: Option<impl Into<ActionsListEnvironmentSecretsParams>>) -> Result<GetActionsListEnvironmentSecretsResponse200, ActionsListEnvironmentSecretsError> {
 
-        let mut request_uri = format!("{}/repositories/{}/environments/{}/secrets", super::GITHUB_BASE_API_URL, repository_id, environment_name);
+        let mut request_uri = format!("{}/repos/{}/{}/environments/{}/secrets", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
 
         if let Some(params) = query_params {
             request_uri.push_str("?");
@@ -7818,11 +10130,110 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
+    /// # List environment variables
+    ///
+    /// Lists all environment variables.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_environment_variables](https://docs.github.com/rest/actions/variables#list-environment-variables)
+    ///
+    /// ---
+    pub async fn list_environment_variables_async(&self, owner: &str, repo: &str, environment_name: &str, query_params: Option<impl Into<ActionsListEnvironmentVariablesParams>>) -> Result<GetActionsListEnvironmentVariablesResponse200, ActionsListEnvironmentVariablesError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/environments/{}/variables", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsListEnvironmentVariablesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List environment variables
+    ///
+    /// Lists all environment variables.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_environment_variables](https://docs.github.com/rest/actions/variables#list-environment-variables)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_environment_variables(&self, owner: &str, repo: &str, environment_name: &str, query_params: Option<impl Into<ActionsListEnvironmentVariablesParams>>) -> Result<GetActionsListEnvironmentVariablesResponse200, ActionsListEnvironmentVariablesError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/environments/{}/variables", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: ActionsListEnvironmentVariablesParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsListEnvironmentVariablesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List jobs for a workflow run
     ///
-    /// Lists jobs for a workflow run. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint. You can use parameters to narrow the list of results. For more information about using parameters, see [Parameters](https://docs.github.com/rest/overview/resources-in-the-rest-api#parameters).
+    /// Lists jobs for a workflow run. You can use parameters to narrow the list of results. For more information
+    /// about using parameters, see [Parameters](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#parameters).
     /// 
-    /// [GitHub API docs for list_jobs_for_workflow_run](https://docs.github.com/rest/reference/actions#list-jobs-for-a-workflow-run)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for list_jobs_for_workflow_run](https://docs.github.com/rest/actions/workflow-jobs#list-jobs-for-a-workflow-run)
     ///
     /// ---
     pub async fn list_jobs_for_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsListJobsForWorkflowRunParams<'api>>>) -> Result<GetActionsListJobsForWorkflowRunResponse200, ActionsListJobsForWorkflowRunError> {
@@ -7862,9 +10273,14 @@ impl<'api> Actions<'api> {
     ///
     /// # List jobs for a workflow run
     ///
-    /// Lists jobs for a workflow run. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint. You can use parameters to narrow the list of results. For more information about using parameters, see [Parameters](https://docs.github.com/rest/overview/resources-in-the-rest-api#parameters).
+    /// Lists jobs for a workflow run. You can use parameters to narrow the list of results. For more information
+    /// about using parameters, see [Parameters](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#parameters).
     /// 
-    /// [GitHub API docs for list_jobs_for_workflow_run](https://docs.github.com/rest/reference/actions#list-jobs-for-a-workflow-run)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for list_jobs_for_workflow_run](https://docs.github.com/rest/actions/workflow-jobs#list-jobs-for-a-workflow-run)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -7906,9 +10322,14 @@ impl<'api> Actions<'api> {
     ///
     /// # List jobs for a workflow run attempt
     ///
-    /// Lists jobs for a specific workflow run attempt. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint. You can use parameters to narrow the list of results. For more information about using parameters, see [Parameters](https://docs.github.com/rest/overview/resources-in-the-rest-api#parameters).
+    /// Lists jobs for a specific workflow run attempt. You can use parameters to narrow the list of results. For more information
+    /// about using parameters, see [Parameters](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#parameters).
     /// 
-    /// [GitHub API docs for list_jobs_for_workflow_run_attempt](https://docs.github.com/rest/reference/actions#list-jobs-for-a-workflow-run-attempt)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint  with a private repository.
+    ///
+    /// [GitHub API docs for list_jobs_for_workflow_run_attempt](https://docs.github.com/rest/actions/workflow-jobs#list-jobs-for-a-workflow-run-attempt)
     ///
     /// ---
     pub async fn list_jobs_for_workflow_run_attempt_async(&self, owner: &str, repo: &str, run_id: i32, attempt_number: i32, query_params: Option<impl Into<ActionsListJobsForWorkflowRunAttemptParams>>) -> Result<GetActionsListJobsForWorkflowRunResponse200, ActionsListJobsForWorkflowRunAttemptError> {
@@ -7949,9 +10370,14 @@ impl<'api> Actions<'api> {
     ///
     /// # List jobs for a workflow run attempt
     ///
-    /// Lists jobs for a specific workflow run attempt. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint. You can use parameters to narrow the list of results. For more information about using parameters, see [Parameters](https://docs.github.com/rest/overview/resources-in-the-rest-api#parameters).
+    /// Lists jobs for a specific workflow run attempt. You can use parameters to narrow the list of results. For more information
+    /// about using parameters, see [Parameters](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#parameters).
     /// 
-    /// [GitHub API docs for list_jobs_for_workflow_run_attempt](https://docs.github.com/rest/reference/actions#list-jobs-for-a-workflow-run-attempt)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint  with a private repository.
+    ///
+    /// [GitHub API docs for list_jobs_for_workflow_run_attempt](https://docs.github.com/rest/actions/workflow-jobs#list-jobs-for-a-workflow-run-attempt)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -7996,9 +10422,11 @@ impl<'api> Actions<'api> {
     ///
     /// Lists all labels for a self-hosted runner configured in an organization.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for list_labels_for_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#list-labels-for-a-self-hosted-runner-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for list_labels_for_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#list-labels-for-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
     pub async fn list_labels_for_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsListLabelsForSelfHostedRunnerForOrgError> {
@@ -8037,9 +10465,11 @@ impl<'api> Actions<'api> {
     ///
     /// Lists all labels for a self-hosted runner configured in an organization.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for list_labels_for_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#list-labels-for-a-self-hosted-runner-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for list_labels_for_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#list-labels-for-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -8079,10 +10509,11 @@ impl<'api> Actions<'api> {
     ///
     /// Lists all labels for a self-hosted runner configured in a repository.
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this
-    /// endpoint.
+    /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
-    /// [GitHub API docs for list_labels_for_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#list-labels-for-a-self-hosted-runner-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_labels_for_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#list-labels-for-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
     pub async fn list_labels_for_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsListLabelsForSelfHostedRunnerForRepoError> {
@@ -8121,10 +10552,11 @@ impl<'api> Actions<'api> {
     ///
     /// Lists all labels for a self-hosted runner configured in a repository.
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this
-    /// endpoint.
+    /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
-    /// [GitHub API docs for list_labels_for_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#list-labels-for-a-self-hosted-runner-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_labels_for_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#list-labels-for-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -8162,9 +10594,14 @@ impl<'api> Actions<'api> {
     ///
     /// # List organization secrets
     ///
-    /// Lists all secrets available in an organization without revealing their encrypted values. You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
+    /// Lists all secrets available in an organization without revealing their
+    /// encrypted values.
     /// 
-    /// [GitHub API docs for list_org_secrets](https://docs.github.com/rest/reference/actions#list-organization-secrets)
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for list_org_secrets](https://docs.github.com/rest/actions/secrets#list-organization-secrets)
     ///
     /// ---
     pub async fn list_org_secrets_async(&self, org: &str, query_params: Option<impl Into<ActionsListOrgSecretsParams>>) -> Result<GetActionsListOrgSecretsResponse200, ActionsListOrgSecretsError> {
@@ -8204,9 +10641,14 @@ impl<'api> Actions<'api> {
     ///
     /// # List organization secrets
     ///
-    /// Lists all secrets available in an organization without revealing their encrypted values. You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
+    /// Lists all secrets available in an organization without revealing their
+    /// encrypted values.
     /// 
-    /// [GitHub API docs for list_org_secrets](https://docs.github.com/rest/reference/actions#list-organization-secrets)
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for list_org_secrets](https://docs.github.com/rest/actions/secrets#list-organization-secrets)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -8246,20 +10688,20 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # List repository access to a self-hosted runner group in an organization
+    /// # List organization variables
     ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud and GitHub Enterprise Server. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
+    /// Lists all organization variables.
     /// 
-    /// Lists the repositories with access to a self-hosted runner group configured in an organization.
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for list_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/reference/actions#list-repository-access-to-a-self-hosted-runner-group-in-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for list_org_variables](https://docs.github.com/rest/actions/variables#list-organization-variables)
     ///
     /// ---
-    pub async fn list_repo_access_to_self_hosted_runner_group_in_org_async(&self, org: &str, runner_group_id: i32, query_params: Option<impl Into<ActionsListRepoAccessToSelfHostedRunnerGroupInOrgParams>>) -> Result<GetActionsListRepoAccessToSelfHostedRunnerGroupInOrgResponse200, ActionsListRepoAccessToSelfHostedRunnerGroupInOrgError> {
+    pub async fn list_org_variables_async(&self, org: &str, query_params: Option<impl Into<ActionsListOrgVariablesParams>>) -> Result<GetActionsListOrgVariablesResponse200, ActionsListOrgVariablesError> {
 
-        let mut request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/repositories", super::GITHUB_BASE_API_URL, org, runner_group_id);
+        let mut request_uri = format!("{}/orgs/{}/actions/variables", super::GITHUB_BASE_API_URL, org);
 
         if let Some(params) = query_params {
             request_uri.push_str("?");
@@ -8285,32 +10727,32 @@ impl<'api> Actions<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }),
+                code => Err(ActionsListOrgVariablesError::Generic { code }),
             }
         }
     }
 
     /// ---
     ///
-    /// # List repository access to a self-hosted runner group in an organization
+    /// # List organization variables
     ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud and GitHub Enterprise Server. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
+    /// Lists all organization variables.
     /// 
-    /// Lists the repositories with access to a self-hosted runner group configured in an organization.
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for list_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/reference/actions#list-repository-access-to-a-self-hosted-runner-group-in-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for list_org_variables](https://docs.github.com/rest/actions/variables#list-organization-variables)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_repo_access_to_self_hosted_runner_group_in_org(&self, org: &str, runner_group_id: i32, query_params: Option<impl Into<ActionsListRepoAccessToSelfHostedRunnerGroupInOrgParams>>) -> Result<GetActionsListRepoAccessToSelfHostedRunnerGroupInOrgResponse200, ActionsListRepoAccessToSelfHostedRunnerGroupInOrgError> {
+    pub fn list_org_variables(&self, org: &str, query_params: Option<impl Into<ActionsListOrgVariablesParams>>) -> Result<GetActionsListOrgVariablesResponse200, ActionsListOrgVariablesError> {
 
-        let mut request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/repositories", super::GITHUB_BASE_API_URL, org, runner_group_id);
+        let mut request_uri = format!("{}/orgs/{}/actions/variables", super::GITHUB_BASE_API_URL, org);
 
         if let Some(params) = query_params {
             request_uri.push_str("?");
-            let qp: ActionsListRepoAccessToSelfHostedRunnerGroupInOrgParams = params.into();
+            let qp: ActionsListOrgVariablesParams = params.into();
             request_uri.push_str(&serde_urlencoded::to_string(qp)?);
         }
 
@@ -8333,7 +10775,197 @@ impl<'api> Actions<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }),
+                code => Err(ActionsListOrgVariablesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List repository organization secrets
+    ///
+    /// Lists all organization secrets shared with a repository without revealing their encrypted
+    /// values.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_repo_organization_secrets](https://docs.github.com/rest/actions/secrets#list-repository-organization-secrets)
+    ///
+    /// ---
+    pub async fn list_repo_organization_secrets_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoOrganizationSecretsParams>>) -> Result<GetActionsListEnvironmentSecretsResponse200, ActionsListRepoOrganizationSecretsError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/actions/organization-secrets", super::GITHUB_BASE_API_URL, owner, repo);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsListRepoOrganizationSecretsError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List repository organization secrets
+    ///
+    /// Lists all organization secrets shared with a repository without revealing their encrypted
+    /// values.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_repo_organization_secrets](https://docs.github.com/rest/actions/secrets#list-repository-organization-secrets)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_repo_organization_secrets(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoOrganizationSecretsParams>>) -> Result<GetActionsListEnvironmentSecretsResponse200, ActionsListRepoOrganizationSecretsError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/actions/organization-secrets", super::GITHUB_BASE_API_URL, owner, repo);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: ActionsListRepoOrganizationSecretsParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsListRepoOrganizationSecretsError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List repository organization variables
+    ///
+    /// Lists all organization variables shared with a repository.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_repo_organization_variables](https://docs.github.com/rest/actions/variables#list-repository-organization-variables)
+    ///
+    /// ---
+    pub async fn list_repo_organization_variables_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoOrganizationVariablesParams>>) -> Result<GetActionsListEnvironmentVariablesResponse200, ActionsListRepoOrganizationVariablesError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/actions/organization-variables", super::GITHUB_BASE_API_URL, owner, repo);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsListRepoOrganizationVariablesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List repository organization variables
+    ///
+    /// Lists all organization variables shared with a repository.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_repo_organization_variables](https://docs.github.com/rest/actions/variables#list-repository-organization-variables)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_repo_organization_variables(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoOrganizationVariablesParams>>) -> Result<GetActionsListEnvironmentVariablesResponse200, ActionsListRepoOrganizationVariablesError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/actions/organization-variables", super::GITHUB_BASE_API_URL, owner, repo);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: ActionsListRepoOrganizationVariablesParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsListRepoOrganizationVariablesError::Generic { code }),
             }
         }
     }
@@ -8342,9 +10974,14 @@ impl<'api> Actions<'api> {
     ///
     /// # List repository secrets
     ///
-    /// Lists all secrets available in a repository without revealing their encrypted values. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
+    /// Lists all secrets available in a repository without revealing their encrypted
+    /// values.
     /// 
-    /// [GitHub API docs for list_repo_secrets](https://docs.github.com/rest/reference/actions#list-repository-secrets)
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_repo_secrets](https://docs.github.com/rest/actions/secrets#list-repository-secrets)
     ///
     /// ---
     pub async fn list_repo_secrets_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoSecretsParams>>) -> Result<GetActionsListEnvironmentSecretsResponse200, ActionsListRepoSecretsError> {
@@ -8384,9 +11021,14 @@ impl<'api> Actions<'api> {
     ///
     /// # List repository secrets
     ///
-    /// Lists all secrets available in a repository without revealing their encrypted values. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `secrets` repository permission to use this endpoint.
+    /// Lists all secrets available in a repository without revealing their encrypted
+    /// values.
     /// 
-    /// [GitHub API docs for list_repo_secrets](https://docs.github.com/rest/reference/actions#list-repository-secrets)
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_repo_secrets](https://docs.github.com/rest/actions/secrets#list-repository-secrets)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -8426,11 +11068,109 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
+    /// # List repository variables
+    ///
+    /// Lists all repository variables.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_repo_variables](https://docs.github.com/rest/actions/variables#list-repository-variables)
+    ///
+    /// ---
+    pub async fn list_repo_variables_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoVariablesParams>>) -> Result<GetActionsListEnvironmentVariablesResponse200, ActionsListRepoVariablesError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/actions/variables", super::GITHUB_BASE_API_URL, owner, repo);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsListRepoVariablesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List repository variables
+    ///
+    /// Lists all repository variables.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_repo_variables](https://docs.github.com/rest/actions/variables#list-repository-variables)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_repo_variables(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoVariablesParams>>) -> Result<GetActionsListEnvironmentVariablesResponse200, ActionsListRepoVariablesError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/actions/variables", super::GITHUB_BASE_API_URL, owner, repo);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: ActionsListRepoVariablesParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsListRepoVariablesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List repository workflows
     ///
-    /// Lists the workflows in a repository. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// Lists the workflows in a repository.
     /// 
-    /// [GitHub API docs for list_repo_workflows](https://docs.github.com/rest/reference/actions#list-repository-workflows)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for list_repo_workflows](https://docs.github.com/rest/actions/workflows#list-repository-workflows)
     ///
     /// ---
     pub async fn list_repo_workflows_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoWorkflowsParams>>) -> Result<GetActionsListRepoWorkflowsResponse200, ActionsListRepoWorkflowsError> {
@@ -8470,9 +11210,13 @@ impl<'api> Actions<'api> {
     ///
     /// # List repository workflows
     ///
-    /// Lists the workflows in a repository. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// Lists the workflows in a repository.
     /// 
-    /// [GitHub API docs for list_repo_workflows](https://docs.github.com/rest/reference/actions#list-repository-workflows)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for list_repo_workflows](https://docs.github.com/rest/actions/workflows#list-repository-workflows)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -8516,9 +11260,11 @@ impl<'api> Actions<'api> {
     ///
     /// Lists binaries for the runner application that you can download and run.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for list_runner_applications_for_org](https://docs.github.com/rest/reference/actions#list-runner-applications-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.  If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for list_runner_applications_for_org](https://docs.github.com/rest/actions/self-hosted-runners#list-runner-applications-for-an-organization)
     ///
     /// ---
     pub async fn list_runner_applications_for_org_async(&self, org: &str) -> Result<Vec<RunnerApplication>, ActionsListRunnerApplicationsForOrgError> {
@@ -8556,9 +11302,11 @@ impl<'api> Actions<'api> {
     ///
     /// Lists binaries for the runner application that you can download and run.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for list_runner_applications_for_org](https://docs.github.com/rest/reference/actions#list-runner-applications-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.  If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for list_runner_applications_for_org](https://docs.github.com/rest/actions/self-hosted-runners#list-runner-applications-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -8597,9 +11345,11 @@ impl<'api> Actions<'api> {
     ///
     /// Lists binaries for the runner application that you can download and run.
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this endpoint.
+    /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
-    /// [GitHub API docs for list_runner_applications_for_repo](https://docs.github.com/rest/reference/actions#list-runner-applications-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_runner_applications_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#list-runner-applications-for-a-repository)
     ///
     /// ---
     pub async fn list_runner_applications_for_repo_async(&self, owner: &str, repo: &str) -> Result<Vec<RunnerApplication>, ActionsListRunnerApplicationsForRepoError> {
@@ -8637,9 +11387,11 @@ impl<'api> Actions<'api> {
     ///
     /// Lists binaries for the runner application that you can download and run.
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this endpoint.
+    /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
-    /// [GitHub API docs for list_runner_applications_for_repo](https://docs.github.com/rest/reference/actions#list-runner-applications-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_runner_applications_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#list-runner-applications-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -8676,9 +11428,14 @@ impl<'api> Actions<'api> {
     ///
     /// # List selected repositories for an organization secret
     ///
-    /// Lists all repositories that have been selected when the `visibility` for repository access to a secret is set to `selected`. You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
+    /// Lists all repositories that have been selected when the `visibility`
+    /// for repository access to a secret is set to `selected`.
     /// 
-    /// [GitHub API docs for list_selected_repos_for_org_secret](https://docs.github.com/rest/reference/actions#list-selected-repositories-for-an-organization-secret)
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for list_selected_repos_for_org_secret](https://docs.github.com/rest/actions/secrets#list-selected-repositories-for-an-organization-secret)
     ///
     /// ---
     pub async fn list_selected_repos_for_org_secret_async(&self, org: &str, secret_name: &str, query_params: Option<impl Into<ActionsListSelectedReposForOrgSecretParams>>) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, ActionsListSelectedReposForOrgSecretError> {
@@ -8718,9 +11475,14 @@ impl<'api> Actions<'api> {
     ///
     /// # List selected repositories for an organization secret
     ///
-    /// Lists all repositories that have been selected when the `visibility` for repository access to a secret is set to `selected`. You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
+    /// Lists all repositories that have been selected when the `visibility`
+    /// for repository access to a secret is set to `selected`.
     /// 
-    /// [GitHub API docs for list_selected_repos_for_org_secret](https://docs.github.com/rest/reference/actions#list-selected-repositories-for-an-organization-secret)
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for list_selected_repos_for_org_secret](https://docs.github.com/rest/actions/secrets#list-selected-repositories-for-an-organization-secret)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -8760,13 +11522,111 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
+    /// # List selected repositories for an organization variable
+    ///
+    /// Lists all repositories that can access an organization variable
+    /// that is available to selected repositories.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for list_selected_repos_for_org_variable](https://docs.github.com/rest/actions/variables#list-selected-repositories-for-an-organization-variable)
+    ///
+    /// ---
+    pub async fn list_selected_repos_for_org_variable_async(&self, org: &str, name: &str, query_params: Option<impl Into<ActionsListSelectedReposForOrgVariableParams>>) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, ActionsListSelectedReposForOrgVariableError> {
+
+        let mut request_uri = format!("{}/orgs/{}/actions/variables/{}/repositories", super::GITHUB_BASE_API_URL, org, name);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                409 => Err(ActionsListSelectedReposForOrgVariableError::Status409),
+                code => Err(ActionsListSelectedReposForOrgVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List selected repositories for an organization variable
+    ///
+    /// Lists all repositories that can access an organization variable
+    /// that is available to selected repositories.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for list_selected_repos_for_org_variable](https://docs.github.com/rest/actions/variables#list-selected-repositories-for-an-organization-variable)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_selected_repos_for_org_variable(&self, org: &str, name: &str, query_params: Option<impl Into<ActionsListSelectedReposForOrgVariableParams>>) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, ActionsListSelectedReposForOrgVariableError> {
+
+        let mut request_uri = format!("{}/orgs/{}/actions/variables/{}/repositories", super::GITHUB_BASE_API_URL, org, name);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: ActionsListSelectedReposForOrgVariableParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                409 => Err(ActionsListSelectedReposForOrgVariableError::Status409),
+                code => Err(ActionsListSelectedReposForOrgVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List selected repositories enabled for GitHub Actions in an organization
     ///
     /// Lists the selected repositories that are enabled for GitHub Actions in an organization. To use this endpoint, the organization permission policy for `enabled_repositories` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
-    /// 
-    /// [GitHub API docs for list_selected_repositories_enabled_github_actions_organization](https://docs.github.com/rest/reference/actions#list-selected-repositories-enabled-for-github-actions-in-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_selected_repositories_enabled_github_actions_organization](https://docs.github.com/rest/actions/permissions#list-selected-repositories-enabled-for-github-actions-in-an-organization)
     ///
     /// ---
     pub async fn list_selected_repositories_enabled_github_actions_organization_async(&self, org: &str, query_params: Option<impl Into<ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationParams>>) -> Result<GetActionsListSelectedRepositoriesEnabledGithubActionsOrganizationResponse200, ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationError> {
@@ -8808,9 +11668,9 @@ impl<'api> Actions<'api> {
     ///
     /// Lists the selected repositories that are enabled for GitHub Actions in an organization. To use this endpoint, the organization permission policy for `enabled_repositories` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
-    /// 
-    /// [GitHub API docs for list_selected_repositories_enabled_github_actions_organization](https://docs.github.com/rest/reference/actions#list-selected-repositories-enabled-for-github-actions-in-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_selected_repositories_enabled_github_actions_organization](https://docs.github.com/rest/actions/permissions#list-selected-repositories-enabled-for-github-actions-in-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -8850,110 +11710,18 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # List self-hosted runner groups for an organization
-    ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
-    /// 
-    /// Lists all self-hosted runner groups configured in an organization and inherited from an enterprise.
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for list_self_hosted_runner_groups_for_org](https://docs.github.com/rest/reference/actions#list-self-hosted-runner-groups-for-an-organization)
-    ///
-    /// ---
-    pub async fn list_self_hosted_runner_groups_for_org_async(&self, org: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnerGroupsForOrgParams>>) -> Result<GetActionsListSelfHostedRunnerGroupsForOrgResponse200, ActionsListSelfHostedRunnerGroupsForOrgError> {
-
-        let mut request_uri = format!("{}/orgs/{}/actions/runner-groups", super::GITHUB_BASE_API_URL, org);
-
-        if let Some(params) = query_params {
-            request_uri.push_str("?");
-            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
-        }
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch_async(request).await?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
-        } else {
-            match github_response.status_code() {
-                code => Err(ActionsListSelfHostedRunnerGroupsForOrgError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # List self-hosted runner groups for an organization
-    ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
-    /// 
-    /// Lists all self-hosted runner groups configured in an organization and inherited from an enterprise.
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for list_self_hosted_runner_groups_for_org](https://docs.github.com/rest/reference/actions#list-self-hosted-runner-groups-for-an-organization)
-    ///
-    /// ---
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_self_hosted_runner_groups_for_org(&self, org: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnerGroupsForOrgParams>>) -> Result<GetActionsListSelfHostedRunnerGroupsForOrgResponse200, ActionsListSelfHostedRunnerGroupsForOrgError> {
-
-        let mut request_uri = format!("{}/orgs/{}/actions/runner-groups", super::GITHUB_BASE_API_URL, org);
-
-        if let Some(params) = query_params {
-            request_uri.push_str("?");
-            let qp: ActionsListSelfHostedRunnerGroupsForOrgParams = params.into();
-            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
-        }
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch(request)?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
-        } else {
-            match github_response.status_code() {
-                code => Err(ActionsListSelfHostedRunnerGroupsForOrgError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
     /// # List self-hosted runners for an organization
     ///
     /// Lists all self-hosted runners configured in an organization.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for list_self_hosted_runners_for_org](https://docs.github.com/rest/reference/actions#list-self-hosted-runners-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for list_self_hosted_runners_for_org](https://docs.github.com/rest/actions/self-hosted-runners#list-self-hosted-runners-for-an-organization)
     ///
     /// ---
-    pub async fn list_self_hosted_runners_for_org_async(&self, org: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnersForOrgParams>>) -> Result<GetActionsListSelfHostedRunnersForRepoResponse200, ActionsListSelfHostedRunnersForOrgError> {
+    pub async fn list_self_hosted_runners_for_org_async(&self, org: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnersForOrgParams<'api>>>) -> Result<GetActionsListSelfHostedRunnersForRepoResponse200, ActionsListSelfHostedRunnersForOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/actions/runners", super::GITHUB_BASE_API_URL, org);
 
@@ -8992,13 +11760,15 @@ impl<'api> Actions<'api> {
     ///
     /// Lists all self-hosted runners configured in an organization.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for list_self_hosted_runners_for_org](https://docs.github.com/rest/reference/actions#list-self-hosted-runners-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for list_self_hosted_runners_for_org](https://docs.github.com/rest/actions/self-hosted-runners#list-self-hosted-runners-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_self_hosted_runners_for_org(&self, org: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnersForOrgParams>>) -> Result<GetActionsListSelfHostedRunnersForRepoResponse200, ActionsListSelfHostedRunnersForOrgError> {
+    pub fn list_self_hosted_runners_for_org(&self, org: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnersForOrgParams<'api>>>) -> Result<GetActionsListSelfHostedRunnersForRepoResponse200, ActionsListSelfHostedRunnersForOrgError> {
 
         let mut request_uri = format!("{}/orgs/{}/actions/runners", super::GITHUB_BASE_API_URL, org);
 
@@ -9036,12 +11806,16 @@ impl<'api> Actions<'api> {
     ///
     /// # List self-hosted runners for a repository
     ///
-    /// Lists all self-hosted runners configured in a repository. You must authenticate using an access token with the `repo` scope to use this endpoint.
+    /// Lists all self-hosted runners configured in a repository.
     /// 
-    /// [GitHub API docs for list_self_hosted_runners_for_repo](https://docs.github.com/rest/reference/actions#list-self-hosted-runners-for-a-repository)
+    /// Authenticated users must have admin access to the repository to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_self_hosted_runners_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#list-self-hosted-runners-for-a-repository)
     ///
     /// ---
-    pub async fn list_self_hosted_runners_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnersForRepoParams>>) -> Result<GetActionsListSelfHostedRunnersForRepoResponse200, ActionsListSelfHostedRunnersForRepoError> {
+    pub async fn list_self_hosted_runners_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnersForRepoParams<'api>>>) -> Result<GetActionsListSelfHostedRunnersForRepoResponse200, ActionsListSelfHostedRunnersForRepoError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/runners", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -9078,13 +11852,17 @@ impl<'api> Actions<'api> {
     ///
     /// # List self-hosted runners for a repository
     ///
-    /// Lists all self-hosted runners configured in a repository. You must authenticate using an access token with the `repo` scope to use this endpoint.
+    /// Lists all self-hosted runners configured in a repository.
     /// 
-    /// [GitHub API docs for list_self_hosted_runners_for_repo](https://docs.github.com/rest/reference/actions#list-self-hosted-runners-for-a-repository)
+    /// Authenticated users must have admin access to the repository to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_self_hosted_runners_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#list-self-hosted-runners-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_self_hosted_runners_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnersForRepoParams>>) -> Result<GetActionsListSelfHostedRunnersForRepoResponse200, ActionsListSelfHostedRunnersForRepoError> {
+    pub fn list_self_hosted_runners_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnersForRepoParams<'api>>>) -> Result<GetActionsListSelfHostedRunnersForRepoResponse200, ActionsListSelfHostedRunnersForRepoError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/runners", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -9120,108 +11898,18 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # List self-hosted runners in a group for an organization
-    ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
-    /// 
-    /// Lists self-hosted runners that are in a specific organization group.
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for list_self_hosted_runners_in_group_for_org](https://docs.github.com/rest/reference/actions#list-self-hosted-runners-in-a-group-for-an-organization)
-    ///
-    /// ---
-    pub async fn list_self_hosted_runners_in_group_for_org_async(&self, org: &str, runner_group_id: i32, query_params: Option<impl Into<ActionsListSelfHostedRunnersInGroupForOrgParams>>) -> Result<GetActionsListSelfHostedRunnersInGroupForOrgResponse200, ActionsListSelfHostedRunnersInGroupForOrgError> {
-
-        let mut request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/runners", super::GITHUB_BASE_API_URL, org, runner_group_id);
-
-        if let Some(params) = query_params {
-            request_uri.push_str("?");
-            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
-        }
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch_async(request).await?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
-        } else {
-            match github_response.status_code() {
-                code => Err(ActionsListSelfHostedRunnersInGroupForOrgError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # List self-hosted runners in a group for an organization
-    ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
-    /// 
-    /// Lists self-hosted runners that are in a specific organization group.
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for list_self_hosted_runners_in_group_for_org](https://docs.github.com/rest/reference/actions#list-self-hosted-runners-in-a-group-for-an-organization)
-    ///
-    /// ---
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_self_hosted_runners_in_group_for_org(&self, org: &str, runner_group_id: i32, query_params: Option<impl Into<ActionsListSelfHostedRunnersInGroupForOrgParams>>) -> Result<GetActionsListSelfHostedRunnersInGroupForOrgResponse200, ActionsListSelfHostedRunnersInGroupForOrgError> {
-
-        let mut request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/runners", super::GITHUB_BASE_API_URL, org, runner_group_id);
-
-        if let Some(params) = query_params {
-            request_uri.push_str("?");
-            let qp: ActionsListSelfHostedRunnersInGroupForOrgParams = params.into();
-            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
-        }
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch(request)?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
-        } else {
-            match github_response.status_code() {
-                code => Err(ActionsListSelfHostedRunnersInGroupForOrgError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
     /// # List workflow run artifacts
     ///
-    /// Lists artifacts for a workflow run. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// Lists artifacts for a workflow run.
     /// 
-    /// [GitHub API docs for list_workflow_run_artifacts](https://docs.github.com/rest/reference/actions#list-workflow-run-artifacts)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for list_workflow_run_artifacts](https://docs.github.com/rest/actions/artifacts#list-workflow-run-artifacts)
     ///
     /// ---
-    pub async fn list_workflow_run_artifacts_async(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsListWorkflowRunArtifactsParams>>) -> Result<GetActionsListWorkflowRunArtifactsResponse200, ActionsListWorkflowRunArtifactsError> {
+    pub async fn list_workflow_run_artifacts_async(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsListWorkflowRunArtifactsParams<'api>>>) -> Result<GetActionsListWorkflowRunArtifactsResponse200, ActionsListWorkflowRunArtifactsError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/runs/{}/artifacts", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
@@ -9258,13 +11946,17 @@ impl<'api> Actions<'api> {
     ///
     /// # List workflow run artifacts
     ///
-    /// Lists artifacts for a workflow run. Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// Lists artifacts for a workflow run.
     /// 
-    /// [GitHub API docs for list_workflow_run_artifacts](https://docs.github.com/rest/reference/actions#list-workflow-run-artifacts)
+    /// Anyone with read access to the repository can use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for list_workflow_run_artifacts](https://docs.github.com/rest/actions/artifacts#list-workflow-run-artifacts)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_workflow_run_artifacts(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsListWorkflowRunArtifactsParams>>) -> Result<GetActionsListWorkflowRunArtifactsResponse200, ActionsListWorkflowRunArtifactsError> {
+    pub fn list_workflow_run_artifacts(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsListWorkflowRunArtifactsParams<'api>>>) -> Result<GetActionsListWorkflowRunArtifactsResponse200, ActionsListWorkflowRunArtifactsError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/runs/{}/artifacts", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
@@ -9300,13 +11992,15 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # List workflow runs
+    /// # List workflow runs for a workflow
     ///
-    /// List all workflow runs for a workflow. You can replace `workflow_id` with the workflow file name. For example, you could use `main.yaml`. You can use parameters to narrow the list of results. For more information about using parameters, see [Parameters](https://docs.github.com/rest/overview/resources-in-the-rest-api#parameters).
+    /// List all workflow runs for a workflow. You can replace `workflow_id` with the workflow file name. For example, you could use `main.yaml`. You can use parameters to narrow the list of results. For more information about using parameters, see [Parameters](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#parameters).
     /// 
-    /// Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope.
+    /// Anyone with read access to the repository can use this endpoint
     /// 
-    /// [GitHub API docs for list_workflow_runs](https://docs.github.com/rest/reference/actions#list-workflow-runs)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for list_workflow_runs](https://docs.github.com/rest/actions/workflow-runs#list-workflow-runs-for-a-workflow)
     ///
     /// ---
     pub async fn list_workflow_runs_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId, query_params: Option<impl Into<ActionsListWorkflowRunsParams<'api>>>) -> Result<GetActionsListWorkflowRunsResponse200, ActionsListWorkflowRunsError> {
@@ -9344,13 +12038,15 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # List workflow runs
+    /// # List workflow runs for a workflow
     ///
-    /// List all workflow runs for a workflow. You can replace `workflow_id` with the workflow file name. For example, you could use `main.yaml`. You can use parameters to narrow the list of results. For more information about using parameters, see [Parameters](https://docs.github.com/rest/overview/resources-in-the-rest-api#parameters).
+    /// List all workflow runs for a workflow. You can replace `workflow_id` with the workflow file name. For example, you could use `main.yaml`. You can use parameters to narrow the list of results. For more information about using parameters, see [Parameters](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#parameters).
     /// 
-    /// Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope.
+    /// Anyone with read access to the repository can use this endpoint
     /// 
-    /// [GitHub API docs for list_workflow_runs](https://docs.github.com/rest/reference/actions#list-workflow-runs)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for list_workflow_runs](https://docs.github.com/rest/actions/workflow-runs#list-workflow-runs-for-a-workflow)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -9392,11 +12088,15 @@ impl<'api> Actions<'api> {
     ///
     /// # List workflow runs for a repository
     ///
-    /// Lists all workflow runs for a repository. You can use parameters to narrow the list of results. For more information about using parameters, see [Parameters](https://docs.github.com/rest/overview/resources-in-the-rest-api#parameters).
+    /// Lists all workflow runs for a repository. You can use parameters to narrow the list of results. For more information about using parameters, see [Parameters](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#parameters).
     /// 
-    /// Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// Anyone with read access to the repository can use this endpoint.
     /// 
-    /// [GitHub API docs for list_workflow_runs_for_repo](https://docs.github.com/rest/reference/actions#list-workflow-runs-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    /// 
+    /// This API will return up to 1,000 results for each search when using the following parameters: `actor`, `branch`, `check_suite_id`, `created`, `event`, `head_sha`, `status`.
+    ///
+    /// [GitHub API docs for list_workflow_runs_for_repo](https://docs.github.com/rest/actions/workflow-runs#list-workflow-runs-for-a-repository)
     ///
     /// ---
     pub async fn list_workflow_runs_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListWorkflowRunsForRepoParams<'api>>>) -> Result<GetActionsListWorkflowRunsResponse200, ActionsListWorkflowRunsForRepoError> {
@@ -9436,11 +12136,15 @@ impl<'api> Actions<'api> {
     ///
     /// # List workflow runs for a repository
     ///
-    /// Lists all workflow runs for a repository. You can use parameters to narrow the list of results. For more information about using parameters, see [Parameters](https://docs.github.com/rest/overview/resources-in-the-rest-api#parameters).
+    /// Lists all workflow runs for a repository. You can use parameters to narrow the list of results. For more information about using parameters, see [Parameters](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#parameters).
     /// 
-    /// Anyone with read access to the repository can use this endpoint. If the repository is private you must use an access token with the `repo` scope. GitHub Apps must have the `actions:read` permission to use this endpoint.
+    /// Anyone with read access to the repository can use this endpoint.
     /// 
-    /// [GitHub API docs for list_workflow_runs_for_repo](https://docs.github.com/rest/reference/actions#list-workflow-runs-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    /// 
+    /// This API will return up to 1,000 results for each search when using the following parameters: `actor`, `branch`, `check_suite_id`, `created`, `event`, `head_sha`, `status`.
+    ///
+    /// [GitHub API docs for list_workflow_runs_for_repo](https://docs.github.com/rest/actions/workflow-runs#list-workflow-runs-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -9480,21 +12184,106 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # Re-run a workflow
+    /// # Re-run a job from a workflow run
     ///
-    /// Re-runs your workflow run using its `id`. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
+    /// Re-run a job and its dependent jobs in a workflow run.
     /// 
-    /// [GitHub API docs for re_run_workflow](https://docs.github.com/rest/reference/actions#re-run-a-workflow)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for re_run_job_for_workflow_run](https://docs.github.com/rest/actions/workflow-runs#re-run-a-job-from-a-workflow-run)
     ///
     /// ---
-    pub async fn re_run_workflow_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<HashMap<String, Value>, ActionsReRunWorkflowError> {
+    pub async fn re_run_job_for_workflow_run_async(&self, owner: &str, repo: &str, job_id: i32, body: PostActionsReRunJobForWorkflowRun) -> Result<EmptyObject, ActionsReRunJobForWorkflowRunError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/jobs/{}/rerun", super::GITHUB_BASE_API_URL, owner, repo, job_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostActionsReRunJobForWorkflowRun::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(ActionsReRunJobForWorkflowRunError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ActionsReRunJobForWorkflowRunError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Re-run a job from a workflow run
+    ///
+    /// Re-run a job and its dependent jobs in a workflow run.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for re_run_job_for_workflow_run](https://docs.github.com/rest/actions/workflow-runs#re-run-a-job-from-a-workflow-run)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn re_run_job_for_workflow_run(&self, owner: &str, repo: &str, job_id: i32, body: PostActionsReRunJobForWorkflowRun) -> Result<EmptyObject, ActionsReRunJobForWorkflowRunError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/jobs/{}/rerun", super::GITHUB_BASE_API_URL, owner, repo, job_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostActionsReRunJobForWorkflowRun::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(ActionsReRunJobForWorkflowRunError::Status403(crate::adapters::to_json(github_response)?)),
+                code => Err(ActionsReRunJobForWorkflowRunError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Re-run a workflow
+    ///
+    /// Re-runs your workflow run using its `id`.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for re_run_workflow](https://docs.github.com/rest/actions/workflow-runs#re-run-a-workflow)
+    ///
+    /// ---
+    pub async fn re_run_workflow_async(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReRunWorkflow) -> Result<EmptyObject, ActionsReRunWorkflowError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/rerun", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: Some(PostActionsReRunWorkflow::from_json(body)?),
             method: "POST",
             headers: vec![]
         };
@@ -9520,20 +12309,22 @@ impl<'api> Actions<'api> {
     ///
     /// # Re-run a workflow
     ///
-    /// Re-runs your workflow run using its `id`. You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `actions:write` permission to use this endpoint.
+    /// Re-runs your workflow run using its `id`.
     /// 
-    /// [GitHub API docs for re_run_workflow](https://docs.github.com/rest/reference/actions#re-run-a-workflow)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for re_run_workflow](https://docs.github.com/rest/actions/workflow-runs#re-run-a-workflow)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn re_run_workflow(&self, owner: &str, repo: &str, run_id: i32) -> Result<HashMap<String, Value>, ActionsReRunWorkflowError> {
+    pub fn re_run_workflow(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReRunWorkflow) -> Result<EmptyObject, ActionsReRunWorkflowError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/rerun", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: Some(PostActionsReRunWorkflow::from_json(body)?),
             method: "POST",
             headers: vec![]
         };
@@ -9557,14 +12348,97 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
+    /// # Re-run failed jobs from a workflow run
+    ///
+    /// Re-run all of the failed jobs and their dependent jobs in a workflow run using the `id` of the workflow run.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for re_run_workflow_failed_jobs](https://docs.github.com/rest/actions/workflow-runs#re-run-failed-jobs-from-a-workflow-run)
+    ///
+    /// ---
+    pub async fn re_run_workflow_failed_jobs_async(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReRunWorkflowFailedJobs) -> Result<EmptyObject, ActionsReRunWorkflowFailedJobsError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/rerun-failed-jobs", super::GITHUB_BASE_API_URL, owner, repo, run_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostActionsReRunWorkflowFailedJobs::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsReRunWorkflowFailedJobsError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Re-run failed jobs from a workflow run
+    ///
+    /// Re-run all of the failed jobs and their dependent jobs in a workflow run using the `id` of the workflow run.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for re_run_workflow_failed_jobs](https://docs.github.com/rest/actions/workflow-runs#re-run-failed-jobs-from-a-workflow-run)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn re_run_workflow_failed_jobs(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReRunWorkflowFailedJobs) -> Result<EmptyObject, ActionsReRunWorkflowFailedJobsError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/rerun-failed-jobs", super::GITHUB_BASE_API_URL, owner, repo, run_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostActionsReRunWorkflowFailedJobs::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsReRunWorkflowFailedJobsError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Remove all custom labels from a self-hosted runner for an organization
     ///
     /// Remove all custom labels from a self-hosted runner configured in an
     /// organization. Returns the remaining read-only labels from the runner.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for remove_all_custom_labels_from_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#remove-all-custom-labels-from-a-self-hosted-runner-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for remove_all_custom_labels_from_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#remove-all-custom-labels-from-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
     pub async fn remove_all_custom_labels_from_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForOrgError> {
@@ -9604,9 +12478,11 @@ impl<'api> Actions<'api> {
     /// Remove all custom labels from a self-hosted runner configured in an
     /// organization. Returns the remaining read-only labels from the runner.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for remove_all_custom_labels_from_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#remove-all-custom-labels-from-a-self-hosted-runner-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for remove_all_custom_labels_from_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#remove-all-custom-labels-from-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -9647,10 +12523,11 @@ impl<'api> Actions<'api> {
     /// Remove all custom labels from a self-hosted runner configured in a
     /// repository. Returns the remaining read-only labels from the runner.
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this
-    /// endpoint.
+    /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
-    /// [GitHub API docs for remove_all_custom_labels_from_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#remove-all-custom-labels-from-a-self-hosted-runner-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for remove_all_custom_labels_from_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#remove-all-custom-labels-from-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
     pub async fn remove_all_custom_labels_from_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForRepoError> {
@@ -9690,10 +12567,11 @@ impl<'api> Actions<'api> {
     /// Remove all custom labels from a self-hosted runner configured in a
     /// repository. Returns the remaining read-only labels from the runner.
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this
-    /// endpoint.
+    /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
-    /// [GitHub API docs for remove_all_custom_labels_from_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#remove-all-custom-labels-from-a-self-hosted-runner-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for remove_all_custom_labels_from_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#remove-all-custom-labels-from-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -9737,9 +12615,11 @@ impl<'api> Actions<'api> {
     /// This endpoint returns a `404 Not Found` status if the custom label is not
     /// present on the runner.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for remove_custom_label_from_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#remove-a-custom-label-from-a-self-hosted-runner-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for remove_custom_label_from_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#remove-a-custom-label-from-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
     pub async fn remove_custom_label_from_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32, name: &str) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError> {
@@ -9783,9 +12663,11 @@ impl<'api> Actions<'api> {
     /// This endpoint returns a `404 Not Found` status if the custom label is not
     /// present on the runner.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for remove_custom_label_from_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#remove-a-custom-label-from-a-self-hosted-runner-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for remove_custom_label_from_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#remove-a-custom-label-from-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -9830,10 +12712,11 @@ impl<'api> Actions<'api> {
     /// This endpoint returns a `404 Not Found` status if the custom label is not
     /// present on the runner.
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this
-    /// endpoint.
+    /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
-    /// [GitHub API docs for remove_custom_label_from_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#remove-a-custom-label-from-a-self-hosted-runner-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for remove_custom_label_from_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#remove-a-custom-label-from-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
     pub async fn remove_custom_label_from_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32, name: &str) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError> {
@@ -9877,10 +12760,11 @@ impl<'api> Actions<'api> {
     /// This endpoint returns a `404 Not Found` status if the custom label is not
     /// present on the runner.
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this
-    /// endpoint.
+    /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
-    /// [GitHub API docs for remove_custom_label_from_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#remove-a-custom-label-from-a-self-hosted-runner-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for remove_custom_label_from_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#remove-a-custom-label-from-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -9917,98 +12801,17 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # Remove repository access to a self-hosted runner group in an organization
-    ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
-    /// 
-    /// 
-    /// Removes a repository from the list of selected repositories that can access a self-hosted runner group. The runner group must have `visibility` set to `selected`. For more information, see "[Create a self-hosted runner group for an organization](#create-a-self-hosted-runner-group-for-an-organization)."
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for remove_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/reference/actions#remove-repository-access-to-a-self-hosted-runner-group-in-an-organization)
-    ///
-    /// ---
-    pub async fn remove_repo_access_to_self_hosted_runner_group_in_org_async(&self, org: &str, runner_group_id: i32, repository_id: i32) -> Result<(), ActionsRemoveRepoAccessToSelfHostedRunnerGroupInOrgError> {
-
-        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, runner_group_id, repository_id);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "DELETE",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch_async(request).await?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
-        } else {
-            match github_response.status_code() {
-                code => Err(ActionsRemoveRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Remove repository access to a self-hosted runner group in an organization
-    ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
-    /// 
-    /// 
-    /// Removes a repository from the list of selected repositories that can access a self-hosted runner group. The runner group must have `visibility` set to `selected`. For more information, see "[Create a self-hosted runner group for an organization](#create-a-self-hosted-runner-group-for-an-organization)."
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for remove_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/reference/actions#remove-repository-access-to-a-self-hosted-runner-group-in-an-organization)
-    ///
-    /// ---
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_repo_access_to_self_hosted_runner_group_in_org(&self, org: &str, runner_group_id: i32, repository_id: i32) -> Result<(), ActionsRemoveRepoAccessToSelfHostedRunnerGroupInOrgError> {
-
-        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, runner_group_id, repository_id);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "DELETE",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch(request)?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
-        } else {
-            match github_response.status_code() {
-                code => Err(ActionsRemoveRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
     /// # Remove selected repository from an organization secret
     ///
-    /// Removes a repository from an organization secret when the `visibility` for repository access is set to `selected`. The visibility is set when you [Create or update an organization secret](https://docs.github.com/rest/reference/actions#create-or-update-an-organization-secret). You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
+    /// Removes a repository from an organization secret when the `visibility`
+    /// for repository access is set to `selected`. The visibility is set when you [Create
+    /// or update an organization secret](https://docs.github.com/rest/actions/secrets#create-or-update-an-organization-secret).
     /// 
-    /// [GitHub API docs for remove_selected_repo_from_org_secret](https://docs.github.com/rest/reference/actions#remove-selected-repository-from-an-organization-secret)
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for remove_selected_repo_from_org_secret](https://docs.github.com/rest/actions/secrets#remove-selected-repository-from-an-organization-secret)
     ///
     /// ---
     pub async fn remove_selected_repo_from_org_secret_async(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), ActionsRemoveSelectedRepoFromOrgSecretError> {
@@ -10045,9 +12848,15 @@ impl<'api> Actions<'api> {
     ///
     /// # Remove selected repository from an organization secret
     ///
-    /// Removes a repository from an organization secret when the `visibility` for repository access is set to `selected`. The visibility is set when you [Create or update an organization secret](https://docs.github.com/rest/reference/actions#create-or-update-an-organization-secret). You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
+    /// Removes a repository from an organization secret when the `visibility`
+    /// for repository access is set to `selected`. The visibility is set when you [Create
+    /// or update an organization secret](https://docs.github.com/rest/actions/secrets#create-or-update-an-organization-secret).
     /// 
-    /// [GitHub API docs for remove_selected_repo_from_org_secret](https://docs.github.com/rest/reference/actions#remove-selected-repository-from-an-organization-secret)
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for remove_selected_repo_from_org_secret](https://docs.github.com/rest/actions/secrets#remove-selected-repository-from-an-organization-secret)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -10083,21 +12892,22 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # Remove a self-hosted runner from a group for an organization
+    /// # Remove selected repository from an organization variable
     ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
+    /// Removes a repository from an organization variable that is
+    /// available to selected repositories. Organization variables that are available to
+    /// selected repositories have their `visibility` field set to `selected`.
     /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
-    /// Removes a self-hosted runner from a group configured in an organization. The runner is then returned to the default group.
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for remove_self_hosted_runner_from_group_for_org](https://docs.github.com/rest/reference/actions#remove-a-self-hosted-runner-from-a-group-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for remove_selected_repo_from_org_variable](https://docs.github.com/rest/actions/variables#remove-selected-repository-from-an-organization-variable)
     ///
     /// ---
-    pub async fn remove_self_hosted_runner_from_group_for_org_async(&self, org: &str, runner_group_id: i32, runner_id: i32) -> Result<(), ActionsRemoveSelfHostedRunnerFromGroupForOrgError> {
+    pub async fn remove_selected_repo_from_org_variable_async(&self, org: &str, name: &str, repository_id: i32) -> Result<(), ActionsRemoveSelectedRepoFromOrgVariableError> {
 
-        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/runners/{}", super::GITHUB_BASE_API_URL, org, runner_group_id, runner_id);
+        let request_uri = format!("{}/orgs/{}/actions/variables/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, name, repository_id);
 
 
         let req = GitHubRequest {
@@ -10119,29 +12929,31 @@ impl<'api> Actions<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsRemoveSelfHostedRunnerFromGroupForOrgError::Generic { code }),
+                409 => Err(ActionsRemoveSelectedRepoFromOrgVariableError::Status409),
+                code => Err(ActionsRemoveSelectedRepoFromOrgVariableError::Generic { code }),
             }
         }
     }
 
     /// ---
     ///
-    /// # Remove a self-hosted runner from a group for an organization
+    /// # Remove selected repository from an organization variable
     ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
+    /// Removes a repository from an organization variable that is
+    /// available to selected repositories. Organization variables that are available to
+    /// selected repositories have their `visibility` field set to `selected`.
     /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
-    /// Removes a self-hosted runner from a group configured in an organization. The runner is then returned to the default group.
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for remove_self_hosted_runner_from_group_for_org](https://docs.github.com/rest/reference/actions#remove-a-self-hosted-runner-from-a-group-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for remove_selected_repo_from_org_variable](https://docs.github.com/rest/actions/variables#remove-selected-repository-from-an-organization-variable)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_self_hosted_runner_from_group_for_org(&self, org: &str, runner_group_id: i32, runner_id: i32) -> Result<(), ActionsRemoveSelfHostedRunnerFromGroupForOrgError> {
+    pub fn remove_selected_repo_from_org_variable(&self, org: &str, name: &str, repository_id: i32) -> Result<(), ActionsRemoveSelectedRepoFromOrgVariableError> {
 
-        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/runners/{}", super::GITHUB_BASE_API_URL, org, runner_group_id, runner_id);
+        let request_uri = format!("{}/orgs/{}/actions/variables/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, name, repository_id);
 
 
         let req = GitHubRequest {
@@ -10163,7 +12975,95 @@ impl<'api> Actions<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsRemoveSelfHostedRunnerFromGroupForOrgError::Generic { code }),
+                409 => Err(ActionsRemoveSelectedRepoFromOrgVariableError::Status409),
+                code => Err(ActionsRemoveSelectedRepoFromOrgVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Review custom deployment protection rules for a workflow run
+    ///
+    /// Approve or reject custom deployment protection rules provided by a GitHub App for a workflow run. For more information, see "[Using environments for deployment](https://docs.github.com/actions/deployment/targeting-different-environments/using-environments-for-deployment)."
+    /// 
+    /// > [!NOTE]
+    /// > GitHub Apps can only review their own custom deployment protection rules. To approve or reject pending deployments that are waiting for review from a specific person or team, see [`POST /repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments`](/rest/actions/workflow-runs#review-pending-deployments-for-a-workflow-run).
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for review_custom_gates_for_run](https://docs.github.com/rest/actions/workflow-runs#review-custom-deployment-protection-rules-for-a-workflow-run)
+    ///
+    /// ---
+    pub async fn review_custom_gates_for_run_async(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReviewCustomGatesForRun) -> Result<(), ActionsReviewCustomGatesForRunError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/deployment_protection_rule", super::GITHUB_BASE_API_URL, owner, repo, run_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostActionsReviewCustomGatesForRun::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsReviewCustomGatesForRunError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Review custom deployment protection rules for a workflow run
+    ///
+    /// Approve or reject custom deployment protection rules provided by a GitHub App for a workflow run. For more information, see "[Using environments for deployment](https://docs.github.com/actions/deployment/targeting-different-environments/using-environments-for-deployment)."
+    /// 
+    /// > [!NOTE]
+    /// > GitHub Apps can only review their own custom deployment protection rules. To approve or reject pending deployments that are waiting for review from a specific person or team, see [`POST /repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments`](/rest/actions/workflow-runs#review-pending-deployments-for-a-workflow-run).
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    ///
+    /// [GitHub API docs for review_custom_gates_for_run](https://docs.github.com/rest/actions/workflow-runs#review-custom-deployment-protection-rules-for-a-workflow-run)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn review_custom_gates_for_run(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReviewCustomGatesForRun) -> Result<(), ActionsReviewCustomGatesForRunError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/deployment_protection_rule", super::GITHUB_BASE_API_URL, owner, repo, run_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostActionsReviewCustomGatesForRun::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsReviewCustomGatesForRunError::Generic { code }),
             }
         }
     }
@@ -10174,9 +13074,11 @@ impl<'api> Actions<'api> {
     ///
     /// Approve or reject pending deployments that are waiting on approval by a required reviewer.
     /// 
-    /// Anyone with read access to the repository contents and deployments can use this endpoint.
+    /// Required reviewers with read access to the repository contents and deployments can use this endpoint.
     /// 
-    /// [GitHub API docs for review_pending_deployments_for_run](https://docs.github.com/rest/reference/actions#review-pending-deployments-for-a-workflow-run)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for review_pending_deployments_for_run](https://docs.github.com/rest/actions/workflow-runs#review-pending-deployments-for-a-workflow-run)
     ///
     /// ---
     pub async fn review_pending_deployments_for_run_async(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReviewPendingDeploymentsForRun) -> Result<Vec<Deployment>, ActionsReviewPendingDeploymentsForRunError> {
@@ -10214,9 +13116,11 @@ impl<'api> Actions<'api> {
     ///
     /// Approve or reject pending deployments that are waiting on approval by a required reviewer.
     /// 
-    /// Anyone with read access to the repository contents and deployments can use this endpoint.
+    /// Required reviewers with read access to the repository contents and deployments can use this endpoint.
     /// 
-    /// [GitHub API docs for review_pending_deployments_for_run](https://docs.github.com/rest/reference/actions#review-pending-deployments-for-a-workflow-run)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for review_pending_deployments_for_run](https://docs.github.com/rest/actions/workflow-runs#review-pending-deployments-for-a-workflow-run)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -10251,17 +13155,13 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # Set allowed actions for an organization
+    /// # Set allowed actions and reusable workflows for an organization
     ///
-    /// Sets the actions that are allowed in an organization. To use this endpoint, the organization permission policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
+    /// Sets the actions and reusable workflows that are allowed in an organization. To use this endpoint, the organization permission policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
     /// 
-    /// If the organization belongs to an enterprise that has `selected` actions set at the enterprise level, then you cannot override any of the enterprise's allowed actions settings.
-    /// 
-    /// To use the `patterns_allowed` setting for private repositories, the organization must belong to an enterprise. If the organization does not belong to an enterprise, then the `patterns_allowed` setting only applies to public repositories in the organization.
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
-    /// 
-    /// [GitHub API docs for set_allowed_actions_organization](https://docs.github.com/rest/reference/actions#set-allowed-actions-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_allowed_actions_organization](https://docs.github.com/rest/actions/permissions#set-allowed-actions-and-reusable-workflows-for-an-organization)
     ///
     /// ---
     pub async fn set_allowed_actions_organization_async(&self, org: &str, body: PutActionsSetAllowedActionsRepository) -> Result<(), ActionsSetAllowedActionsOrganizationError> {
@@ -10295,17 +13195,13 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # Set allowed actions for an organization
+    /// # Set allowed actions and reusable workflows for an organization
     ///
-    /// Sets the actions that are allowed in an organization. To use this endpoint, the organization permission policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
+    /// Sets the actions and reusable workflows that are allowed in an organization. To use this endpoint, the organization permission policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
     /// 
-    /// If the organization belongs to an enterprise that has `selected` actions set at the enterprise level, then you cannot override any of the enterprise's allowed actions settings.
-    /// 
-    /// To use the `patterns_allowed` setting for private repositories, the organization must belong to an enterprise. If the organization does not belong to an enterprise, then the `patterns_allowed` setting only applies to public repositories in the organization.
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
-    /// 
-    /// [GitHub API docs for set_allowed_actions_organization](https://docs.github.com/rest/reference/actions#set-allowed-actions-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_allowed_actions_organization](https://docs.github.com/rest/actions/permissions#set-allowed-actions-and-reusable-workflows-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -10340,17 +13236,13 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # Set allowed actions for a repository
+    /// # Set allowed actions and reusable workflows for a repository
     ///
-    /// Sets the actions that are allowed in a repository. To use this endpoint, the repository permission policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for a repository](#set-github-actions-permissions-for-a-repository)."
+    /// Sets the actions and reusable workflows that are allowed in a repository. To use this endpoint, the repository permission policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for a repository](#set-github-actions-permissions-for-a-repository)."
     /// 
-    /// If the repository belongs to an organization or enterprise that has `selected` actions set at the organization or enterprise levels, then you cannot override any of the allowed actions settings.
-    /// 
-    /// To use the `patterns_allowed` setting for private repositories, the repository must belong to an enterprise. If the repository does not belong to an enterprise, then the `patterns_allowed` setting only applies to public repositories.
-    /// 
-    /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `administration` repository permission to use this API.
-    /// 
-    /// [GitHub API docs for set_allowed_actions_repository](https://docs.github.com/rest/reference/actions#set-allowed-actions-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_allowed_actions_repository](https://docs.github.com/rest/actions/permissions#set-allowed-actions-and-reusable-workflows-for-a-repository)
     ///
     /// ---
     pub async fn set_allowed_actions_repository_async(&self, owner: &str, repo: &str, body: PutActionsSetAllowedActionsRepository) -> Result<(), ActionsSetAllowedActionsRepositoryError> {
@@ -10384,17 +13276,13 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # Set allowed actions for a repository
+    /// # Set allowed actions and reusable workflows for a repository
     ///
-    /// Sets the actions that are allowed in a repository. To use this endpoint, the repository permission policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for a repository](#set-github-actions-permissions-for-a-repository)."
+    /// Sets the actions and reusable workflows that are allowed in a repository. To use this endpoint, the repository permission policy for `allowed_actions` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for a repository](#set-github-actions-permissions-for-a-repository)."
     /// 
-    /// If the repository belongs to an organization or enterprise that has `selected` actions set at the organization or enterprise levels, then you cannot override any of the allowed actions settings.
-    /// 
-    /// To use the `patterns_allowed` setting for private repositories, the repository must belong to an enterprise. If the repository does not belong to an enterprise, then the `patterns_allowed` setting only applies to public repositories.
-    /// 
-    /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `administration` repository permission to use this API.
-    /// 
-    /// [GitHub API docs for set_allowed_actions_repository](https://docs.github.com/rest/reference/actions#set-allowed-actions-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_allowed_actions_repository](https://docs.github.com/rest/actions/permissions#set-allowed-actions-and-reusable-workflows-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -10434,9 +13322,11 @@ impl<'api> Actions<'api> {
     /// Remove all previous custom labels and set the new custom labels for a specific
     /// self-hosted runner configured in an organization.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for set_custom_labels_for_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#set-custom-labels-for-a-self-hosted-runner-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for set_custom_labels_for_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#set-custom-labels-for-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
     pub async fn set_custom_labels_for_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32, body: PutActionsSetCustomLabelsForSelfHostedRunnerForOrg) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsSetCustomLabelsForSelfHostedRunnerForOrgError> {
@@ -10477,9 +13367,11 @@ impl<'api> Actions<'api> {
     /// Remove all previous custom labels and set the new custom labels for a specific
     /// self-hosted runner configured in an organization.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
+    /// Authenticated users must have admin access to the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for set_custom_labels_for_self_hosted_runner_for_org](https://docs.github.com/rest/reference/actions#set-custom-labels-for-a-self-hosted-runner-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for set_custom_labels_for_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#set-custom-labels-for-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -10521,10 +13413,11 @@ impl<'api> Actions<'api> {
     /// Remove all previous custom labels and set the new custom labels for a specific
     /// self-hosted runner configured in a repository.
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this
-    /// endpoint.
+    /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
-    /// [GitHub API docs for set_custom_labels_for_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#set-custom-labels-for-a-self-hosted-runner-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_custom_labels_for_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#set-custom-labels-for-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
     pub async fn set_custom_labels_for_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32, body: PutActionsSetCustomLabelsForSelfHostedRunnerForRepo) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsSetCustomLabelsForSelfHostedRunnerForRepoError> {
@@ -10565,10 +13458,11 @@ impl<'api> Actions<'api> {
     /// Remove all previous custom labels and set the new custom labels for a specific
     /// self-hosted runner configured in a repository.
     /// 
-    /// You must authenticate using an access token with the `repo` scope to use this
-    /// endpoint.
+    /// Authenticated users must have admin access to the repository to use this endpoint.
     /// 
-    /// [GitHub API docs for set_custom_labels_for_self_hosted_runner_for_repo](https://docs.github.com/rest/reference/actions#set-custom-labels-for-a-self-hosted-runner-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_custom_labels_for_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#set-custom-labels-for-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -10605,15 +13499,272 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
+    /// # Set the customization template for an OIDC subject claim for a repository
+    ///
+    /// Sets the customization template and `opt-in` or `opt-out` flag for an OpenID Connect (OIDC) subject claim for a repository.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_custom_oidc_sub_claim_for_repo](https://docs.github.com/rest/actions/oidc#set-the-customization-template-for-an-oidc-subject-claim-for-a-repository)
+    ///
+    /// ---
+    pub async fn set_custom_oidc_sub_claim_for_repo_async(&self, owner: &str, repo: &str, body: ActionsOidcSubjectCustomizationForARepository) -> Result<EmptyObject, ActionsSetCustomOidcSubClaimForRepoError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/oidc/customization/sub", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(ActionsOidcSubjectCustomizationForARepository::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsSetCustomOidcSubClaimForRepoError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                400 => Err(ActionsSetCustomOidcSubClaimForRepoError::Status400(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(ActionsSetCustomOidcSubClaimForRepoError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(ActionsSetCustomOidcSubClaimForRepoError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Set the customization template for an OIDC subject claim for a repository
+    ///
+    /// Sets the customization template and `opt-in` or `opt-out` flag for an OpenID Connect (OIDC) subject claim for a repository.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_custom_oidc_sub_claim_for_repo](https://docs.github.com/rest/actions/oidc#set-the-customization-template-for-an-oidc-subject-claim-for-a-repository)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn set_custom_oidc_sub_claim_for_repo(&self, owner: &str, repo: &str, body: ActionsOidcSubjectCustomizationForARepository) -> Result<EmptyObject, ActionsSetCustomOidcSubClaimForRepoError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/oidc/customization/sub", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(ActionsOidcSubjectCustomizationForARepository::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(ActionsSetCustomOidcSubClaimForRepoError::Status404(crate::adapters::to_json(github_response)?)),
+                400 => Err(ActionsSetCustomOidcSubClaimForRepoError::Status400(crate::adapters::to_json(github_response)?)),
+                422 => Err(ActionsSetCustomOidcSubClaimForRepoError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(ActionsSetCustomOidcSubClaimForRepoError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Set default workflow permissions for an organization
+    ///
+    /// Sets the default workflow permissions granted to the `GITHUB_TOKEN` when running workflows in an organization, and sets if GitHub Actions
+    /// can submit approving pull request reviews. For more information, see
+    /// "[Setting the permissions of the GITHUB_TOKEN for your organization](https://docs.github.com/organizations/managing-organization-settings/disabling-or-limiting-github-actions-for-your-organization#setting-the-permissions-of-the-github_token-for-your-organization)."
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_github_actions_default_workflow_permissions_organization](https://docs.github.com/rest/actions/permissions#set-default-workflow-permissions-for-an-organization)
+    ///
+    /// ---
+    pub async fn set_github_actions_default_workflow_permissions_organization_async(&self, org: &str, body: PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository) -> Result<(), ActionsSetGithubActionsDefaultWorkflowPermissionsOrganizationError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/permissions/workflow", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsSetGithubActionsDefaultWorkflowPermissionsOrganizationError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Set default workflow permissions for an organization
+    ///
+    /// Sets the default workflow permissions granted to the `GITHUB_TOKEN` when running workflows in an organization, and sets if GitHub Actions
+    /// can submit approving pull request reviews. For more information, see
+    /// "[Setting the permissions of the GITHUB_TOKEN for your organization](https://docs.github.com/organizations/managing-organization-settings/disabling-or-limiting-github-actions-for-your-organization#setting-the-permissions-of-the-github_token-for-your-organization)."
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_github_actions_default_workflow_permissions_organization](https://docs.github.com/rest/actions/permissions#set-default-workflow-permissions-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn set_github_actions_default_workflow_permissions_organization(&self, org: &str, body: PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository) -> Result<(), ActionsSetGithubActionsDefaultWorkflowPermissionsOrganizationError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/permissions/workflow", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsSetGithubActionsDefaultWorkflowPermissionsOrganizationError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Set default workflow permissions for a repository
+    ///
+    /// Sets the default workflow permissions granted to the `GITHUB_TOKEN` when running workflows in a repository, and sets if GitHub Actions
+    /// can submit approving pull request reviews.
+    /// For more information, see "[Setting the permissions of the GITHUB_TOKEN for your repository](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#setting-the-permissions-of-the-github_token-for-your-repository)."
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_github_actions_default_workflow_permissions_repository](https://docs.github.com/rest/actions/permissions#set-default-workflow-permissions-for-a-repository)
+    ///
+    /// ---
+    pub async fn set_github_actions_default_workflow_permissions_repository_async(&self, owner: &str, repo: &str, body: PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository) -> Result<(), ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/permissions/workflow", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                409 => Err(ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError::Status409),
+                code => Err(ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Set default workflow permissions for a repository
+    ///
+    /// Sets the default workflow permissions granted to the `GITHUB_TOKEN` when running workflows in a repository, and sets if GitHub Actions
+    /// can submit approving pull request reviews.
+    /// For more information, see "[Setting the permissions of the GITHUB_TOKEN for your repository](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#setting-the-permissions-of-the-github_token-for-your-repository)."
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_github_actions_default_workflow_permissions_repository](https://docs.github.com/rest/actions/permissions#set-default-workflow-permissions-for-a-repository)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn set_github_actions_default_workflow_permissions_repository(&self, owner: &str, repo: &str, body: PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository) -> Result<(), ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/permissions/workflow", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                409 => Err(ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError::Status409),
+                code => Err(ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Set GitHub Actions permissions for an organization
     ///
-    /// Sets the GitHub Actions permissions policy for repositories and allowed actions in an organization.
+    /// Sets the GitHub Actions permissions policy for repositories and allowed actions and reusable workflows in an organization.
     /// 
-    /// If the organization belongs to an enterprise that has set restrictive permissions at the enterprise level, such as `allowed_actions` to `selected` actions, then you cannot override them for the organization.
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
-    /// 
-    /// [GitHub API docs for set_github_actions_permissions_organization](https://docs.github.com/rest/reference/actions#set-github-actions-permissions-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_github_actions_permissions_organization](https://docs.github.com/rest/actions/permissions#set-github-actions-permissions-for-an-organization)
     ///
     /// ---
     pub async fn set_github_actions_permissions_organization_async(&self, org: &str, body: PutActionsSetGithubActionsPermissionsOrganization) -> Result<(), ActionsSetGithubActionsPermissionsOrganizationError> {
@@ -10649,13 +13800,11 @@ impl<'api> Actions<'api> {
     ///
     /// # Set GitHub Actions permissions for an organization
     ///
-    /// Sets the GitHub Actions permissions policy for repositories and allowed actions in an organization.
+    /// Sets the GitHub Actions permissions policy for repositories and allowed actions and reusable workflows in an organization.
     /// 
-    /// If the organization belongs to an enterprise that has set restrictive permissions at the enterprise level, such as `allowed_actions` to `selected` actions, then you cannot override them for the organization.
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
-    /// 
-    /// [GitHub API docs for set_github_actions_permissions_organization](https://docs.github.com/rest/reference/actions#set-github-actions-permissions-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_github_actions_permissions_organization](https://docs.github.com/rest/actions/permissions#set-github-actions-permissions-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -10692,13 +13841,11 @@ impl<'api> Actions<'api> {
     ///
     /// # Set GitHub Actions permissions for a repository
     ///
-    /// Sets the GitHub Actions permissions policy for enabling GitHub Actions and allowed actions in the repository.
+    /// Sets the GitHub Actions permissions policy for enabling GitHub Actions and allowed actions and reusable workflows in the repository.
     /// 
-    /// If the repository belongs to an organization or enterprise that has set restrictive permissions at the organization or enterprise levels, such as `allowed_actions` to `selected` actions, then you cannot override them for the repository.
-    /// 
-    /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `administration` repository permission to use this API.
-    /// 
-    /// [GitHub API docs for set_github_actions_permissions_repository](https://docs.github.com/rest/reference/actions#set-github-actions-permissions-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_github_actions_permissions_repository](https://docs.github.com/rest/actions/permissions#set-github-actions-permissions-for-a-repository)
     ///
     /// ---
     pub async fn set_github_actions_permissions_repository_async(&self, owner: &str, repo: &str, body: PutActionsSetGithubActionsPermissionsRepository) -> Result<(), ActionsSetGithubActionsPermissionsRepositoryError> {
@@ -10734,13 +13881,11 @@ impl<'api> Actions<'api> {
     ///
     /// # Set GitHub Actions permissions for a repository
     ///
-    /// Sets the GitHub Actions permissions policy for enabling GitHub Actions and allowed actions in the repository.
+    /// Sets the GitHub Actions permissions policy for enabling GitHub Actions and allowed actions and reusable workflows in the repository.
     /// 
-    /// If the repository belongs to an organization or enterprise that has set restrictive permissions at the organization or enterprise levels, such as `allowed_actions` to `selected` actions, then you cannot override them for the repository.
-    /// 
-    /// You must authenticate using an access token with the `repo` scope to use this endpoint. GitHub Apps must have the `administration` repository permission to use this API.
-    /// 
-    /// [GitHub API docs for set_github_actions_permissions_repository](https://docs.github.com/rest/reference/actions#set-github-actions-permissions-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_github_actions_permissions_repository](https://docs.github.com/rest/actions/permissions#set-github-actions-permissions-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -10775,96 +13920,17 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # Set repository access for a self-hosted runner group in an organization
-    ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
-    /// 
-    /// Replaces the list of repositories that have access to a self-hosted runner group configured in an organization.
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for set_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/reference/actions#set-repository-access-to-a-self-hosted-runner-group-in-an-organization)
-    ///
-    /// ---
-    pub async fn set_repo_access_to_self_hosted_runner_group_in_org_async(&self, org: &str, runner_group_id: i32, body: PutActionsSetRepoAccessToSelfHostedRunnerGroupInOrg) -> Result<(), ActionsSetRepoAccessToSelfHostedRunnerGroupInOrgError> {
-
-        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/repositories", super::GITHUB_BASE_API_URL, org, runner_group_id);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: Some(PutActionsSetRepoAccessToSelfHostedRunnerGroupInOrg::from_json(body)?),
-            method: "PUT",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch_async(request).await?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
-        } else {
-            match github_response.status_code() {
-                code => Err(ActionsSetRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Set repository access for a self-hosted runner group in an organization
-    ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
-    /// 
-    /// Replaces the list of repositories that have access to a self-hosted runner group configured in an organization.
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for set_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/reference/actions#set-repository-access-to-a-self-hosted-runner-group-in-an-organization)
-    ///
-    /// ---
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_repo_access_to_self_hosted_runner_group_in_org(&self, org: &str, runner_group_id: i32, body: PutActionsSetRepoAccessToSelfHostedRunnerGroupInOrg) -> Result<(), ActionsSetRepoAccessToSelfHostedRunnerGroupInOrgError> {
-
-        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/repositories", super::GITHUB_BASE_API_URL, org, runner_group_id);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: Some(PutActionsSetRepoAccessToSelfHostedRunnerGroupInOrg::from_json(body)?),
-            method: "PUT",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch(request)?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
-        } else {
-            match github_response.status_code() {
-                code => Err(ActionsSetRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
     /// # Set selected repositories for an organization secret
     ///
-    /// Replaces all repositories for an organization secret when the `visibility` for repository access is set to `selected`. The visibility is set when you [Create or update an organization secret](https://docs.github.com/rest/reference/actions#create-or-update-an-organization-secret). You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
+    /// Replaces all repositories for an organization secret when the `visibility`
+    /// for repository access is set to `selected`. The visibility is set when you [Create
+    /// or update an organization secret](https://docs.github.com/rest/actions/secrets#create-or-update-an-organization-secret).
     /// 
-    /// [GitHub API docs for set_selected_repos_for_org_secret](https://docs.github.com/rest/reference/actions#set-selected-repositories-for-an-organization-secret)
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for set_selected_repos_for_org_secret](https://docs.github.com/rest/actions/secrets#set-selected-repositories-for-an-organization-secret)
     ///
     /// ---
     pub async fn set_selected_repos_for_org_secret_async(&self, org: &str, secret_name: &str, body: PutActionsSetSelectedReposForOrgSecret) -> Result<(), ActionsSetSelectedReposForOrgSecretError> {
@@ -10900,9 +13966,15 @@ impl<'api> Actions<'api> {
     ///
     /// # Set selected repositories for an organization secret
     ///
-    /// Replaces all repositories for an organization secret when the `visibility` for repository access is set to `selected`. The visibility is set when you [Create or update an organization secret](https://docs.github.com/rest/reference/actions#create-or-update-an-organization-secret). You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `secrets` organization permission to use this endpoint.
+    /// Replaces all repositories for an organization secret when the `visibility`
+    /// for repository access is set to `selected`. The visibility is set when you [Create
+    /// or update an organization secret](https://docs.github.com/rest/actions/secrets#create-or-update-an-organization-secret).
     /// 
-    /// [GitHub API docs for set_selected_repos_for_org_secret](https://docs.github.com/rest/reference/actions#set-selected-repositories-for-an-organization-secret)
+    /// Authenticated users must have collaborator access to a repository to create, update, or read secrets.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for set_selected_repos_for_org_secret](https://docs.github.com/rest/actions/secrets#set-selected-repositories-for-an-organization-secret)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -10937,13 +14009,105 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
+    /// # Set selected repositories for an organization variable
+    ///
+    /// Replaces all repositories for an organization variable that is available
+    /// to selected repositories. Organization variables that are available to selected
+    /// repositories have their `visibility` field set to `selected`.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for set_selected_repos_for_org_variable](https://docs.github.com/rest/actions/variables#set-selected-repositories-for-an-organization-variable)
+    ///
+    /// ---
+    pub async fn set_selected_repos_for_org_variable_async(&self, org: &str, name: &str, body: PutActionsSetSelectedReposForOrgVariable) -> Result<(), ActionsSetSelectedReposForOrgVariableError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/variables/{}/repositories", super::GITHUB_BASE_API_URL, org, name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PutActionsSetSelectedReposForOrgVariable::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                409 => Err(ActionsSetSelectedReposForOrgVariableError::Status409),
+                code => Err(ActionsSetSelectedReposForOrgVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Set selected repositories for an organization variable
+    ///
+    /// Replaces all repositories for an organization variable that is available
+    /// to selected repositories. Organization variables that are available to selected
+    /// repositories have their `visibility` field set to `selected`.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for set_selected_repos_for_org_variable](https://docs.github.com/rest/actions/variables#set-selected-repositories-for-an-organization-variable)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn set_selected_repos_for_org_variable(&self, org: &str, name: &str, body: PutActionsSetSelectedReposForOrgVariable) -> Result<(), ActionsSetSelectedReposForOrgVariableError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/variables/{}/repositories", super::GITHUB_BASE_API_URL, org, name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PutActionsSetSelectedReposForOrgVariable::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                409 => Err(ActionsSetSelectedReposForOrgVariableError::Status409),
+                code => Err(ActionsSetSelectedReposForOrgVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Set selected repositories enabled for GitHub Actions in an organization
     ///
     /// Replaces the list of selected repositories that are enabled for GitHub Actions in an organization. To use this endpoint, the organization permission policy for `enabled_repositories` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
     /// 
-    /// [GitHub API docs for set_selected_repositories_enabled_github_actions_organization](https://docs.github.com/rest/reference/actions#set-selected-repositories-enabled-for-github-actions-in-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_selected_repositories_enabled_github_actions_organization](https://docs.github.com/rest/actions/permissions#set-selected-repositories-enabled-for-github-actions-in-an-organization)
     ///
     /// ---
     pub async fn set_selected_repositories_enabled_github_actions_organization_async(&self, org: &str, body: PutActionsSetSelectedRepositoriesEnabledGithubActionsOrganization) -> Result<(), ActionsSetSelectedRepositoriesEnabledGithubActionsOrganizationError> {
@@ -10981,9 +14145,10 @@ impl<'api> Actions<'api> {
     ///
     /// Replaces the list of selected repositories that are enabled for GitHub Actions in an organization. To use this endpoint, the organization permission policy for `enabled_repositories` must be configured to `selected`. For more information, see "[Set GitHub Actions permissions for an organization](#set-github-actions-permissions-for-an-organization)."
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint. GitHub Apps must have the `administration` organization permission to use this API.
     /// 
-    /// [GitHub API docs for set_selected_repositories_enabled_github_actions_organization](https://docs.github.com/rest/reference/actions#set-selected-repositories-enabled-for-github-actions-in-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_selected_repositories_enabled_github_actions_organization](https://docs.github.com/rest/actions/permissions#set-selected-repositories-enabled-for-github-actions-in-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -11018,25 +14183,25 @@ impl<'api> Actions<'api> {
 
     /// ---
     ///
-    /// # Set self-hosted runners in a group for an organization
+    /// # Set the level of access for workflows outside of the repository
     ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
+    /// Sets the level of access that workflows outside of the repository have to actions and reusable workflows in the repository.
+    /// This endpoint only applies to private repositories.
+    /// For more information, see "[Allowing access to components in a private repository](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#allowing-access-to-components-in-a-private-repository)".
     /// 
-    /// Replaces the list of self-hosted runners that are part of an organization runner group.
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for set_self_hosted_runners_in_group_for_org](https://docs.github.com/rest/reference/actions#set-self-hosted-runners-in-a-group-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_workflow_access_to_repository](https://docs.github.com/rest/actions/permissions#set-the-level-of-access-for-workflows-outside-of-the-repository)
     ///
     /// ---
-    pub async fn set_self_hosted_runners_in_group_for_org_async(&self, org: &str, runner_group_id: i32, body: PutActionsSetSelfHostedRunnersInGroupForOrg) -> Result<(), ActionsSetSelfHostedRunnersInGroupForOrgError> {
+    pub async fn set_workflow_access_to_repository_async(&self, owner: &str, repo: &str, body: ActionsWorkflowAccessToRepository) -> Result<(), ActionsSetWorkflowAccessToRepositoryError> {
 
-        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/runners", super::GITHUB_BASE_API_URL, org, runner_group_id);
+        let request_uri = format!("{}/repos/{}/{}/actions/permissions/access", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetSelfHostedRunnersInGroupForOrg::from_json(body)?),
+            body: Some(ActionsWorkflowAccessToRepository::from_json(body)?),
             method: "PUT",
             headers: vec![]
         };
@@ -11053,33 +14218,33 @@ impl<'api> Actions<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsSetSelfHostedRunnersInGroupForOrgError::Generic { code }),
+                code => Err(ActionsSetWorkflowAccessToRepositoryError::Generic { code }),
             }
         }
     }
 
     /// ---
     ///
-    /// # Set self-hosted runners in a group for an organization
+    /// # Set the level of access for workflows outside of the repository
     ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
+    /// Sets the level of access that workflows outside of the repository have to actions and reusable workflows in the repository.
+    /// This endpoint only applies to private repositories.
+    /// For more information, see "[Allowing access to components in a private repository](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#allowing-access-to-components-in-a-private-repository)".
     /// 
-    /// Replaces the list of self-hosted runners that are part of an organization runner group.
-    /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for set_self_hosted_runners_in_group_for_org](https://docs.github.com/rest/reference/actions#set-self-hosted-runners-in-a-group-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_workflow_access_to_repository](https://docs.github.com/rest/actions/permissions#set-the-level-of-access-for-workflows-outside-of-the-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_self_hosted_runners_in_group_for_org(&self, org: &str, runner_group_id: i32, body: PutActionsSetSelfHostedRunnersInGroupForOrg) -> Result<(), ActionsSetSelfHostedRunnersInGroupForOrgError> {
+    pub fn set_workflow_access_to_repository(&self, owner: &str, repo: &str, body: ActionsWorkflowAccessToRepository) -> Result<(), ActionsSetWorkflowAccessToRepositoryError> {
 
-        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/runners", super::GITHUB_BASE_API_URL, org, runner_group_id);
+        let request_uri = format!("{}/repos/{}/{}/actions/permissions/access", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetSelfHostedRunnersInGroupForOrg::from_json(body)?),
+            body: Some(ActionsWorkflowAccessToRepository::from_json(body)?),
             method: "PUT",
             headers: vec![]
         };
@@ -11096,32 +14261,32 @@ impl<'api> Actions<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsSetSelfHostedRunnersInGroupForOrgError::Generic { code }),
+                code => Err(ActionsSetWorkflowAccessToRepositoryError::Generic { code }),
             }
         }
     }
 
     /// ---
     ///
-    /// # Update a self-hosted runner group for an organization
+    /// # Update an environment variable
     ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
+    /// Updates an environment variable that you can reference in a GitHub Actions workflow.
     /// 
-    /// Updates the `name` and `visibility` of a self-hosted runner group in an organization.
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for update_self_hosted_runner_group_for_org](https://docs.github.com/rest/reference/actions#update-a-self-hosted-runner-group-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for update_environment_variable](https://docs.github.com/rest/actions/variables#update-an-environment-variable)
     ///
     /// ---
-    pub async fn update_self_hosted_runner_group_for_org_async(&self, org: &str, runner_group_id: i32, body: PatchActionsUpdateSelfHostedRunnerGroupForOrg) -> Result<RunnerGroupsOrg, ActionsUpdateSelfHostedRunnerGroupForOrgError> {
+    pub async fn update_environment_variable_async(&self, owner: &str, repo: &str, name: &str, environment_name: &str, body: PatchActionsUpdateEnvironmentVariable) -> Result<(), ActionsUpdateEnvironmentVariableError> {
 
-        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}", super::GITHUB_BASE_API_URL, org, runner_group_id);
+        let request_uri = format!("{}/repos/{}/{}/environments/{}/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, name, environment_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchActionsUpdateSelfHostedRunnerGroupForOrg::from_json(body)?),
+            body: Some(PatchActionsUpdateEnvironmentVariable::from_json(body)?),
             method: "PATCH",
             headers: vec![]
         };
@@ -11138,33 +14303,33 @@ impl<'api> Actions<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsUpdateSelfHostedRunnerGroupForOrgError::Generic { code }),
+                code => Err(ActionsUpdateEnvironmentVariableError::Generic { code }),
             }
         }
     }
 
     /// ---
     ///
-    /// # Update a self-hosted runner group for an organization
+    /// # Update an environment variable
     ///
-    /// The self-hosted runner groups REST API is available with GitHub Enterprise Cloud. For more information, see "[GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products)."
+    /// Updates an environment variable that you can reference in a GitHub Actions workflow.
     /// 
-    /// Updates the `name` and `visibility` of a self-hosted runner group in an organization.
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
     /// 
-    /// You must authenticate using an access token with the `admin:org` scope to use this endpoint.
-    /// 
-    /// [GitHub API docs for update_self_hosted_runner_group_for_org](https://docs.github.com/rest/reference/actions#update-a-self-hosted-runner-group-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for update_environment_variable](https://docs.github.com/rest/actions/variables#update-an-environment-variable)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_self_hosted_runner_group_for_org(&self, org: &str, runner_group_id: i32, body: PatchActionsUpdateSelfHostedRunnerGroupForOrg) -> Result<RunnerGroupsOrg, ActionsUpdateSelfHostedRunnerGroupForOrgError> {
+    pub fn update_environment_variable(&self, owner: &str, repo: &str, name: &str, environment_name: &str, body: PatchActionsUpdateEnvironmentVariable) -> Result<(), ActionsUpdateEnvironmentVariableError> {
 
-        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}", super::GITHUB_BASE_API_URL, org, runner_group_id);
+        let request_uri = format!("{}/repos/{}/{}/environments/{}/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, name, environment_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchActionsUpdateSelfHostedRunnerGroupForOrg::from_json(body)?),
+            body: Some(PatchActionsUpdateEnvironmentVariable::from_json(body)?),
             method: "PATCH",
             headers: vec![]
         };
@@ -11181,7 +14346,177 @@ impl<'api> Actions<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsUpdateSelfHostedRunnerGroupForOrgError::Generic { code }),
+                code => Err(ActionsUpdateEnvironmentVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Update an organization variable
+    ///
+    /// Updates an organization variable that you can reference in a GitHub Actions workflow.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for update_org_variable](https://docs.github.com/rest/actions/variables#update-an-organization-variable)
+    ///
+    /// ---
+    pub async fn update_org_variable_async(&self, org: &str, name: &str, body: PatchActionsUpdateOrgVariable) -> Result<(), ActionsUpdateOrgVariableError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, org, name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PatchActionsUpdateOrgVariable::from_json(body)?),
+            method: "PATCH",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsUpdateOrgVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Update an organization variable
+    ///
+    /// Updates an organization variable that you can reference in a GitHub Actions workflow.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint. If the repository is private, the `repo` scope is also required.
+    ///
+    /// [GitHub API docs for update_org_variable](https://docs.github.com/rest/actions/variables#update-an-organization-variable)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn update_org_variable(&self, org: &str, name: &str, body: PatchActionsUpdateOrgVariable) -> Result<(), ActionsUpdateOrgVariableError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, org, name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PatchActionsUpdateOrgVariable::from_json(body)?),
+            method: "PATCH",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsUpdateOrgVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Update a repository variable
+    ///
+    /// Updates a repository variable that you can reference in a GitHub Actions workflow.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for update_repo_variable](https://docs.github.com/rest/actions/variables#update-a-repository-variable)
+    ///
+    /// ---
+    pub async fn update_repo_variable_async(&self, owner: &str, repo: &str, name: &str, body: PatchActionsUpdateRepoVariable) -> Result<(), ActionsUpdateRepoVariableError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PatchActionsUpdateRepoVariable::from_json(body)?),
+            method: "PATCH",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsUpdateRepoVariableError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Update a repository variable
+    ///
+    /// Updates a repository variable that you can reference in a GitHub Actions workflow.
+    /// 
+    /// Authenticated users must have collaborator access to a repository to create, update, or read variables.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for update_repo_variable](https://docs.github.com/rest/actions/variables#update-a-repository-variable)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn update_repo_variable(&self, owner: &str, repo: &str, name: &str, body: PatchActionsUpdateRepoVariable) -> Result<(), ActionsUpdateRepoVariableError> {
+
+        let request_uri = format!("{}/repos/{}/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PatchActionsUpdateRepoVariable::from_json(body)?),
+            method: "PATCH",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsUpdateRepoVariableError::Generic { code }),
             }
         }
     }

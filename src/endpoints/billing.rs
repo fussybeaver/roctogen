@@ -1,6 +1,6 @@
 //! Method, error and parameter types for the Billing endpoint.
 #![allow(
-    unused_imports,
+    clippy::all
 )]
 /* 
  * GitHub v3 REST API
@@ -29,23 +29,6 @@ pub struct Billing<'api> {
 
 pub fn new(auth: &Auth) -> Billing {
     Billing { auth }
-}
-
-/// Errors for the [Get GitHub Actions billing for an enterprise](Billing::get_github_actions_billing_ghe_async()) endpoint.
-#[derive(Debug, thiserror::Error)]
-pub enum BillingGetGithubActionsBillingGheError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
-    #[error("Status code: {}", code)]
-    Generic { code: u16 },
 }
 
 /// Errors for the [Get GitHub Actions billing for an organization](Billing::get_github_actions_billing_org_async()) endpoint.
@@ -82,61 +65,6 @@ pub enum BillingGetGithubActionsBillingUserError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Get GitHub Advanced Security active committers for an enterprise](Billing::get_github_advanced_security_billing_ghe_async()) endpoint.
-#[derive(Debug, thiserror::Error)]
-pub enum BillingGetGithubAdvancedSecurityBillingGheError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
-    #[error("Response if GitHub Advanced Security is not enabled for this repository")]
-    Status403(BasicError),
-    #[error("Status code: {}", code)]
-    Generic { code: u16 },
-}
-
-/// Errors for the [Get GitHub Advanced Security active committers for an organization](Billing::get_github_advanced_security_billing_org_async()) endpoint.
-#[derive(Debug, thiserror::Error)]
-pub enum BillingGetGithubAdvancedSecurityBillingOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
-    #[error("Response if GitHub Advanced Security is not enabled for this repository")]
-    Status403(BasicError),
-    #[error("Status code: {}", code)]
-    Generic { code: u16 },
-}
-
-/// Errors for the [Get GitHub Packages billing for an enterprise](Billing::get_github_packages_billing_ghe_async()) endpoint.
-#[derive(Debug, thiserror::Error)]
-pub enum BillingGetGithubPackagesBillingGheError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
-    #[error("Status code: {}", code)]
-    Generic { code: u16 },
-}
-
 /// Errors for the [Get GitHub Packages billing for an organization](Billing::get_github_packages_billing_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum BillingGetGithubPackagesBillingOrgError {
@@ -157,23 +85,6 @@ pub enum BillingGetGithubPackagesBillingOrgError {
 /// Errors for the [Get GitHub Packages billing for a user](Billing::get_github_packages_billing_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum BillingGetGithubPackagesBillingUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
-    #[error("Status code: {}", code)]
-    Generic { code: u16 },
-}
-
-/// Errors for the [Get shared storage billing for an enterprise](Billing::get_shared_storage_billing_ghe_async()) endpoint.
-#[derive(Debug, thiserror::Error)]
-pub enum BillingGetSharedStorageBillingGheError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -223,184 +134,19 @@ pub enum BillingGetSharedStorageBillingUserError {
 }
 
 
-/// Query parameters for the [Get GitHub Advanced Security active committers for an enterprise](Billing::get_github_advanced_security_billing_ghe_async()) endpoint.
-#[derive(Default, Serialize)]
-pub struct BillingGetGithubAdvancedSecurityBillingGheParams {
-    /// Results per page (max 100)
-    per_page: Option<u16>, 
-    /// Page number of the results to fetch.
-    page: Option<u16>
-}
-
-impl BillingGetGithubAdvancedSecurityBillingGheParams {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    /// Results per page (max 100)
-    pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
-            per_page: Some(per_page),
-            page: self.page, 
-        }
-    }
-
-    /// Page number of the results to fetch.
-    pub fn page(self, page: u16) -> Self {
-        Self { 
-            per_page: self.per_page, 
-            page: Some(page),
-        }
-    }
-}
-
-impl<'enc> From<&'enc PerPage> for BillingGetGithubAdvancedSecurityBillingGheParams {
-    fn from(per_page: &'enc PerPage) -> Self {
-        Self {
-            per_page: Some(per_page.per_page),
-            page: Some(per_page.page),
-            ..Default::default()
-        }
-    }
-}
-/// Query parameters for the [Get GitHub Advanced Security active committers for an organization](Billing::get_github_advanced_security_billing_org_async()) endpoint.
-#[derive(Default, Serialize)]
-pub struct BillingGetGithubAdvancedSecurityBillingOrgParams {
-    /// Results per page (max 100)
-    per_page: Option<u16>, 
-    /// Page number of the results to fetch.
-    page: Option<u16>
-}
-
-impl BillingGetGithubAdvancedSecurityBillingOrgParams {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    /// Results per page (max 100)
-    pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
-            per_page: Some(per_page),
-            page: self.page, 
-        }
-    }
-
-    /// Page number of the results to fetch.
-    pub fn page(self, page: u16) -> Self {
-        Self { 
-            per_page: self.per_page, 
-            page: Some(page),
-        }
-    }
-}
-
-impl<'enc> From<&'enc PerPage> for BillingGetGithubAdvancedSecurityBillingOrgParams {
-    fn from(per_page: &'enc PerPage) -> Self {
-        Self {
-            per_page: Some(per_page.per_page),
-            page: Some(per_page.page),
-            ..Default::default()
-        }
-    }
-}
 
 impl<'api> Billing<'api> {
-    /// ---
-    ///
-    /// # Get GitHub Actions billing for an enterprise
-    ///
-    /// Gets the summary of the free and paid GitHub Actions minutes used.
-    /// 
-    /// Paid minutes only apply to workflows in private repositories that use GitHub-hosted runners. Minutes used is listed for each GitHub-hosted runner operating system. Any job re-runs are also included in the usage. The usage does not include the multiplier for macOS and Windows runners and is not rounded up to the nearest whole minute. For more information, see "[Managing billing for GitHub Actions](https://help.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-actions)".
-    /// 
-    /// The authenticated user must be an enterprise admin.
-    /// 
-    /// [GitHub API docs for get_github_actions_billing_ghe](https://docs.github.com/rest/reference/billing#get-github-actions-billing-for-an-enterprise)
-    ///
-    /// ---
-    pub async fn get_github_actions_billing_ghe_async(&self, enterprise: &str) -> Result<ActionsBillingUsage, BillingGetGithubActionsBillingGheError> {
-
-        let request_uri = format!("{}/enterprises/{}/settings/billing/actions", super::GITHUB_BASE_API_URL, enterprise);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch_async(request).await?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
-        } else {
-            match github_response.status_code() {
-                code => Err(BillingGetGithubActionsBillingGheError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Get GitHub Actions billing for an enterprise
-    ///
-    /// Gets the summary of the free and paid GitHub Actions minutes used.
-    /// 
-    /// Paid minutes only apply to workflows in private repositories that use GitHub-hosted runners. Minutes used is listed for each GitHub-hosted runner operating system. Any job re-runs are also included in the usage. The usage does not include the multiplier for macOS and Windows runners and is not rounded up to the nearest whole minute. For more information, see "[Managing billing for GitHub Actions](https://help.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-actions)".
-    /// 
-    /// The authenticated user must be an enterprise admin.
-    /// 
-    /// [GitHub API docs for get_github_actions_billing_ghe](https://docs.github.com/rest/reference/billing#get-github-actions-billing-for-an-enterprise)
-    ///
-    /// ---
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_github_actions_billing_ghe(&self, enterprise: &str) -> Result<ActionsBillingUsage, BillingGetGithubActionsBillingGheError> {
-
-        let request_uri = format!("{}/enterprises/{}/settings/billing/actions", super::GITHUB_BASE_API_URL, enterprise);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch(request)?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
-        } else {
-            match github_response.status_code() {
-                code => Err(BillingGetGithubActionsBillingGheError::Generic { code }),
-            }
-        }
-    }
-
     /// ---
     ///
     /// # Get GitHub Actions billing for an organization
     ///
     /// Gets the summary of the free and paid GitHub Actions minutes used.
     /// 
-    /// Paid minutes only apply to workflows in private repositories that use GitHub-hosted runners. Minutes used is listed for each GitHub-hosted runner operating system. Any job re-runs are also included in the usage. The usage returned includes any minute multipliers for macOS and Windows runners, and is rounded up to the nearest whole minute. For more information, see "[Managing billing for GitHub Actions](https://help.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-actions)".
+    /// Paid minutes only apply to workflows in private repositories that use GitHub-hosted runners. Minutes used is listed for each GitHub-hosted runner operating system. Any job re-runs are also included in the usage. The usage returned includes any minute multipliers for macOS and Windows runners, and is rounded up to the nearest whole minute. For more information, see "[Managing billing for GitHub Actions](https://docs.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-actions)".
     /// 
-    /// Access tokens must have the `repo` or `admin:org` scope.
-    /// 
-    /// [GitHub API docs for get_github_actions_billing_org](https://docs.github.com/rest/reference/billing#get-github-actions-billing-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` or `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_github_actions_billing_org](https://docs.github.com/rest/billing/billing#get-github-actions-billing-for-an-organization)
     ///
     /// ---
     pub async fn get_github_actions_billing_org_async(&self, org: &str) -> Result<ActionsBillingUsage, BillingGetGithubActionsBillingOrgError> {
@@ -438,11 +184,11 @@ impl<'api> Billing<'api> {
     ///
     /// Gets the summary of the free and paid GitHub Actions minutes used.
     /// 
-    /// Paid minutes only apply to workflows in private repositories that use GitHub-hosted runners. Minutes used is listed for each GitHub-hosted runner operating system. Any job re-runs are also included in the usage. The usage returned includes any minute multipliers for macOS and Windows runners, and is rounded up to the nearest whole minute. For more information, see "[Managing billing for GitHub Actions](https://help.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-actions)".
+    /// Paid minutes only apply to workflows in private repositories that use GitHub-hosted runners. Minutes used is listed for each GitHub-hosted runner operating system. Any job re-runs are also included in the usage. The usage returned includes any minute multipliers for macOS and Windows runners, and is rounded up to the nearest whole minute. For more information, see "[Managing billing for GitHub Actions](https://docs.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-actions)".
     /// 
-    /// Access tokens must have the `repo` or `admin:org` scope.
-    /// 
-    /// [GitHub API docs for get_github_actions_billing_org](https://docs.github.com/rest/reference/billing#get-github-actions-billing-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` or `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_github_actions_billing_org](https://docs.github.com/rest/billing/billing#get-github-actions-billing-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -481,11 +227,11 @@ impl<'api> Billing<'api> {
     ///
     /// Gets the summary of the free and paid GitHub Actions minutes used.
     /// 
-    /// Paid minutes only apply to workflows in private repositories that use GitHub-hosted runners. Minutes used is listed for each GitHub-hosted runner operating system. Any job re-runs are also included in the usage. The usage returned includes any minute multipliers for macOS and Windows runners, and is rounded up to the nearest whole minute. For more information, see "[Managing billing for GitHub Actions](https://help.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-actions)".
+    /// Paid minutes only apply to workflows in private repositories that use GitHub-hosted runners. Minutes used is listed for each GitHub-hosted runner operating system. Any job re-runs are also included in the usage. The usage returned includes any minute multipliers for macOS and Windows runners, and is rounded up to the nearest whole minute. For more information, see "[Managing billing for GitHub Actions](https://docs.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-actions)".
     /// 
-    /// Access tokens must have the `user` scope.
-    /// 
-    /// [GitHub API docs for get_github_actions_billing_user](https://docs.github.com/rest/reference/billing#get-github-actions-billing-for-a-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `user` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_github_actions_billing_user](https://docs.github.com/rest/billing/billing#get-github-actions-billing-for-a-user)
     ///
     /// ---
     pub async fn get_github_actions_billing_user_async(&self, username: &str) -> Result<ActionsBillingUsage, BillingGetGithubActionsBillingUserError> {
@@ -523,11 +269,11 @@ impl<'api> Billing<'api> {
     ///
     /// Gets the summary of the free and paid GitHub Actions minutes used.
     /// 
-    /// Paid minutes only apply to workflows in private repositories that use GitHub-hosted runners. Minutes used is listed for each GitHub-hosted runner operating system. Any job re-runs are also included in the usage. The usage returned includes any minute multipliers for macOS and Windows runners, and is rounded up to the nearest whole minute. For more information, see "[Managing billing for GitHub Actions](https://help.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-actions)".
+    /// Paid minutes only apply to workflows in private repositories that use GitHub-hosted runners. Minutes used is listed for each GitHub-hosted runner operating system. Any job re-runs are also included in the usage. The usage returned includes any minute multipliers for macOS and Windows runners, and is rounded up to the nearest whole minute. For more information, see "[Managing billing for GitHub Actions](https://docs.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-actions)".
     /// 
-    /// Access tokens must have the `user` scope.
-    /// 
-    /// [GitHub API docs for get_github_actions_billing_user](https://docs.github.com/rest/reference/billing#get-github-actions-billing-for-a-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `user` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_github_actions_billing_user](https://docs.github.com/rest/billing/billing#get-github-actions-billing-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -562,282 +308,15 @@ impl<'api> Billing<'api> {
 
     /// ---
     ///
-    /// # Get GitHub Advanced Security active committers for an enterprise
-    ///
-    /// Gets the GitHub Advanced Security active committers for an enterprise per repository.
-    /// Each distinct user login across all repositories is counted as a single Advanced Security seat, so the total_advanced_security_committers is not the sum of active_users for each repository.
-    /// 
-    /// [GitHub API docs for get_github_advanced_security_billing_ghe](https://docs.github.com/rest/reference/billing#export-advanced-security-active-committers-data-for-enterprise)
-    ///
-    /// ---
-    pub async fn get_github_advanced_security_billing_ghe_async(&self, enterprise: &str, query_params: Option<impl Into<BillingGetGithubAdvancedSecurityBillingGheParams>>) -> Result<AdvancedSecurityActiveCommitters, BillingGetGithubAdvancedSecurityBillingGheError> {
-
-        let mut request_uri = format!("{}/enterprises/{}/settings/billing/advanced-security", super::GITHUB_BASE_API_URL, enterprise);
-
-        if let Some(params) = query_params {
-            request_uri.push_str("?");
-            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
-        }
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch_async(request).await?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
-        } else {
-            match github_response.status_code() {
-                403 => Err(BillingGetGithubAdvancedSecurityBillingGheError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(BillingGetGithubAdvancedSecurityBillingGheError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Get GitHub Advanced Security active committers for an enterprise
-    ///
-    /// Gets the GitHub Advanced Security active committers for an enterprise per repository.
-    /// Each distinct user login across all repositories is counted as a single Advanced Security seat, so the total_advanced_security_committers is not the sum of active_users for each repository.
-    /// 
-    /// [GitHub API docs for get_github_advanced_security_billing_ghe](https://docs.github.com/rest/reference/billing#export-advanced-security-active-committers-data-for-enterprise)
-    ///
-    /// ---
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_github_advanced_security_billing_ghe(&self, enterprise: &str, query_params: Option<impl Into<BillingGetGithubAdvancedSecurityBillingGheParams>>) -> Result<AdvancedSecurityActiveCommitters, BillingGetGithubAdvancedSecurityBillingGheError> {
-
-        let mut request_uri = format!("{}/enterprises/{}/settings/billing/advanced-security", super::GITHUB_BASE_API_URL, enterprise);
-
-        if let Some(params) = query_params {
-            request_uri.push_str("?");
-            let qp: BillingGetGithubAdvancedSecurityBillingGheParams = params.into();
-            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
-        }
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch(request)?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
-        } else {
-            match github_response.status_code() {
-                403 => Err(BillingGetGithubAdvancedSecurityBillingGheError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(BillingGetGithubAdvancedSecurityBillingGheError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Get GitHub Advanced Security active committers for an organization
-    ///
-    /// Gets the GitHub Advanced Security active committers for an organization per repository.
-    /// Each distinct user login across all repositories is counted as a single Advanced Security seat, so the total_advanced_security_committers is not the sum of advanced_security_committers for each repository.
-    /// If this organization defers to an enterprise for billing, the total_advanced_security_committers returned from the organization API may include some users that are in more than one organization, so they will only consume a single Advanced Security seat at the enterprise level.
-    /// 
-    /// [GitHub API docs for get_github_advanced_security_billing_org](https://docs.github.com/rest/reference/billing#get-github-advanced-security-active-committers-for-an-organization)
-    ///
-    /// ---
-    pub async fn get_github_advanced_security_billing_org_async(&self, org: &str, query_params: Option<impl Into<BillingGetGithubAdvancedSecurityBillingOrgParams>>) -> Result<AdvancedSecurityActiveCommitters, BillingGetGithubAdvancedSecurityBillingOrgError> {
-
-        let mut request_uri = format!("{}/orgs/{}/settings/billing/advanced-security", super::GITHUB_BASE_API_URL, org);
-
-        if let Some(params) = query_params {
-            request_uri.push_str("?");
-            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
-        }
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch_async(request).await?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
-        } else {
-            match github_response.status_code() {
-                403 => Err(BillingGetGithubAdvancedSecurityBillingOrgError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(BillingGetGithubAdvancedSecurityBillingOrgError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Get GitHub Advanced Security active committers for an organization
-    ///
-    /// Gets the GitHub Advanced Security active committers for an organization per repository.
-    /// Each distinct user login across all repositories is counted as a single Advanced Security seat, so the total_advanced_security_committers is not the sum of advanced_security_committers for each repository.
-    /// If this organization defers to an enterprise for billing, the total_advanced_security_committers returned from the organization API may include some users that are in more than one organization, so they will only consume a single Advanced Security seat at the enterprise level.
-    /// 
-    /// [GitHub API docs for get_github_advanced_security_billing_org](https://docs.github.com/rest/reference/billing#get-github-advanced-security-active-committers-for-an-organization)
-    ///
-    /// ---
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_github_advanced_security_billing_org(&self, org: &str, query_params: Option<impl Into<BillingGetGithubAdvancedSecurityBillingOrgParams>>) -> Result<AdvancedSecurityActiveCommitters, BillingGetGithubAdvancedSecurityBillingOrgError> {
-
-        let mut request_uri = format!("{}/orgs/{}/settings/billing/advanced-security", super::GITHUB_BASE_API_URL, org);
-
-        if let Some(params) = query_params {
-            request_uri.push_str("?");
-            let qp: BillingGetGithubAdvancedSecurityBillingOrgParams = params.into();
-            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
-        }
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch(request)?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
-        } else {
-            match github_response.status_code() {
-                403 => Err(BillingGetGithubAdvancedSecurityBillingOrgError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(BillingGetGithubAdvancedSecurityBillingOrgError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Get GitHub Packages billing for an enterprise
-    ///
-    /// Gets the free and paid storage used for GitHub Packages in gigabytes.
-    /// 
-    /// Paid minutes only apply to packages stored for private repositories. For more information, see "[Managing billing for GitHub Packages](https://help.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-packages)."
-    /// 
-    /// The authenticated user must be an enterprise admin.
-    /// 
-    /// [GitHub API docs for get_github_packages_billing_ghe](https://docs.github.com/rest/reference/billing#get-github-packages-billing-for-an-enterprise)
-    ///
-    /// ---
-    pub async fn get_github_packages_billing_ghe_async(&self, enterprise: &str) -> Result<PackagesBillingUsage, BillingGetGithubPackagesBillingGheError> {
-
-        let request_uri = format!("{}/enterprises/{}/settings/billing/packages", super::GITHUB_BASE_API_URL, enterprise);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch_async(request).await?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
-        } else {
-            match github_response.status_code() {
-                code => Err(BillingGetGithubPackagesBillingGheError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Get GitHub Packages billing for an enterprise
-    ///
-    /// Gets the free and paid storage used for GitHub Packages in gigabytes.
-    /// 
-    /// Paid minutes only apply to packages stored for private repositories. For more information, see "[Managing billing for GitHub Packages](https://help.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-packages)."
-    /// 
-    /// The authenticated user must be an enterprise admin.
-    /// 
-    /// [GitHub API docs for get_github_packages_billing_ghe](https://docs.github.com/rest/reference/billing#get-github-packages-billing-for-an-enterprise)
-    ///
-    /// ---
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_github_packages_billing_ghe(&self, enterprise: &str) -> Result<PackagesBillingUsage, BillingGetGithubPackagesBillingGheError> {
-
-        let request_uri = format!("{}/enterprises/{}/settings/billing/packages", super::GITHUB_BASE_API_URL, enterprise);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch(request)?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
-        } else {
-            match github_response.status_code() {
-                code => Err(BillingGetGithubPackagesBillingGheError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
     /// # Get GitHub Packages billing for an organization
     ///
     /// Gets the free and paid storage used for GitHub Packages in gigabytes.
     /// 
-    /// Paid minutes only apply to packages stored for private repositories. For more information, see "[Managing billing for GitHub Packages](https://help.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-packages)."
+    /// Paid minutes only apply to packages stored for private repositories. For more information, see "[Managing billing for GitHub Packages](https://docs.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-packages)."
     /// 
-    /// Access tokens must have the `repo` or `admin:org` scope.
-    /// 
-    /// [GitHub API docs for get_github_packages_billing_org](https://docs.github.com/rest/reference/billing#get-github-packages-billing-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` or `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_github_packages_billing_org](https://docs.github.com/rest/billing/billing#get-github-packages-billing-for-an-organization)
     ///
     /// ---
     pub async fn get_github_packages_billing_org_async(&self, org: &str) -> Result<PackagesBillingUsage, BillingGetGithubPackagesBillingOrgError> {
@@ -875,11 +354,11 @@ impl<'api> Billing<'api> {
     ///
     /// Gets the free and paid storage used for GitHub Packages in gigabytes.
     /// 
-    /// Paid minutes only apply to packages stored for private repositories. For more information, see "[Managing billing for GitHub Packages](https://help.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-packages)."
+    /// Paid minutes only apply to packages stored for private repositories. For more information, see "[Managing billing for GitHub Packages](https://docs.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-packages)."
     /// 
-    /// Access tokens must have the `repo` or `admin:org` scope.
-    /// 
-    /// [GitHub API docs for get_github_packages_billing_org](https://docs.github.com/rest/reference/billing#get-github-packages-billing-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` or `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_github_packages_billing_org](https://docs.github.com/rest/billing/billing#get-github-packages-billing-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -918,11 +397,11 @@ impl<'api> Billing<'api> {
     ///
     /// Gets the free and paid storage used for GitHub Packages in gigabytes.
     /// 
-    /// Paid minutes only apply to packages stored for private repositories. For more information, see "[Managing billing for GitHub Packages](https://help.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-packages)."
+    /// Paid minutes only apply to packages stored for private repositories. For more information, see "[Managing billing for GitHub Packages](https://docs.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-packages)."
     /// 
-    /// Access tokens must have the `user` scope.
-    /// 
-    /// [GitHub API docs for get_github_packages_billing_user](https://docs.github.com/rest/reference/billing#get-github-packages-billing-for-a-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `user` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_github_packages_billing_user](https://docs.github.com/rest/billing/billing#get-github-packages-billing-for-a-user)
     ///
     /// ---
     pub async fn get_github_packages_billing_user_async(&self, username: &str) -> Result<PackagesBillingUsage, BillingGetGithubPackagesBillingUserError> {
@@ -960,11 +439,11 @@ impl<'api> Billing<'api> {
     ///
     /// Gets the free and paid storage used for GitHub Packages in gigabytes.
     /// 
-    /// Paid minutes only apply to packages stored for private repositories. For more information, see "[Managing billing for GitHub Packages](https://help.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-packages)."
+    /// Paid minutes only apply to packages stored for private repositories. For more information, see "[Managing billing for GitHub Packages](https://docs.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-packages)."
     /// 
-    /// Access tokens must have the `user` scope.
-    /// 
-    /// [GitHub API docs for get_github_packages_billing_user](https://docs.github.com/rest/reference/billing#get-github-packages-billing-for-a-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `user` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_github_packages_billing_user](https://docs.github.com/rest/billing/billing#get-github-packages-billing-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -999,100 +478,15 @@ impl<'api> Billing<'api> {
 
     /// ---
     ///
-    /// # Get shared storage billing for an enterprise
-    ///
-    /// Gets the estimated paid and estimated total storage used for GitHub Actions and Github Packages.
-    /// 
-    /// Paid minutes only apply to packages stored for private repositories. For more information, see "[Managing billing for GitHub Packages](https://help.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-packages)."
-    /// 
-    /// The authenticated user must be an enterprise admin.
-    /// 
-    /// [GitHub API docs for get_shared_storage_billing_ghe](https://docs.github.com/rest/reference/billing#get-shared-storage-billing-for-an-enterprise)
-    ///
-    /// ---
-    pub async fn get_shared_storage_billing_ghe_async(&self, enterprise: &str) -> Result<CombinedBillingUsage, BillingGetSharedStorageBillingGheError> {
-
-        let request_uri = format!("{}/enterprises/{}/settings/billing/shared-storage", super::GITHUB_BASE_API_URL, enterprise);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch_async(request).await?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
-        } else {
-            match github_response.status_code() {
-                code => Err(BillingGetSharedStorageBillingGheError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
-    /// # Get shared storage billing for an enterprise
-    ///
-    /// Gets the estimated paid and estimated total storage used for GitHub Actions and Github Packages.
-    /// 
-    /// Paid minutes only apply to packages stored for private repositories. For more information, see "[Managing billing for GitHub Packages](https://help.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-packages)."
-    /// 
-    /// The authenticated user must be an enterprise admin.
-    /// 
-    /// [GitHub API docs for get_shared_storage_billing_ghe](https://docs.github.com/rest/reference/billing#get-shared-storage-billing-for-an-enterprise)
-    ///
-    /// ---
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_shared_storage_billing_ghe(&self, enterprise: &str) -> Result<CombinedBillingUsage, BillingGetSharedStorageBillingGheError> {
-
-        let request_uri = format!("{}/enterprises/{}/settings/billing/shared-storage", super::GITHUB_BASE_API_URL, enterprise);
-
-
-        let req = GitHubRequest {
-            uri: request_uri,
-            body: None,
-            method: "GET",
-            headers: vec![]
-        };
-
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
-
-        // --
-
-        let github_response = crate::adapters::fetch(request)?;
-
-        // --
-
-        if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
-        } else {
-            match github_response.status_code() {
-                code => Err(BillingGetSharedStorageBillingGheError::Generic { code }),
-            }
-        }
-    }
-
-    /// ---
-    ///
     /// # Get shared storage billing for an organization
     ///
-    /// Gets the estimated paid and estimated total storage used for GitHub Actions and Github Packages.
+    /// Gets the estimated paid and estimated total storage used for GitHub Actions and GitHub Packages.
     /// 
-    /// Paid minutes only apply to packages stored for private repositories. For more information, see "[Managing billing for GitHub Packages](https://help.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-packages)."
+    /// Paid minutes only apply to packages stored for private repositories. For more information, see "[Managing billing for GitHub Packages](https://docs.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-packages)."
     /// 
-    /// Access tokens must have the `repo` or `admin:org` scope.
-    /// 
-    /// [GitHub API docs for get_shared_storage_billing_org](https://docs.github.com/rest/reference/billing#get-shared-storage-billing-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` or `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_shared_storage_billing_org](https://docs.github.com/rest/billing/billing#get-shared-storage-billing-for-an-organization)
     ///
     /// ---
     pub async fn get_shared_storage_billing_org_async(&self, org: &str) -> Result<CombinedBillingUsage, BillingGetSharedStorageBillingOrgError> {
@@ -1128,13 +522,13 @@ impl<'api> Billing<'api> {
     ///
     /// # Get shared storage billing for an organization
     ///
-    /// Gets the estimated paid and estimated total storage used for GitHub Actions and Github Packages.
+    /// Gets the estimated paid and estimated total storage used for GitHub Actions and GitHub Packages.
     /// 
-    /// Paid minutes only apply to packages stored for private repositories. For more information, see "[Managing billing for GitHub Packages](https://help.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-packages)."
+    /// Paid minutes only apply to packages stored for private repositories. For more information, see "[Managing billing for GitHub Packages](https://docs.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-packages)."
     /// 
-    /// Access tokens must have the `repo` or `admin:org` scope.
-    /// 
-    /// [GitHub API docs for get_shared_storage_billing_org](https://docs.github.com/rest/reference/billing#get-shared-storage-billing-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` or `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_shared_storage_billing_org](https://docs.github.com/rest/billing/billing#get-shared-storage-billing-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1171,13 +565,13 @@ impl<'api> Billing<'api> {
     ///
     /// # Get shared storage billing for a user
     ///
-    /// Gets the estimated paid and estimated total storage used for GitHub Actions and Github Packages.
+    /// Gets the estimated paid and estimated total storage used for GitHub Actions and GitHub Packages.
     /// 
-    /// Paid minutes only apply to packages stored for private repositories. For more information, see "[Managing billing for GitHub Packages](https://help.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-packages)."
+    /// Paid minutes only apply to packages stored for private repositories. For more information, see "[Managing billing for GitHub Packages](https://docs.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-packages)."
     /// 
-    /// Access tokens must have the `user` scope.
-    /// 
-    /// [GitHub API docs for get_shared_storage_billing_user](https://docs.github.com/rest/reference/billing#get-shared-storage-billing-for-a-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `user` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_shared_storage_billing_user](https://docs.github.com/rest/billing/billing#get-shared-storage-billing-for-a-user)
     ///
     /// ---
     pub async fn get_shared_storage_billing_user_async(&self, username: &str) -> Result<CombinedBillingUsage, BillingGetSharedStorageBillingUserError> {
@@ -1213,13 +607,13 @@ impl<'api> Billing<'api> {
     ///
     /// # Get shared storage billing for a user
     ///
-    /// Gets the estimated paid and estimated total storage used for GitHub Actions and Github Packages.
+    /// Gets the estimated paid and estimated total storage used for GitHub Actions and GitHub Packages.
     /// 
-    /// Paid minutes only apply to packages stored for private repositories. For more information, see "[Managing billing for GitHub Packages](https://help.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-packages)."
+    /// Paid minutes only apply to packages stored for private repositories. For more information, see "[Managing billing for GitHub Packages](https://docs.github.com/github/setting-up-and-managing-billing-and-payments-on-github/managing-billing-for-github-packages)."
     /// 
-    /// Access tokens must have the `user` scope.
-    /// 
-    /// [GitHub API docs for get_shared_storage_billing_user](https://docs.github.com/rest/reference/billing#get-shared-storage-billing-for-a-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `user` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_shared_storage_billing_user](https://docs.github.com/rest/billing/billing#get-shared-storage-billing-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

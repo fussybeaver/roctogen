@@ -1,6 +1,6 @@
 //! Method, error and parameter types for the Licenses endpoint.
 #![allow(
-    unused_imports,
+    clippy::all
 )]
 /* 
  * GitHub v3 REST API
@@ -86,6 +86,8 @@ pub enum LicensesGetForRepoError {
 
     // -- endpoint errors
 
+    #[error("Resource not found")]
+    Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -96,9 +98,9 @@ pub enum LicensesGetForRepoError {
 pub struct LicensesGetAllCommonlyUsedParams {
     
     featured: Option<bool>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -109,25 +111,25 @@ impl LicensesGetAllCommonlyUsedParams {
 
     
     pub fn featured(self, featured: bool) -> Self {
-        Self { 
+        Self {
             featured: Some(featured),
             per_page: self.per_page, 
             page: self.page, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             featured: self.featured, 
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             featured: self.featured, 
             per_page: self.per_page, 
             page: Some(page),
@@ -144,13 +146,35 @@ impl<'enc> From<&'enc PerPage> for LicensesGetAllCommonlyUsedParams {
         }
     }
 }
+/// Query parameters for the [Get the license for a repository](Licenses::get_for_repo_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct LicensesGetForRepoParams {
+    /// The Git reference for the results you want to list. The `ref` for a branch can be formatted either as `refs/heads/<branch name>` or simply `<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
+    git_ref: Option<CodeScanningRef>
+}
+
+impl LicensesGetForRepoParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The Git reference for the results you want to list. The `ref` for a branch can be formatted either as `refs/heads/<branch name>` or simply `<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
+    pub fn git_ref(self, git_ref: CodeScanningRef) -> Self {
+        Self {
+            git_ref: Some(git_ref),
+        }
+    }
+}
+
 
 impl<'api> Licenses<'api> {
     /// ---
     ///
     /// # Get a license
-    /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/licenses#get-a-license)
+    ///
+    /// Gets information about a specific license. For more information, see "[Licensing a repository ](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository)."
+    ///
+    /// [GitHub API docs for get](https://docs.github.com/rest/licenses/licenses#get-a-license)
     ///
     /// ---
     pub async fn get_async(&self, license: &str) -> Result<License, LicensesGetError> {
@@ -188,8 +212,10 @@ impl<'api> Licenses<'api> {
     /// ---
     ///
     /// # Get a license
-    /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/licenses#get-a-license)
+    ///
+    /// Gets information about a specific license. For more information, see "[Licensing a repository ](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository)."
+    ///
+    /// [GitHub API docs for get](https://docs.github.com/rest/licenses/licenses#get-a-license)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -228,8 +254,10 @@ impl<'api> Licenses<'api> {
     /// ---
     ///
     /// # Get all commonly used licenses
-    /// 
-    /// [GitHub API docs for get_all_commonly_used](https://docs.github.com/rest/reference/licenses#get-all-commonly-used-licenses)
+    ///
+    /// Lists the most commonly used licenses on GitHub. For more information, see "[Licensing a repository ](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository)."
+    ///
+    /// [GitHub API docs for get_all_commonly_used](https://docs.github.com/rest/licenses/licenses#get-all-commonly-used-licenses)
     ///
     /// ---
     pub async fn get_all_commonly_used_async(&self, query_params: Option<impl Into<LicensesGetAllCommonlyUsedParams>>) -> Result<Vec<LicenseSimple>, LicensesGetAllCommonlyUsedError> {
@@ -269,8 +297,10 @@ impl<'api> Licenses<'api> {
     /// ---
     ///
     /// # Get all commonly used licenses
-    /// 
-    /// [GitHub API docs for get_all_commonly_used](https://docs.github.com/rest/reference/licenses#get-all-commonly-used-licenses)
+    ///
+    /// Lists the most commonly used licenses on GitHub. For more information, see "[Licensing a repository ](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository)."
+    ///
+    /// [GitHub API docs for get_all_commonly_used](https://docs.github.com/rest/licenses/licenses#get-all-commonly-used-licenses)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -315,15 +345,22 @@ impl<'api> Licenses<'api> {
     ///
     /// This method returns the contents of the repository's license file, if one is detected.
     /// 
-    /// Similar to [Get repository content](https://docs.github.com/rest/reference/repos#get-repository-content), this method also supports [custom media types](https://docs.github.com/rest/overview/media-types) for retrieving the raw license content or rendered license HTML.
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
     /// 
-    /// [GitHub API docs for get_for_repo](https://docs.github.com/rest/reference/licenses/#get-the-license-for-a-repository)
+    /// - **`application/vnd.github.raw+json`**: Returns the raw contents of the license.
+    /// - **`application/vnd.github.html+json`**: Returns the license contents in HTML. Markup languages are rendered to HTML using GitHub's open-source [Markup library](https://github.com/github/markup).
+    ///
+    /// [GitHub API docs for get_for_repo](https://docs.github.com/rest/licenses/licenses#get-the-license-for-a-repository)
     ///
     /// ---
-    pub async fn get_for_repo_async(&self, owner: &str, repo: &str) -> Result<LicenseContent, LicensesGetForRepoError> {
+    pub async fn get_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<LicensesGetForRepoParams>>) -> Result<LicenseContent, LicensesGetForRepoError> {
 
-        let request_uri = format!("{}/repos/{}/{}/license", super::GITHUB_BASE_API_URL, owner, repo);
+        let mut request_uri = format!("{}/repos/{}/{}/license", super::GITHUB_BASE_API_URL, owner, repo);
 
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
 
         let req = GitHubRequest {
             uri: request_uri,
@@ -344,6 +381,7 @@ impl<'api> Licenses<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
+                404 => Err(LicensesGetForRepoError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(LicensesGetForRepoError::Generic { code }),
             }
         }
@@ -355,16 +393,24 @@ impl<'api> Licenses<'api> {
     ///
     /// This method returns the contents of the repository's license file, if one is detected.
     /// 
-    /// Similar to [Get repository content](https://docs.github.com/rest/reference/repos#get-repository-content), this method also supports [custom media types](https://docs.github.com/rest/overview/media-types) for retrieving the raw license content or rendered license HTML.
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
     /// 
-    /// [GitHub API docs for get_for_repo](https://docs.github.com/rest/reference/licenses/#get-the-license-for-a-repository)
+    /// - **`application/vnd.github.raw+json`**: Returns the raw contents of the license.
+    /// - **`application/vnd.github.html+json`**: Returns the license contents in HTML. Markup languages are rendered to HTML using GitHub's open-source [Markup library](https://github.com/github/markup).
+    ///
+    /// [GitHub API docs for get_for_repo](https://docs.github.com/rest/licenses/licenses#get-the-license-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_for_repo(&self, owner: &str, repo: &str) -> Result<LicenseContent, LicensesGetForRepoError> {
+    pub fn get_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<LicensesGetForRepoParams>>) -> Result<LicenseContent, LicensesGetForRepoError> {
 
-        let request_uri = format!("{}/repos/{}/{}/license", super::GITHUB_BASE_API_URL, owner, repo);
+        let mut request_uri = format!("{}/repos/{}/{}/license", super::GITHUB_BASE_API_URL, owner, repo);
 
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: LicensesGetForRepoParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
 
         let req = GitHubRequest {
             uri: request_uri,
@@ -385,6 +431,7 @@ impl<'api> Licenses<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
+                404 => Err(LicensesGetForRepoError::Status404(crate::adapters::to_json(github_response)?)),
                 code => Err(LicensesGetForRepoError::Generic { code }),
             }
         }

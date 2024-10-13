@@ -1,6 +1,6 @@
 //! Method, error and parameter types for the Interactions endpoint.
 #![allow(
-    unused_imports,
+    clippy::all
 )]
 /* 
  * GitHub v3 REST API
@@ -150,7 +150,7 @@ pub enum InteractionsSetRestrictionsForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -169,7 +169,7 @@ pub enum InteractionsSetRestrictionsForOrgError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -202,8 +202,8 @@ impl<'api> Interactions<'api> {
     /// # Get interaction restrictions for your public repositories
     ///
     /// Shows which type of GitHub user can interact with your public repositories and when the restriction expires.
-    /// 
-    /// [GitHub API docs for get_restrictions_for_authenticated_user](https://docs.github.com/rest/reference/interactions#get-interaction-restrictions-for-your-public-repositories)
+    ///
+    /// [GitHub API docs for get_restrictions_for_authenticated_user](https://docs.github.com/rest/interactions/user#get-interaction-restrictions-for-your-public-repositories)
     ///
     /// ---
     pub async fn get_restrictions_for_authenticated_user_async(&self) -> Result<GetInteractionsGetRestrictionsForAuthenticatedUserResponse200, InteractionsGetRestrictionsForAuthenticatedUserError> {
@@ -241,8 +241,8 @@ impl<'api> Interactions<'api> {
     /// # Get interaction restrictions for your public repositories
     ///
     /// Shows which type of GitHub user can interact with your public repositories and when the restriction expires.
-    /// 
-    /// [GitHub API docs for get_restrictions_for_authenticated_user](https://docs.github.com/rest/reference/interactions#get-interaction-restrictions-for-your-public-repositories)
+    ///
+    /// [GitHub API docs for get_restrictions_for_authenticated_user](https://docs.github.com/rest/interactions/user#get-interaction-restrictions-for-your-public-repositories)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -281,8 +281,8 @@ impl<'api> Interactions<'api> {
     /// # Get interaction restrictions for an organization
     ///
     /// Shows which type of GitHub user can interact with this organization and when the restriction expires. If there is no restrictions, you will see an empty response.
-    /// 
-    /// [GitHub API docs for get_restrictions_for_org](https://docs.github.com/rest/reference/interactions#get-interaction-restrictions-for-an-organization)
+    ///
+    /// [GitHub API docs for get_restrictions_for_org](https://docs.github.com/rest/interactions/orgs#get-interaction-restrictions-for-an-organization)
     ///
     /// ---
     pub async fn get_restrictions_for_org_async(&self, org: &str) -> Result<GetInteractionsGetRestrictionsForAuthenticatedUserResponse200, InteractionsGetRestrictionsForOrgError> {
@@ -319,8 +319,8 @@ impl<'api> Interactions<'api> {
     /// # Get interaction restrictions for an organization
     ///
     /// Shows which type of GitHub user can interact with this organization and when the restriction expires. If there is no restrictions, you will see an empty response.
-    /// 
-    /// [GitHub API docs for get_restrictions_for_org](https://docs.github.com/rest/reference/interactions#get-interaction-restrictions-for-an-organization)
+    ///
+    /// [GitHub API docs for get_restrictions_for_org](https://docs.github.com/rest/interactions/orgs#get-interaction-restrictions-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -358,8 +358,8 @@ impl<'api> Interactions<'api> {
     /// # Get interaction restrictions for a repository
     ///
     /// Shows which type of GitHub user can interact with this repository and when the restriction expires. If there are no restrictions, you will see an empty response.
-    /// 
-    /// [GitHub API docs for get_restrictions_for_repo](https://docs.github.com/rest/reference/interactions#get-interaction-restrictions-for-a-repository)
+    ///
+    /// [GitHub API docs for get_restrictions_for_repo](https://docs.github.com/rest/interactions/repos#get-interaction-restrictions-for-a-repository)
     ///
     /// ---
     pub async fn get_restrictions_for_repo_async(&self, owner: &str, repo: &str) -> Result<GetInteractionsGetRestrictionsForAuthenticatedUserResponse200, InteractionsGetRestrictionsForRepoError> {
@@ -396,8 +396,8 @@ impl<'api> Interactions<'api> {
     /// # Get interaction restrictions for a repository
     ///
     /// Shows which type of GitHub user can interact with this repository and when the restriction expires. If there are no restrictions, you will see an empty response.
-    /// 
-    /// [GitHub API docs for get_restrictions_for_repo](https://docs.github.com/rest/reference/interactions#get-interaction-restrictions-for-a-repository)
+    ///
+    /// [GitHub API docs for get_restrictions_for_repo](https://docs.github.com/rest/interactions/repos#get-interaction-restrictions-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -435,8 +435,8 @@ impl<'api> Interactions<'api> {
     /// # Remove interaction restrictions from your public repositories
     ///
     /// Removes any interaction restrictions from your public repositories.
-    /// 
-    /// [GitHub API docs for remove_restrictions_for_authenticated_user](https://docs.github.com/rest/reference/interactions#remove-interaction-restrictions-from-your-public-repositories)
+    ///
+    /// [GitHub API docs for remove_restrictions_for_authenticated_user](https://docs.github.com/rest/interactions/user#remove-interaction-restrictions-from-your-public-repositories)
     ///
     /// ---
     pub async fn remove_restrictions_for_authenticated_user_async(&self) -> Result<(), InteractionsRemoveRestrictionsForAuthenticatedUserError> {
@@ -473,8 +473,8 @@ impl<'api> Interactions<'api> {
     /// # Remove interaction restrictions from your public repositories
     ///
     /// Removes any interaction restrictions from your public repositories.
-    /// 
-    /// [GitHub API docs for remove_restrictions_for_authenticated_user](https://docs.github.com/rest/reference/interactions#remove-interaction-restrictions-from-your-public-repositories)
+    ///
+    /// [GitHub API docs for remove_restrictions_for_authenticated_user](https://docs.github.com/rest/interactions/user#remove-interaction-restrictions-from-your-public-repositories)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -512,8 +512,8 @@ impl<'api> Interactions<'api> {
     /// # Remove interaction restrictions for an organization
     ///
     /// Removes all interaction restrictions from public repositories in the given organization. You must be an organization owner to remove restrictions.
-    /// 
-    /// [GitHub API docs for remove_restrictions_for_org](https://docs.github.com/rest/reference/interactions#remove-interaction-restrictions-for-an-organization)
+    ///
+    /// [GitHub API docs for remove_restrictions_for_org](https://docs.github.com/rest/interactions/orgs#remove-interaction-restrictions-for-an-organization)
     ///
     /// ---
     pub async fn remove_restrictions_for_org_async(&self, org: &str) -> Result<(), InteractionsRemoveRestrictionsForOrgError> {
@@ -550,8 +550,8 @@ impl<'api> Interactions<'api> {
     /// # Remove interaction restrictions for an organization
     ///
     /// Removes all interaction restrictions from public repositories in the given organization. You must be an organization owner to remove restrictions.
-    /// 
-    /// [GitHub API docs for remove_restrictions_for_org](https://docs.github.com/rest/reference/interactions#remove-interaction-restrictions-for-an-organization)
+    ///
+    /// [GitHub API docs for remove_restrictions_for_org](https://docs.github.com/rest/interactions/orgs#remove-interaction-restrictions-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -589,8 +589,8 @@ impl<'api> Interactions<'api> {
     /// # Remove interaction restrictions for a repository
     ///
     /// Removes all interaction restrictions from the given repository. You must have owner or admin access to remove restrictions. If the interaction limit is set for the user or organization that owns this repository, you will receive a `409 Conflict` response and will not be able to use this endpoint to change the interaction limit for a single repository.
-    /// 
-    /// [GitHub API docs for remove_restrictions_for_repo](https://docs.github.com/rest/reference/interactions#remove-interaction-restrictions-for-a-repository)
+    ///
+    /// [GitHub API docs for remove_restrictions_for_repo](https://docs.github.com/rest/interactions/repos#remove-interaction-restrictions-for-a-repository)
     ///
     /// ---
     pub async fn remove_restrictions_for_repo_async(&self, owner: &str, repo: &str) -> Result<(), InteractionsRemoveRestrictionsForRepoError> {
@@ -628,8 +628,8 @@ impl<'api> Interactions<'api> {
     /// # Remove interaction restrictions for a repository
     ///
     /// Removes all interaction restrictions from the given repository. You must have owner or admin access to remove restrictions. If the interaction limit is set for the user or organization that owns this repository, you will receive a `409 Conflict` response and will not be able to use this endpoint to change the interaction limit for a single repository.
-    /// 
-    /// [GitHub API docs for remove_restrictions_for_repo](https://docs.github.com/rest/reference/interactions#remove-interaction-restrictions-for-a-repository)
+    ///
+    /// [GitHub API docs for remove_restrictions_for_repo](https://docs.github.com/rest/interactions/repos#remove-interaction-restrictions-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -668,8 +668,8 @@ impl<'api> Interactions<'api> {
     /// # Set interaction restrictions for your public repositories
     ///
     /// Temporarily restricts which type of GitHub user can interact with your public repositories. Setting the interaction limit at the user level will overwrite any interaction limits that are set for individual repositories owned by the user.
-    /// 
-    /// [GitHub API docs for set_restrictions_for_authenticated_user](https://docs.github.com/rest/reference/interactions#set-interaction-restrictions-for-your-public-repositories)
+    ///
+    /// [GitHub API docs for set_restrictions_for_authenticated_user](https://docs.github.com/rest/interactions/user#set-interaction-restrictions-for-your-public-repositories)
     ///
     /// ---
     pub async fn set_restrictions_for_authenticated_user_async(&self, body: PutInteractionsSetRestrictionsForAuthenticatedUser) -> Result<InteractionLimitResponse, InteractionsSetRestrictionsForAuthenticatedUserError> {
@@ -707,8 +707,8 @@ impl<'api> Interactions<'api> {
     /// # Set interaction restrictions for your public repositories
     ///
     /// Temporarily restricts which type of GitHub user can interact with your public repositories. Setting the interaction limit at the user level will overwrite any interaction limits that are set for individual repositories owned by the user.
-    /// 
-    /// [GitHub API docs for set_restrictions_for_authenticated_user](https://docs.github.com/rest/reference/interactions#set-interaction-restrictions-for-your-public-repositories)
+    ///
+    /// [GitHub API docs for set_restrictions_for_authenticated_user](https://docs.github.com/rest/interactions/user#set-interaction-restrictions-for-your-public-repositories)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -747,8 +747,8 @@ impl<'api> Interactions<'api> {
     /// # Set interaction restrictions for an organization
     ///
     /// Temporarily restricts interactions to a certain type of GitHub user in any public repository in the given organization. You must be an organization owner to set these restrictions. Setting the interaction limit at the organization level will overwrite any interaction limits that are set for individual repositories owned by the organization.
-    /// 
-    /// [GitHub API docs for set_restrictions_for_org](https://docs.github.com/rest/reference/interactions#set-interaction-restrictions-for-an-organization)
+    ///
+    /// [GitHub API docs for set_restrictions_for_org](https://docs.github.com/rest/interactions/orgs#set-interaction-restrictions-for-an-organization)
     ///
     /// ---
     pub async fn set_restrictions_for_org_async(&self, org: &str, body: PutInteractionsSetRestrictionsForAuthenticatedUser) -> Result<InteractionLimitResponse, InteractionsSetRestrictionsForOrgError> {
@@ -786,8 +786,8 @@ impl<'api> Interactions<'api> {
     /// # Set interaction restrictions for an organization
     ///
     /// Temporarily restricts interactions to a certain type of GitHub user in any public repository in the given organization. You must be an organization owner to set these restrictions. Setting the interaction limit at the organization level will overwrite any interaction limits that are set for individual repositories owned by the organization.
-    /// 
-    /// [GitHub API docs for set_restrictions_for_org](https://docs.github.com/rest/reference/interactions#set-interaction-restrictions-for-an-organization)
+    ///
+    /// [GitHub API docs for set_restrictions_for_org](https://docs.github.com/rest/interactions/orgs#set-interaction-restrictions-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -826,8 +826,8 @@ impl<'api> Interactions<'api> {
     /// # Set interaction restrictions for a repository
     ///
     /// Temporarily restricts interactions to a certain type of GitHub user within the given repository. You must have owner or admin access to set these restrictions. If an interaction limit is set for the user or organization that owns this repository, you will receive a `409 Conflict` response and will not be able to use this endpoint to change the interaction limit for a single repository.
-    /// 
-    /// [GitHub API docs for set_restrictions_for_repo](https://docs.github.com/rest/reference/interactions#set-interaction-restrictions-for-a-repository)
+    ///
+    /// [GitHub API docs for set_restrictions_for_repo](https://docs.github.com/rest/interactions/repos#set-interaction-restrictions-for-a-repository)
     ///
     /// ---
     pub async fn set_restrictions_for_repo_async(&self, owner: &str, repo: &str, body: PutInteractionsSetRestrictionsForAuthenticatedUser) -> Result<InteractionLimitResponse, InteractionsSetRestrictionsForRepoError> {
@@ -865,8 +865,8 @@ impl<'api> Interactions<'api> {
     /// # Set interaction restrictions for a repository
     ///
     /// Temporarily restricts interactions to a certain type of GitHub user within the given repository. You must have owner or admin access to set these restrictions. If an interaction limit is set for the user or organization that owns this repository, you will receive a `409 Conflict` response and will not be able to use this endpoint to change the interaction limit for a single repository.
-    /// 
-    /// [GitHub API docs for set_restrictions_for_repo](https://docs.github.com/rest/reference/interactions#set-interaction-restrictions-for-a-repository)
+    ///
+    /// [GitHub API docs for set_restrictions_for_repo](https://docs.github.com/rest/interactions/repos#set-interaction-restrictions-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

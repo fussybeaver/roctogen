@@ -1,6 +1,6 @@
 //! Method, error and parameter types for the Emojis endpoint.
 #![allow(
-    unused_imports,
+    clippy::all
 )]
 /* 
  * GitHub v3 REST API
@@ -58,8 +58,8 @@ impl<'api> Emojis<'api> {
     /// # Get emojis
     ///
     /// Lists all the emojis available to use on GitHub.
-    /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/emojis#get-emojis)
+    ///
+    /// [GitHub API docs for get](https://docs.github.com/rest/emojis/emojis#get-emojis)
     ///
     /// ---
     pub async fn get_async(&self) -> Result<HashMap<String, String>, EmojisGetError> {
@@ -97,8 +97,8 @@ impl<'api> Emojis<'api> {
     /// # Get emojis
     ///
     /// Lists all the emojis available to use on GitHub.
-    /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/emojis#get-emojis)
+    ///
+    /// [GitHub API docs for get](https://docs.github.com/rest/emojis/emojis#get-emojis)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

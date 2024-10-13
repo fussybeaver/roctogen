@@ -1,6 +1,6 @@
 //! Method, error and parameter types for the Markdown endpoint.
 #![allow(
-    unused_imports,
+    clippy::all
 )]
 /* 
  * GitHub v3 REST API
@@ -75,8 +75,8 @@ impl<'api> Markdown<'api> {
     /// ---
     ///
     /// # Render a Markdown document
-    /// 
-    /// [GitHub API docs for render](https://docs.github.com/rest/reference/markdown#render-a-markdown-document)
+    ///
+    /// [GitHub API docs for render](https://docs.github.com/rest/markdown/markdown#render-a-markdown-document)
     ///
     /// ---
     pub async fn render_async(&self, body: PostMarkdownRender) -> Result<String, MarkdownRenderError> {
@@ -112,8 +112,8 @@ impl<'api> Markdown<'api> {
     /// ---
     ///
     /// # Render a Markdown document
-    /// 
-    /// [GitHub API docs for render](https://docs.github.com/rest/reference/markdown#render-a-markdown-document)
+    ///
+    /// [GitHub API docs for render](https://docs.github.com/rest/markdown/markdown#render-a-markdown-document)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -152,8 +152,8 @@ impl<'api> Markdown<'api> {
     /// # Render a Markdown document in raw mode
     ///
     /// You must send Markdown as plain text (using a `Content-Type` header of `text/plain` or `text/x-markdown`) to this endpoint, rather than using JSON format. In raw mode, [GitHub Flavored Markdown](https://github.github.com/gfm/) is not supported and Markdown will be rendered in plain format like a README.md file. Markdown content must be 400 KB or less.
-    /// 
-    /// [GitHub API docs for render_raw](https://docs.github.com/rest/reference/markdown#render-a-markdown-document-in-raw-mode)
+    ///
+    /// [GitHub API docs for render_raw](https://docs.github.com/rest/markdown/markdown#render-a-markdown-document-in-raw-mode)
     ///
     /// ---
     pub async fn render_raw_async(&self, body: String) -> Result<String, MarkdownRenderRawError> {
@@ -191,8 +191,8 @@ impl<'api> Markdown<'api> {
     /// # Render a Markdown document in raw mode
     ///
     /// You must send Markdown as plain text (using a `Content-Type` header of `text/plain` or `text/x-markdown`) to this endpoint, rather than using JSON format. In raw mode, [GitHub Flavored Markdown](https://github.github.com/gfm/) is not supported and Markdown will be rendered in plain format like a README.md file. Markdown content must be 400 KB or less.
-    /// 
-    /// [GitHub API docs for render_raw](https://docs.github.com/rest/reference/markdown#render-a-markdown-document-in-raw-mode)
+    ///
+    /// [GitHub API docs for render_raw](https://docs.github.com/rest/markdown/markdown#render-a-markdown-document-in-raw-mode)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

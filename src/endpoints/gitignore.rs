@@ -1,6 +1,6 @@
 //! Method, error and parameter types for the Gitignore endpoint.
 #![allow(
-    unused_imports,
+    clippy::all
 )]
 /* 
  * GitHub v3 REST API
@@ -76,9 +76,9 @@ impl<'api> Gitignore<'api> {
     ///
     /// # Get all gitignore templates
     ///
-    /// List all templates available to pass as an option when [creating a repository](https://docs.github.com/rest/reference/repos#create-a-repository-for-the-authenticated-user).
-    /// 
-    /// [GitHub API docs for get_all_templates](https://docs.github.com/rest/reference/gitignore#get-all-gitignore-templates)
+    /// List all templates available to pass as an option when [creating a repository](https://docs.github.com/rest/repos/repos#create-a-repository-for-the-authenticated-user).
+    ///
+    /// [GitHub API docs for get_all_templates](https://docs.github.com/rest/gitignore/gitignore#get-all-gitignore-templates)
     ///
     /// ---
     pub async fn get_all_templates_async(&self) -> Result<Vec<String>, GitignoreGetAllTemplatesError> {
@@ -115,9 +115,9 @@ impl<'api> Gitignore<'api> {
     ///
     /// # Get all gitignore templates
     ///
-    /// List all templates available to pass as an option when [creating a repository](https://docs.github.com/rest/reference/repos#create-a-repository-for-the-authenticated-user).
-    /// 
-    /// [GitHub API docs for get_all_templates](https://docs.github.com/rest/reference/gitignore#get-all-gitignore-templates)
+    /// List all templates available to pass as an option when [creating a repository](https://docs.github.com/rest/repos/repos#create-a-repository-for-the-authenticated-user).
+    ///
+    /// [GitHub API docs for get_all_templates](https://docs.github.com/rest/gitignore/gitignore#get-all-gitignore-templates)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -155,10 +155,13 @@ impl<'api> Gitignore<'api> {
     ///
     /// # Get a gitignore template
     ///
-    /// The API also allows fetching the source of a single template.
-    /// Use the raw [media type](https://docs.github.com/rest/overview/media-types/) to get the raw contents.
+    /// Get the content of a gitignore template.
     /// 
-    /// [GitHub API docs for get_template](https://docs.github.com/rest/reference/gitignore#get-a-gitignore-template)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw .gitignore contents.
+    ///
+    /// [GitHub API docs for get_template](https://docs.github.com/rest/gitignore/gitignore#get-a-gitignore-template)
     ///
     /// ---
     pub async fn get_template_async(&self, name: &str) -> Result<GitignoreTemplate, GitignoreGetTemplateError> {
@@ -195,10 +198,13 @@ impl<'api> Gitignore<'api> {
     ///
     /// # Get a gitignore template
     ///
-    /// The API also allows fetching the source of a single template.
-    /// Use the raw [media type](https://docs.github.com/rest/overview/media-types/) to get the raw contents.
+    /// Get the content of a gitignore template.
     /// 
-    /// [GitHub API docs for get_template](https://docs.github.com/rest/reference/gitignore#get-a-gitignore-template)
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw .gitignore contents.
+    ///
+    /// [GitHub API docs for get_template](https://docs.github.com/rest/gitignore/gitignore#get-a-gitignore-template)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

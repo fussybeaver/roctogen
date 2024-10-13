@@ -1,6 +1,6 @@
 //! Method, error and parameter types for the Users endpoint.
 #![allow(
-    unused_imports,
+    clippy::all
 )]
 /* 
  * GitHub v3 REST API
@@ -44,7 +44,34 @@ pub enum UsersAddEmailForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationError),
+    #[error("Not modified")]
+    Status304,
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Add social accounts for the authenticated user](Users::add_social_account_for_authenticated_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum UsersAddSocialAccountForAuthenticatedUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
     Status304,
@@ -79,7 +106,7 @@ pub enum UsersBlockError {
     Status403(BasicError),
     #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -98,7 +125,7 @@ pub enum UsersCheckBlockedError {
 
     // -- endpoint errors
 
-    #[error("If the user is not blocked:")]
+    #[error("If the user is not blocked")]
     Status404(BasicError),
     #[error("Not modified")]
     Status304,
@@ -167,7 +194,7 @@ pub enum UsersCreateGpgKeyForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
     Status304,
@@ -194,7 +221,34 @@ pub enum UsersCreatePublicSshKeyForAuthenticatedUserError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationError),
+    #[error("Not modified")]
+    Status304,
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Create a SSH signing key for the authenticated user](Users::create_ssh_signing_key_for_authenticated_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum UsersCreateSshSigningKeyForAuthenticatedUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
     Status304,
@@ -229,7 +283,7 @@ pub enum UsersDeleteEmailForAuthenticatedUserError {
     Status403(BasicError),
     #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -250,7 +304,7 @@ pub enum UsersDeleteGpgKeyForAuthenticatedUserError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
     Status304,
@@ -265,6 +319,58 @@ pub enum UsersDeleteGpgKeyForAuthenticatedUserError {
 /// Errors for the [Delete a public SSH key for the authenticated user](Users::delete_public_ssh_key_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersDeletePublicSshKeyForAuthenticatedUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Not modified")]
+    Status304,
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Delete social accounts for the authenticated user](Users::delete_social_account_for_authenticated_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum UsersDeleteSocialAccountForAuthenticatedUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationError),
+    #[error("Not modified")]
+    Status304,
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Delete an SSH signing key for the authenticated user](Users::delete_ssh_signing_key_for_authenticated_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum UsersDeleteSshSigningKeyForAuthenticatedUserError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -335,6 +441,25 @@ pub enum UsersGetAuthenticatedError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Get a user using their ID](Users::get_by_id_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum UsersGetByIdError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Get a user](Users::get_by_username_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersGetByUsernameError {
@@ -369,7 +494,7 @@ pub enum UsersGetContextForUserError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -425,6 +550,31 @@ pub enum UsersGetPublicSshKeyForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Get an SSH signing key for the authenticated user](Users::get_ssh_signing_key_for_authenticated_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum UsersGetSshSigningKeyForAuthenticatedUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Not modified")]
+    Status304,
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [List users](Users::list_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersListError {
@@ -440,6 +590,29 @@ pub enum UsersListError {
 
     #[error("Not modified")]
     Status304,
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List attestations](Users::list_attestations_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum UsersListAttestationsError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Response")]
+    Status201(EmptyObject),
+    #[error("Response")]
+    Status204,
+    #[error("Resource not found")]
+    Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -465,8 +638,6 @@ pub enum UsersListBlockedByAuthenticatedUserError {
     Status403(BasicError),
     #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Preview header missing")]
-    Status415(PostProjectsCreateForAuthenticatedUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -685,6 +856,90 @@ pub enum UsersListPublicSshKeysForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+/// Errors for the [List social accounts for the authenticated user](Users::list_social_accounts_for_authenticated_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum UsersListSocialAccountsForAuthenticatedUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Not modified")]
+    Status304,
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List social accounts for a user](Users::list_social_accounts_for_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum UsersListSocialAccountsForUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List SSH signing keys for the authenticated user](Users::list_ssh_signing_keys_for_authenticated_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum UsersListSshSigningKeysForAuthenticatedUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Not modified")]
+    Status304,
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Requires authentication")]
+    Status401(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List SSH signing keys for a user](Users::list_ssh_signing_keys_for_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum UsersListSshSigningKeysForUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Set primary email visibility for the authenticated user](Users::set_primary_email_visibility_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersSetPrimaryEmailVisibilityForAuthenticatedUserError {
@@ -706,7 +961,7 @@ pub enum UsersSetPrimaryEmailVisibilityForAuthenticatedUserError {
     Status403(BasicError),
     #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -783,7 +1038,7 @@ pub enum UsersUpdateAuthenticatedError {
     Status403(BasicError),
     #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -806,7 +1061,7 @@ impl<'req> UsersGetContextForUserParams<'req> {
 
     /// Identifies which additional information you'd like to receive about the person's hovercard. Can be `organization`, `repository`, `issue`, `pull_request`. **Required** when using `subject_id`.
     pub fn subject_type(self, subject_type: &'req str) -> Self {
-        Self { 
+        Self {
             subject_type: Some(subject_type),
             subject_id: self.subject_id, 
         }
@@ -814,7 +1069,7 @@ impl<'req> UsersGetContextForUserParams<'req> {
 
     /// Uses the ID for the `subject_type` you specified. **Required** when using `subject_type`.
     pub fn subject_id(self, subject_id: &'req str) -> Self {
-        Self { 
+        Self {
             subject_type: self.subject_type, 
             subject_id: Some(subject_id),
         }
@@ -826,7 +1081,7 @@ impl<'req> UsersGetContextForUserParams<'req> {
 pub struct UsersListParams {
     /// A user ID. Only return users with an ID greater than this ID.
     since: Option<i32>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>
 }
 
@@ -837,27 +1092,111 @@ impl UsersListParams {
 
     /// A user ID. Only return users with an ID greater than this ID.
     pub fn since(self, since: i32) -> Self {
-        Self { 
+        Self {
             since: Some(since),
             per_page: self.per_page, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             since: self.since, 
             per_page: Some(per_page),
         }
     }
 }
 
+/// Query parameters for the [List attestations](Users::list_attestations_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct UsersListAttestationsParams<'req> {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    before: Option<&'req str>, 
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    after: Option<&'req str>
+}
+
+impl<'req> UsersListAttestationsParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            before: self.before, 
+            after: self.after, 
+        }
+    }
+
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn before(self, before: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            before: Some(before),
+            after: self.after, 
+        }
+    }
+
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn after(self, after: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            before: self.before, 
+            after: Some(after),
+        }
+    }
+}
+
+/// Query parameters for the [List users blocked by the authenticated user](Users::list_blocked_by_authenticated_user_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct UsersListBlockedByAuthenticatedUserParams {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl UsersListBlockedByAuthenticatedUserParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for UsersListBlockedByAuthenticatedUserParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [List email addresses for the authenticated user](Users::list_emails_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct UsersListEmailsForAuthenticatedUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -866,17 +1205,17 @@ impl UsersListEmailsForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -895,9 +1234,9 @@ impl<'enc> From<&'enc PerPage> for UsersListEmailsForAuthenticatedUserParams {
 /// Query parameters for the [List the people the authenticated user follows](Users::list_followed_by_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct UsersListFollowedByAuthenticatedUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -906,17 +1245,17 @@ impl UsersListFollowedByAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -935,9 +1274,9 @@ impl<'enc> From<&'enc PerPage> for UsersListFollowedByAuthenticatedUserParams {
 /// Query parameters for the [List followers of the authenticated user](Users::list_followers_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct UsersListFollowersForAuthenticatedUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -946,17 +1285,17 @@ impl UsersListFollowersForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -975,9 +1314,9 @@ impl<'enc> From<&'enc PerPage> for UsersListFollowersForAuthenticatedUserParams 
 /// Query parameters for the [List followers of a user](Users::list_followers_for_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct UsersListFollowersForUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -986,17 +1325,17 @@ impl UsersListFollowersForUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1015,9 +1354,9 @@ impl<'enc> From<&'enc PerPage> for UsersListFollowersForUserParams {
 /// Query parameters for the [List the people a user follows](Users::list_following_for_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct UsersListFollowingForUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1026,17 +1365,17 @@ impl UsersListFollowingForUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1055,9 +1394,9 @@ impl<'enc> From<&'enc PerPage> for UsersListFollowingForUserParams {
 /// Query parameters for the [List GPG keys for the authenticated user](Users::list_gpg_keys_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct UsersListGpgKeysForAuthenticatedUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1066,17 +1405,17 @@ impl UsersListGpgKeysForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1095,9 +1434,9 @@ impl<'enc> From<&'enc PerPage> for UsersListGpgKeysForAuthenticatedUserParams {
 /// Query parameters for the [List GPG keys for a user](Users::list_gpg_keys_for_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct UsersListGpgKeysForUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1106,17 +1445,17 @@ impl UsersListGpgKeysForUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1135,9 +1474,9 @@ impl<'enc> From<&'enc PerPage> for UsersListGpgKeysForUserParams {
 /// Query parameters for the [List public email addresses for the authenticated user](Users::list_public_emails_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct UsersListPublicEmailsForAuthenticatedUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1146,17 +1485,17 @@ impl UsersListPublicEmailsForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1175,9 +1514,9 @@ impl<'enc> From<&'enc PerPage> for UsersListPublicEmailsForAuthenticatedUserPara
 /// Query parameters for the [List public keys for a user](Users::list_public_keys_for_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct UsersListPublicKeysForUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1186,17 +1525,17 @@ impl UsersListPublicKeysForUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1215,9 +1554,9 @@ impl<'enc> From<&'enc PerPage> for UsersListPublicKeysForUserParams {
 /// Query parameters for the [List public SSH keys for the authenticated user](Users::list_public_ssh_keys_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct UsersListPublicSshKeysForAuthenticatedUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1226,17 +1565,17 @@ impl UsersListPublicSshKeysForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1252,15 +1591,175 @@ impl<'enc> From<&'enc PerPage> for UsersListPublicSshKeysForAuthenticatedUserPar
         }
     }
 }
+/// Query parameters for the [List social accounts for the authenticated user](Users::list_social_accounts_for_authenticated_user_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct UsersListSocialAccountsForAuthenticatedUserParams {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl UsersListSocialAccountsForAuthenticatedUserParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for UsersListSocialAccountsForAuthenticatedUserParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [List social accounts for a user](Users::list_social_accounts_for_user_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct UsersListSocialAccountsForUserParams {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl UsersListSocialAccountsForUserParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for UsersListSocialAccountsForUserParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [List SSH signing keys for the authenticated user](Users::list_ssh_signing_keys_for_authenticated_user_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct UsersListSshSigningKeysForAuthenticatedUserParams {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl UsersListSshSigningKeysForAuthenticatedUserParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for UsersListSshSigningKeysForAuthenticatedUserParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [List SSH signing keys for a user](Users::list_ssh_signing_keys_for_user_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct UsersListSshSigningKeysForUserParams {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl UsersListSshSigningKeysForUserParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for UsersListSshSigningKeysForUserParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 
 impl<'api> Users<'api> {
     /// ---
     ///
     /// # Add an email address for the authenticated user
     ///
-    /// This endpoint is accessible with the `user` scope.
-    /// 
-    /// [GitHub API docs for add_email_for_authenticated_user](https://docs.github.com/rest/reference/users#add-an-email-address-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `user` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for add_email_for_authenticated_user](https://docs.github.com/rest/users/emails#add-an-email-address-for-the-authenticated-user)
     ///
     /// ---
     pub async fn add_email_for_authenticated_user_async(&self, body: PostUsersAddEmailForAuthenticatedUser) -> Result<Vec<Email>, UsersAddEmailForAuthenticatedUserError> {
@@ -1301,9 +1800,9 @@ impl<'api> Users<'api> {
     ///
     /// # Add an email address for the authenticated user
     ///
-    /// This endpoint is accessible with the `user` scope.
-    /// 
-    /// [GitHub API docs for add_email_for_authenticated_user](https://docs.github.com/rest/reference/users#add-an-email-address-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `user` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for add_email_for_authenticated_user](https://docs.github.com/rest/users/emails#add-an-email-address-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1343,9 +1842,102 @@ impl<'api> Users<'api> {
 
     /// ---
     ///
-    /// # Block a user
+    /// # Add social accounts for the authenticated user
+    ///
+    /// Add one or more social accounts to the authenticated user's profile.
     /// 
-    /// [GitHub API docs for block](https://docs.github.com/rest/reference/users#block-a-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `user` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for add_social_account_for_authenticated_user](https://docs.github.com/rest/users/social-accounts#add-social-accounts-for-the-authenticated-user)
+    ///
+    /// ---
+    pub async fn add_social_account_for_authenticated_user_async(&self, body: PostUsersAddSocialAccountForAuthenticatedUser) -> Result<Vec<SocialAccount>, UsersAddSocialAccountForAuthenticatedUserError> {
+
+        let request_uri = format!("{}/user/social_accounts", super::GITHUB_BASE_API_URL);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostUsersAddSocialAccountForAuthenticatedUser::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                422 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                304 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status304),
+                404 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersAddSocialAccountForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Add social accounts for the authenticated user
+    ///
+    /// Add one or more social accounts to the authenticated user's profile.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `user` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for add_social_account_for_authenticated_user](https://docs.github.com/rest/users/social-accounts#add-social-accounts-for-the-authenticated-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn add_social_account_for_authenticated_user(&self, body: PostUsersAddSocialAccountForAuthenticatedUser) -> Result<Vec<SocialAccount>, UsersAddSocialAccountForAuthenticatedUserError> {
+
+        let request_uri = format!("{}/user/social_accounts", super::GITHUB_BASE_API_URL);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostUsersAddSocialAccountForAuthenticatedUser::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                422 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
+                304 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status304),
+                404 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersAddSocialAccountForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Block a user
+    ///
+    /// Blocks the given user and returns a 204. If the authenticated user cannot block the given user a 422 is returned.
+    ///
+    /// [GitHub API docs for block](https://docs.github.com/rest/users/blocking#block-a-user)
     ///
     /// ---
     pub async fn block_async(&self, username: &str) -> Result<(), UsersBlockError> {
@@ -1385,8 +1977,10 @@ impl<'api> Users<'api> {
     /// ---
     ///
     /// # Block a user
-    /// 
-    /// [GitHub API docs for block](https://docs.github.com/rest/reference/users#block-a-user)
+    ///
+    /// Blocks the given user and returns a 204. If the authenticated user cannot block the given user a 422 is returned.
+    ///
+    /// [GitHub API docs for block](https://docs.github.com/rest/users/blocking#block-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1427,8 +2021,10 @@ impl<'api> Users<'api> {
     /// ---
     ///
     /// # Check if a user is blocked by the authenticated user
-    /// 
-    /// [GitHub API docs for check_blocked](https://docs.github.com/rest/reference/users#check-if-a-user-is-blocked-by-the-authenticated-user)
+    ///
+    /// Returns a 204 if the given user is blocked by the authenticated user. Returns a 404 if the given user is not blocked by the authenticated user, or if the given user account has been identified as spam by GitHub.
+    ///
+    /// [GitHub API docs for check_blocked](https://docs.github.com/rest/users/blocking#check-if-a-user-is-blocked-by-the-authenticated-user)
     ///
     /// ---
     pub async fn check_blocked_async(&self, username: &str) -> Result<(), UsersCheckBlockedError> {
@@ -1467,8 +2063,10 @@ impl<'api> Users<'api> {
     /// ---
     ///
     /// # Check if a user is blocked by the authenticated user
-    /// 
-    /// [GitHub API docs for check_blocked](https://docs.github.com/rest/reference/users#check-if-a-user-is-blocked-by-the-authenticated-user)
+    ///
+    /// Returns a 204 if the given user is blocked by the authenticated user. Returns a 404 if the given user is not blocked by the authenticated user, or if the given user account has been identified as spam by GitHub.
+    ///
+    /// [GitHub API docs for check_blocked](https://docs.github.com/rest/users/blocking#check-if-a-user-is-blocked-by-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1508,8 +2106,8 @@ impl<'api> Users<'api> {
     /// ---
     ///
     /// # Check if a user follows another user
-    /// 
-    /// [GitHub API docs for check_following_for_user](https://docs.github.com/rest/reference/users#check-if-a-user-follows-another-user)
+    ///
+    /// [GitHub API docs for check_following_for_user](https://docs.github.com/rest/users/followers#check-if-a-user-follows-another-user)
     ///
     /// ---
     pub async fn check_following_for_user_async(&self, username: &str, target_user: &str) -> Result<(), UsersCheckFollowingForUserError> {
@@ -1545,8 +2143,8 @@ impl<'api> Users<'api> {
     /// ---
     ///
     /// # Check if a user follows another user
-    /// 
-    /// [GitHub API docs for check_following_for_user](https://docs.github.com/rest/reference/users#check-if-a-user-follows-another-user)
+    ///
+    /// [GitHub API docs for check_following_for_user](https://docs.github.com/rest/users/followers#check-if-a-user-follows-another-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1583,8 +2181,8 @@ impl<'api> Users<'api> {
     /// ---
     ///
     /// # Check if a person is followed by the authenticated user
-    /// 
-    /// [GitHub API docs for check_person_is_followed_by_authenticated](https://docs.github.com/rest/reference/users#check-if-a-person-is-followed-by-the-authenticated-user)
+    ///
+    /// [GitHub API docs for check_person_is_followed_by_authenticated](https://docs.github.com/rest/users/followers#check-if-a-person-is-followed-by-the-authenticated-user)
     ///
     /// ---
     pub async fn check_person_is_followed_by_authenticated_async(&self, username: &str) -> Result<(), UsersCheckPersonIsFollowedByAuthenticatedError> {
@@ -1623,8 +2221,8 @@ impl<'api> Users<'api> {
     /// ---
     ///
     /// # Check if a person is followed by the authenticated user
-    /// 
-    /// [GitHub API docs for check_person_is_followed_by_authenticated](https://docs.github.com/rest/reference/users#check-if-a-person-is-followed-by-the-authenticated-user)
+    ///
+    /// [GitHub API docs for check_person_is_followed_by_authenticated](https://docs.github.com/rest/users/followers#check-if-a-person-is-followed-by-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1665,9 +2263,11 @@ impl<'api> Users<'api> {
     ///
     /// # Create a GPG key for the authenticated user
     ///
-    /// Adds a GPG key to the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth, or OAuth with at least `write:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// Adds a GPG key to the authenticated user's GitHub account.
     /// 
-    /// [GitHub API docs for create_gpg_key_for_authenticated_user](https://docs.github.com/rest/reference/users#create-a-gpg-key-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `write:gpg_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_gpg_key_for_authenticated_user](https://docs.github.com/rest/users/gpg-keys#create-a-gpg-key-for-the-authenticated-user)
     ///
     /// ---
     pub async fn create_gpg_key_for_authenticated_user_async(&self, body: PostUsersCreateGpgKeyForAuthenticatedUser) -> Result<GpgKey, UsersCreateGpgKeyForAuthenticatedUserError> {
@@ -1708,9 +2308,11 @@ impl<'api> Users<'api> {
     ///
     /// # Create a GPG key for the authenticated user
     ///
-    /// Adds a GPG key to the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth, or OAuth with at least `write:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// Adds a GPG key to the authenticated user's GitHub account.
     /// 
-    /// [GitHub API docs for create_gpg_key_for_authenticated_user](https://docs.github.com/rest/reference/users#create-a-gpg-key-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `write:gpg_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_gpg_key_for_authenticated_user](https://docs.github.com/rest/users/gpg-keys#create-a-gpg-key-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1752,9 +2354,11 @@ impl<'api> Users<'api> {
     ///
     /// # Create a public SSH key for the authenticated user
     ///
-    /// Adds a public SSH key to the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth, or OAuth with at least `write:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// Adds a public SSH key to the authenticated user's GitHub account.
     /// 
-    /// [GitHub API docs for create_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/reference/users#create-a-public-ssh-key-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `write:gpg_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/users/keys#create-a-public-ssh-key-for-the-authenticated-user)
     ///
     /// ---
     pub async fn create_public_ssh_key_for_authenticated_user_async(&self, body: PostUsersCreatePublicSshKeyForAuthenticatedUser) -> Result<Key, UsersCreatePublicSshKeyForAuthenticatedUserError> {
@@ -1795,9 +2399,11 @@ impl<'api> Users<'api> {
     ///
     /// # Create a public SSH key for the authenticated user
     ///
-    /// Adds a public SSH key to the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth, or OAuth with at least `write:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// Adds a public SSH key to the authenticated user's GitHub account.
     /// 
-    /// [GitHub API docs for create_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/reference/users#create-a-public-ssh-key-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `write:gpg_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/users/keys#create-a-public-ssh-key-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1837,11 +2443,102 @@ impl<'api> Users<'api> {
 
     /// ---
     ///
+    /// # Create a SSH signing key for the authenticated user
+    ///
+    /// Creates an SSH signing key for the authenticated user's GitHub account.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `write:ssh_signing_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_ssh_signing_key_for_authenticated_user](https://docs.github.com/rest/users/ssh-signing-keys#create-a-ssh-signing-key-for-the-authenticated-user)
+    ///
+    /// ---
+    pub async fn create_ssh_signing_key_for_authenticated_user_async(&self, body: PostUsersCreateSshSigningKeyForAuthenticatedUser) -> Result<SshSigningKey, UsersCreateSshSigningKeyForAuthenticatedUserError> {
+
+        let request_uri = format!("{}/user/ssh_signing_keys", super::GITHUB_BASE_API_URL);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostUsersCreateSshSigningKeyForAuthenticatedUser::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                422 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                304 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status304),
+                404 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create a SSH signing key for the authenticated user
+    ///
+    /// Creates an SSH signing key for the authenticated user's GitHub account.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `write:ssh_signing_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_ssh_signing_key_for_authenticated_user](https://docs.github.com/rest/users/ssh-signing-keys#create-a-ssh-signing-key-for-the-authenticated-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn create_ssh_signing_key_for_authenticated_user(&self, body: PostUsersCreateSshSigningKeyForAuthenticatedUser) -> Result<SshSigningKey, UsersCreateSshSigningKeyForAuthenticatedUserError> {
+
+        let request_uri = format!("{}/user/ssh_signing_keys", super::GITHUB_BASE_API_URL);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostUsersCreateSshSigningKeyForAuthenticatedUser::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                422 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
+                304 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status304),
+                404 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Delete an email address for the authenticated user
     ///
-    /// This endpoint is accessible with the `user` scope.
-    /// 
-    /// [GitHub API docs for delete_email_for_authenticated_user](https://docs.github.com/rest/reference/users#delete-an-email-address-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `user` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_email_for_authenticated_user](https://docs.github.com/rest/users/emails#delete-an-email-address-for-the-authenticated-user)
     ///
     /// ---
     pub async fn delete_email_for_authenticated_user_async(&self, body: DeleteUsersDeleteEmailForAuthenticatedUser) -> Result<(), UsersDeleteEmailForAuthenticatedUserError> {
@@ -1882,9 +2579,9 @@ impl<'api> Users<'api> {
     ///
     /// # Delete an email address for the authenticated user
     ///
-    /// This endpoint is accessible with the `user` scope.
-    /// 
-    /// [GitHub API docs for delete_email_for_authenticated_user](https://docs.github.com/rest/reference/users#delete-an-email-address-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `user` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_email_for_authenticated_user](https://docs.github.com/rest/users/emails#delete-an-email-address-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1926,9 +2623,11 @@ impl<'api> Users<'api> {
     ///
     /// # Delete a GPG key for the authenticated user
     ///
-    /// Removes a GPG key from the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth or via OAuth with at least `admin:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// Removes a GPG key from the authenticated user's GitHub account.
     /// 
-    /// [GitHub API docs for delete_gpg_key_for_authenticated_user](https://docs.github.com/rest/reference/users#delete-a-gpg-key-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:gpg_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_gpg_key_for_authenticated_user](https://docs.github.com/rest/users/gpg-keys#delete-a-gpg-key-for-the-authenticated-user)
     ///
     /// ---
     pub async fn delete_gpg_key_for_authenticated_user_async(&self, gpg_key_id: i32) -> Result<(), UsersDeleteGpgKeyForAuthenticatedUserError> {
@@ -1969,9 +2668,11 @@ impl<'api> Users<'api> {
     ///
     /// # Delete a GPG key for the authenticated user
     ///
-    /// Removes a GPG key from the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth or via OAuth with at least `admin:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// Removes a GPG key from the authenticated user's GitHub account.
     /// 
-    /// [GitHub API docs for delete_gpg_key_for_authenticated_user](https://docs.github.com/rest/reference/users#delete-a-gpg-key-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:gpg_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_gpg_key_for_authenticated_user](https://docs.github.com/rest/users/gpg-keys#delete-a-gpg-key-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2013,9 +2714,11 @@ impl<'api> Users<'api> {
     ///
     /// # Delete a public SSH key for the authenticated user
     ///
-    /// Removes a public SSH key from the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth or via OAuth with at least `admin:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// Removes a public SSH key from the authenticated user's GitHub account.
     /// 
-    /// [GitHub API docs for delete_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/reference/users#delete-a-public-ssh-key-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:public_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/users/keys#delete-a-public-ssh-key-for-the-authenticated-user)
     ///
     /// ---
     pub async fn delete_public_ssh_key_for_authenticated_user_async(&self, key_id: i32) -> Result<(), UsersDeletePublicSshKeyForAuthenticatedUserError> {
@@ -2055,9 +2758,11 @@ impl<'api> Users<'api> {
     ///
     /// # Delete a public SSH key for the authenticated user
     ///
-    /// Removes a public SSH key from the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth or via OAuth with at least `admin:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// Removes a public SSH key from the authenticated user's GitHub account.
     /// 
-    /// [GitHub API docs for delete_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/reference/users#delete-a-public-ssh-key-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:public_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/users/keys#delete-a-public-ssh-key-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2096,13 +2801,193 @@ impl<'api> Users<'api> {
 
     /// ---
     ///
+    /// # Delete social accounts for the authenticated user
+    ///
+    /// Deletes one or more social accounts from the authenticated user's profile.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `user` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_social_account_for_authenticated_user](https://docs.github.com/rest/users/social-accounts#delete-social-accounts-for-the-authenticated-user)
+    ///
+    /// ---
+    pub async fn delete_social_account_for_authenticated_user_async(&self, body: DeleteUsersDeleteSocialAccountForAuthenticatedUser) -> Result<(), UsersDeleteSocialAccountForAuthenticatedUserError> {
+
+        let request_uri = format!("{}/user/social_accounts", super::GITHUB_BASE_API_URL);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(DeleteUsersDeleteSocialAccountForAuthenticatedUser::from_json(body)?),
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                422 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                304 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status304),
+                404 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete social accounts for the authenticated user
+    ///
+    /// Deletes one or more social accounts from the authenticated user's profile.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `user` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_social_account_for_authenticated_user](https://docs.github.com/rest/users/social-accounts#delete-social-accounts-for-the-authenticated-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn delete_social_account_for_authenticated_user(&self, body: DeleteUsersDeleteSocialAccountForAuthenticatedUser) -> Result<(), UsersDeleteSocialAccountForAuthenticatedUserError> {
+
+        let request_uri = format!("{}/user/social_accounts", super::GITHUB_BASE_API_URL);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(DeleteUsersDeleteSocialAccountForAuthenticatedUser::from_json(body)?),
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                422 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
+                304 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status304),
+                404 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete an SSH signing key for the authenticated user
+    ///
+    /// Deletes an SSH signing key from the authenticated user's GitHub account.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:ssh_signing_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_ssh_signing_key_for_authenticated_user](https://docs.github.com/rest/users/ssh-signing-keys#delete-an-ssh-signing-key-for-the-authenticated-user)
+    ///
+    /// ---
+    pub async fn delete_ssh_signing_key_for_authenticated_user_async(&self, ssh_signing_key_id: i32) -> Result<(), UsersDeleteSshSigningKeyForAuthenticatedUserError> {
+
+        let request_uri = format!("{}/user/ssh_signing_keys/{}", super::GITHUB_BASE_API_URL, ssh_signing_key_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status304),
+                404 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete an SSH signing key for the authenticated user
+    ///
+    /// Deletes an SSH signing key from the authenticated user's GitHub account.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:ssh_signing_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_ssh_signing_key_for_authenticated_user](https://docs.github.com/rest/users/ssh-signing-keys#delete-an-ssh-signing-key-for-the-authenticated-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn delete_ssh_signing_key_for_authenticated_user(&self, ssh_signing_key_id: i32) -> Result<(), UsersDeleteSshSigningKeyForAuthenticatedUserError> {
+
+        let request_uri = format!("{}/user/ssh_signing_keys/{}", super::GITHUB_BASE_API_URL, ssh_signing_key_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status304),
+                404 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Follow a user
     ///
-    /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
+    /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
     /// 
-    /// Following a user requires the user to be logged in and authenticated with basic auth or OAuth with the `user:follow` scope.
-    /// 
-    /// [GitHub API docs for follow](https://docs.github.com/rest/reference/users#follow-a-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `user:follow` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for follow](https://docs.github.com/rest/users/followers#follow-a-user)
     ///
     /// ---
     pub async fn follow_async(&self, username: &str) -> Result<(), UsersFollowError> {
@@ -2142,11 +3027,11 @@ impl<'api> Users<'api> {
     ///
     /// # Follow a user
     ///
-    /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
+    /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
     /// 
-    /// Following a user requires the user to be logged in and authenticated with basic auth or OAuth with the `user:follow` scope.
-    /// 
-    /// [GitHub API docs for follow](https://docs.github.com/rest/reference/users#follow-a-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `user:follow` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for follow](https://docs.github.com/rest/users/followers#follow-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2187,11 +3072,9 @@ impl<'api> Users<'api> {
     ///
     /// # Get the authenticated user
     ///
-    /// If the authenticated user is authenticated through basic authentication or OAuth with the `user` scope, then the response lists public and private profile information.
-    /// 
-    /// If the authenticated user is authenticated through OAuth without the `user` scope, then the response lists only public profile information.
-    /// 
-    /// [GitHub API docs for get_authenticated](https://docs.github.com/rest/reference/users#get-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `user` scope in order for the response to include private profile information.
+    ///
+    /// [GitHub API docs for get_authenticated](https://docs.github.com/rest/users/users#get-the-authenticated-user)
     ///
     /// ---
     pub async fn get_authenticated_async(&self) -> Result<GetUsersGetByUsernameResponse200, UsersGetAuthenticatedError> {
@@ -2230,11 +3113,9 @@ impl<'api> Users<'api> {
     ///
     /// # Get the authenticated user
     ///
-    /// If the authenticated user is authenticated through basic authentication or OAuth with the `user` scope, then the response lists public and private profile information.
-    /// 
-    /// If the authenticated user is authenticated through OAuth without the `user` scope, then the response lists only public profile information.
-    /// 
-    /// [GitHub API docs for get_authenticated](https://docs.github.com/rest/reference/users#get-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `user` scope in order for the response to include private profile information.
+    ///
+    /// [GitHub API docs for get_authenticated](https://docs.github.com/rest/users/users#get-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2272,17 +3153,102 @@ impl<'api> Users<'api> {
 
     /// ---
     ///
+    /// # Get a user using their ID
+    ///
+    /// Provides publicly available information about someone with a GitHub account. This method takes their durable user `ID` instead of their `login`, which can change over time.
+    /// 
+    /// The `email` key in the following response is the publicly visible email address from your GitHub [profile page](https://github.com/settings/profile). When setting up your profile, you can select a primary email address to be “public” which provides an email entry for this endpoint. If you do not set a public email address for `email`, then it will have a value of `null`. You only see publicly visible email addresses when authenticated with GitHub. For more information, see [Authentication](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#authentication).
+    /// 
+    /// The Emails API enables you to list all of your email addresses, and toggle a primary email to be visible publicly. For more information, see "[Emails API](https://docs.github.com/rest/users/emails)".
+    ///
+    /// [GitHub API docs for get_by_id](https://docs.github.com/rest/users/users#get-a-user-using-their-id)
+    ///
+    /// ---
+    pub async fn get_by_id_async(&self, account_id: i32) -> Result<GetUsersGetByUsernameResponse200, UsersGetByIdError> {
+
+        let request_uri = format!("{}/user/{}", super::GITHUB_BASE_API_URL, account_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(UsersGetByIdError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersGetByIdError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get a user using their ID
+    ///
+    /// Provides publicly available information about someone with a GitHub account. This method takes their durable user `ID` instead of their `login`, which can change over time.
+    /// 
+    /// The `email` key in the following response is the publicly visible email address from your GitHub [profile page](https://github.com/settings/profile). When setting up your profile, you can select a primary email address to be “public” which provides an email entry for this endpoint. If you do not set a public email address for `email`, then it will have a value of `null`. You only see publicly visible email addresses when authenticated with GitHub. For more information, see [Authentication](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#authentication).
+    /// 
+    /// The Emails API enables you to list all of your email addresses, and toggle a primary email to be visible publicly. For more information, see "[Emails API](https://docs.github.com/rest/users/emails)".
+    ///
+    /// [GitHub API docs for get_by_id](https://docs.github.com/rest/users/users#get-a-user-using-their-id)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_by_id(&self, account_id: i32) -> Result<GetUsersGetByUsernameResponse200, UsersGetByIdError> {
+
+        let request_uri = format!("{}/user/{}", super::GITHUB_BASE_API_URL, account_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(UsersGetByIdError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersGetByIdError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Get a user
     ///
     /// Provides publicly available information about someone with a GitHub account.
     /// 
-    /// GitHub Apps with the `Plan` user permission can use this endpoint to retrieve information about a user's GitHub plan. The GitHub App must be authenticated as a user. See "[Identifying and authorizing users for GitHub Apps](https://docs.github.com/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps/)" for details about authentication. For an example response, see 'Response with GitHub plan information' below"
+    /// The `email` key in the following response is the publicly visible email address from your GitHub [profile page](https://github.com/settings/profile). When setting up your profile, you can select a primary email address to be “public” which provides an email entry for this endpoint. If you do not set a public email address for `email`, then it will have a value of `null`. You only see publicly visible email addresses when authenticated with GitHub. For more information, see [Authentication](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#authentication).
     /// 
-    /// The `email` key in the following response is the publicly visible email address from your GitHub [profile page](https://github.com/settings/profile). When setting up your profile, you can select a primary email address to be “public” which provides an email entry for this endpoint. If you do not set a public email address for `email`, then it will have a value of `null`. You only see publicly visible email addresses when authenticated with GitHub. For more information, see [Authentication](https://docs.github.com/rest/overview/resources-in-the-rest-api#authentication).
-    /// 
-    /// The Emails API enables you to list all of your email addresses, and toggle a primary email to be visible publicly. For more information, see "[Emails API](https://docs.github.com/rest/reference/users#emails)".
-    /// 
-    /// [GitHub API docs for get_by_username](https://docs.github.com/rest/reference/users#get-a-user)
+    /// The Emails API enables you to list all of your email addresses, and toggle a primary email to be visible publicly. For more information, see "[Emails API](https://docs.github.com/rest/users/emails)".
+    ///
+    /// [GitHub API docs for get_by_username](https://docs.github.com/rest/users/users#get-a-user)
     ///
     /// ---
     pub async fn get_by_username_async(&self, username: &str) -> Result<GetUsersGetByUsernameResponse200, UsersGetByUsernameError> {
@@ -2321,13 +3287,11 @@ impl<'api> Users<'api> {
     ///
     /// Provides publicly available information about someone with a GitHub account.
     /// 
-    /// GitHub Apps with the `Plan` user permission can use this endpoint to retrieve information about a user's GitHub plan. The GitHub App must be authenticated as a user. See "[Identifying and authorizing users for GitHub Apps](https://docs.github.com/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps/)" for details about authentication. For an example response, see 'Response with GitHub plan information' below"
+    /// The `email` key in the following response is the publicly visible email address from your GitHub [profile page](https://github.com/settings/profile). When setting up your profile, you can select a primary email address to be “public” which provides an email entry for this endpoint. If you do not set a public email address for `email`, then it will have a value of `null`. You only see publicly visible email addresses when authenticated with GitHub. For more information, see [Authentication](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#authentication).
     /// 
-    /// The `email` key in the following response is the publicly visible email address from your GitHub [profile page](https://github.com/settings/profile). When setting up your profile, you can select a primary email address to be “public” which provides an email entry for this endpoint. If you do not set a public email address for `email`, then it will have a value of `null`. You only see publicly visible email addresses when authenticated with GitHub. For more information, see [Authentication](https://docs.github.com/rest/overview/resources-in-the-rest-api#authentication).
-    /// 
-    /// The Emails API enables you to list all of your email addresses, and toggle a primary email to be visible publicly. For more information, see "[Emails API](https://docs.github.com/rest/reference/users#emails)".
-    /// 
-    /// [GitHub API docs for get_by_username](https://docs.github.com/rest/reference/users#get-a-user)
+    /// The Emails API enables you to list all of your email addresses, and toggle a primary email to be visible publicly. For more information, see "[Emails API](https://docs.github.com/rest/users/emails)".
+    ///
+    /// [GitHub API docs for get_by_username](https://docs.github.com/rest/users/users#get-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2365,16 +3329,13 @@ impl<'api> Users<'api> {
     ///
     /// # Get contextual information for a user
     ///
-    /// Provides hovercard information when authenticated through basic auth or OAuth with the `repo` scope. You can find out more about someone in relation to their pull requests, issues, repositories, and organizations.
+    /// Provides hovercard information. You can find out more about someone in relation to their pull requests, issues, repositories, and organizations.
     /// 
-    /// The `subject_type` and `subject_id` parameters provide context for the person's hovercard, which returns more information than without the parameters. For example, if you wanted to find out more about `octocat` who owns the `Spoon-Knife` repository via cURL, it would look like this:
+    ///   The `subject_type` and `subject_id` parameters provide context for the person's hovercard, which returns more information than without the parameters. For example, if you wanted to find out more about `octocat` who owns the `Spoon-Knife` repository, you would use a `subject_type` value of `repository` and a `subject_id` value of `1300192` (the ID of the `Spoon-Knife` repository).
     /// 
-    /// ```shell,nocompile
-    ///  curl -u username:token
-    ///   https://api.github.com/users/octocat/hovercard?subject_type=repository&subject_id=1300192
-    /// ```
-    /// 
-    /// [GitHub API docs for get_context_for_user](https://docs.github.com/rest/reference/users#get-contextual-information-for-a-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_context_for_user](https://docs.github.com/rest/users/users#get-contextual-information-for-a-user)
     ///
     /// ---
     pub async fn get_context_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersGetContextForUserParams<'api>>>) -> Result<Hovercard, UsersGetContextForUserError> {
@@ -2416,16 +3377,13 @@ impl<'api> Users<'api> {
     ///
     /// # Get contextual information for a user
     ///
-    /// Provides hovercard information when authenticated through basic auth or OAuth with the `repo` scope. You can find out more about someone in relation to their pull requests, issues, repositories, and organizations.
+    /// Provides hovercard information. You can find out more about someone in relation to their pull requests, issues, repositories, and organizations.
     /// 
-    /// The `subject_type` and `subject_id` parameters provide context for the person's hovercard, which returns more information than without the parameters. For example, if you wanted to find out more about `octocat` who owns the `Spoon-Knife` repository via cURL, it would look like this:
+    ///   The `subject_type` and `subject_id` parameters provide context for the person's hovercard, which returns more information than without the parameters. For example, if you wanted to find out more about `octocat` who owns the `Spoon-Knife` repository, you would use a `subject_type` value of `repository` and a `subject_id` value of `1300192` (the ID of the `Spoon-Knife` repository).
     /// 
-    /// ```shell,nocompile
-    ///  curl -u username:token
-    ///   https://api.github.com/users/octocat/hovercard?subject_type=repository&subject_id=1300192
-    /// ```
-    /// 
-    /// [GitHub API docs for get_context_for_user](https://docs.github.com/rest/reference/users#get-contextual-information-for-a-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_context_for_user](https://docs.github.com/rest/users/users#get-contextual-information-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2469,9 +3427,11 @@ impl<'api> Users<'api> {
     ///
     /// # Get a GPG key for the authenticated user
     ///
-    /// View extended details for a single GPG key. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// View extended details for a single GPG key.
     /// 
-    /// [GitHub API docs for get_gpg_key_for_authenticated_user](https://docs.github.com/rest/reference/users#get-a-gpg-key-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:gpg_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_gpg_key_for_authenticated_user](https://docs.github.com/rest/users/gpg-keys#get-a-gpg-key-for-the-authenticated-user)
     ///
     /// ---
     pub async fn get_gpg_key_for_authenticated_user_async(&self, gpg_key_id: i32) -> Result<GpgKey, UsersGetGpgKeyForAuthenticatedUserError> {
@@ -2511,9 +3471,11 @@ impl<'api> Users<'api> {
     ///
     /// # Get a GPG key for the authenticated user
     ///
-    /// View extended details for a single GPG key. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// View extended details for a single GPG key.
     /// 
-    /// [GitHub API docs for get_gpg_key_for_authenticated_user](https://docs.github.com/rest/reference/users#get-a-gpg-key-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:gpg_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_gpg_key_for_authenticated_user](https://docs.github.com/rest/users/gpg-keys#get-a-gpg-key-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2554,9 +3516,11 @@ impl<'api> Users<'api> {
     ///
     /// # Get a public SSH key for the authenticated user
     ///
-    /// View extended details for a single public SSH key. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// View extended details for a single public SSH key.
     /// 
-    /// [GitHub API docs for get_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/reference/users#get-a-public-ssh-key-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:public_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/users/keys#get-a-public-ssh-key-for-the-authenticated-user)
     ///
     /// ---
     pub async fn get_public_ssh_key_for_authenticated_user_async(&self, key_id: i32) -> Result<Key, UsersGetPublicSshKeyForAuthenticatedUserError> {
@@ -2596,9 +3560,11 @@ impl<'api> Users<'api> {
     ///
     /// # Get a public SSH key for the authenticated user
     ///
-    /// View extended details for a single public SSH key. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// View extended details for a single public SSH key.
     /// 
-    /// [GitHub API docs for get_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/reference/users#get-a-public-ssh-key-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:public_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/users/keys#get-a-public-ssh-key-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2637,13 +3603,102 @@ impl<'api> Users<'api> {
 
     /// ---
     ///
+    /// # Get an SSH signing key for the authenticated user
+    ///
+    /// Gets extended details for an SSH signing key.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `read:ssh_signing_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_ssh_signing_key_for_authenticated_user](https://docs.github.com/rest/users/ssh-signing-keys#get-an-ssh-signing-key-for-the-authenticated-user)
+    ///
+    /// ---
+    pub async fn get_ssh_signing_key_for_authenticated_user_async(&self, ssh_signing_key_id: i32) -> Result<SshSigningKey, UsersGetSshSigningKeyForAuthenticatedUserError> {
+
+        let request_uri = format!("{}/user/ssh_signing_keys/{}", super::GITHUB_BASE_API_URL, ssh_signing_key_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                304 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status304),
+                403 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get an SSH signing key for the authenticated user
+    ///
+    /// Gets extended details for an SSH signing key.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `read:ssh_signing_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_ssh_signing_key_for_authenticated_user](https://docs.github.com/rest/users/ssh-signing-keys#get-an-ssh-signing-key-for-the-authenticated-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_ssh_signing_key_for_authenticated_user(&self, ssh_signing_key_id: i32) -> Result<SshSigningKey, UsersGetSshSigningKeyForAuthenticatedUserError> {
+
+        let request_uri = format!("{}/user/ssh_signing_keys/{}", super::GITHUB_BASE_API_URL, ssh_signing_key_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                304 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status304),
+                403 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List users
     ///
     /// Lists all users, in the order that they signed up on GitHub. This list includes personal user accounts and organization accounts.
     /// 
-    /// Note: Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header) to get the URL for the next page of users.
-    /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/users#list-users)
+    /// Note: Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers) to get the URL for the next page of users.
+    ///
+    /// [GitHub API docs for list](https://docs.github.com/rest/users/users#list-users)
     ///
     /// ---
     pub async fn list_async(&self, query_params: Option<impl Into<UsersListParams>>) -> Result<Vec<SimpleUser>, UsersListError> {
@@ -2686,9 +3741,9 @@ impl<'api> Users<'api> {
     ///
     /// Lists all users, in the order that they signed up on GitHub. This list includes personal user accounts and organization accounts.
     /// 
-    /// Note: Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header) to get the URL for the next page of users.
-    /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/users#list-users)
+    /// Note: Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers) to get the URL for the next page of users.
+    ///
+    /// [GitHub API docs for list](https://docs.github.com/rest/users/users#list-users)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2729,17 +3784,121 @@ impl<'api> Users<'api> {
 
     /// ---
     ///
+    /// # List attestations
+    ///
+    /// List a collection of artifact attestations with a given subject digest that are associated with repositories owned by a user.
+    /// 
+    /// The collection of attestations returned by this endpoint is filtered according to the authenticated user's permissions; if the authenticated user cannot read a repository, the attestations associated with that repository will not be included in the response. In addition, when using a fine-grained access token the `attestations:read` permission is required.
+    /// 
+    /// **Please note:** in order to offer meaningful security benefits, an attestation's signature and timestamps **must** be cryptographically verified, and the identity of the attestation signer **must** be validated. Attestations can be verified using the [GitHub CLI `attestation verify` command](https://cli.github.com/manual/gh_attestation_verify). For more information, see [our guide on how to use artifact attestations to establish a build's provenance](https://docs.github.com/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds).
+    ///
+    /// [GitHub API docs for list_attestations](https://docs.github.com/rest/users/attestations#list-attestations)
+    ///
+    /// ---
+    pub async fn list_attestations_async(&self, username: &str, subject_digest: &str, query_params: Option<impl Into<UsersListAttestationsParams<'api>>>) -> Result<GetUsersListAttestationsResponse200, UsersListAttestationsError> {
+
+        let mut request_uri = format!("{}/users/{}/attestations/{}", super::GITHUB_BASE_API_URL, username, subject_digest);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                201 => Err(UsersListAttestationsError::Status201(crate::adapters::to_json_async(github_response).await?)),
+                204 => Err(UsersListAttestationsError::Status204),
+                404 => Err(UsersListAttestationsError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersListAttestationsError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List attestations
+    ///
+    /// List a collection of artifact attestations with a given subject digest that are associated with repositories owned by a user.
+    /// 
+    /// The collection of attestations returned by this endpoint is filtered according to the authenticated user's permissions; if the authenticated user cannot read a repository, the attestations associated with that repository will not be included in the response. In addition, when using a fine-grained access token the `attestations:read` permission is required.
+    /// 
+    /// **Please note:** in order to offer meaningful security benefits, an attestation's signature and timestamps **must** be cryptographically verified, and the identity of the attestation signer **must** be validated. Attestations can be verified using the [GitHub CLI `attestation verify` command](https://cli.github.com/manual/gh_attestation_verify). For more information, see [our guide on how to use artifact attestations to establish a build's provenance](https://docs.github.com/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds).
+    ///
+    /// [GitHub API docs for list_attestations](https://docs.github.com/rest/users/attestations#list-attestations)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_attestations(&self, username: &str, subject_digest: &str, query_params: Option<impl Into<UsersListAttestationsParams<'api>>>) -> Result<GetUsersListAttestationsResponse200, UsersListAttestationsError> {
+
+        let mut request_uri = format!("{}/users/{}/attestations/{}", super::GITHUB_BASE_API_URL, username, subject_digest);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: UsersListAttestationsParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                201 => Err(UsersListAttestationsError::Status201(crate::adapters::to_json(github_response)?)),
+                204 => Err(UsersListAttestationsError::Status204),
+                404 => Err(UsersListAttestationsError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersListAttestationsError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List users blocked by the authenticated user
     ///
     /// List the users you've blocked on your personal account.
-    /// 
-    /// [GitHub API docs for list_blocked_by_authenticated_user](https://docs.github.com/rest/reference/users#list-users-blocked-by-the-authenticated-user)
+    ///
+    /// [GitHub API docs for list_blocked_by_authenticated_user](https://docs.github.com/rest/users/blocking#list-users-blocked-by-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_blocked_by_authenticated_user_async(&self) -> Result<Vec<SimpleUser>, UsersListBlockedByAuthenticatedUserError> {
+    pub async fn list_blocked_by_authenticated_user_async(&self, query_params: Option<impl Into<UsersListBlockedByAuthenticatedUserParams>>) -> Result<Vec<SimpleUser>, UsersListBlockedByAuthenticatedUserError> {
 
-        let request_uri = format!("{}/user/blocks", super::GITHUB_BASE_API_URL);
+        let mut request_uri = format!("{}/user/blocks", super::GITHUB_BASE_API_URL);
 
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
 
         let req = GitHubRequest {
             uri: request_uri,
@@ -2764,7 +3923,6 @@ impl<'api> Users<'api> {
                 404 => Err(UsersListBlockedByAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
                 403 => Err(UsersListBlockedByAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 401 => Err(UsersListBlockedByAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(UsersListBlockedByAuthenticatedUserError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(UsersListBlockedByAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2775,15 +3933,20 @@ impl<'api> Users<'api> {
     /// # List users blocked by the authenticated user
     ///
     /// List the users you've blocked on your personal account.
-    /// 
-    /// [GitHub API docs for list_blocked_by_authenticated_user](https://docs.github.com/rest/reference/users#list-users-blocked-by-the-authenticated-user)
+    ///
+    /// [GitHub API docs for list_blocked_by_authenticated_user](https://docs.github.com/rest/users/blocking#list-users-blocked-by-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_blocked_by_authenticated_user(&self) -> Result<Vec<SimpleUser>, UsersListBlockedByAuthenticatedUserError> {
+    pub fn list_blocked_by_authenticated_user(&self, query_params: Option<impl Into<UsersListBlockedByAuthenticatedUserParams>>) -> Result<Vec<SimpleUser>, UsersListBlockedByAuthenticatedUserError> {
 
-        let request_uri = format!("{}/user/blocks", super::GITHUB_BASE_API_URL);
+        let mut request_uri = format!("{}/user/blocks", super::GITHUB_BASE_API_URL);
 
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: UsersListBlockedByAuthenticatedUserParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
 
         let req = GitHubRequest {
             uri: request_uri,
@@ -2808,7 +3971,6 @@ impl<'api> Users<'api> {
                 404 => Err(UsersListBlockedByAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
                 403 => Err(UsersListBlockedByAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
                 401 => Err(UsersListBlockedByAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                415 => Err(UsersListBlockedByAuthenticatedUserError::Status415(crate::adapters::to_json(github_response)?)),
                 code => Err(UsersListBlockedByAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2818,9 +3980,12 @@ impl<'api> Users<'api> {
     ///
     /// # List email addresses for the authenticated user
     ///
-    /// Lists all of your email addresses, and specifies which one is visible to the public. This endpoint is accessible with the `user:email` scope.
+    /// Lists all of your email addresses, and specifies which one is visible
+    /// to the public.
     /// 
-    /// [GitHub API docs for list_emails_for_authenticated_user](https://docs.github.com/rest/reference/users#list-email-addresses-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `user:email` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_emails_for_authenticated_user](https://docs.github.com/rest/users/emails#list-email-addresses-for-the-authenticated-user)
     ///
     /// ---
     pub async fn list_emails_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListEmailsForAuthenticatedUserParams>>) -> Result<Vec<Email>, UsersListEmailsForAuthenticatedUserError> {
@@ -2864,9 +4029,12 @@ impl<'api> Users<'api> {
     ///
     /// # List email addresses for the authenticated user
     ///
-    /// Lists all of your email addresses, and specifies which one is visible to the public. This endpoint is accessible with the `user:email` scope.
+    /// Lists all of your email addresses, and specifies which one is visible
+    /// to the public.
     /// 
-    /// [GitHub API docs for list_emails_for_authenticated_user](https://docs.github.com/rest/reference/users#list-email-addresses-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `user:email` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_emails_for_authenticated_user](https://docs.github.com/rest/users/emails#list-email-addresses-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2913,8 +4081,8 @@ impl<'api> Users<'api> {
     /// # List the people the authenticated user follows
     ///
     /// Lists the people who the authenticated user follows.
-    /// 
-    /// [GitHub API docs for list_followed_by_authenticated_user](https://docs.github.com/rest/reference/users#list-the-people-the-authenticated-user-follows)
+    ///
+    /// [GitHub API docs for list_followed_by_authenticated_user](https://docs.github.com/rest/users/followers#list-the-people-the-authenticated-user-follows)
     ///
     /// ---
     pub async fn list_followed_by_authenticated_user_async(&self, query_params: Option<impl Into<UsersListFollowedByAuthenticatedUserParams>>) -> Result<Vec<SimpleUser>, UsersListFollowedByAuthenticatedUserError> {
@@ -2958,8 +4126,8 @@ impl<'api> Users<'api> {
     /// # List the people the authenticated user follows
     ///
     /// Lists the people who the authenticated user follows.
-    /// 
-    /// [GitHub API docs for list_followed_by_authenticated_user](https://docs.github.com/rest/reference/users#list-the-people-the-authenticated-user-follows)
+    ///
+    /// [GitHub API docs for list_followed_by_authenticated_user](https://docs.github.com/rest/users/followers#list-the-people-the-authenticated-user-follows)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3005,8 +4173,8 @@ impl<'api> Users<'api> {
     /// # List followers of the authenticated user
     ///
     /// Lists the people following the authenticated user.
-    /// 
-    /// [GitHub API docs for list_followers_for_authenticated_user](https://docs.github.com/rest/reference/users#list-followers-of-the-authenticated-user)
+    ///
+    /// [GitHub API docs for list_followers_for_authenticated_user](https://docs.github.com/rest/users/followers#list-followers-of-the-authenticated-user)
     ///
     /// ---
     pub async fn list_followers_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListFollowersForAuthenticatedUserParams>>) -> Result<Vec<SimpleUser>, UsersListFollowersForAuthenticatedUserError> {
@@ -3050,8 +4218,8 @@ impl<'api> Users<'api> {
     /// # List followers of the authenticated user
     ///
     /// Lists the people following the authenticated user.
-    /// 
-    /// [GitHub API docs for list_followers_for_authenticated_user](https://docs.github.com/rest/reference/users#list-followers-of-the-authenticated-user)
+    ///
+    /// [GitHub API docs for list_followers_for_authenticated_user](https://docs.github.com/rest/users/followers#list-followers-of-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3097,8 +4265,8 @@ impl<'api> Users<'api> {
     /// # List followers of a user
     ///
     /// Lists the people following the specified user.
-    /// 
-    /// [GitHub API docs for list_followers_for_user](https://docs.github.com/rest/reference/users#list-followers-of-a-user)
+    ///
+    /// [GitHub API docs for list_followers_for_user](https://docs.github.com/rest/users/followers#list-followers-of-a-user)
     ///
     /// ---
     pub async fn list_followers_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersListFollowersForUserParams>>) -> Result<Vec<SimpleUser>, UsersListFollowersForUserError> {
@@ -3139,8 +4307,8 @@ impl<'api> Users<'api> {
     /// # List followers of a user
     ///
     /// Lists the people following the specified user.
-    /// 
-    /// [GitHub API docs for list_followers_for_user](https://docs.github.com/rest/reference/users#list-followers-of-a-user)
+    ///
+    /// [GitHub API docs for list_followers_for_user](https://docs.github.com/rest/users/followers#list-followers-of-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3183,8 +4351,8 @@ impl<'api> Users<'api> {
     /// # List the people a user follows
     ///
     /// Lists the people who the specified user follows.
-    /// 
-    /// [GitHub API docs for list_following_for_user](https://docs.github.com/rest/reference/users#list-the-people-a-user-follows)
+    ///
+    /// [GitHub API docs for list_following_for_user](https://docs.github.com/rest/users/followers#list-the-people-a-user-follows)
     ///
     /// ---
     pub async fn list_following_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersListFollowingForUserParams>>) -> Result<Vec<SimpleUser>, UsersListFollowingForUserError> {
@@ -3225,8 +4393,8 @@ impl<'api> Users<'api> {
     /// # List the people a user follows
     ///
     /// Lists the people who the specified user follows.
-    /// 
-    /// [GitHub API docs for list_following_for_user](https://docs.github.com/rest/reference/users#list-the-people-a-user-follows)
+    ///
+    /// [GitHub API docs for list_following_for_user](https://docs.github.com/rest/users/followers#list-the-people-a-user-follows)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3268,9 +4436,11 @@ impl<'api> Users<'api> {
     ///
     /// # List GPG keys for the authenticated user
     ///
-    /// Lists the current user's GPG keys. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// Lists the current user's GPG keys.
     /// 
-    /// [GitHub API docs for list_gpg_keys_for_authenticated_user](https://docs.github.com/rest/reference/users#list-gpg-keys-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:gpg_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_gpg_keys_for_authenticated_user](https://docs.github.com/rest/users/gpg-keys#list-gpg-keys-for-the-authenticated-user)
     ///
     /// ---
     pub async fn list_gpg_keys_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListGpgKeysForAuthenticatedUserParams>>) -> Result<Vec<GpgKey>, UsersListGpgKeysForAuthenticatedUserError> {
@@ -3314,9 +4484,11 @@ impl<'api> Users<'api> {
     ///
     /// # List GPG keys for the authenticated user
     ///
-    /// Lists the current user's GPG keys. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:gpg_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// Lists the current user's GPG keys.
     /// 
-    /// [GitHub API docs for list_gpg_keys_for_authenticated_user](https://docs.github.com/rest/reference/users#list-gpg-keys-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:gpg_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_gpg_keys_for_authenticated_user](https://docs.github.com/rest/users/gpg-keys#list-gpg-keys-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3363,8 +4535,8 @@ impl<'api> Users<'api> {
     /// # List GPG keys for a user
     ///
     /// Lists the GPG keys for a user. This information is accessible by anyone.
-    /// 
-    /// [GitHub API docs for list_gpg_keys_for_user](https://docs.github.com/rest/reference/users#list-gpg-keys-for-a-user)
+    ///
+    /// [GitHub API docs for list_gpg_keys_for_user](https://docs.github.com/rest/users/gpg-keys#list-gpg-keys-for-a-user)
     ///
     /// ---
     pub async fn list_gpg_keys_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersListGpgKeysForUserParams>>) -> Result<Vec<GpgKey>, UsersListGpgKeysForUserError> {
@@ -3405,8 +4577,8 @@ impl<'api> Users<'api> {
     /// # List GPG keys for a user
     ///
     /// Lists the GPG keys for a user. This information is accessible by anyone.
-    /// 
-    /// [GitHub API docs for list_gpg_keys_for_user](https://docs.github.com/rest/reference/users#list-gpg-keys-for-a-user)
+    ///
+    /// [GitHub API docs for list_gpg_keys_for_user](https://docs.github.com/rest/users/gpg-keys#list-gpg-keys-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3448,9 +4620,13 @@ impl<'api> Users<'api> {
     ///
     /// # List public email addresses for the authenticated user
     ///
-    /// Lists your publicly visible email address, which you can set with the [Set primary email visibility for the authenticated user](https://docs.github.com/rest/reference/users#set-primary-email-visibility-for-the-authenticated-user) endpoint. This endpoint is accessible with the `user:email` scope.
+    /// Lists your publicly visible email address, which you can set with the
+    /// [Set primary email visibility for the authenticated user](https://docs.github.com/rest/users/emails#set-primary-email-visibility-for-the-authenticated-user)
+    /// endpoint.
     /// 
-    /// [GitHub API docs for list_public_emails_for_authenticated_user](https://docs.github.com/rest/reference/users#list-public-email-addresses-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `user:email` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_public_emails_for_authenticated_user](https://docs.github.com/rest/users/emails#list-public-email-addresses-for-the-authenticated-user)
     ///
     /// ---
     pub async fn list_public_emails_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListPublicEmailsForAuthenticatedUserParams>>) -> Result<Vec<Email>, UsersListPublicEmailsForAuthenticatedUserError> {
@@ -3494,9 +4670,13 @@ impl<'api> Users<'api> {
     ///
     /// # List public email addresses for the authenticated user
     ///
-    /// Lists your publicly visible email address, which you can set with the [Set primary email visibility for the authenticated user](https://docs.github.com/rest/reference/users#set-primary-email-visibility-for-the-authenticated-user) endpoint. This endpoint is accessible with the `user:email` scope.
+    /// Lists your publicly visible email address, which you can set with the
+    /// [Set primary email visibility for the authenticated user](https://docs.github.com/rest/users/emails#set-primary-email-visibility-for-the-authenticated-user)
+    /// endpoint.
     /// 
-    /// [GitHub API docs for list_public_emails_for_authenticated_user](https://docs.github.com/rest/reference/users#list-public-email-addresses-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `user:email` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_public_emails_for_authenticated_user](https://docs.github.com/rest/users/emails#list-public-email-addresses-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3543,8 +4723,8 @@ impl<'api> Users<'api> {
     /// # List public keys for a user
     ///
     /// Lists the _verified_ public SSH keys for a user. This is accessible by anyone.
-    /// 
-    /// [GitHub API docs for list_public_keys_for_user](https://docs.github.com/rest/reference/users#list-public-keys-for-a-user)
+    ///
+    /// [GitHub API docs for list_public_keys_for_user](https://docs.github.com/rest/users/keys#list-public-keys-for-a-user)
     ///
     /// ---
     pub async fn list_public_keys_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersListPublicKeysForUserParams>>) -> Result<Vec<KeySimple>, UsersListPublicKeysForUserError> {
@@ -3585,8 +4765,8 @@ impl<'api> Users<'api> {
     /// # List public keys for a user
     ///
     /// Lists the _verified_ public SSH keys for a user. This is accessible by anyone.
-    /// 
-    /// [GitHub API docs for list_public_keys_for_user](https://docs.github.com/rest/reference/users#list-public-keys-for-a-user)
+    ///
+    /// [GitHub API docs for list_public_keys_for_user](https://docs.github.com/rest/users/keys#list-public-keys-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3628,9 +4808,11 @@ impl<'api> Users<'api> {
     ///
     /// # List public SSH keys for the authenticated user
     ///
-    /// Lists the public SSH keys for the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// Lists the public SSH keys for the authenticated user's GitHub account.
     /// 
-    /// [GitHub API docs for list_public_ssh_keys_for_authenticated_user](https://docs.github.com/rest/reference/users#list-public-ssh-keys-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:public_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_public_ssh_keys_for_authenticated_user](https://docs.github.com/rest/users/keys#list-public-ssh-keys-for-the-authenticated-user)
     ///
     /// ---
     pub async fn list_public_ssh_keys_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListPublicSshKeysForAuthenticatedUserParams>>) -> Result<Vec<Key>, UsersListPublicSshKeysForAuthenticatedUserError> {
@@ -3674,9 +4856,11 @@ impl<'api> Users<'api> {
     ///
     /// # List public SSH keys for the authenticated user
     ///
-    /// Lists the public SSH keys for the authenticated user's GitHub account. Requires that you are authenticated via Basic Auth or via OAuth with at least `read:public_key` [scope](https://docs.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/).
+    /// Lists the public SSH keys for the authenticated user's GitHub account.
     /// 
-    /// [GitHub API docs for list_public_ssh_keys_for_authenticated_user](https://docs.github.com/rest/reference/users#list-public-ssh-keys-for-the-authenticated-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:public_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_public_ssh_keys_for_authenticated_user](https://docs.github.com/rest/users/keys#list-public-ssh-keys-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3720,11 +4904,375 @@ impl<'api> Users<'api> {
 
     /// ---
     ///
+    /// # List social accounts for the authenticated user
+    ///
+    /// Lists all of your social accounts.
+    ///
+    /// [GitHub API docs for list_social_accounts_for_authenticated_user](https://docs.github.com/rest/users/social-accounts#list-social-accounts-for-the-authenticated-user)
+    ///
+    /// ---
+    pub async fn list_social_accounts_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListSocialAccountsForAuthenticatedUserParams>>) -> Result<Vec<SocialAccount>, UsersListSocialAccountsForAuthenticatedUserError> {
+
+        let mut request_uri = format!("{}/user/social_accounts", super::GITHUB_BASE_API_URL);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status304),
+                404 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersListSocialAccountsForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List social accounts for the authenticated user
+    ///
+    /// Lists all of your social accounts.
+    ///
+    /// [GitHub API docs for list_social_accounts_for_authenticated_user](https://docs.github.com/rest/users/social-accounts#list-social-accounts-for-the-authenticated-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_social_accounts_for_authenticated_user(&self, query_params: Option<impl Into<UsersListSocialAccountsForAuthenticatedUserParams>>) -> Result<Vec<SocialAccount>, UsersListSocialAccountsForAuthenticatedUserError> {
+
+        let mut request_uri = format!("{}/user/social_accounts", super::GITHUB_BASE_API_URL);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: UsersListSocialAccountsForAuthenticatedUserParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status304),
+                404 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersListSocialAccountsForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List social accounts for a user
+    ///
+    /// Lists social media accounts for a user. This endpoint is accessible by anyone.
+    ///
+    /// [GitHub API docs for list_social_accounts_for_user](https://docs.github.com/rest/users/social-accounts#list-social-accounts-for-a-user)
+    ///
+    /// ---
+    pub async fn list_social_accounts_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersListSocialAccountsForUserParams>>) -> Result<Vec<SocialAccount>, UsersListSocialAccountsForUserError> {
+
+        let mut request_uri = format!("{}/users/{}/social_accounts", super::GITHUB_BASE_API_URL, username);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(UsersListSocialAccountsForUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List social accounts for a user
+    ///
+    /// Lists social media accounts for a user. This endpoint is accessible by anyone.
+    ///
+    /// [GitHub API docs for list_social_accounts_for_user](https://docs.github.com/rest/users/social-accounts#list-social-accounts-for-a-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_social_accounts_for_user(&self, username: &str, query_params: Option<impl Into<UsersListSocialAccountsForUserParams>>) -> Result<Vec<SocialAccount>, UsersListSocialAccountsForUserError> {
+
+        let mut request_uri = format!("{}/users/{}/social_accounts", super::GITHUB_BASE_API_URL, username);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: UsersListSocialAccountsForUserParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(UsersListSocialAccountsForUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List SSH signing keys for the authenticated user
+    ///
+    /// Lists the SSH signing keys for the authenticated user's GitHub account.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `read:ssh_signing_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_ssh_signing_keys_for_authenticated_user](https://docs.github.com/rest/users/ssh-signing-keys#list-ssh-signing-keys-for-the-authenticated-user)
+    ///
+    /// ---
+    pub async fn list_ssh_signing_keys_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListSshSigningKeysForAuthenticatedUserParams>>) -> Result<Vec<SshSigningKey>, UsersListSshSigningKeysForAuthenticatedUserError> {
+
+        let mut request_uri = format!("{}/user/ssh_signing_keys", super::GITHUB_BASE_API_URL);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status304),
+                404 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(UsersListSshSigningKeysForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List SSH signing keys for the authenticated user
+    ///
+    /// Lists the SSH signing keys for the authenticated user's GitHub account.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `read:ssh_signing_key` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_ssh_signing_keys_for_authenticated_user](https://docs.github.com/rest/users/ssh-signing-keys#list-ssh-signing-keys-for-the-authenticated-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_ssh_signing_keys_for_authenticated_user(&self, query_params: Option<impl Into<UsersListSshSigningKeysForAuthenticatedUserParams>>) -> Result<Vec<SshSigningKey>, UsersListSshSigningKeysForAuthenticatedUserError> {
+
+        let mut request_uri = format!("{}/user/ssh_signing_keys", super::GITHUB_BASE_API_URL);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: UsersListSshSigningKeysForAuthenticatedUserParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status304),
+                404 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                401 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                code => Err(UsersListSshSigningKeysForAuthenticatedUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List SSH signing keys for a user
+    ///
+    /// Lists the SSH signing keys for a user. This operation is accessible by anyone.
+    ///
+    /// [GitHub API docs for list_ssh_signing_keys_for_user](https://docs.github.com/rest/users/ssh-signing-keys#list-ssh-signing-keys-for-a-user)
+    ///
+    /// ---
+    pub async fn list_ssh_signing_keys_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersListSshSigningKeysForUserParams>>) -> Result<Vec<SshSigningKey>, UsersListSshSigningKeysForUserError> {
+
+        let mut request_uri = format!("{}/users/{}/ssh_signing_keys", super::GITHUB_BASE_API_URL, username);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(UsersListSshSigningKeysForUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List SSH signing keys for a user
+    ///
+    /// Lists the SSH signing keys for a user. This operation is accessible by anyone.
+    ///
+    /// [GitHub API docs for list_ssh_signing_keys_for_user](https://docs.github.com/rest/users/ssh-signing-keys#list-ssh-signing-keys-for-a-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_ssh_signing_keys_for_user(&self, username: &str, query_params: Option<impl Into<UsersListSshSigningKeysForUserParams>>) -> Result<Vec<SshSigningKey>, UsersListSshSigningKeysForUserError> {
+
+        let mut request_uri = format!("{}/users/{}/ssh_signing_keys", super::GITHUB_BASE_API_URL, username);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: UsersListSshSigningKeysForUserParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(UsersListSshSigningKeysForUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Set primary email visibility for the authenticated user
     ///
     /// Sets the visibility for your primary email addresses.
-    /// 
-    /// [GitHub API docs for set_primary_email_visibility_for_authenticated_user](https://docs.github.com/rest/reference/users#set-primary-email-visibility-for-the-authenticated-user)
+    ///
+    /// [GitHub API docs for set_primary_email_visibility_for_authenticated_user](https://docs.github.com/rest/users/emails#set-primary-email-visibility-for-the-authenticated-user)
     ///
     /// ---
     pub async fn set_primary_email_visibility_for_authenticated_user_async(&self, body: PatchUsersSetPrimaryEmailVisibilityForAuthenticatedUser) -> Result<Vec<Email>, UsersSetPrimaryEmailVisibilityForAuthenticatedUserError> {
@@ -3766,8 +5314,8 @@ impl<'api> Users<'api> {
     /// # Set primary email visibility for the authenticated user
     ///
     /// Sets the visibility for your primary email addresses.
-    /// 
-    /// [GitHub API docs for set_primary_email_visibility_for_authenticated_user](https://docs.github.com/rest/reference/users#set-primary-email-visibility-for-the-authenticated-user)
+    ///
+    /// [GitHub API docs for set_primary_email_visibility_for_authenticated_user](https://docs.github.com/rest/users/emails#set-primary-email-visibility-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3808,8 +5356,10 @@ impl<'api> Users<'api> {
     /// ---
     ///
     /// # Unblock a user
-    /// 
-    /// [GitHub API docs for unblock](https://docs.github.com/rest/reference/users#unblock-a-user)
+    ///
+    /// Unblocks the given user and returns a 204.
+    ///
+    /// [GitHub API docs for unblock](https://docs.github.com/rest/users/blocking#unblock-a-user)
     ///
     /// ---
     pub async fn unblock_async(&self, username: &str) -> Result<(), UsersUnblockError> {
@@ -3848,8 +5398,10 @@ impl<'api> Users<'api> {
     /// ---
     ///
     /// # Unblock a user
-    /// 
-    /// [GitHub API docs for unblock](https://docs.github.com/rest/reference/users#unblock-a-user)
+    ///
+    /// Unblocks the given user and returns a 204.
+    ///
+    /// [GitHub API docs for unblock](https://docs.github.com/rest/users/blocking#unblock-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3890,9 +5442,9 @@ impl<'api> Users<'api> {
     ///
     /// # Unfollow a user
     ///
-    /// Unfollowing a user requires the user to be logged in and authenticated with basic auth or OAuth with the `user:follow` scope.
-    /// 
-    /// [GitHub API docs for unfollow](https://docs.github.com/rest/reference/users#unfollow-a-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `user:follow` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for unfollow](https://docs.github.com/rest/users/followers#unfollow-a-user)
     ///
     /// ---
     pub async fn unfollow_async(&self, username: &str) -> Result<(), UsersUnfollowError> {
@@ -3932,9 +5484,9 @@ impl<'api> Users<'api> {
     ///
     /// # Unfollow a user
     ///
-    /// Unfollowing a user requires the user to be logged in and authenticated with basic auth or OAuth with the `user:follow` scope.
-    /// 
-    /// [GitHub API docs for unfollow](https://docs.github.com/rest/reference/users#unfollow-a-user)
+    /// OAuth app tokens and personal access tokens (classic) need the `user:follow` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for unfollow](https://docs.github.com/rest/users/followers#unfollow-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3976,8 +5528,8 @@ impl<'api> Users<'api> {
     /// # Update the authenticated user
     ///
     /// **Note:** If your email is set to private and you send an `email` parameter as part of this request to update your profile, your privacy settings are still enforced: the email address will not be displayed on your public profile or via the API.
-    /// 
-    /// [GitHub API docs for update_authenticated](https://docs.github.com/rest/reference/users/#update-the-authenticated-user)
+    ///
+    /// [GitHub API docs for update_authenticated](https://docs.github.com/rest/users/users#update-the-authenticated-user)
     ///
     /// ---
     pub async fn update_authenticated_async(&self, body: PatchUsersUpdateAuthenticated) -> Result<PrivateUser, UsersUpdateAuthenticatedError> {
@@ -4019,8 +5571,8 @@ impl<'api> Users<'api> {
     /// # Update the authenticated user
     ///
     /// **Note:** If your email is set to private and you send an `email` parameter as part of this request to update your profile, your privacy settings are still enforced: the email address will not be displayed on your public profile or via the API.
-    /// 
-    /// [GitHub API docs for update_authenticated](https://docs.github.com/rest/reference/users/#update-the-authenticated-user)
+    ///
+    /// [GitHub API docs for update_authenticated](https://docs.github.com/rest/users/users#update-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

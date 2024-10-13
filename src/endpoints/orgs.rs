@@ -1,6 +1,6 @@
 //! Method, error and parameter types for the Orgs endpoint.
 #![allow(
-    unused_imports,
+    clippy::all
 )]
 /* 
  * GitHub v3 REST API
@@ -31,6 +31,65 @@ pub fn new(auth: &Auth) -> Orgs {
     Orgs { auth }
 }
 
+/// Errors for the [Add a security manager team](Orgs::add_security_manager_team_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsAddSecurityManagerTeamError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Assign an organization role to a team](Orgs::assign_team_to_org_role_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsAssignTeamToOrgRoleError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Response if the organization, team or role does not exist.")]
+    Status404,
+    #[error("Response if the organization roles feature is not enabled for the organization, or validation failed.")]
+    Status422,
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Assign an organization role to a user](Orgs::assign_user_to_org_role_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsAssignUserToOrgRoleError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Response if the organization, user or role does not exist.")]
+    Status404,
+    #[error("Response if the organization roles feature is not enabled enabled for the organization, the validation failed, or the user is not an organization member.")]
+    Status422,
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Block a user from an organization](Orgs::block_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsBlockUserError {
@@ -44,7 +103,7 @@ pub enum OrgsBlockUserError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -63,7 +122,7 @@ pub enum OrgsCancelInvitationError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
     Status404(BasicError),
@@ -84,7 +143,7 @@ pub enum OrgsCheckBlockedUserError {
 
     // -- endpoint errors
 
-    #[error("If the user is not blocked:")]
+    #[error("If the user is not blocked")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -145,7 +204,7 @@ pub enum OrgsConvertMemberToOutsideCollaboratorError {
 
     #[error("User was converted")]
     Status204,
-    #[error("Forbidden if user is the last owner of the organization or not a member of the organization")]
+    #[error("Forbidden if user is the last owner of the organization, not a member of the organization, or if the enterprise enforces a policy for inviting outside collaborators. For more information, see \"[Enforcing repository management policies in your enterprise](https://docs.github.com/admin/policies/enforcing-policies-for-your-enterprise/enforcing-repository-management-policies-in-your-enterprise#enforcing-a-policy-for-inviting-outside-collaborators-to-repositories).\"")]
     Status403,
     #[error("Resource not found")]
     Status404(BasicError),
@@ -166,8 +225,73 @@ pub enum OrgsCreateInvitationError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Create or update custom properties for an organization](Orgs::create_or_update_custom_properties_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsCreateOrUpdateCustomPropertiesError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Create or update custom property values for organization repositories](Orgs::create_or_update_custom_properties_values_for_repos_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsCreateOrUpdateCustomPropertiesValuesForReposError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Create or update a custom property for an organization](Orgs::create_or_update_custom_property_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsCreateOrUpdateCustomPropertyError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Forbidden")]
+    Status403(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
@@ -187,10 +311,31 @@ pub enum OrgsCreateWebhookError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
     Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Delete an organization](Orgs::delete_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsDeleteError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -214,6 +359,25 @@ pub enum OrgsDeleteWebhookError {
     Generic { code: u16 },
 }
 
+/// Errors for the [Enable or disable a security feature for an organization](Orgs::enable_or_disable_security_product_on_all_org_repos_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsEnableOrDisableSecurityProductOnAllOrgReposError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("The action could not be taken due to an in progress enablement, or a policy is preventing enablement")]
+    Status422,
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Get an organization](Orgs::get_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsGetError {
@@ -233,9 +397,9 @@ pub enum OrgsGetError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Get the audit log for an organization](Orgs::get_audit_log_async()) endpoint.
+/// Errors for the [Get all custom properties for an organization](Orgs::get_all_custom_properties_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum OrgsGetAuditLogError {
+pub enum OrgsGetAllCustomPropertiesError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -246,6 +410,31 @@ pub enum OrgsGetAuditLogError {
 
     // -- endpoint errors
 
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get a custom property for an organization](Orgs::get_custom_property_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsGetCustomPropertyError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -288,6 +477,27 @@ pub enum OrgsGetMembershipForUserError {
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get an organization role](Orgs::get_org_role_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsGetOrgRoleError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -343,7 +553,7 @@ pub enum OrgsGetWebhookDeliveryError {
 
     #[error("Bad Request")]
     Status400(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -385,6 +595,23 @@ pub enum OrgsListAppInstallationsError {
     Generic { code: u16 },
 }
 
+/// Errors for the [List attestations](Orgs::list_attestations_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsListAttestationsError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [List users blocked by an organization](Orgs::list_blocked_users_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListBlockedUsersError {
@@ -398,15 +625,13 @@ pub enum OrgsListBlockedUsersError {
 
     // -- endpoint errors
 
-    #[error("Preview header missing")]
-    Status415(PostProjectsCreateForAuthenticatedUserResponse415),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
-/// Errors for the [List custom repository roles in an organization](Orgs::list_custom_roles_async()) endpoint.
+/// Errors for the [List custom property values for organization repositories](Orgs::list_custom_properties_values_for_repos_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum OrgsListCustomRolesError {
+pub enum OrgsListCustomPropertiesValuesForReposError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -417,6 +642,10 @@ pub enum OrgsListCustomRolesError {
 
     // -- endpoint errors
 
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -512,9 +741,7 @@ pub enum OrgsListMembersError {
 
     // -- endpoint errors
 
-    #[error("Response if requester is not an organization member")]
-    Status302,
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -539,7 +766,70 @@ pub enum OrgsListMembershipsForAuthenticatedUserError {
     Status403(BasicError),
     #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List teams that are assigned to an organization role](Orgs::list_org_role_teams_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsListOrgRoleTeamsError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Response if the organization or role does not exist.")]
+    Status404,
+    #[error("Response if the organization roles feature is not enabled or validation failed.")]
+    Status422,
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List users that are assigned to an organization role](Orgs::list_org_role_users_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsListOrgRoleUsersError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Response if the organization or role does not exist.")]
+    Status404,
+    #[error("Response if the organization roles feature is not enabled or validation failed.")]
+    Status422,
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get all organization roles for an organization](Orgs::list_org_roles_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsListOrgRolesError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -558,6 +848,102 @@ pub enum OrgsListOutsideCollaboratorsError {
 
     // -- endpoint errors
 
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List repositories a fine-grained personal access token has access to](Orgs::list_pat_grant_repositories_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsListPatGrantRepositoriesError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Internal Error")]
+    Status500(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List repositories requested to be accessed by a fine-grained personal access token](Orgs::list_pat_grant_request_repositories_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsListPatGrantRequestRepositoriesError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Internal Error")]
+    Status500(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List requests to access organization resources with fine-grained personal access tokens](Orgs::list_pat_grant_requests_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsListPatGrantRequestsError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Internal Error")]
+    Status500(BasicError),
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List fine-grained personal access tokens with access to organization resources](Orgs::list_pat_grants_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsListPatGrantsError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Internal Error")]
+    Status500(BasicError),
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -598,9 +984,9 @@ pub enum OrgsListPublicMembersError {
     Generic { code: u16 },
 }
 
-/// Errors for the [List SAML SSO authorizations for an organization](Orgs::list_saml_sso_authorizations_async()) endpoint.
+/// Errors for the [List security manager teams](Orgs::list_security_manager_teams_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum OrgsListSamlSsoAuthorizationsError {
+pub enum OrgsListSecurityManagerTeamsError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -630,7 +1016,7 @@ pub enum OrgsListWebhookDeliveriesError {
 
     #[error("Bad Request")]
     Status400(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -689,8 +1075,29 @@ pub enum OrgsRedeliverWebhookDeliveryError {
 
     #[error("Bad Request")]
     Status400(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Remove a custom property for an organization](Orgs::remove_custom_property_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsRemoveCustomPropertyError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -771,9 +1178,9 @@ pub enum OrgsRemovePublicMembershipForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
-/// Errors for the [Remove a SAML SSO authorization for an organization](Orgs::remove_saml_sso_authorization_async()) endpoint.
+/// Errors for the [Remove a security manager team](Orgs::remove_security_manager_team_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
-pub enum OrgsRemoveSamlSsoAuthorizationError {
+pub enum OrgsRemoveSecurityManagerTeamError {
     #[error(transparent)]
     AdapterError(#[from] AdapterError),
     #[error(transparent)]
@@ -784,8 +1191,124 @@ pub enum OrgsRemoveSamlSsoAuthorizationError {
 
     // -- endpoint errors
 
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Review a request to access organization resources with a fine-grained personal access token](Orgs::review_pat_grant_request_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsReviewPatGrantRequestError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Internal Error")]
+    Status500(BasicError),
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationError),
     #[error("Resource not found")]
     Status404(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Review requests to access organization resources with fine-grained personal access tokens](Orgs::review_pat_grant_requests_in_bulk_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsReviewPatGrantRequestsInBulkError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Internal Error")]
+    Status500(BasicError),
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Remove all organization roles for a team](Orgs::revoke_all_org_roles_team_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsRevokeAllOrgRolesTeamError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Remove all organization roles for a user](Orgs::revoke_all_org_roles_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsRevokeAllOrgRolesUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Remove an organization role from a team](Orgs::revoke_org_role_team_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsRevokeOrgRoleTeamError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Remove an organization role from a user](Orgs::revoke_org_role_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsRevokeOrgRoleUserError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -803,7 +1326,7 @@ pub enum OrgsSetMembershipForUserError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
@@ -885,7 +1408,57 @@ pub enum OrgsUpdateMembershipForAuthenticatedUserError {
     Status403(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Update the access a fine-grained personal access token has to organization resources](Orgs::update_pat_access_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsUpdatePatAccessError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Internal Error")]
+    Status500(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Update the access to organization resources via fine-grained personal access tokens](Orgs::update_pat_accesses_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsUpdatePatAccessesError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Internal Error")]
+    Status500(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -904,7 +1477,7 @@ pub enum OrgsUpdateWebhookError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
     Status404(BasicError),
@@ -930,107 +1503,12 @@ pub enum OrgsUpdateWebhookConfigForOrgError {
 }
 
 
-/// Query parameters for the [Get the audit log for an organization](Orgs::get_audit_log_async()) endpoint.
-#[derive(Default, Serialize)]
-pub struct OrgsGetAuditLogParams<'req> {
-    /// A search phrase. For more information, see [Searching the audit log](https://docs.github.com/github/setting-up-and-managing-organizations-and-teams/reviewing-the-audit-log-for-your-organization#searching-the-audit-log).
-    phrase: Option<&'req str>, 
-    /// The event types to include:  - `web` - returns web (non-Git) events. - `git` - returns Git events. - `all` - returns both web and Git events.  The default is `web`.
-    include: Option<&'req str>, 
-    /// A cursor, as given in the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header). If specified, the query only searches for events after this cursor.
-    after: Option<&'req str>, 
-    /// A cursor, as given in the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header). If specified, the query only searches for events before this cursor.
-    before: Option<&'req str>, 
-    /// The order of audit log events. To list newest events first, specify `desc`. To list oldest events first, specify `asc`.  The default is `desc`.
-    order: Option<&'req str>, 
-    /// Results per page (max 100)
-    per_page: Option<u16>
-}
-
-impl<'req> OrgsGetAuditLogParams<'req> {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    /// A search phrase. For more information, see [Searching the audit log](https://docs.github.com/github/setting-up-and-managing-organizations-and-teams/reviewing-the-audit-log-for-your-organization#searching-the-audit-log).
-    pub fn phrase(self, phrase: &'req str) -> Self {
-        Self { 
-            phrase: Some(phrase),
-            include: self.include, 
-            after: self.after, 
-            before: self.before, 
-            order: self.order, 
-            per_page: self.per_page, 
-        }
-    }
-
-    /// The event types to include:  - `web` - returns web (non-Git) events. - `git` - returns Git events. - `all` - returns both web and Git events.  The default is `web`.
-    pub fn include(self, include: &'req str) -> Self {
-        Self { 
-            phrase: self.phrase, 
-            include: Some(include),
-            after: self.after, 
-            before: self.before, 
-            order: self.order, 
-            per_page: self.per_page, 
-        }
-    }
-
-    /// A cursor, as given in the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header). If specified, the query only searches for events after this cursor.
-    pub fn after(self, after: &'req str) -> Self {
-        Self { 
-            phrase: self.phrase, 
-            include: self.include, 
-            after: Some(after),
-            before: self.before, 
-            order: self.order, 
-            per_page: self.per_page, 
-        }
-    }
-
-    /// A cursor, as given in the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header). If specified, the query only searches for events before this cursor.
-    pub fn before(self, before: &'req str) -> Self {
-        Self { 
-            phrase: self.phrase, 
-            include: self.include, 
-            after: self.after, 
-            before: Some(before),
-            order: self.order, 
-            per_page: self.per_page, 
-        }
-    }
-
-    /// The order of audit log events. To list newest events first, specify `desc`. To list oldest events first, specify `asc`.  The default is `desc`.
-    pub fn order(self, order: &'req str) -> Self {
-        Self { 
-            phrase: self.phrase, 
-            include: self.include, 
-            after: self.after, 
-            before: self.before, 
-            order: Some(order),
-            per_page: self.per_page, 
-        }
-    }
-
-    /// Results per page (max 100)
-    pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
-            phrase: self.phrase, 
-            include: self.include, 
-            after: self.after, 
-            before: self.before, 
-            order: self.order, 
-            per_page: Some(per_page),
-        }
-    }
-}
-
 /// Query parameters for the [List organizations](Orgs::list_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsListParams {
     /// An organization ID. Only return organizations with an ID greater than this ID.
     since: Option<i32>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>
 }
 
@@ -1041,15 +1519,15 @@ impl OrgsListParams {
 
     /// An organization ID. Only return organizations with an ID greater than this ID.
     pub fn since(self, since: i32) -> Self {
-        Self { 
+        Self {
             since: Some(since),
             per_page: self.per_page, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             since: self.since, 
             per_page: Some(per_page),
         }
@@ -1059,9 +1537,9 @@ impl OrgsListParams {
 /// Query parameters for the [List app installations for an organization](Orgs::list_app_installations_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsListAppInstallationsParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1070,17 +1548,17 @@ impl OrgsListAppInstallationsParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1096,12 +1574,149 @@ impl<'enc> From<&'enc PerPage> for OrgsListAppInstallationsParams {
         }
     }
 }
+/// Query parameters for the [List attestations](Orgs::list_attestations_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct OrgsListAttestationsParams<'req> {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    before: Option<&'req str>, 
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    after: Option<&'req str>
+}
+
+impl<'req> OrgsListAttestationsParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            before: self.before, 
+            after: self.after, 
+        }
+    }
+
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn before(self, before: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            before: Some(before),
+            after: self.after, 
+        }
+    }
+
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn after(self, after: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            before: self.before, 
+            after: Some(after),
+        }
+    }
+}
+
+/// Query parameters for the [List users blocked by an organization](Orgs::list_blocked_users_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct OrgsListBlockedUsersParams {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl OrgsListBlockedUsersParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for OrgsListBlockedUsersParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [List custom property values for organization repositories](Orgs::list_custom_properties_values_for_repos_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct OrgsListCustomPropertiesValuesForReposParams<'req> {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>, 
+    /// Finds repositories in the organization with a query containing one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as the web interface for GitHub. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/search/search#constructing-a-search-query). See \"[Searching for repositories](https://docs.github.com/articles/searching-for-repositories/)\" for a detailed list of qualifiers.
+    repository_query: Option<&'req str>
+}
+
+impl<'req> OrgsListCustomPropertiesValuesForReposParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+            repository_query: self.repository_query, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+            repository_query: self.repository_query, 
+        }
+    }
+
+    /// Finds repositories in the organization with a query containing one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as the web interface for GitHub. To learn more about the format of the query, see [Constructing a search query](https://docs.github.com/rest/search/search#constructing-a-search-query). See \"[Searching for repositories](https://docs.github.com/articles/searching-for-repositories/)\" for a detailed list of qualifiers.
+    pub fn repository_query(self, repository_query: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            repository_query: Some(repository_query),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for OrgsListCustomPropertiesValuesForReposParams<'enc> {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [List failed organization invitations](Orgs::list_failed_invitations_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsListFailedInvitationsParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1110,17 +1725,17 @@ impl OrgsListFailedInvitationsParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1139,9 +1754,9 @@ impl<'enc> From<&'enc PerPage> for OrgsListFailedInvitationsParams {
 /// Query parameters for the [List organizations for the authenticated user](Orgs::list_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsListForAuthenticatedUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1150,17 +1765,17 @@ impl OrgsListForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1179,9 +1794,9 @@ impl<'enc> From<&'enc PerPage> for OrgsListForAuthenticatedUserParams {
 /// Query parameters for the [List organizations for a user](Orgs::list_for_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsListForUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1190,17 +1805,17 @@ impl OrgsListForUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1219,9 +1834,9 @@ impl<'enc> From<&'enc PerPage> for OrgsListForUserParams {
 /// Query parameters for the [List organization invitation teams](Orgs::list_invitation_teams_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsListInvitationTeamsParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1230,17 +1845,17 @@ impl OrgsListInvitationTeamsParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1259,13 +1874,13 @@ impl<'enc> From<&'enc PerPage> for OrgsListInvitationTeamsParams {
 /// Query parameters for the [List organization members](Orgs::list_members_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsListMembersParams<'req> {
-    /// Filter members returned in the list. Can be one of:   \\* `2fa_disabled` - Members without [two-factor authentication](https://github.com/blog/1614-two-factor-authentication) enabled. Available for organization owners.   \\* `all` - All members the authenticated user can see.
+    /// Filter members returned in the list. `2fa_disabled` means that only members without [two-factor authentication](https://github.com/blog/1614-two-factor-authentication) enabled will be returned. This options is only available for organization owners.
     filter: Option<&'req str>, 
-    /// Filter members returned by their role. Can be one of:   \\* `all` - All members of the organization, regardless of role.   \\* `admin` - Organization owners.   \\* `member` - Non-owner organization members.
+    /// Filter members returned by their role.
     role: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1274,9 +1889,9 @@ impl<'req> OrgsListMembersParams<'req> {
         Self::default()
     }
 
-    /// Filter members returned in the list. Can be one of:   \\* `2fa_disabled` - Members without [two-factor authentication](https://github.com/blog/1614-two-factor-authentication) enabled. Available for organization owners.   \\* `all` - All members the authenticated user can see.
+    /// Filter members returned in the list. `2fa_disabled` means that only members without [two-factor authentication](https://github.com/blog/1614-two-factor-authentication) enabled will be returned. This options is only available for organization owners.
     pub fn filter(self, filter: &'req str) -> Self {
-        Self { 
+        Self {
             filter: Some(filter),
             role: self.role, 
             per_page: self.per_page, 
@@ -1284,9 +1899,9 @@ impl<'req> OrgsListMembersParams<'req> {
         }
     }
 
-    /// Filter members returned by their role. Can be one of:   \\* `all` - All members of the organization, regardless of role.   \\* `admin` - Organization owners.   \\* `member` - Non-owner organization members.
+    /// Filter members returned by their role.
     pub fn role(self, role: &'req str) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             role: Some(role),
             per_page: self.per_page, 
@@ -1294,9 +1909,9 @@ impl<'req> OrgsListMembersParams<'req> {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             role: self.role, 
             per_page: Some(per_page),
@@ -1304,9 +1919,9 @@ impl<'req> OrgsListMembersParams<'req> {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             role: self.role, 
             per_page: self.per_page, 
@@ -1327,11 +1942,11 @@ impl<'enc> From<&'enc PerPage> for OrgsListMembersParams<'enc> {
 /// Query parameters for the [List organization memberships for the authenticated user](Orgs::list_memberships_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsListMembershipsForAuthenticatedUserParams<'req> {
-    /// Indicates the state of the memberships to return. Can be either `active` or `pending`. If not specified, the API returns both active and pending memberships.
+    /// Indicates the state of the memberships to return. If not specified, the API returns both active and pending memberships.
     state: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1340,27 +1955,27 @@ impl<'req> OrgsListMembershipsForAuthenticatedUserParams<'req> {
         Self::default()
     }
 
-    /// Indicates the state of the memberships to return. Can be either `active` or `pending`. If not specified, the API returns both active and pending memberships.
+    /// Indicates the state of the memberships to return. If not specified, the API returns both active and pending memberships.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             state: Some(state),
             per_page: self.per_page, 
             page: self.page, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             per_page: self.per_page, 
             page: Some(page),
@@ -1377,14 +1992,94 @@ impl<'enc> From<&'enc PerPage> for OrgsListMembershipsForAuthenticatedUserParams
         }
     }
 }
+/// Query parameters for the [List teams that are assigned to an organization role](Orgs::list_org_role_teams_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct OrgsListOrgRoleTeamsParams {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl OrgsListOrgRoleTeamsParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for OrgsListOrgRoleTeamsParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [List users that are assigned to an organization role](Orgs::list_org_role_users_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct OrgsListOrgRoleUsersParams {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl OrgsListOrgRoleUsersParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for OrgsListOrgRoleUsersParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [List outside collaborators for an organization](Orgs::list_outside_collaborators_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsListOutsideCollaboratorsParams<'req> {
-    /// Filter the list of outside collaborators. Can be one of:   \\* `2fa_disabled`: Outside collaborators without [two-factor authentication](https://github.com/blog/1614-two-factor-authentication) enabled.   \\* `all`: All outside collaborators.
+    /// Filter the list of outside collaborators. `2fa_disabled` means that only outside collaborators without [two-factor authentication](https://github.com/blog/1614-two-factor-authentication) enabled will be returned.
     filter: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1393,27 +2088,27 @@ impl<'req> OrgsListOutsideCollaboratorsParams<'req> {
         Self::default()
     }
 
-    /// Filter the list of outside collaborators. Can be one of:   \\* `2fa_disabled`: Outside collaborators without [two-factor authentication](https://github.com/blog/1614-two-factor-authentication) enabled.   \\* `all`: All outside collaborators.
+    /// Filter the list of outside collaborators. `2fa_disabled` means that only outside collaborators without [two-factor authentication](https://github.com/blog/1614-two-factor-authentication) enabled will be returned.
     pub fn filter(self, filter: &'req str) -> Self {
-        Self { 
+        Self {
             filter: Some(filter),
             per_page: self.per_page, 
             page: self.page, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             filter: self.filter, 
             per_page: self.per_page, 
             page: Some(page),
@@ -1430,38 +2125,492 @@ impl<'enc> From<&'enc PerPage> for OrgsListOutsideCollaboratorsParams<'enc> {
         }
     }
 }
-/// Query parameters for the [List pending organization invitations](Orgs::list_pending_invitations_async()) endpoint.
+/// Query parameters for the [List repositories a fine-grained personal access token has access to](Orgs::list_pat_grant_repositories_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct OrgsListPendingInvitationsParams {
-    /// Results per page (max 100)
+pub struct OrgsListPatGrantRepositoriesParams {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
-impl OrgsListPendingInvitationsParams {
+impl OrgsListPatGrantRepositoriesParams {
     pub fn new() -> Self {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
     }
 }
 
-impl<'enc> From<&'enc PerPage> for OrgsListPendingInvitationsParams {
+impl<'enc> From<&'enc PerPage> for OrgsListPatGrantRepositoriesParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [List repositories requested to be accessed by a fine-grained personal access token](Orgs::list_pat_grant_request_repositories_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct OrgsListPatGrantRequestRepositoriesParams {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl OrgsListPatGrantRequestRepositoriesParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for OrgsListPatGrantRequestRepositoriesParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [List requests to access organization resources with fine-grained personal access tokens](Orgs::list_pat_grant_requests_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct OrgsListPatGrantRequestsParams<'req> {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>, 
+    /// The property by which to sort the results.
+    sort: Option<&'req str>, 
+    /// The direction to sort the results by.
+    direction: Option<&'req str>, 
+    /// A list of owner usernames to use to filter the results.
+    owner: Option<Vec<String>>, 
+    /// The name of the repository to use to filter the results.
+    repository: Option<&'req str>, 
+    /// The permission to use to filter the results.
+    permission: Option<&'req str>, 
+    /// Only show fine-grained personal access tokens used before the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    last_used_before: Option<chrono::DateTime<chrono::Utc>>, 
+    /// Only show fine-grained personal access tokens used after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    last_used_after: Option<chrono::DateTime<chrono::Utc>>
+}
+
+impl<'req> OrgsListPatGrantRequestsParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+            sort: self.sort, 
+            direction: self.direction, 
+            owner: self.owner, 
+            repository: self.repository, 
+            permission: self.permission, 
+            last_used_before: self.last_used_before, 
+            last_used_after: self.last_used_after, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+            sort: self.sort, 
+            direction: self.direction, 
+            owner: self.owner, 
+            repository: self.repository, 
+            permission: self.permission, 
+            last_used_before: self.last_used_before, 
+            last_used_after: self.last_used_after, 
+        }
+    }
+
+    /// The property by which to sort the results.
+    pub fn sort(self, sort: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            sort: Some(sort),
+            direction: self.direction, 
+            owner: self.owner, 
+            repository: self.repository, 
+            permission: self.permission, 
+            last_used_before: self.last_used_before, 
+            last_used_after: self.last_used_after, 
+        }
+    }
+
+    /// The direction to sort the results by.
+    pub fn direction(self, direction: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            sort: self.sort, 
+            direction: Some(direction),
+            owner: self.owner, 
+            repository: self.repository, 
+            permission: self.permission, 
+            last_used_before: self.last_used_before, 
+            last_used_after: self.last_used_after, 
+        }
+    }
+
+    /// A list of owner usernames to use to filter the results.
+    pub fn owner(self, owner: Vec<String>) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            sort: self.sort, 
+            direction: self.direction, 
+            owner: Some(owner),
+            repository: self.repository, 
+            permission: self.permission, 
+            last_used_before: self.last_used_before, 
+            last_used_after: self.last_used_after, 
+        }
+    }
+
+    /// The name of the repository to use to filter the results.
+    pub fn repository(self, repository: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            sort: self.sort, 
+            direction: self.direction, 
+            owner: self.owner, 
+            repository: Some(repository),
+            permission: self.permission, 
+            last_used_before: self.last_used_before, 
+            last_used_after: self.last_used_after, 
+        }
+    }
+
+    /// The permission to use to filter the results.
+    pub fn permission(self, permission: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            sort: self.sort, 
+            direction: self.direction, 
+            owner: self.owner, 
+            repository: self.repository, 
+            permission: Some(permission),
+            last_used_before: self.last_used_before, 
+            last_used_after: self.last_used_after, 
+        }
+    }
+
+    /// Only show fine-grained personal access tokens used before the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    pub fn last_used_before(self, last_used_before: chrono::DateTime<chrono::Utc>) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            sort: self.sort, 
+            direction: self.direction, 
+            owner: self.owner, 
+            repository: self.repository, 
+            permission: self.permission, 
+            last_used_before: Some(last_used_before),
+            last_used_after: self.last_used_after, 
+        }
+    }
+
+    /// Only show fine-grained personal access tokens used after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    pub fn last_used_after(self, last_used_after: chrono::DateTime<chrono::Utc>) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            sort: self.sort, 
+            direction: self.direction, 
+            owner: self.owner, 
+            repository: self.repository, 
+            permission: self.permission, 
+            last_used_before: self.last_used_before, 
+            last_used_after: Some(last_used_after),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for OrgsListPatGrantRequestsParams<'enc> {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [List fine-grained personal access tokens with access to organization resources](Orgs::list_pat_grants_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct OrgsListPatGrantsParams<'req> {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>, 
+    /// The property by which to sort the results.
+    sort: Option<&'req str>, 
+    /// The direction to sort the results by.
+    direction: Option<&'req str>, 
+    /// A list of owner usernames to use to filter the results.
+    owner: Option<Vec<String>>, 
+    /// The name of the repository to use to filter the results.
+    repository: Option<&'req str>, 
+    /// The permission to use to filter the results.
+    permission: Option<&'req str>, 
+    /// Only show fine-grained personal access tokens used before the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    last_used_before: Option<chrono::DateTime<chrono::Utc>>, 
+    /// Only show fine-grained personal access tokens used after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    last_used_after: Option<chrono::DateTime<chrono::Utc>>
+}
+
+impl<'req> OrgsListPatGrantsParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+            sort: self.sort, 
+            direction: self.direction, 
+            owner: self.owner, 
+            repository: self.repository, 
+            permission: self.permission, 
+            last_used_before: self.last_used_before, 
+            last_used_after: self.last_used_after, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+            sort: self.sort, 
+            direction: self.direction, 
+            owner: self.owner, 
+            repository: self.repository, 
+            permission: self.permission, 
+            last_used_before: self.last_used_before, 
+            last_used_after: self.last_used_after, 
+        }
+    }
+
+    /// The property by which to sort the results.
+    pub fn sort(self, sort: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            sort: Some(sort),
+            direction: self.direction, 
+            owner: self.owner, 
+            repository: self.repository, 
+            permission: self.permission, 
+            last_used_before: self.last_used_before, 
+            last_used_after: self.last_used_after, 
+        }
+    }
+
+    /// The direction to sort the results by.
+    pub fn direction(self, direction: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            sort: self.sort, 
+            direction: Some(direction),
+            owner: self.owner, 
+            repository: self.repository, 
+            permission: self.permission, 
+            last_used_before: self.last_used_before, 
+            last_used_after: self.last_used_after, 
+        }
+    }
+
+    /// A list of owner usernames to use to filter the results.
+    pub fn owner(self, owner: Vec<String>) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            sort: self.sort, 
+            direction: self.direction, 
+            owner: Some(owner),
+            repository: self.repository, 
+            permission: self.permission, 
+            last_used_before: self.last_used_before, 
+            last_used_after: self.last_used_after, 
+        }
+    }
+
+    /// The name of the repository to use to filter the results.
+    pub fn repository(self, repository: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            sort: self.sort, 
+            direction: self.direction, 
+            owner: self.owner, 
+            repository: Some(repository),
+            permission: self.permission, 
+            last_used_before: self.last_used_before, 
+            last_used_after: self.last_used_after, 
+        }
+    }
+
+    /// The permission to use to filter the results.
+    pub fn permission(self, permission: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            sort: self.sort, 
+            direction: self.direction, 
+            owner: self.owner, 
+            repository: self.repository, 
+            permission: Some(permission),
+            last_used_before: self.last_used_before, 
+            last_used_after: self.last_used_after, 
+        }
+    }
+
+    /// Only show fine-grained personal access tokens used before the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    pub fn last_used_before(self, last_used_before: chrono::DateTime<chrono::Utc>) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            sort: self.sort, 
+            direction: self.direction, 
+            owner: self.owner, 
+            repository: self.repository, 
+            permission: self.permission, 
+            last_used_before: Some(last_used_before),
+            last_used_after: self.last_used_after, 
+        }
+    }
+
+    /// Only show fine-grained personal access tokens used after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    pub fn last_used_after(self, last_used_after: chrono::DateTime<chrono::Utc>) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            sort: self.sort, 
+            direction: self.direction, 
+            owner: self.owner, 
+            repository: self.repository, 
+            permission: self.permission, 
+            last_used_before: self.last_used_before, 
+            last_used_after: Some(last_used_after),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for OrgsListPatGrantsParams<'enc> {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [List pending organization invitations](Orgs::list_pending_invitations_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct OrgsListPendingInvitationsParams<'req> {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>, 
+    /// Filter invitations by their member role.
+    role: Option<&'req str>, 
+    /// Filter invitations by their invitation source.
+    invitation_source: Option<&'req str>
+}
+
+impl<'req> OrgsListPendingInvitationsParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+            role: self.role, 
+            invitation_source: self.invitation_source, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+            role: self.role, 
+            invitation_source: self.invitation_source, 
+        }
+    }
+
+    /// Filter invitations by their member role.
+    pub fn role(self, role: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            role: Some(role),
+            invitation_source: self.invitation_source, 
+        }
+    }
+
+    /// Filter invitations by their invitation source.
+    pub fn invitation_source(self, invitation_source: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            role: self.role, 
+            invitation_source: Some(invitation_source),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for OrgsListPendingInvitationsParams<'enc> {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -1473,9 +2622,9 @@ impl<'enc> From<&'enc PerPage> for OrgsListPendingInvitationsParams {
 /// Query parameters for the [List public organization members](Orgs::list_public_members_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsListPublicMembersParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1484,17 +2633,17 @@ impl OrgsListPublicMembersParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1513,10 +2662,12 @@ impl<'enc> From<&'enc PerPage> for OrgsListPublicMembersParams {
 /// Query parameters for the [List deliveries for an organization webhook](Orgs::list_webhook_deliveries_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsListWebhookDeliveriesParams<'req> {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
     /// Used for pagination: the starting delivery from which the page of deliveries is fetched. Refer to the `link` header for the next and previous page cursors.
-    cursor: Option<&'req str>
+    cursor: Option<&'req str>, 
+    
+    redelivery: Option<bool>
 }
 
 impl<'req> OrgsListWebhookDeliveriesParams<'req> {
@@ -1524,19 +2675,30 @@ impl<'req> OrgsListWebhookDeliveriesParams<'req> {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             cursor: self.cursor, 
+            redelivery: self.redelivery, 
         }
     }
 
     /// Used for pagination: the starting delivery from which the page of deliveries is fetched. Refer to the `link` header for the next and previous page cursors.
     pub fn cursor(self, cursor: &'req str) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             cursor: Some(cursor),
+            redelivery: self.redelivery, 
+        }
+    }
+
+    
+    pub fn redelivery(self, redelivery: bool) -> Self {
+        Self {
+            per_page: self.per_page, 
+            cursor: self.cursor, 
+            redelivery: Some(redelivery),
         }
     }
 }
@@ -1544,9 +2706,9 @@ impl<'req> OrgsListWebhookDeliveriesParams<'req> {
 /// Query parameters for the [List organization webhooks](Orgs::list_webhooks_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsListWebhooksParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1555,17 +2717,17 @@ impl OrgsListWebhooksParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1585,9 +2747,274 @@ impl<'enc> From<&'enc PerPage> for OrgsListWebhooksParams {
 impl<'api> Orgs<'api> {
     /// ---
     ///
-    /// # Block a user from an organization
+    /// # Add a security manager team
+    ///
+    /// Adds a team as a security manager for an organization. For more information, see "[Managing security for an organization](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-security-managers-in-your-organization) for an organization."
     /// 
-    /// [GitHub API docs for block_user](https://docs.github.com/rest/reference/orgs#block-a-user-from-an-organization)
+    /// The authenticated user must be an administrator for the organization to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for add_security_manager_team](https://docs.github.com/rest/orgs/security-managers#add-a-security-manager-team)
+    ///
+    /// ---
+    pub async fn add_security_manager_team_async(&self, org: &str, team_slug: &str) -> Result<(), OrgsAddSecurityManagerTeamError> {
+
+        let request_uri = format!("{}/orgs/{}/security-managers/teams/{}", super::GITHUB_BASE_API_URL, org, team_slug);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsAddSecurityManagerTeamError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Add a security manager team
+    ///
+    /// Adds a team as a security manager for an organization. For more information, see "[Managing security for an organization](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-security-managers-in-your-organization) for an organization."
+    /// 
+    /// The authenticated user must be an administrator for the organization to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `write:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for add_security_manager_team](https://docs.github.com/rest/orgs/security-managers#add-a-security-manager-team)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn add_security_manager_team(&self, org: &str, team_slug: &str) -> Result<(), OrgsAddSecurityManagerTeamError> {
+
+        let request_uri = format!("{}/orgs/{}/security-managers/teams/{}", super::GITHUB_BASE_API_URL, org, team_slug);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsAddSecurityManagerTeamError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Assign an organization role to a team
+    ///
+    /// Assigns an organization role to a team in an organization. For more information on organization roles, see "[Using organization roles](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/using-organization-roles)."
+    /// 
+    /// The authenticated user must be an administrator for the organization to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for assign_team_to_org_role](https://docs.github.com/rest/orgs/organization-roles#assign-an-organization-role-to-a-team)
+    ///
+    /// ---
+    pub async fn assign_team_to_org_role_async(&self, org: &str, team_slug: &str, role_id: i32) -> Result<(), OrgsAssignTeamToOrgRoleError> {
+
+        let request_uri = format!("{}/orgs/{}/organization-roles/teams/{}/{}", super::GITHUB_BASE_API_URL, org, team_slug, role_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(OrgsAssignTeamToOrgRoleError::Status404),
+                422 => Err(OrgsAssignTeamToOrgRoleError::Status422),
+                code => Err(OrgsAssignTeamToOrgRoleError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Assign an organization role to a team
+    ///
+    /// Assigns an organization role to a team in an organization. For more information on organization roles, see "[Using organization roles](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/using-organization-roles)."
+    /// 
+    /// The authenticated user must be an administrator for the organization to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for assign_team_to_org_role](https://docs.github.com/rest/orgs/organization-roles#assign-an-organization-role-to-a-team)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn assign_team_to_org_role(&self, org: &str, team_slug: &str, role_id: i32) -> Result<(), OrgsAssignTeamToOrgRoleError> {
+
+        let request_uri = format!("{}/orgs/{}/organization-roles/teams/{}/{}", super::GITHUB_BASE_API_URL, org, team_slug, role_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(OrgsAssignTeamToOrgRoleError::Status404),
+                422 => Err(OrgsAssignTeamToOrgRoleError::Status422),
+                code => Err(OrgsAssignTeamToOrgRoleError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Assign an organization role to a user
+    ///
+    /// Assigns an organization role to a member of an organization. For more information on organization roles, see "[Using organization roles](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/using-organization-roles)."
+    /// 
+    /// The authenticated user must be an administrator for the organization to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for assign_user_to_org_role](https://docs.github.com/rest/orgs/organization-roles#assign-an-organization-role-to-a-user)
+    ///
+    /// ---
+    pub async fn assign_user_to_org_role_async(&self, org: &str, username: &str, role_id: i32) -> Result<(), OrgsAssignUserToOrgRoleError> {
+
+        let request_uri = format!("{}/orgs/{}/organization-roles/users/{}/{}", super::GITHUB_BASE_API_URL, org, username, role_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(OrgsAssignUserToOrgRoleError::Status404),
+                422 => Err(OrgsAssignUserToOrgRoleError::Status422),
+                code => Err(OrgsAssignUserToOrgRoleError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Assign an organization role to a user
+    ///
+    /// Assigns an organization role to a member of an organization. For more information on organization roles, see "[Using organization roles](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/using-organization-roles)."
+    /// 
+    /// The authenticated user must be an administrator for the organization to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for assign_user_to_org_role](https://docs.github.com/rest/orgs/organization-roles#assign-an-organization-role-to-a-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn assign_user_to_org_role(&self, org: &str, username: &str, role_id: i32) -> Result<(), OrgsAssignUserToOrgRoleError> {
+
+        let request_uri = format!("{}/orgs/{}/organization-roles/users/{}/{}", super::GITHUB_BASE_API_URL, org, username, role_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(OrgsAssignUserToOrgRoleError::Status404),
+                422 => Err(OrgsAssignUserToOrgRoleError::Status422),
+                code => Err(OrgsAssignUserToOrgRoleError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Block a user from an organization
+    ///
+    /// Blocks the given user on behalf of the specified organization and returns a 204. If the organization cannot block the given user a 422 is returned.
+    ///
+    /// [GitHub API docs for block_user](https://docs.github.com/rest/orgs/blocking#block-a-user-from-an-organization)
     ///
     /// ---
     pub async fn block_user_async(&self, org: &str, username: &str) -> Result<(), OrgsBlockUserError> {
@@ -1623,8 +3050,10 @@ impl<'api> Orgs<'api> {
     /// ---
     ///
     /// # Block a user from an organization
-    /// 
-    /// [GitHub API docs for block_user](https://docs.github.com/rest/reference/orgs#block-a-user-from-an-organization)
+    ///
+    /// Blocks the given user on behalf of the specified organization and returns a 204. If the organization cannot block the given user a 422 is returned.
+    ///
+    /// [GitHub API docs for block_user](https://docs.github.com/rest/orgs/blocking#block-a-user-from-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1664,9 +3093,9 @@ impl<'api> Orgs<'api> {
     ///
     /// Cancel an organization invitation. In order to cancel an organization invitation, the authenticated user must be an organization owner.
     /// 
-    /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications).
-    /// 
-    /// [GitHub API docs for cancel_invitation](https://docs.github.com/rest/reference/orgs#cancel-an-organization-invitation)
+    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications).
+    ///
+    /// [GitHub API docs for cancel_invitation](https://docs.github.com/rest/orgs/members#cancel-an-organization-invitation)
     ///
     /// ---
     pub async fn cancel_invitation_async(&self, org: &str, invitation_id: i32) -> Result<(), OrgsCancelInvitationError> {
@@ -1706,9 +3135,9 @@ impl<'api> Orgs<'api> {
     ///
     /// Cancel an organization invitation. In order to cancel an organization invitation, the authenticated user must be an organization owner.
     /// 
-    /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications).
-    /// 
-    /// [GitHub API docs for cancel_invitation](https://docs.github.com/rest/reference/orgs#cancel-an-organization-invitation)
+    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications).
+    ///
+    /// [GitHub API docs for cancel_invitation](https://docs.github.com/rest/orgs/members#cancel-an-organization-invitation)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1746,8 +3175,10 @@ impl<'api> Orgs<'api> {
     /// ---
     ///
     /// # Check if a user is blocked by an organization
-    /// 
-    /// [GitHub API docs for check_blocked_user](https://docs.github.com/rest/reference/orgs#check-if-a-user-is-blocked-by-an-organization)
+    ///
+    /// Returns a 204 if the given user is blocked by the given organization. Returns a 404 if the organization is not blocking the user, or if the user account has been identified as spam by GitHub.
+    ///
+    /// [GitHub API docs for check_blocked_user](https://docs.github.com/rest/orgs/blocking#check-if-a-user-is-blocked-by-an-organization)
     ///
     /// ---
     pub async fn check_blocked_user_async(&self, org: &str, username: &str) -> Result<(), OrgsCheckBlockedUserError> {
@@ -1783,8 +3214,10 @@ impl<'api> Orgs<'api> {
     /// ---
     ///
     /// # Check if a user is blocked by an organization
-    /// 
-    /// [GitHub API docs for check_blocked_user](https://docs.github.com/rest/reference/orgs#check-if-a-user-is-blocked-by-an-organization)
+    ///
+    /// Returns a 204 if the given user is blocked by the given organization. Returns a 404 if the organization is not blocking the user, or if the user account has been identified as spam by GitHub.
+    ///
+    /// [GitHub API docs for check_blocked_user](https://docs.github.com/rest/orgs/blocking#check-if-a-user-is-blocked-by-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1823,8 +3256,8 @@ impl<'api> Orgs<'api> {
     /// # Check organization membership for a user
     ///
     /// Check if a user is, publicly or privately, a member of the organization.
-    /// 
-    /// [GitHub API docs for check_membership_for_user](https://docs.github.com/rest/reference/orgs#check-organization-membership-for-a-user)
+    ///
+    /// [GitHub API docs for check_membership_for_user](https://docs.github.com/rest/orgs/members#check-organization-membership-for-a-user)
     ///
     /// ---
     pub async fn check_membership_for_user_async(&self, org: &str, username: &str) -> Result<(), OrgsCheckMembershipForUserError> {
@@ -1863,8 +3296,8 @@ impl<'api> Orgs<'api> {
     /// # Check organization membership for a user
     ///
     /// Check if a user is, publicly or privately, a member of the organization.
-    /// 
-    /// [GitHub API docs for check_membership_for_user](https://docs.github.com/rest/reference/orgs#check-organization-membership-for-a-user)
+    ///
+    /// [GitHub API docs for check_membership_for_user](https://docs.github.com/rest/orgs/members#check-organization-membership-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1902,8 +3335,10 @@ impl<'api> Orgs<'api> {
     /// ---
     ///
     /// # Check public organization membership for a user
-    /// 
-    /// [GitHub API docs for check_public_membership_for_user](https://docs.github.com/rest/reference/orgs#check-public-organization-membership-for-a-user)
+    ///
+    /// Check if the provided user is a public member of the organization.
+    ///
+    /// [GitHub API docs for check_public_membership_for_user](https://docs.github.com/rest/orgs/members#check-public-organization-membership-for-a-user)
     ///
     /// ---
     pub async fn check_public_membership_for_user_async(&self, org: &str, username: &str) -> Result<(), OrgsCheckPublicMembershipForUserError> {
@@ -1939,8 +3374,10 @@ impl<'api> Orgs<'api> {
     /// ---
     ///
     /// # Check public organization membership for a user
-    /// 
-    /// [GitHub API docs for check_public_membership_for_user](https://docs.github.com/rest/reference/orgs#check-public-organization-membership-for-a-user)
+    ///
+    /// Check if the provided user is a public member of the organization.
+    ///
+    /// [GitHub API docs for check_public_membership_for_user](https://docs.github.com/rest/orgs/members#check-public-organization-membership-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1978,19 +3415,19 @@ impl<'api> Orgs<'api> {
     ///
     /// # Convert an organization member to outside collaborator
     ///
-    /// When an organization member is converted to an outside collaborator, they'll only have access to the repositories that their current team membership allows. The user will no longer be a member of the organization. For more information, see "[Converting an organization member to an outside collaborator](https://help.github.com/articles/converting-an-organization-member-to-an-outside-collaborator/)".
-    /// 
-    /// [GitHub API docs for convert_member_to_outside_collaborator](https://docs.github.com/rest/reference/orgs#convert-an-organization-member-to-outside-collaborator)
+    /// When an organization member is converted to an outside collaborator, they'll only have access to the repositories that their current team membership allows. The user will no longer be a member of the organization. For more information, see "[Converting an organization member to an outside collaborator](https://docs.github.com/articles/converting-an-organization-member-to-an-outside-collaborator/)". Converting an organization member to an outside collaborator may be restricted by enterprise administrators. For more information, see "[Enforcing repository management policies in your enterprise](https://docs.github.com/admin/policies/enforcing-policies-for-your-enterprise/enforcing-repository-management-policies-in-your-enterprise#enforcing-a-policy-for-inviting-outside-collaborators-to-repositories)."
+    ///
+    /// [GitHub API docs for convert_member_to_outside_collaborator](https://docs.github.com/rest/orgs/outside-collaborators#convert-an-organization-member-to-outside-collaborator)
     ///
     /// ---
-    pub async fn convert_member_to_outside_collaborator_async(&self, org: &str, username: &str) -> Result<HashMap<String, Value>, OrgsConvertMemberToOutsideCollaboratorError> {
+    pub async fn convert_member_to_outside_collaborator_async(&self, org: &str, username: &str, body: PutOrgsConvertMemberToOutsideCollaborator) -> Result<HashMap<String, Value>, OrgsConvertMemberToOutsideCollaboratorError> {
 
         let request_uri = format!("{}/orgs/{}/outside_collaborators/{}", super::GITHUB_BASE_API_URL, org, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: Some(PutOrgsConvertMemberToOutsideCollaborator::from_json(body)?),
             method: "PUT",
             headers: vec![]
         };
@@ -2019,20 +3456,20 @@ impl<'api> Orgs<'api> {
     ///
     /// # Convert an organization member to outside collaborator
     ///
-    /// When an organization member is converted to an outside collaborator, they'll only have access to the repositories that their current team membership allows. The user will no longer be a member of the organization. For more information, see "[Converting an organization member to an outside collaborator](https://help.github.com/articles/converting-an-organization-member-to-an-outside-collaborator/)".
-    /// 
-    /// [GitHub API docs for convert_member_to_outside_collaborator](https://docs.github.com/rest/reference/orgs#convert-an-organization-member-to-outside-collaborator)
+    /// When an organization member is converted to an outside collaborator, they'll only have access to the repositories that their current team membership allows. The user will no longer be a member of the organization. For more information, see "[Converting an organization member to an outside collaborator](https://docs.github.com/articles/converting-an-organization-member-to-an-outside-collaborator/)". Converting an organization member to an outside collaborator may be restricted by enterprise administrators. For more information, see "[Enforcing repository management policies in your enterprise](https://docs.github.com/admin/policies/enforcing-policies-for-your-enterprise/enforcing-repository-management-policies-in-your-enterprise#enforcing-a-policy-for-inviting-outside-collaborators-to-repositories)."
+    ///
+    /// [GitHub API docs for convert_member_to_outside_collaborator](https://docs.github.com/rest/orgs/outside-collaborators#convert-an-organization-member-to-outside-collaborator)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn convert_member_to_outside_collaborator(&self, org: &str, username: &str) -> Result<HashMap<String, Value>, OrgsConvertMemberToOutsideCollaboratorError> {
+    pub fn convert_member_to_outside_collaborator(&self, org: &str, username: &str, body: PutOrgsConvertMemberToOutsideCollaborator) -> Result<HashMap<String, Value>, OrgsConvertMemberToOutsideCollaboratorError> {
 
         let request_uri = format!("{}/orgs/{}/outside_collaborators/{}", super::GITHUB_BASE_API_URL, org, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: Some(PutOrgsConvertMemberToOutsideCollaborator::from_json(body)?),
             method: "PUT",
             headers: vec![]
         };
@@ -2063,9 +3500,10 @@ impl<'api> Orgs<'api> {
     ///
     /// Invite people to an organization by using their GitHub user ID or their email address. In order to create invitations in an organization, the authenticated user must be an organization owner.
     /// 
-    /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. See "[Secondary rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#secondary-rate-limits)" and "[Dealing with secondary rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-secondary-rate-limits)" for details.
-    /// 
-    /// [GitHub API docs for create_invitation](https://docs.github.com/rest/reference/orgs#create-an-organization-invitation)
+    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)"
+    /// and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
+    ///
+    /// [GitHub API docs for create_invitation](https://docs.github.com/rest/orgs/members#create-an-organization-invitation)
     ///
     /// ---
     pub async fn create_invitation_async(&self, org: &str, body: PostOrgsCreateInvitation) -> Result<OrganizationInvitation, OrgsCreateInvitationError> {
@@ -2105,9 +3543,10 @@ impl<'api> Orgs<'api> {
     ///
     /// Invite people to an organization by using their GitHub user ID or their email address. In order to create invitations in an organization, the authenticated user must be an organization owner.
     /// 
-    /// This endpoint triggers [notifications](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. See "[Secondary rate limits](https://docs.github.com/rest/overview/resources-in-the-rest-api#secondary-rate-limits)" and "[Dealing with secondary rate limits](https://docs.github.com/rest/guides/best-practices-for-integrators#dealing-with-secondary-rate-limits)" for details.
-    /// 
-    /// [GitHub API docs for create_invitation](https://docs.github.com/rest/reference/orgs#create-an-organization-invitation)
+    /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)"
+    /// and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
+    ///
+    /// [GitHub API docs for create_invitation](https://docs.github.com/rest/orgs/members#create-an-organization-invitation)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2144,11 +3583,295 @@ impl<'api> Orgs<'api> {
 
     /// ---
     ///
+    /// # Create or update custom properties for an organization
+    ///
+    /// Creates new or updates existing custom properties defined for an organization in a batch.
+    /// 
+    /// To use this endpoint, the authenticated user must be one of:
+    ///   - An administrator for the organization.
+    ///   - A user, or a user on a team, with the fine-grained permission of `custom_properties_org_definitions_manager` in the organization.
+    ///
+    /// [GitHub API docs for create_or_update_custom_properties](https://docs.github.com/rest/orgs/custom-properties#create-or-update-custom-properties-for-an-organization)
+    ///
+    /// ---
+    pub async fn create_or_update_custom_properties_async(&self, org: &str, body: PatchOrgsCreateOrUpdateCustomProperties) -> Result<Vec<CustomProperty>, OrgsCreateOrUpdateCustomPropertiesError> {
+
+        let request_uri = format!("{}/orgs/{}/properties/schema", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PatchOrgsCreateOrUpdateCustomProperties::from_json(body)?),
+            method: "PATCH",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(OrgsCreateOrUpdateCustomPropertiesError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OrgsCreateOrUpdateCustomPropertiesError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(OrgsCreateOrUpdateCustomPropertiesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create or update custom properties for an organization
+    ///
+    /// Creates new or updates existing custom properties defined for an organization in a batch.
+    /// 
+    /// To use this endpoint, the authenticated user must be one of:
+    ///   - An administrator for the organization.
+    ///   - A user, or a user on a team, with the fine-grained permission of `custom_properties_org_definitions_manager` in the organization.
+    ///
+    /// [GitHub API docs for create_or_update_custom_properties](https://docs.github.com/rest/orgs/custom-properties#create-or-update-custom-properties-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn create_or_update_custom_properties(&self, org: &str, body: PatchOrgsCreateOrUpdateCustomProperties) -> Result<Vec<CustomProperty>, OrgsCreateOrUpdateCustomPropertiesError> {
+
+        let request_uri = format!("{}/orgs/{}/properties/schema", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PatchOrgsCreateOrUpdateCustomProperties::from_json(body)?),
+            method: "PATCH",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(OrgsCreateOrUpdateCustomPropertiesError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(OrgsCreateOrUpdateCustomPropertiesError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(OrgsCreateOrUpdateCustomPropertiesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create or update custom property values for organization repositories
+    ///
+    /// Create new or update existing custom property values for repositories in a batch that belong to an organization.
+    /// Each target repository will have its custom property values updated to match the values provided in the request.
+    /// 
+    /// A maximum of 30 repositories can be updated in a single request.
+    /// 
+    /// Using a value of `null` for a custom property will remove or 'unset' the property value from the repository.
+    /// 
+    /// To use this endpoint, the authenticated user must be one of:
+    ///   - An administrator for the organization.
+    ///   - A user, or a user on a team, with the fine-grained permission of `custom_properties_org_values_editor` in the organization.
+    ///
+    /// [GitHub API docs for create_or_update_custom_properties_values_for_repos](https://docs.github.com/rest/orgs/custom-properties#create-or-update-custom-property-values-for-organization-repositories)
+    ///
+    /// ---
+    pub async fn create_or_update_custom_properties_values_for_repos_async(&self, org: &str, body: PatchOrgsCreateOrUpdateCustomPropertiesValuesForRepos) -> Result<(), OrgsCreateOrUpdateCustomPropertiesValuesForReposError> {
+
+        let request_uri = format!("{}/orgs/{}/properties/values", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PatchOrgsCreateOrUpdateCustomPropertiesValuesForRepos::from_json(body)?),
+            method: "PATCH",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create or update custom property values for organization repositories
+    ///
+    /// Create new or update existing custom property values for repositories in a batch that belong to an organization.
+    /// Each target repository will have its custom property values updated to match the values provided in the request.
+    /// 
+    /// A maximum of 30 repositories can be updated in a single request.
+    /// 
+    /// Using a value of `null` for a custom property will remove or 'unset' the property value from the repository.
+    /// 
+    /// To use this endpoint, the authenticated user must be one of:
+    ///   - An administrator for the organization.
+    ///   - A user, or a user on a team, with the fine-grained permission of `custom_properties_org_values_editor` in the organization.
+    ///
+    /// [GitHub API docs for create_or_update_custom_properties_values_for_repos](https://docs.github.com/rest/orgs/custom-properties#create-or-update-custom-property-values-for-organization-repositories)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn create_or_update_custom_properties_values_for_repos(&self, org: &str, body: PatchOrgsCreateOrUpdateCustomPropertiesValuesForRepos) -> Result<(), OrgsCreateOrUpdateCustomPropertiesValuesForReposError> {
+
+        let request_uri = format!("{}/orgs/{}/properties/values", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PatchOrgsCreateOrUpdateCustomPropertiesValuesForRepos::from_json(body)?),
+            method: "PATCH",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create or update a custom property for an organization
+    ///
+    /// Creates a new or updates an existing custom property that is defined for an organization.
+    /// 
+    /// To use this endpoint, the authenticated user must be one of:
+    /// - An administrator for the organization.
+    /// - A user, or a user on a team, with the fine-grained permission of `custom_properties_org_definitions_manager` in the organization.
+    ///
+    /// [GitHub API docs for create_or_update_custom_property](https://docs.github.com/rest/orgs/custom-properties#create-or-update-a-custom-property-for-an-organization)
+    ///
+    /// ---
+    pub async fn create_or_update_custom_property_async(&self, org: &str, custom_property_name: &str, body: PutOrgsCreateOrUpdateCustomProperty) -> Result<CustomProperty, OrgsCreateOrUpdateCustomPropertyError> {
+
+        let request_uri = format!("{}/orgs/{}/properties/schema/{}", super::GITHUB_BASE_API_URL, org, custom_property_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PutOrgsCreateOrUpdateCustomProperty::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(OrgsCreateOrUpdateCustomPropertyError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OrgsCreateOrUpdateCustomPropertyError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(OrgsCreateOrUpdateCustomPropertyError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create or update a custom property for an organization
+    ///
+    /// Creates a new or updates an existing custom property that is defined for an organization.
+    /// 
+    /// To use this endpoint, the authenticated user must be one of:
+    /// - An administrator for the organization.
+    /// - A user, or a user on a team, with the fine-grained permission of `custom_properties_org_definitions_manager` in the organization.
+    ///
+    /// [GitHub API docs for create_or_update_custom_property](https://docs.github.com/rest/orgs/custom-properties#create-or-update-a-custom-property-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn create_or_update_custom_property(&self, org: &str, custom_property_name: &str, body: PutOrgsCreateOrUpdateCustomProperty) -> Result<CustomProperty, OrgsCreateOrUpdateCustomPropertyError> {
+
+        let request_uri = format!("{}/orgs/{}/properties/schema/{}", super::GITHUB_BASE_API_URL, org, custom_property_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PutOrgsCreateOrUpdateCustomProperty::from_json(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(OrgsCreateOrUpdateCustomPropertyError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(OrgsCreateOrUpdateCustomPropertyError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(OrgsCreateOrUpdateCustomPropertyError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Create an organization webhook
     ///
-    /// Here's how you can create a hook that posts payloads in JSON format:
+    /// Create a hook that posts payloads in JSON format.
     /// 
-    /// [GitHub API docs for create_webhook](https://docs.github.com/rest/reference/orgs#create-an-organization-webhook)
+    /// You must be an organization owner to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or
+    /// edit webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
+    ///
+    /// [GitHub API docs for create_webhook](https://docs.github.com/rest/orgs/webhooks#create-an-organization-webhook)
     ///
     /// ---
     pub async fn create_webhook_async(&self, org: &str, body: PostOrgsCreateWebhook) -> Result<OrgHook, OrgsCreateWebhookError> {
@@ -2186,9 +3909,14 @@ impl<'api> Orgs<'api> {
     ///
     /// # Create an organization webhook
     ///
-    /// Here's how you can create a hook that posts payloads in JSON format:
+    /// Create a hook that posts payloads in JSON format.
     /// 
-    /// [GitHub API docs for create_webhook](https://docs.github.com/rest/reference/orgs#create-an-organization-webhook)
+    /// You must be an organization owner to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or
+    /// edit webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
+    ///
+    /// [GitHub API docs for create_webhook](https://docs.github.com/rest/orgs/webhooks#create-an-organization-webhook)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2225,9 +3953,107 @@ impl<'api> Orgs<'api> {
 
     /// ---
     ///
-    /// # Delete an organization webhook
+    /// # Delete an organization
+    ///
+    /// Deletes an organization and all its repositories.
     /// 
-    /// [GitHub API docs for delete_webhook](https://docs.github.com/rest/reference/orgs#delete-an-organization-webhook)
+    /// The organization login will be unavailable for 90 days after deletion.
+    /// 
+    /// Please review the Terms of Service regarding account deletion before using this endpoint:
+    /// 
+    /// https://docs.github.com/site-policy/github-terms/github-terms-of-service
+    ///
+    /// [GitHub API docs for delete](https://docs.github.com/rest/orgs/orgs#delete-an-organization)
+    ///
+    /// ---
+    pub async fn delete_async(&self, org: &str) -> Result<HashMap<String, Value>, OrgsDeleteError> {
+
+        let request_uri = format!("{}/orgs/{}", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(OrgsDeleteError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(OrgsDeleteError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(OrgsDeleteError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete an organization
+    ///
+    /// Deletes an organization and all its repositories.
+    /// 
+    /// The organization login will be unavailable for 90 days after deletion.
+    /// 
+    /// Please review the Terms of Service regarding account deletion before using this endpoint:
+    /// 
+    /// https://docs.github.com/site-policy/github-terms/github-terms-of-service
+    ///
+    /// [GitHub API docs for delete](https://docs.github.com/rest/orgs/orgs#delete-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn delete(&self, org: &str) -> Result<HashMap<String, Value>, OrgsDeleteError> {
+
+        let request_uri = format!("{}/orgs/{}", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(OrgsDeleteError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(OrgsDeleteError::Status403(crate::adapters::to_json(github_response)?)),
+                code => Err(OrgsDeleteError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete an organization webhook
+    ///
+    /// You must be an organization owner to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
+    /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
+    ///
+    /// [GitHub API docs for delete_webhook](https://docs.github.com/rest/orgs/webhooks#delete-an-organization-webhook)
     ///
     /// ---
     pub async fn delete_webhook_async(&self, org: &str, hook_id: i32) -> Result<(), OrgsDeleteWebhookError> {
@@ -2263,8 +4089,13 @@ impl<'api> Orgs<'api> {
     /// ---
     ///
     /// # Delete an organization webhook
+    ///
+    /// You must be an organization owner to use this endpoint.
     /// 
-    /// [GitHub API docs for delete_webhook](https://docs.github.com/rest/reference/orgs#delete-an-organization-webhook)
+    /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
+    /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
+    ///
+    /// [GitHub API docs for delete_webhook](https://docs.github.com/rest/orgs/webhooks#delete-an-organization-webhook)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2300,13 +4131,112 @@ impl<'api> Orgs<'api> {
 
     /// ---
     ///
+    /// # Enable or disable a security feature for an organization
+    ///
+    /// > [!WARNING]
+    /// > **Deprecation notice:** The ability to enable or disable a security feature for all eligible repositories in an organization is deprecated. Please use [code security configurations](https://docs.github.com/rest/code-security/configurations) instead. For more information, see the [changelog](https://github.blog/changelog/2024-07-22-deprecation-of-api-endpoint-to-enable-or-disable-a-security-feature-for-an-organization/).
+    /// 
+    /// Enables or disables the specified security feature for all eligible repositories in an organization. For more information, see "[Managing security managers in your organization](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-security-managers-in-your-organization)."
+    /// 
+    /// The authenticated user must be an organization owner or be member of a team with the security manager role to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org`, `write:org`, or `repo` scopes to use this endpoint.
+    ///
+    /// [GitHub API docs for enable_or_disable_security_product_on_all_org_repos](https://docs.github.com/rest/orgs/orgs#enable-or-disable-a-security-feature-for-an-organization)
+    ///
+    /// ---
+    pub async fn enable_or_disable_security_product_on_all_org_repos_async(&self, org: &str, security_product: &str, enablement: &str, body: PostOrgsEnableOrDisableSecurityProductOnAllOrgRepos) -> Result<(), OrgsEnableOrDisableSecurityProductOnAllOrgReposError> {
+
+        let request_uri = format!("{}/orgs/{}/{}/{}", super::GITHUB_BASE_API_URL, org, security_product, enablement);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostOrgsEnableOrDisableSecurityProductOnAllOrgRepos::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                422 => Err(OrgsEnableOrDisableSecurityProductOnAllOrgReposError::Status422),
+                code => Err(OrgsEnableOrDisableSecurityProductOnAllOrgReposError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Enable or disable a security feature for an organization
+    ///
+    /// > [!WARNING]
+    /// > **Deprecation notice:** The ability to enable or disable a security feature for all eligible repositories in an organization is deprecated. Please use [code security configurations](https://docs.github.com/rest/code-security/configurations) instead. For more information, see the [changelog](https://github.blog/changelog/2024-07-22-deprecation-of-api-endpoint-to-enable-or-disable-a-security-feature-for-an-organization/).
+    /// 
+    /// Enables or disables the specified security feature for all eligible repositories in an organization. For more information, see "[Managing security managers in your organization](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-security-managers-in-your-organization)."
+    /// 
+    /// The authenticated user must be an organization owner or be member of a team with the security manager role to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org`, `write:org`, or `repo` scopes to use this endpoint.
+    ///
+    /// [GitHub API docs for enable_or_disable_security_product_on_all_org_repos](https://docs.github.com/rest/orgs/orgs#enable-or-disable-a-security-feature-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn enable_or_disable_security_product_on_all_org_repos(&self, org: &str, security_product: &str, enablement: &str, body: PostOrgsEnableOrDisableSecurityProductOnAllOrgRepos) -> Result<(), OrgsEnableOrDisableSecurityProductOnAllOrgReposError> {
+
+        let request_uri = format!("{}/orgs/{}/{}/{}", super::GITHUB_BASE_API_URL, org, security_product, enablement);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostOrgsEnableOrDisableSecurityProductOnAllOrgRepos::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                422 => Err(OrgsEnableOrDisableSecurityProductOnAllOrgReposError::Status422),
+                code => Err(OrgsEnableOrDisableSecurityProductOnAllOrgReposError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Get an organization
     ///
-    /// To see many of the organization response values, you need to be an authenticated organization owner with the `admin:org` scope. When the value of `two_factor_requirement_enabled` is `true`, the organization requires all members, billing managers, and outside collaborators to enable [two-factor authentication](https://help.github.com/articles/securing-your-account-with-two-factor-authentication-2fa/).
+    /// Gets information about an organization.
     /// 
-    /// GitHub Apps with the `Organization plan` permission can use this endpoint to retrieve information about an organization's GitHub plan. See "[Authenticating with GitHub Apps](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/)" for details. For an example response, see 'Response with GitHub plan information' below."
+    /// When the value of `two_factor_requirement_enabled` is `true`, the organization requires all members, billing managers, and outside collaborators to enable [two-factor authentication](https://docs.github.com/articles/securing-your-account-with-two-factor-authentication-2fa/).
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/orgs#get-an-organization)
+    /// To see the full details about an organization, the authenticated user must be an organization owner.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to see the full details about an organization.
+    /// 
+    /// To see information about an organization's GitHub plan, GitHub Apps need the `Organization plan` permission.
+    ///
+    /// [GitHub API docs for get](https://docs.github.com/rest/orgs/orgs#get-an-organization)
     ///
     /// ---
     pub async fn get_async(&self, org: &str) -> Result<OrganizationFull, OrgsGetError> {
@@ -2343,11 +4273,17 @@ impl<'api> Orgs<'api> {
     ///
     /// # Get an organization
     ///
-    /// To see many of the organization response values, you need to be an authenticated organization owner with the `admin:org` scope. When the value of `two_factor_requirement_enabled` is `true`, the organization requires all members, billing managers, and outside collaborators to enable [two-factor authentication](https://help.github.com/articles/securing-your-account-with-two-factor-authentication-2fa/).
+    /// Gets information about an organization.
     /// 
-    /// GitHub Apps with the `Organization plan` permission can use this endpoint to retrieve information about an organization's GitHub plan. See "[Authenticating with GitHub Apps](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/)" for details. For an example response, see 'Response with GitHub plan information' below."
+    /// When the value of `two_factor_requirement_enabled` is `true`, the organization requires all members, billing managers, and outside collaborators to enable [two-factor authentication](https://docs.github.com/articles/securing-your-account-with-two-factor-authentication-2fa/).
     /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/orgs#get-an-organization)
+    /// To see the full details about an organization, the authenticated user must be an organization owner.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to see the full details about an organization.
+    /// 
+    /// To see information about an organization's GitHub plan, GitHub Apps need the `Organization plan` permission.
+    ///
+    /// [GitHub API docs for get](https://docs.github.com/rest/orgs/orgs#get-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2383,23 +4319,18 @@ impl<'api> Orgs<'api> {
 
     /// ---
     ///
-    /// # Get the audit log for an organization
+    /// # Get all custom properties for an organization
     ///
-    /// Gets the audit log for an organization. For more information, see "[Reviewing the audit log for your organization](https://docs.github.com/github/setting-up-and-managing-organizations-and-teams/reviewing-the-audit-log-for-your-organization)."
-    /// 
-    /// To use this endpoint, you must be an organization owner, and you must use an access token with the `admin:org` scope. GitHub Apps must have the `organization_administration` read permission to use this endpoint.
-    /// 
-    /// [GitHub API docs for get_audit_log](https://docs.github.com/rest/reference/orgs#get-audit-log)
+    /// Gets all custom properties defined for an organization.
+    /// Organization members can read these properties.
+    ///
+    /// [GitHub API docs for get_all_custom_properties](https://docs.github.com/rest/orgs/custom-properties#get-all-custom-properties-for-an-organization)
     ///
     /// ---
-    pub async fn get_audit_log_async(&self, org: &str, query_params: Option<impl Into<OrgsGetAuditLogParams<'api>>>) -> Result<Vec<AuditLogEvent>, OrgsGetAuditLogError> {
+    pub async fn get_all_custom_properties_async(&self, org: &str) -> Result<Vec<CustomProperty>, OrgsGetAllCustomPropertiesError> {
 
-        let mut request_uri = format!("{}/orgs/{}/audit-log", super::GITHUB_BASE_API_URL, org);
+        let request_uri = format!("{}/orgs/{}/properties/schema", super::GITHUB_BASE_API_URL, org);
 
-        if let Some(params) = query_params {
-            request_uri.push_str("?");
-            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
-        }
 
         let req = GitHubRequest {
             uri: request_uri,
@@ -2420,32 +4351,28 @@ impl<'api> Orgs<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsGetAuditLogError::Generic { code }),
+                403 => Err(OrgsGetAllCustomPropertiesError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OrgsGetAllCustomPropertiesError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(OrgsGetAllCustomPropertiesError::Generic { code }),
             }
         }
     }
 
     /// ---
     ///
-    /// # Get the audit log for an organization
+    /// # Get all custom properties for an organization
     ///
-    /// Gets the audit log for an organization. For more information, see "[Reviewing the audit log for your organization](https://docs.github.com/github/setting-up-and-managing-organizations-and-teams/reviewing-the-audit-log-for-your-organization)."
-    /// 
-    /// To use this endpoint, you must be an organization owner, and you must use an access token with the `admin:org` scope. GitHub Apps must have the `organization_administration` read permission to use this endpoint.
-    /// 
-    /// [GitHub API docs for get_audit_log](https://docs.github.com/rest/reference/orgs#get-audit-log)
+    /// Gets all custom properties defined for an organization.
+    /// Organization members can read these properties.
+    ///
+    /// [GitHub API docs for get_all_custom_properties](https://docs.github.com/rest/orgs/custom-properties#get-all-custom-properties-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_audit_log(&self, org: &str, query_params: Option<impl Into<OrgsGetAuditLogParams<'api>>>) -> Result<Vec<AuditLogEvent>, OrgsGetAuditLogError> {
+    pub fn get_all_custom_properties(&self, org: &str) -> Result<Vec<CustomProperty>, OrgsGetAllCustomPropertiesError> {
 
-        let mut request_uri = format!("{}/orgs/{}/audit-log", super::GITHUB_BASE_API_URL, org);
+        let request_uri = format!("{}/orgs/{}/properties/schema", super::GITHUB_BASE_API_URL, org);
 
-        if let Some(params) = query_params {
-            request_uri.push_str("?");
-            let qp: OrgsGetAuditLogParams = params.into();
-            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
-        }
 
         let req = GitHubRequest {
             uri: request_uri,
@@ -2466,7 +4393,92 @@ impl<'api> Orgs<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsGetAuditLogError::Generic { code }),
+                403 => Err(OrgsGetAllCustomPropertiesError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(OrgsGetAllCustomPropertiesError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(OrgsGetAllCustomPropertiesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get a custom property for an organization
+    ///
+    /// Gets a custom property that is defined for an organization.
+    /// Organization members can read these properties.
+    ///
+    /// [GitHub API docs for get_custom_property](https://docs.github.com/rest/orgs/custom-properties#get-a-custom-property-for-an-organization)
+    ///
+    /// ---
+    pub async fn get_custom_property_async(&self, org: &str, custom_property_name: &str) -> Result<CustomProperty, OrgsGetCustomPropertyError> {
+
+        let request_uri = format!("{}/orgs/{}/properties/schema/{}", super::GITHUB_BASE_API_URL, org, custom_property_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(OrgsGetCustomPropertyError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OrgsGetCustomPropertyError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(OrgsGetCustomPropertyError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get a custom property for an organization
+    ///
+    /// Gets a custom property that is defined for an organization.
+    /// Organization members can read these properties.
+    ///
+    /// [GitHub API docs for get_custom_property](https://docs.github.com/rest/orgs/custom-properties#get-a-custom-property-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_custom_property(&self, org: &str, custom_property_name: &str) -> Result<CustomProperty, OrgsGetCustomPropertyError> {
+
+        let request_uri = format!("{}/orgs/{}/properties/schema/{}", super::GITHUB_BASE_API_URL, org, custom_property_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(OrgsGetCustomPropertyError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(OrgsGetCustomPropertyError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(OrgsGetCustomPropertyError::Generic { code }),
             }
         }
     }
@@ -2474,8 +4486,10 @@ impl<'api> Orgs<'api> {
     /// ---
     ///
     /// # Get an organization membership for the authenticated user
-    /// 
-    /// [GitHub API docs for get_membership_for_authenticated_user](https://docs.github.com/rest/reference/orgs#get-an-organization-membership-for-the-authenticated-user)
+    ///
+    /// If the authenticated user is an active or pending member of the organization, this endpoint will return the user's membership. If the authenticated user is not affiliated with the organization, a `404` is returned. This endpoint will return a `403` if the request is made by a GitHub App that is blocked by the organization.
+    ///
+    /// [GitHub API docs for get_membership_for_authenticated_user](https://docs.github.com/rest/orgs/members#get-an-organization-membership-for-the-authenticated-user)
     ///
     /// ---
     pub async fn get_membership_for_authenticated_user_async(&self, org: &str) -> Result<OrgMembership, OrgsGetMembershipForAuthenticatedUserError> {
@@ -2512,8 +4526,10 @@ impl<'api> Orgs<'api> {
     /// ---
     ///
     /// # Get an organization membership for the authenticated user
-    /// 
-    /// [GitHub API docs for get_membership_for_authenticated_user](https://docs.github.com/rest/reference/orgs#get-an-organization-membership-for-the-authenticated-user)
+    ///
+    /// If the authenticated user is an active or pending member of the organization, this endpoint will return the user's membership. If the authenticated user is not affiliated with the organization, a `404` is returned. This endpoint will return a `403` if the request is made by a GitHub App that is blocked by the organization.
+    ///
+    /// [GitHub API docs for get_membership_for_authenticated_user](https://docs.github.com/rest/orgs/members#get-an-organization-membership-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2553,8 +4569,8 @@ impl<'api> Orgs<'api> {
     /// # Get organization membership for a user
     ///
     /// In order to get a user's membership with an organization, the authenticated user must be an organization member. The `state` parameter in the response can be used to identify the user's membership status.
-    /// 
-    /// [GitHub API docs for get_membership_for_user](https://docs.github.com/rest/reference/orgs#get-organization-membership-for-a-user)
+    ///
+    /// [GitHub API docs for get_membership_for_user](https://docs.github.com/rest/orgs/members#get-organization-membership-for-a-user)
     ///
     /// ---
     pub async fn get_membership_for_user_async(&self, org: &str, username: &str) -> Result<OrgMembership, OrgsGetMembershipForUserError> {
@@ -2593,8 +4609,8 @@ impl<'api> Orgs<'api> {
     /// # Get organization membership for a user
     ///
     /// In order to get a user's membership with an organization, the authenticated user must be an organization member. The `state` parameter in the response can be used to identify the user's membership status.
-    /// 
-    /// [GitHub API docs for get_membership_for_user](https://docs.github.com/rest/reference/orgs#get-organization-membership-for-a-user)
+    ///
+    /// [GitHub API docs for get_membership_for_user](https://docs.github.com/rest/orgs/members#get-organization-membership-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2631,11 +4647,112 @@ impl<'api> Orgs<'api> {
 
     /// ---
     ///
+    /// # Get an organization role
+    ///
+    /// Gets an organization role that is available to this organization. For more information on organization roles, see "[Using organization roles](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/using-organization-roles)."
+    /// 
+    /// To use this endpoint, the authenticated user must be one of:
+    /// 
+    /// - An administrator for the organization.
+    /// - A user, or a user on a team, with the fine-grained permissions of `read_organization_custom_org_role` in the organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_org_role](https://docs.github.com/rest/orgs/organization-roles#get-an-organization-role)
+    ///
+    /// ---
+    pub async fn get_org_role_async(&self, org: &str, role_id: i32) -> Result<OrganizationRole, OrgsGetOrgRoleError> {
+
+        let request_uri = format!("{}/orgs/{}/organization-roles/{}", super::GITHUB_BASE_API_URL, org, role_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(OrgsGetOrgRoleError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(OrgsGetOrgRoleError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(OrgsGetOrgRoleError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get an organization role
+    ///
+    /// Gets an organization role that is available to this organization. For more information on organization roles, see "[Using organization roles](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/using-organization-roles)."
+    /// 
+    /// To use this endpoint, the authenticated user must be one of:
+    /// 
+    /// - An administrator for the organization.
+    /// - A user, or a user on a team, with the fine-grained permissions of `read_organization_custom_org_role` in the organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_org_role](https://docs.github.com/rest/orgs/organization-roles#get-an-organization-role)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_org_role(&self, org: &str, role_id: i32) -> Result<OrganizationRole, OrgsGetOrgRoleError> {
+
+        let request_uri = format!("{}/orgs/{}/organization-roles/{}", super::GITHUB_BASE_API_URL, org, role_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(OrgsGetOrgRoleError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(OrgsGetOrgRoleError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(OrgsGetOrgRoleError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Get an organization webhook
     ///
-    /// Returns a webhook configured in an organization. To get only the webhook `config` properties, see "[Get a webhook configuration for an organization](/rest/reference/orgs#get-a-webhook-configuration-for-an-organization)."
+    /// Returns a webhook configured in an organization. To get only the webhook
+    /// `config` properties, see "[Get a webhook configuration for an organization](/rest/orgs/webhooks#get-a-webhook-configuration-for-an-organization).
     /// 
-    /// [GitHub API docs for get_webhook](https://docs.github.com/rest/reference/orgs#get-an-organization-webhook)
+    /// You must be an organization owner to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
+    /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
+    ///
+    /// [GitHub API docs for get_webhook](https://docs.github.com/rest/orgs/webhooks#get-an-organization-webhook)
     ///
     /// ---
     pub async fn get_webhook_async(&self, org: &str, hook_id: i32) -> Result<OrgHook, OrgsGetWebhookError> {
@@ -2672,9 +4789,15 @@ impl<'api> Orgs<'api> {
     ///
     /// # Get an organization webhook
     ///
-    /// Returns a webhook configured in an organization. To get only the webhook `config` properties, see "[Get a webhook configuration for an organization](/rest/reference/orgs#get-a-webhook-configuration-for-an-organization)."
+    /// Returns a webhook configured in an organization. To get only the webhook
+    /// `config` properties, see "[Get a webhook configuration for an organization](/rest/orgs/webhooks#get-a-webhook-configuration-for-an-organization).
     /// 
-    /// [GitHub API docs for get_webhook](https://docs.github.com/rest/reference/orgs#get-an-organization-webhook)
+    /// You must be an organization owner to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
+    /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
+    ///
+    /// [GitHub API docs for get_webhook](https://docs.github.com/rest/orgs/webhooks#get-an-organization-webhook)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2712,11 +4835,14 @@ impl<'api> Orgs<'api> {
     ///
     /// # Get a webhook configuration for an organization
     ///
-    /// Returns the webhook configuration for an organization. To get more information about the webhook, including the `active` state and `events`, use "[Get an organization webhook ](/rest/reference/orgs#get-an-organization-webhook)."
+    /// Returns the webhook configuration for an organization. To get more information about the webhook, including the `active` state and `events`, use "[Get an organization webhook ](/rest/orgs/webhooks#get-an-organization-webhook)."
     /// 
-    /// Access tokens must have the `admin:org_hook` scope, and GitHub Apps must have the `organization_hooks:read` permission.
+    /// You must be an organization owner to use this endpoint.
     /// 
-    /// [GitHub API docs for get_webhook_config_for_org](https://docs.github.com/rest/reference/orgs#get-a-webhook-configuration-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
+    /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
+    ///
+    /// [GitHub API docs for get_webhook_config_for_org](https://docs.github.com/rest/orgs/webhooks#get-a-webhook-configuration-for-an-organization)
     ///
     /// ---
     pub async fn get_webhook_config_for_org_async(&self, org: &str, hook_id: i32) -> Result<WebhookConfig, OrgsGetWebhookConfigForOrgError> {
@@ -2752,11 +4878,14 @@ impl<'api> Orgs<'api> {
     ///
     /// # Get a webhook configuration for an organization
     ///
-    /// Returns the webhook configuration for an organization. To get more information about the webhook, including the `active` state and `events`, use "[Get an organization webhook ](/rest/reference/orgs#get-an-organization-webhook)."
+    /// Returns the webhook configuration for an organization. To get more information about the webhook, including the `active` state and `events`, use "[Get an organization webhook ](/rest/orgs/webhooks#get-an-organization-webhook)."
     /// 
-    /// Access tokens must have the `admin:org_hook` scope, and GitHub Apps must have the `organization_hooks:read` permission.
+    /// You must be an organization owner to use this endpoint.
     /// 
-    /// [GitHub API docs for get_webhook_config_for_org](https://docs.github.com/rest/reference/orgs#get-a-webhook-configuration-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
+    /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
+    ///
+    /// [GitHub API docs for get_webhook_config_for_org](https://docs.github.com/rest/orgs/webhooks#get-a-webhook-configuration-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2795,7 +4924,12 @@ impl<'api> Orgs<'api> {
     ///
     /// Returns a delivery for a webhook configured in an organization.
     /// 
-    /// [GitHub API docs for get_webhook_delivery](https://docs.github.com/rest/reference/orgs#get-a-webhook-delivery-for-an-organization-webhook)
+    /// You must be an organization owner to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
+    /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
+    ///
+    /// [GitHub API docs for get_webhook_delivery](https://docs.github.com/rest/orgs/webhooks#get-a-webhook-delivery-for-an-organization-webhook)
     ///
     /// ---
     pub async fn get_webhook_delivery_async(&self, org: &str, hook_id: i32, delivery_id: i32) -> Result<HookDelivery, OrgsGetWebhookDeliveryError> {
@@ -2835,7 +4969,12 @@ impl<'api> Orgs<'api> {
     ///
     /// Returns a delivery for a webhook configured in an organization.
     /// 
-    /// [GitHub API docs for get_webhook_delivery](https://docs.github.com/rest/reference/orgs#get-a-webhook-delivery-for-an-organization-webhook)
+    /// You must be an organization owner to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
+    /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
+    ///
+    /// [GitHub API docs for get_webhook_delivery](https://docs.github.com/rest/orgs/webhooks#get-a-webhook-delivery-for-an-organization-webhook)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2874,11 +5013,12 @@ impl<'api> Orgs<'api> {
     ///
     /// # List organizations
     ///
-    /// Lists all organizations, in the order that they were created on GitHub.
+    /// Lists all organizations, in the order that they were created.
     /// 
-    /// **Note:** Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header) to get the URL for the next page of organizations.
-    /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/orgs#list-organizations)
+    /// > [!NOTE]
+    /// > Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers) to get the URL for the next page of organizations.
+    ///
+    /// [GitHub API docs for list](https://docs.github.com/rest/orgs/orgs#list-organizations)
     ///
     /// ---
     pub async fn list_async(&self, query_params: Option<impl Into<OrgsListParams>>) -> Result<Vec<OrganizationSimple>, OrgsListError> {
@@ -2919,11 +5059,12 @@ impl<'api> Orgs<'api> {
     ///
     /// # List organizations
     ///
-    /// Lists all organizations, in the order that they were created on GitHub.
+    /// Lists all organizations, in the order that they were created.
     /// 
-    /// **Note:** Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/overview/resources-in-the-rest-api#link-header) to get the URL for the next page of organizations.
-    /// 
-    /// [GitHub API docs for list](https://docs.github.com/rest/reference/orgs#list-organizations)
+    /// > [!NOTE]
+    /// > Pagination is powered exclusively by the `since` parameter. Use the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers) to get the URL for the next page of organizations.
+    ///
+    /// [GitHub API docs for list](https://docs.github.com/rest/orgs/orgs#list-organizations)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2966,9 +5107,14 @@ impl<'api> Orgs<'api> {
     ///
     /// # List app installations for an organization
     ///
-    /// Lists all GitHub Apps in an organization. The installation count includes all GitHub Apps installed on repositories in the organization. You must be an organization owner with `admin:read` scope to use this endpoint.
+    /// Lists all GitHub Apps in an organization. The installation count includes
+    /// all GitHub Apps installed on repositories in the organization.
     /// 
-    /// [GitHub API docs for list_app_installations](https://docs.github.com/rest/reference/orgs#list-app-installations-for-an-organization)
+    /// The authenticated user must be an organization owner to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:read` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_app_installations](https://docs.github.com/rest/orgs/orgs#list-app-installations-for-an-organization)
     ///
     /// ---
     pub async fn list_app_installations_async(&self, org: &str, query_params: Option<impl Into<OrgsListAppInstallationsParams>>) -> Result<GetAppsListInstallationsForAuthenticatedUserResponse200, OrgsListAppInstallationsError> {
@@ -3008,9 +5154,14 @@ impl<'api> Orgs<'api> {
     ///
     /// # List app installations for an organization
     ///
-    /// Lists all GitHub Apps in an organization. The installation count includes all GitHub Apps installed on repositories in the organization. You must be an organization owner with `admin:read` scope to use this endpoint.
+    /// Lists all GitHub Apps in an organization. The installation count includes
+    /// all GitHub Apps installed on repositories in the organization.
     /// 
-    /// [GitHub API docs for list_app_installations](https://docs.github.com/rest/reference/orgs#list-app-installations-for-an-organization)
+    /// The authenticated user must be an organization owner to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:read` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_app_installations](https://docs.github.com/rest/orgs/orgs#list-app-installations-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3050,17 +5201,25 @@ impl<'api> Orgs<'api> {
 
     /// ---
     ///
-    /// # List users blocked by an organization
+    /// # List attestations
     ///
-    /// List the users blocked by an organization.
+    /// List a collection of artifact attestations with a given subject digest that are associated with repositories owned by an organization.
     /// 
-    /// [GitHub API docs for list_blocked_users](https://docs.github.com/rest/reference/orgs#list-users-blocked-by-an-organization)
+    /// The collection of attestations returned by this endpoint is filtered according to the authenticated user's permissions; if the authenticated user cannot read a repository, the attestations associated with that repository will not be included in the response. In addition, when using a fine-grained access token the `attestations:read` permission is required.
+    /// 
+    /// **Please note:** in order to offer meaningful security benefits, an attestation's signature and timestamps **must** be cryptographically verified, and the identity of the attestation signer **must** be validated. Attestations can be verified using the [GitHub CLI `attestation verify` command](https://cli.github.com/manual/gh_attestation_verify). For more information, see [our guide on how to use artifact attestations to establish a build's provenance](https://docs.github.com/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds).
+    ///
+    /// [GitHub API docs for list_attestations](https://docs.github.com/rest/orgs/orgs#list-attestations)
     ///
     /// ---
-    pub async fn list_blocked_users_async(&self, org: &str) -> Result<Vec<SimpleUser>, OrgsListBlockedUsersError> {
+    pub async fn list_attestations_async(&self, org: &str, subject_digest: &str, query_params: Option<impl Into<OrgsListAttestationsParams<'api>>>) -> Result<GetReposListAttestationsResponse200, OrgsListAttestationsError> {
 
-        let request_uri = format!("{}/orgs/{}/blocks", super::GITHUB_BASE_API_URL, org);
+        let mut request_uri = format!("{}/orgs/{}/attestations/{}", super::GITHUB_BASE_API_URL, org, subject_digest);
 
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
 
         let req = GitHubRequest {
             uri: request_uri,
@@ -3081,26 +5240,34 @@ impl<'api> Orgs<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                415 => Err(OrgsListBlockedUsersError::Status415(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsListBlockedUsersError::Generic { code }),
+                code => Err(OrgsListAttestationsError::Generic { code }),
             }
         }
     }
 
     /// ---
     ///
-    /// # List users blocked by an organization
+    /// # List attestations
     ///
-    /// List the users blocked by an organization.
+    /// List a collection of artifact attestations with a given subject digest that are associated with repositories owned by an organization.
     /// 
-    /// [GitHub API docs for list_blocked_users](https://docs.github.com/rest/reference/orgs#list-users-blocked-by-an-organization)
+    /// The collection of attestations returned by this endpoint is filtered according to the authenticated user's permissions; if the authenticated user cannot read a repository, the attestations associated with that repository will not be included in the response. In addition, when using a fine-grained access token the `attestations:read` permission is required.
+    /// 
+    /// **Please note:** in order to offer meaningful security benefits, an attestation's signature and timestamps **must** be cryptographically verified, and the identity of the attestation signer **must** be validated. Attestations can be verified using the [GitHub CLI `attestation verify` command](https://cli.github.com/manual/gh_attestation_verify). For more information, see [our guide on how to use artifact attestations to establish a build's provenance](https://docs.github.com/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds).
+    ///
+    /// [GitHub API docs for list_attestations](https://docs.github.com/rest/orgs/orgs#list-attestations)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_blocked_users(&self, org: &str) -> Result<Vec<SimpleUser>, OrgsListBlockedUsersError> {
+    pub fn list_attestations(&self, org: &str, subject_digest: &str, query_params: Option<impl Into<OrgsListAttestationsParams<'api>>>) -> Result<GetReposListAttestationsResponse200, OrgsListAttestationsError> {
 
-        let request_uri = format!("{}/orgs/{}/blocks", super::GITHUB_BASE_API_URL, org);
+        let mut request_uri = format!("{}/orgs/{}/attestations/{}", super::GITHUB_BASE_API_URL, org, subject_digest);
 
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: OrgsListAttestationsParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
 
         let req = GitHubRequest {
             uri: request_uri,
@@ -3121,28 +5288,28 @@ impl<'api> Orgs<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                415 => Err(OrgsListBlockedUsersError::Status415(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsListBlockedUsersError::Generic { code }),
+                code => Err(OrgsListAttestationsError::Generic { code }),
             }
         }
     }
 
     /// ---
     ///
-    /// # List custom repository roles in an organization
+    /// # List users blocked by an organization
     ///
-    /// List the custom repository roles available in this organization. In order to see custom
-    /// repository roles in an organization, the authenticated user must be an organization owner.
-    /// 
-    /// For more information on custom repository roles, see "[Managing custom repository roles for an organization](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-custom-repository-roles-for-an-organization)".
-    /// 
-    /// [GitHub API docs for list_custom_roles](https://docs.github.com/rest/reference/orgs#list-custom-repository-roles-in-an-organization)
+    /// List the users blocked by an organization.
+    ///
+    /// [GitHub API docs for list_blocked_users](https://docs.github.com/rest/orgs/blocking#list-users-blocked-by-an-organization)
     ///
     /// ---
-    pub async fn list_custom_roles_async(&self, organization_id: &str) -> Result<GetOrgsListCustomRolesResponse200, OrgsListCustomRolesError> {
+    pub async fn list_blocked_users_async(&self, org: &str, query_params: Option<impl Into<OrgsListBlockedUsersParams>>) -> Result<Vec<SimpleUser>, OrgsListBlockedUsersError> {
 
-        let request_uri = format!("{}/organizations/{}/custom_roles", super::GITHUB_BASE_API_URL, organization_id);
+        let mut request_uri = format!("{}/orgs/{}/blocks", super::GITHUB_BASE_API_URL, org);
 
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
 
         let req = GitHubRequest {
             uri: request_uri,
@@ -3163,28 +5330,30 @@ impl<'api> Orgs<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsListCustomRolesError::Generic { code }),
+                code => Err(OrgsListBlockedUsersError::Generic { code }),
             }
         }
     }
 
     /// ---
     ///
-    /// # List custom repository roles in an organization
+    /// # List users blocked by an organization
     ///
-    /// List the custom repository roles available in this organization. In order to see custom
-    /// repository roles in an organization, the authenticated user must be an organization owner.
-    /// 
-    /// For more information on custom repository roles, see "[Managing custom repository roles for an organization](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-custom-repository-roles-for-an-organization)".
-    /// 
-    /// [GitHub API docs for list_custom_roles](https://docs.github.com/rest/reference/orgs#list-custom-repository-roles-in-an-organization)
+    /// List the users blocked by an organization.
+    ///
+    /// [GitHub API docs for list_blocked_users](https://docs.github.com/rest/orgs/blocking#list-users-blocked-by-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_custom_roles(&self, organization_id: &str) -> Result<GetOrgsListCustomRolesResponse200, OrgsListCustomRolesError> {
+    pub fn list_blocked_users(&self, org: &str, query_params: Option<impl Into<OrgsListBlockedUsersParams>>) -> Result<Vec<SimpleUser>, OrgsListBlockedUsersError> {
 
-        let request_uri = format!("{}/organizations/{}/custom_roles", super::GITHUB_BASE_API_URL, organization_id);
+        let mut request_uri = format!("{}/orgs/{}/blocks", super::GITHUB_BASE_API_URL, org);
 
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: OrgsListBlockedUsersParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
 
         let req = GitHubRequest {
             uri: request_uri,
@@ -3205,7 +5374,99 @@ impl<'api> Orgs<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsListCustomRolesError::Generic { code }),
+                code => Err(OrgsListBlockedUsersError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List custom property values for organization repositories
+    ///
+    /// Lists organization repositories with all of their custom property values.
+    /// Organization members can read these properties.
+    ///
+    /// [GitHub API docs for list_custom_properties_values_for_repos](https://docs.github.com/rest/orgs/custom-properties#list-custom-property-values-for-organization-repositories)
+    ///
+    /// ---
+    pub async fn list_custom_properties_values_for_repos_async(&self, org: &str, query_params: Option<impl Into<OrgsListCustomPropertiesValuesForReposParams<'api>>>) -> Result<Vec<OrgRepoCustomPropertyValues>, OrgsListCustomPropertiesValuesForReposError> {
+
+        let mut request_uri = format!("{}/orgs/{}/properties/values", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(OrgsListCustomPropertiesValuesForReposError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OrgsListCustomPropertiesValuesForReposError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(OrgsListCustomPropertiesValuesForReposError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List custom property values for organization repositories
+    ///
+    /// Lists organization repositories with all of their custom property values.
+    /// Organization members can read these properties.
+    ///
+    /// [GitHub API docs for list_custom_properties_values_for_repos](https://docs.github.com/rest/orgs/custom-properties#list-custom-property-values-for-organization-repositories)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_custom_properties_values_for_repos(&self, org: &str, query_params: Option<impl Into<OrgsListCustomPropertiesValuesForReposParams<'api>>>) -> Result<Vec<OrgRepoCustomPropertyValues>, OrgsListCustomPropertiesValuesForReposError> {
+
+        let mut request_uri = format!("{}/orgs/{}/properties/values", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: OrgsListCustomPropertiesValuesForReposParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(OrgsListCustomPropertiesValuesForReposError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(OrgsListCustomPropertiesValuesForReposError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(OrgsListCustomPropertiesValuesForReposError::Generic { code }),
             }
         }
     }
@@ -3215,8 +5476,8 @@ impl<'api> Orgs<'api> {
     /// # List failed organization invitations
     ///
     /// The return hash contains `failed_at` and `failed_reason` fields which represent the time at which the invitation failed and the reason for the failure.
-    /// 
-    /// [GitHub API docs for list_failed_invitations](https://docs.github.com/rest/reference/orgs#list-failed-organization-invitations)
+    ///
+    /// [GitHub API docs for list_failed_invitations](https://docs.github.com/rest/orgs/members#list-failed-organization-invitations)
     ///
     /// ---
     pub async fn list_failed_invitations_async(&self, org: &str, query_params: Option<impl Into<OrgsListFailedInvitationsParams>>) -> Result<Vec<OrganizationInvitation>, OrgsListFailedInvitationsError> {
@@ -3258,8 +5519,8 @@ impl<'api> Orgs<'api> {
     /// # List failed organization invitations
     ///
     /// The return hash contains `failed_at` and `failed_reason` fields which represent the time at which the invitation failed and the reason for the failure.
-    /// 
-    /// [GitHub API docs for list_failed_invitations](https://docs.github.com/rest/reference/orgs#list-failed-organization-invitations)
+    ///
+    /// [GitHub API docs for list_failed_invitations](https://docs.github.com/rest/orgs/members#list-failed-organization-invitations)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3304,11 +5565,9 @@ impl<'api> Orgs<'api> {
     ///
     /// List organizations for the authenticated user.
     /// 
-    /// **OAuth scope requirements**
-    /// 
-    /// This only lists organizations that your authorization allows you to operate on in some way (e.g., you can list teams with `read:org` scope, you can publicize your organization membership with `user` scope, etc.). Therefore, this API requires at least `user` or `read:org` scope. OAuth requests with insufficient scope receive a `403 Forbidden` response.
-    /// 
-    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/orgs#list-organizations-for-the-authenticated-user)
+    /// For OAuth app tokens and personal access tokens (classic), this endpoint only lists organizations that your authorization allows you to operate on in some way (e.g., you can list teams with `read:org` scope, you can publicize your organization membership with `user` scope, etc.). Therefore, this API requires at least `user` or `read:org` scope for OAuth app tokens and personal access tokens (classic). Requests with insufficient scope will receive a `403 Forbidden` response.
+    ///
+    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/orgs/orgs#list-organizations-for-the-authenticated-user)
     ///
     /// ---
     pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<OrgsListForAuthenticatedUserParams>>) -> Result<Vec<OrganizationSimple>, OrgsListForAuthenticatedUserError> {
@@ -3353,11 +5612,9 @@ impl<'api> Orgs<'api> {
     ///
     /// List organizations for the authenticated user.
     /// 
-    /// **OAuth scope requirements**
-    /// 
-    /// This only lists organizations that your authorization allows you to operate on in some way (e.g., you can list teams with `read:org` scope, you can publicize your organization membership with `user` scope, etc.). Therefore, this API requires at least `user` or `read:org` scope. OAuth requests with insufficient scope receive a `403 Forbidden` response.
-    /// 
-    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/reference/orgs#list-organizations-for-the-authenticated-user)
+    /// For OAuth app tokens and personal access tokens (classic), this endpoint only lists organizations that your authorization allows you to operate on in some way (e.g., you can list teams with `read:org` scope, you can publicize your organization membership with `user` scope, etc.). Therefore, this API requires at least `user` or `read:org` scope for OAuth app tokens and personal access tokens (classic). Requests with insufficient scope will receive a `403 Forbidden` response.
+    ///
+    /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/orgs/orgs#list-organizations-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3402,11 +5659,11 @@ impl<'api> Orgs<'api> {
     ///
     /// # List organizations for a user
     ///
-    /// List [public organization memberships](https://help.github.com/articles/publicizing-or-concealing-organization-membership) for the specified user.
+    /// List [public organization memberships](https://docs.github.com/articles/publicizing-or-concealing-organization-membership) for the specified user.
     /// 
-    /// This method only lists _public_ memberships, regardless of authentication. If you need to fetch all of the organization memberships (public and private) for the authenticated user, use the [List organizations for the authenticated user](https://docs.github.com/rest/reference/orgs#list-organizations-for-the-authenticated-user) API instead.
-    /// 
-    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/orgs#list-organizations-for-a-user)
+    /// This method only lists _public_ memberships, regardless of authentication. If you need to fetch all of the organization memberships (public and private) for the authenticated user, use the [List organizations for the authenticated user](https://docs.github.com/rest/orgs/orgs#list-organizations-for-the-authenticated-user) API instead.
+    ///
+    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/orgs/orgs#list-organizations-for-a-user)
     ///
     /// ---
     pub async fn list_for_user_async(&self, username: &str, query_params: Option<impl Into<OrgsListForUserParams>>) -> Result<Vec<OrganizationSimple>, OrgsListForUserError> {
@@ -3446,11 +5703,11 @@ impl<'api> Orgs<'api> {
     ///
     /// # List organizations for a user
     ///
-    /// List [public organization memberships](https://help.github.com/articles/publicizing-or-concealing-organization-membership) for the specified user.
+    /// List [public organization memberships](https://docs.github.com/articles/publicizing-or-concealing-organization-membership) for the specified user.
     /// 
-    /// This method only lists _public_ memberships, regardless of authentication. If you need to fetch all of the organization memberships (public and private) for the authenticated user, use the [List organizations for the authenticated user](https://docs.github.com/rest/reference/orgs#list-organizations-for-the-authenticated-user) API instead.
-    /// 
-    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/orgs#list-organizations-for-a-user)
+    /// This method only lists _public_ memberships, regardless of authentication. If you need to fetch all of the organization memberships (public and private) for the authenticated user, use the [List organizations for the authenticated user](https://docs.github.com/rest/orgs/orgs#list-organizations-for-the-authenticated-user) API instead.
+    ///
+    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/orgs/orgs#list-organizations-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3493,8 +5750,8 @@ impl<'api> Orgs<'api> {
     /// # List organization invitation teams
     ///
     /// List all teams associated with an invitation. In order to see invitations in an organization, the authenticated user must be an organization owner.
-    /// 
-    /// [GitHub API docs for list_invitation_teams](https://docs.github.com/rest/reference/orgs#list-organization-invitation-teams)
+    ///
+    /// [GitHub API docs for list_invitation_teams](https://docs.github.com/rest/orgs/members#list-organization-invitation-teams)
     ///
     /// ---
     pub async fn list_invitation_teams_async(&self, org: &str, invitation_id: i32, query_params: Option<impl Into<OrgsListInvitationTeamsParams>>) -> Result<Vec<Team>, OrgsListInvitationTeamsError> {
@@ -3536,8 +5793,8 @@ impl<'api> Orgs<'api> {
     /// # List organization invitation teams
     ///
     /// List all teams associated with an invitation. In order to see invitations in an organization, the authenticated user must be an organization owner.
-    /// 
-    /// [GitHub API docs for list_invitation_teams](https://docs.github.com/rest/reference/orgs#list-organization-invitation-teams)
+    ///
+    /// [GitHub API docs for list_invitation_teams](https://docs.github.com/rest/orgs/members#list-organization-invitation-teams)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3581,8 +5838,8 @@ impl<'api> Orgs<'api> {
     /// # List organization members
     ///
     /// List all users who are members of an organization. If the authenticated user is also a member of this organization then both concealed and public members will be returned.
-    /// 
-    /// [GitHub API docs for list_members](https://docs.github.com/rest/reference/orgs#list-organization-members)
+    ///
+    /// [GitHub API docs for list_members](https://docs.github.com/rest/orgs/members#list-organization-members)
     ///
     /// ---
     pub async fn list_members_async(&self, org: &str, query_params: Option<impl Into<OrgsListMembersParams<'api>>>) -> Result<Vec<SimpleUser>, OrgsListMembersError> {
@@ -3613,7 +5870,6 @@ impl<'api> Orgs<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                302 => Err(OrgsListMembersError::Status302),
                 422 => Err(OrgsListMembersError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(OrgsListMembersError::Generic { code }),
             }
@@ -3625,8 +5881,8 @@ impl<'api> Orgs<'api> {
     /// # List organization members
     ///
     /// List all users who are members of an organization. If the authenticated user is also a member of this organization then both concealed and public members will be returned.
-    /// 
-    /// [GitHub API docs for list_members](https://docs.github.com/rest/reference/orgs#list-organization-members)
+    ///
+    /// [GitHub API docs for list_members](https://docs.github.com/rest/orgs/members#list-organization-members)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3659,7 +5915,6 @@ impl<'api> Orgs<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                302 => Err(OrgsListMembersError::Status302),
                 422 => Err(OrgsListMembersError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(OrgsListMembersError::Generic { code }),
             }
@@ -3669,8 +5924,10 @@ impl<'api> Orgs<'api> {
     /// ---
     ///
     /// # List organization memberships for the authenticated user
-    /// 
-    /// [GitHub API docs for list_memberships_for_authenticated_user](https://docs.github.com/rest/reference/orgs#list-organization-memberships-for-the-authenticated-user)
+    ///
+    /// Lists all of the authenticated user's organization memberships.
+    ///
+    /// [GitHub API docs for list_memberships_for_authenticated_user](https://docs.github.com/rest/orgs/members#list-organization-memberships-for-the-authenticated-user)
     ///
     /// ---
     pub async fn list_memberships_for_authenticated_user_async(&self, query_params: Option<impl Into<OrgsListMembershipsForAuthenticatedUserParams<'api>>>) -> Result<Vec<OrgMembership>, OrgsListMembershipsForAuthenticatedUserError> {
@@ -3713,8 +5970,10 @@ impl<'api> Orgs<'api> {
     /// ---
     ///
     /// # List organization memberships for the authenticated user
-    /// 
-    /// [GitHub API docs for list_memberships_for_authenticated_user](https://docs.github.com/rest/reference/orgs#list-organization-memberships-for-the-authenticated-user)
+    ///
+    /// Lists all of the authenticated user's organization memberships.
+    ///
+    /// [GitHub API docs for list_memberships_for_authenticated_user](https://docs.github.com/rest/orgs/members#list-organization-memberships-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3758,11 +6017,302 @@ impl<'api> Orgs<'api> {
 
     /// ---
     ///
+    /// # List teams that are assigned to an organization role
+    ///
+    /// Lists the teams that are assigned to an organization role. For more information on organization roles, see "[Using organization roles](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/using-organization-roles)."
+    /// 
+    /// To use this endpoint, you must be an administrator for the organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_org_role_teams](https://docs.github.com/rest/orgs/organization-roles#list-teams-that-are-assigned-to-an-organization-role)
+    ///
+    /// ---
+    pub async fn list_org_role_teams_async(&self, org: &str, role_id: i32, query_params: Option<impl Into<OrgsListOrgRoleTeamsParams>>) -> Result<Vec<TeamRoleAssignment>, OrgsListOrgRoleTeamsError> {
+
+        let mut request_uri = format!("{}/orgs/{}/organization-roles/{}/teams", super::GITHUB_BASE_API_URL, org, role_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(OrgsListOrgRoleTeamsError::Status404),
+                422 => Err(OrgsListOrgRoleTeamsError::Status422),
+                code => Err(OrgsListOrgRoleTeamsError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List teams that are assigned to an organization role
+    ///
+    /// Lists the teams that are assigned to an organization role. For more information on organization roles, see "[Using organization roles](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/using-organization-roles)."
+    /// 
+    /// To use this endpoint, you must be an administrator for the organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_org_role_teams](https://docs.github.com/rest/orgs/organization-roles#list-teams-that-are-assigned-to-an-organization-role)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_org_role_teams(&self, org: &str, role_id: i32, query_params: Option<impl Into<OrgsListOrgRoleTeamsParams>>) -> Result<Vec<TeamRoleAssignment>, OrgsListOrgRoleTeamsError> {
+
+        let mut request_uri = format!("{}/orgs/{}/organization-roles/{}/teams", super::GITHUB_BASE_API_URL, org, role_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: OrgsListOrgRoleTeamsParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(OrgsListOrgRoleTeamsError::Status404),
+                422 => Err(OrgsListOrgRoleTeamsError::Status422),
+                code => Err(OrgsListOrgRoleTeamsError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List users that are assigned to an organization role
+    ///
+    /// Lists organization members that are assigned to an organization role. For more information on organization roles, see "[Using organization roles](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/using-organization-roles)."
+    /// 
+    /// To use this endpoint, you must be an administrator for the organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_org_role_users](https://docs.github.com/rest/orgs/organization-roles#list-users-that-are-assigned-to-an-organization-role)
+    ///
+    /// ---
+    pub async fn list_org_role_users_async(&self, org: &str, role_id: i32, query_params: Option<impl Into<OrgsListOrgRoleUsersParams>>) -> Result<Vec<UserRoleAssignment>, OrgsListOrgRoleUsersError> {
+
+        let mut request_uri = format!("{}/orgs/{}/organization-roles/{}/users", super::GITHUB_BASE_API_URL, org, role_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(OrgsListOrgRoleUsersError::Status404),
+                422 => Err(OrgsListOrgRoleUsersError::Status422),
+                code => Err(OrgsListOrgRoleUsersError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List users that are assigned to an organization role
+    ///
+    /// Lists organization members that are assigned to an organization role. For more information on organization roles, see "[Using organization roles](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/using-organization-roles)."
+    /// 
+    /// To use this endpoint, you must be an administrator for the organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_org_role_users](https://docs.github.com/rest/orgs/organization-roles#list-users-that-are-assigned-to-an-organization-role)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_org_role_users(&self, org: &str, role_id: i32, query_params: Option<impl Into<OrgsListOrgRoleUsersParams>>) -> Result<Vec<UserRoleAssignment>, OrgsListOrgRoleUsersError> {
+
+        let mut request_uri = format!("{}/orgs/{}/organization-roles/{}/users", super::GITHUB_BASE_API_URL, org, role_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: OrgsListOrgRoleUsersParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(OrgsListOrgRoleUsersError::Status404),
+                422 => Err(OrgsListOrgRoleUsersError::Status422),
+                code => Err(OrgsListOrgRoleUsersError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get all organization roles for an organization
+    ///
+    /// Lists the organization roles available in this organization. For more information on organization roles, see "[Using organization roles](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/using-organization-roles)."
+    /// 
+    /// To use this endpoint, the authenticated user must be one of:
+    /// 
+    /// - An administrator for the organization.
+    /// - A user, or a user on a team, with the fine-grained permissions of `read_organization_custom_org_role` in the organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_org_roles](https://docs.github.com/rest/orgs/organization-roles#get-all-organization-roles-for-an-organization)
+    ///
+    /// ---
+    pub async fn list_org_roles_async(&self, org: &str) -> Result<GetOrgsListOrgRolesResponse200, OrgsListOrgRolesError> {
+
+        let request_uri = format!("{}/orgs/{}/organization-roles", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(OrgsListOrgRolesError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(OrgsListOrgRolesError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(OrgsListOrgRolesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get all organization roles for an organization
+    ///
+    /// Lists the organization roles available in this organization. For more information on organization roles, see "[Using organization roles](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/using-organization-roles)."
+    /// 
+    /// To use this endpoint, the authenticated user must be one of:
+    /// 
+    /// - An administrator for the organization.
+    /// - A user, or a user on a team, with the fine-grained permissions of `read_organization_custom_org_role` in the organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_org_roles](https://docs.github.com/rest/orgs/organization-roles#get-all-organization-roles-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_org_roles(&self, org: &str) -> Result<GetOrgsListOrgRolesResponse200, OrgsListOrgRolesError> {
+
+        let request_uri = format!("{}/orgs/{}/organization-roles", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(OrgsListOrgRolesError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(OrgsListOrgRolesError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(OrgsListOrgRolesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List outside collaborators for an organization
     ///
     /// List all users who are outside collaborators of an organization.
-    /// 
-    /// [GitHub API docs for list_outside_collaborators](https://docs.github.com/rest/reference/orgs#list-outside-collaborators-for-an-organization)
+    ///
+    /// [GitHub API docs for list_outside_collaborators](https://docs.github.com/rest/orgs/outside-collaborators#list-outside-collaborators-for-an-organization)
     ///
     /// ---
     pub async fn list_outside_collaborators_async(&self, org: &str, query_params: Option<impl Into<OrgsListOutsideCollaboratorsParams<'api>>>) -> Result<Vec<SimpleUser>, OrgsListOutsideCollaboratorsError> {
@@ -3803,8 +6353,8 @@ impl<'api> Orgs<'api> {
     /// # List outside collaborators for an organization
     ///
     /// List all users who are outside collaborators of an organization.
-    /// 
-    /// [GitHub API docs for list_outside_collaborators](https://docs.github.com/rest/reference/orgs#list-outside-collaborators-for-an-organization)
+    ///
+    /// [GitHub API docs for list_outside_collaborators](https://docs.github.com/rest/orgs/outside-collaborators#list-outside-collaborators-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3844,14 +6394,405 @@ impl<'api> Orgs<'api> {
 
     /// ---
     ///
-    /// # List pending organization invitations
+    /// # List repositories a fine-grained personal access token has access to
     ///
-    /// The return hash contains a `role` field which refers to the Organization Invitation role and will be one of the following values: `direct_member`, `admin`, `billing_manager`, `hiring_manager`, or `reinstate`. If the invitee is not a GitHub member, the `login` field in the return hash will be `null`.
+    /// Lists the repositories a fine-grained personal access token has access to.
     /// 
-    /// [GitHub API docs for list_pending_invitations](https://docs.github.com/rest/reference/orgs#list-pending-organization-invitations)
+    /// Only GitHub Apps can use this endpoint.
+    ///
+    /// [GitHub API docs for list_pat_grant_repositories](https://docs.github.com/rest/orgs/personal-access-tokens#list-repositories-a-fine-grained-personal-access-token-has-access-to)
     ///
     /// ---
-    pub async fn list_pending_invitations_async(&self, org: &str, query_params: Option<impl Into<OrgsListPendingInvitationsParams>>) -> Result<Vec<OrganizationInvitation>, OrgsListPendingInvitationsError> {
+    pub async fn list_pat_grant_repositories_async(&self, org: &str, pat_id: i32, query_params: Option<impl Into<OrgsListPatGrantRepositoriesParams>>) -> Result<Vec<MinimalRepository>, OrgsListPatGrantRepositoriesError> {
+
+        let mut request_uri = format!("{}/orgs/{}/personal-access-tokens/{}/repositories", super::GITHUB_BASE_API_URL, org, pat_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(OrgsListPatGrantRepositoriesError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OrgsListPatGrantRepositoriesError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(OrgsListPatGrantRepositoriesError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(OrgsListPatGrantRepositoriesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List repositories a fine-grained personal access token has access to
+    ///
+    /// Lists the repositories a fine-grained personal access token has access to.
+    /// 
+    /// Only GitHub Apps can use this endpoint.
+    ///
+    /// [GitHub API docs for list_pat_grant_repositories](https://docs.github.com/rest/orgs/personal-access-tokens#list-repositories-a-fine-grained-personal-access-token-has-access-to)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_pat_grant_repositories(&self, org: &str, pat_id: i32, query_params: Option<impl Into<OrgsListPatGrantRepositoriesParams>>) -> Result<Vec<MinimalRepository>, OrgsListPatGrantRepositoriesError> {
+
+        let mut request_uri = format!("{}/orgs/{}/personal-access-tokens/{}/repositories", super::GITHUB_BASE_API_URL, org, pat_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: OrgsListPatGrantRepositoriesParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(OrgsListPatGrantRepositoriesError::Status500(crate::adapters::to_json(github_response)?)),
+                404 => Err(OrgsListPatGrantRepositoriesError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(OrgsListPatGrantRepositoriesError::Status403(crate::adapters::to_json(github_response)?)),
+                code => Err(OrgsListPatGrantRepositoriesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List repositories requested to be accessed by a fine-grained personal access token
+    ///
+    /// Lists the repositories a fine-grained personal access token request is requesting access to.
+    /// 
+    /// Only GitHub Apps can use this endpoint.
+    ///
+    /// [GitHub API docs for list_pat_grant_request_repositories](https://docs.github.com/rest/orgs/personal-access-tokens#list-repositories-requested-to-be-accessed-by-a-fine-grained-personal-access-token)
+    ///
+    /// ---
+    pub async fn list_pat_grant_request_repositories_async(&self, org: &str, pat_request_id: i32, query_params: Option<impl Into<OrgsListPatGrantRequestRepositoriesParams>>) -> Result<Vec<MinimalRepository>, OrgsListPatGrantRequestRepositoriesError> {
+
+        let mut request_uri = format!("{}/orgs/{}/personal-access-token-requests/{}/repositories", super::GITHUB_BASE_API_URL, org, pat_request_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(OrgsListPatGrantRequestRepositoriesError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OrgsListPatGrantRequestRepositoriesError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(OrgsListPatGrantRequestRepositoriesError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(OrgsListPatGrantRequestRepositoriesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List repositories requested to be accessed by a fine-grained personal access token
+    ///
+    /// Lists the repositories a fine-grained personal access token request is requesting access to.
+    /// 
+    /// Only GitHub Apps can use this endpoint.
+    ///
+    /// [GitHub API docs for list_pat_grant_request_repositories](https://docs.github.com/rest/orgs/personal-access-tokens#list-repositories-requested-to-be-accessed-by-a-fine-grained-personal-access-token)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_pat_grant_request_repositories(&self, org: &str, pat_request_id: i32, query_params: Option<impl Into<OrgsListPatGrantRequestRepositoriesParams>>) -> Result<Vec<MinimalRepository>, OrgsListPatGrantRequestRepositoriesError> {
+
+        let mut request_uri = format!("{}/orgs/{}/personal-access-token-requests/{}/repositories", super::GITHUB_BASE_API_URL, org, pat_request_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: OrgsListPatGrantRequestRepositoriesParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(OrgsListPatGrantRequestRepositoriesError::Status500(crate::adapters::to_json(github_response)?)),
+                404 => Err(OrgsListPatGrantRequestRepositoriesError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(OrgsListPatGrantRequestRepositoriesError::Status403(crate::adapters::to_json(github_response)?)),
+                code => Err(OrgsListPatGrantRequestRepositoriesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List requests to access organization resources with fine-grained personal access tokens
+    ///
+    /// Lists requests from organization members to access organization resources with a fine-grained personal access token.
+    /// 
+    /// Only GitHub Apps can use this endpoint.
+    ///
+    /// [GitHub API docs for list_pat_grant_requests](https://docs.github.com/rest/orgs/personal-access-tokens#list-requests-to-access-organization-resources-with-fine-grained-personal-access-tokens)
+    ///
+    /// ---
+    pub async fn list_pat_grant_requests_async(&self, org: &str, query_params: Option<impl Into<OrgsListPatGrantRequestsParams<'api>>>) -> Result<Vec<OrganizationProgrammaticAccessGrantRequest>, OrgsListPatGrantRequestsError> {
+
+        let mut request_uri = format!("{}/orgs/{}/personal-access-token-requests", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(OrgsListPatGrantRequestsError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(OrgsListPatGrantRequestsError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OrgsListPatGrantRequestsError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(OrgsListPatGrantRequestsError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(OrgsListPatGrantRequestsError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List requests to access organization resources with fine-grained personal access tokens
+    ///
+    /// Lists requests from organization members to access organization resources with a fine-grained personal access token.
+    /// 
+    /// Only GitHub Apps can use this endpoint.
+    ///
+    /// [GitHub API docs for list_pat_grant_requests](https://docs.github.com/rest/orgs/personal-access-tokens#list-requests-to-access-organization-resources-with-fine-grained-personal-access-tokens)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_pat_grant_requests(&self, org: &str, query_params: Option<impl Into<OrgsListPatGrantRequestsParams<'api>>>) -> Result<Vec<OrganizationProgrammaticAccessGrantRequest>, OrgsListPatGrantRequestsError> {
+
+        let mut request_uri = format!("{}/orgs/{}/personal-access-token-requests", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: OrgsListPatGrantRequestsParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(OrgsListPatGrantRequestsError::Status500(crate::adapters::to_json(github_response)?)),
+                422 => Err(OrgsListPatGrantRequestsError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(OrgsListPatGrantRequestsError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(OrgsListPatGrantRequestsError::Status403(crate::adapters::to_json(github_response)?)),
+                code => Err(OrgsListPatGrantRequestsError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List fine-grained personal access tokens with access to organization resources
+    ///
+    /// Lists approved fine-grained personal access tokens owned by organization members that can access organization resources.
+    /// 
+    /// Only GitHub Apps can use this endpoint.
+    ///
+    /// [GitHub API docs for list_pat_grants](https://docs.github.com/rest/orgs/personal-access-tokens#list-fine-grained-personal-access-tokens-with-access-to-organization-resources)
+    ///
+    /// ---
+    pub async fn list_pat_grants_async(&self, org: &str, query_params: Option<impl Into<OrgsListPatGrantsParams<'api>>>) -> Result<Vec<OrganizationProgrammaticAccessGrant>, OrgsListPatGrantsError> {
+
+        let mut request_uri = format!("{}/orgs/{}/personal-access-tokens", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(OrgsListPatGrantsError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(OrgsListPatGrantsError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OrgsListPatGrantsError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(OrgsListPatGrantsError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(OrgsListPatGrantsError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List fine-grained personal access tokens with access to organization resources
+    ///
+    /// Lists approved fine-grained personal access tokens owned by organization members that can access organization resources.
+    /// 
+    /// Only GitHub Apps can use this endpoint.
+    ///
+    /// [GitHub API docs for list_pat_grants](https://docs.github.com/rest/orgs/personal-access-tokens#list-fine-grained-personal-access-tokens-with-access-to-organization-resources)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_pat_grants(&self, org: &str, query_params: Option<impl Into<OrgsListPatGrantsParams<'api>>>) -> Result<Vec<OrganizationProgrammaticAccessGrant>, OrgsListPatGrantsError> {
+
+        let mut request_uri = format!("{}/orgs/{}/personal-access-tokens", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: OrgsListPatGrantsParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(OrgsListPatGrantsError::Status500(crate::adapters::to_json(github_response)?)),
+                422 => Err(OrgsListPatGrantsError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(OrgsListPatGrantsError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(OrgsListPatGrantsError::Status403(crate::adapters::to_json(github_response)?)),
+                code => Err(OrgsListPatGrantsError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List pending organization invitations
+    ///
+    /// The return hash contains a `role` field which refers to the Organization
+    /// Invitation role and will be one of the following values: `direct_member`, `admin`,
+    /// `billing_manager`, or `hiring_manager`. If the invitee is not a GitHub
+    /// member, the `login` field in the return hash will be `null`.
+    ///
+    /// [GitHub API docs for list_pending_invitations](https://docs.github.com/rest/orgs/members#list-pending-organization-invitations)
+    ///
+    /// ---
+    pub async fn list_pending_invitations_async(&self, org: &str, query_params: Option<impl Into<OrgsListPendingInvitationsParams<'api>>>) -> Result<Vec<OrganizationInvitation>, OrgsListPendingInvitationsError> {
 
         let mut request_uri = format!("{}/orgs/{}/invitations", super::GITHUB_BASE_API_URL, org);
 
@@ -3889,13 +6830,16 @@ impl<'api> Orgs<'api> {
     ///
     /// # List pending organization invitations
     ///
-    /// The return hash contains a `role` field which refers to the Organization Invitation role and will be one of the following values: `direct_member`, `admin`, `billing_manager`, `hiring_manager`, or `reinstate`. If the invitee is not a GitHub member, the `login` field in the return hash will be `null`.
-    /// 
-    /// [GitHub API docs for list_pending_invitations](https://docs.github.com/rest/reference/orgs#list-pending-organization-invitations)
+    /// The return hash contains a `role` field which refers to the Organization
+    /// Invitation role and will be one of the following values: `direct_member`, `admin`,
+    /// `billing_manager`, or `hiring_manager`. If the invitee is not a GitHub
+    /// member, the `login` field in the return hash will be `null`.
+    ///
+    /// [GitHub API docs for list_pending_invitations](https://docs.github.com/rest/orgs/members#list-pending-organization-invitations)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_pending_invitations(&self, org: &str, query_params: Option<impl Into<OrgsListPendingInvitationsParams>>) -> Result<Vec<OrganizationInvitation>, OrgsListPendingInvitationsError> {
+    pub fn list_pending_invitations(&self, org: &str, query_params: Option<impl Into<OrgsListPendingInvitationsParams<'api>>>) -> Result<Vec<OrganizationInvitation>, OrgsListPendingInvitationsError> {
 
         let mut request_uri = format!("{}/orgs/{}/invitations", super::GITHUB_BASE_API_URL, org);
 
@@ -3935,8 +6879,8 @@ impl<'api> Orgs<'api> {
     /// # List public organization members
     ///
     /// Members of an organization can choose to have their membership publicized or not.
-    /// 
-    /// [GitHub API docs for list_public_members](https://docs.github.com/rest/reference/orgs#list-public-organization-members)
+    ///
+    /// [GitHub API docs for list_public_members](https://docs.github.com/rest/orgs/members#list-public-organization-members)
     ///
     /// ---
     pub async fn list_public_members_async(&self, org: &str, query_params: Option<impl Into<OrgsListPublicMembersParams>>) -> Result<Vec<SimpleUser>, OrgsListPublicMembersError> {
@@ -3977,8 +6921,8 @@ impl<'api> Orgs<'api> {
     /// # List public organization members
     ///
     /// Members of an organization can choose to have their membership publicized or not.
-    /// 
-    /// [GitHub API docs for list_public_members](https://docs.github.com/rest/reference/orgs#list-public-organization-members)
+    ///
+    /// [GitHub API docs for list_public_members](https://docs.github.com/rest/orgs/members#list-public-organization-members)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4018,18 +6962,20 @@ impl<'api> Orgs<'api> {
 
     /// ---
     ///
-    /// # List SAML SSO authorizations for an organization
+    /// # List security manager teams
     ///
-    /// Listing and deleting credential authorizations is available to organizations with GitHub Enterprise Cloud. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products).
+    /// Lists teams that are security managers for an organization. For more information, see "[Managing security managers in your organization](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-security-managers-in-your-organization)."
     /// 
-    /// An authenticated organization owner with the `read:org` scope can list all credential authorizations for an organization that uses SAML single sign-on (SSO). The credentials are either personal access tokens or SSH keys that organization members have authorized for the organization. For more information, see [About authentication with SAML single sign-on](https://help.github.com/en/articles/about-authentication-with-saml-single-sign-on).
+    /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for list_saml_sso_authorizations](https://docs.github.com/rest/reference/orgs#list-saml-sso-authorizations-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_security_manager_teams](https://docs.github.com/rest/orgs/security-managers#list-security-manager-teams)
     ///
     /// ---
-    pub async fn list_saml_sso_authorizations_async(&self, org: &str) -> Result<Vec<CredentialAuthorization>, OrgsListSamlSsoAuthorizationsError> {
+    pub async fn list_security_manager_teams_async(&self, org: &str) -> Result<Vec<TeamSimple>, OrgsListSecurityManagerTeamsError> {
 
-        let request_uri = format!("{}/orgs/{}/credential-authorizations", super::GITHUB_BASE_API_URL, org);
+        let request_uri = format!("{}/orgs/{}/security-managers", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
@@ -4051,26 +6997,28 @@ impl<'api> Orgs<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsListSamlSsoAuthorizationsError::Generic { code }),
+                code => Err(OrgsListSecurityManagerTeamsError::Generic { code }),
             }
         }
     }
 
     /// ---
     ///
-    /// # List SAML SSO authorizations for an organization
+    /// # List security manager teams
     ///
-    /// Listing and deleting credential authorizations is available to organizations with GitHub Enterprise Cloud. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products).
+    /// Lists teams that are security managers for an organization. For more information, see "[Managing security managers in your organization](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-security-managers-in-your-organization)."
     /// 
-    /// An authenticated organization owner with the `read:org` scope can list all credential authorizations for an organization that uses SAML single sign-on (SSO). The credentials are either personal access tokens or SSH keys that organization members have authorized for the organization. For more information, see [About authentication with SAML single sign-on](https://help.github.com/en/articles/about-authentication-with-saml-single-sign-on).
+    /// The authenticated user must be an administrator or security manager for the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for list_saml_sso_authorizations](https://docs.github.com/rest/reference/orgs#list-saml-sso-authorizations-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `read:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_security_manager_teams](https://docs.github.com/rest/orgs/security-managers#list-security-manager-teams)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_saml_sso_authorizations(&self, org: &str) -> Result<Vec<CredentialAuthorization>, OrgsListSamlSsoAuthorizationsError> {
+    pub fn list_security_manager_teams(&self, org: &str) -> Result<Vec<TeamSimple>, OrgsListSecurityManagerTeamsError> {
 
-        let request_uri = format!("{}/orgs/{}/credential-authorizations", super::GITHUB_BASE_API_URL, org);
+        let request_uri = format!("{}/orgs/{}/security-managers", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
@@ -4092,7 +7040,7 @@ impl<'api> Orgs<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsListSamlSsoAuthorizationsError::Generic { code }),
+                code => Err(OrgsListSecurityManagerTeamsError::Generic { code }),
             }
         }
     }
@@ -4103,7 +7051,12 @@ impl<'api> Orgs<'api> {
     ///
     /// Returns a list of webhook deliveries for a webhook configured in an organization.
     /// 
-    /// [GitHub API docs for list_webhook_deliveries](https://docs.github.com/rest/reference/orgs#list-deliveries-for-an-organization-webhook)
+    /// You must be an organization owner to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
+    /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
+    ///
+    /// [GitHub API docs for list_webhook_deliveries](https://docs.github.com/rest/orgs/webhooks#list-deliveries-for-an-organization-webhook)
     ///
     /// ---
     pub async fn list_webhook_deliveries_async(&self, org: &str, hook_id: i32, query_params: Option<impl Into<OrgsListWebhookDeliveriesParams<'api>>>) -> Result<Vec<HookDeliveryItem>, OrgsListWebhookDeliveriesError> {
@@ -4147,7 +7100,12 @@ impl<'api> Orgs<'api> {
     ///
     /// Returns a list of webhook deliveries for a webhook configured in an organization.
     /// 
-    /// [GitHub API docs for list_webhook_deliveries](https://docs.github.com/rest/reference/orgs#list-deliveries-for-an-organization-webhook)
+    /// You must be an organization owner to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
+    /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
+    ///
+    /// [GitHub API docs for list_webhook_deliveries](https://docs.github.com/rest/orgs/webhooks#list-deliveries-for-an-organization-webhook)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4190,8 +7148,13 @@ impl<'api> Orgs<'api> {
     /// ---
     ///
     /// # List organization webhooks
+    ///
+    /// You must be an organization owner to use this endpoint.
     /// 
-    /// [GitHub API docs for list_webhooks](https://docs.github.com/rest/reference/orgs#list-organization-webhooks)
+    /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
+    /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
+    ///
+    /// [GitHub API docs for list_webhooks](https://docs.github.com/rest/orgs/webhooks#list-organization-webhooks)
     ///
     /// ---
     pub async fn list_webhooks_async(&self, org: &str, query_params: Option<impl Into<OrgsListWebhooksParams>>) -> Result<Vec<OrgHook>, OrgsListWebhooksError> {
@@ -4231,8 +7194,13 @@ impl<'api> Orgs<'api> {
     /// ---
     ///
     /// # List organization webhooks
+    ///
+    /// You must be an organization owner to use this endpoint.
     /// 
-    /// [GitHub API docs for list_webhooks](https://docs.github.com/rest/reference/orgs#list-organization-webhooks)
+    /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
+    /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
+    ///
+    /// [GitHub API docs for list_webhooks](https://docs.github.com/rest/orgs/webhooks#list-organization-webhooks)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4275,9 +7243,15 @@ impl<'api> Orgs<'api> {
     ///
     /// # Ping an organization webhook
     ///
-    /// This will trigger a [ping event](https://docs.github.com/webhooks/#ping-event) to be sent to the hook.
+    /// This will trigger a [ping event](https://docs.github.com/webhooks/#ping-event)
+    /// to be sent to the hook.
     /// 
-    /// [GitHub API docs for ping_webhook](https://docs.github.com/rest/reference/orgs#ping-an-organization-webhook)
+    /// You must be an organization owner to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
+    /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
+    ///
+    /// [GitHub API docs for ping_webhook](https://docs.github.com/rest/orgs/webhooks#ping-an-organization-webhook)
     ///
     /// ---
     pub async fn ping_webhook_async(&self, org: &str, hook_id: i32) -> Result<(), OrgsPingWebhookError> {
@@ -4314,9 +7288,15 @@ impl<'api> Orgs<'api> {
     ///
     /// # Ping an organization webhook
     ///
-    /// This will trigger a [ping event](https://docs.github.com/webhooks/#ping-event) to be sent to the hook.
+    /// This will trigger a [ping event](https://docs.github.com/webhooks/#ping-event)
+    /// to be sent to the hook.
     /// 
-    /// [GitHub API docs for ping_webhook](https://docs.github.com/rest/reference/orgs#ping-an-organization-webhook)
+    /// You must be an organization owner to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
+    /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
+    ///
+    /// [GitHub API docs for ping_webhook](https://docs.github.com/rest/orgs/webhooks#ping-an-organization-webhook)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4356,7 +7336,12 @@ impl<'api> Orgs<'api> {
     ///
     /// Redeliver a delivery for a webhook configured in an organization.
     /// 
-    /// [GitHub API docs for redeliver_webhook_delivery](https://docs.github.com/rest/reference/orgs#redeliver-a-delivery-for-an-organization-webhook)
+    /// You must be an organization owner to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
+    /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
+    ///
+    /// [GitHub API docs for redeliver_webhook_delivery](https://docs.github.com/rest/orgs/webhooks#redeliver-a-delivery-for-an-organization-webhook)
     ///
     /// ---
     pub async fn redeliver_webhook_delivery_async(&self, org: &str, hook_id: i32, delivery_id: i32) -> Result<HashMap<String, Value>, OrgsRedeliverWebhookDeliveryError> {
@@ -4396,7 +7381,12 @@ impl<'api> Orgs<'api> {
     ///
     /// Redeliver a delivery for a webhook configured in an organization.
     /// 
-    /// [GitHub API docs for redeliver_webhook_delivery](https://docs.github.com/rest/reference/orgs#redeliver-a-delivery-for-an-organization-webhook)
+    /// You must be an organization owner to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
+    /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
+    ///
+    /// [GitHub API docs for redeliver_webhook_delivery](https://docs.github.com/rest/orgs/webhooks#redeliver-a-delivery-for-an-organization-webhook)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4433,11 +7423,100 @@ impl<'api> Orgs<'api> {
 
     /// ---
     ///
+    /// # Remove a custom property for an organization
+    ///
+    /// Removes a custom property that is defined for an organization.
+    /// 
+    /// To use this endpoint, the authenticated user must be one of:
+    ///   - An administrator for the organization.
+    ///   - A user, or a user on a team, with the fine-grained permission of `custom_properties_org_definitions_manager` in the organization.
+    ///
+    /// [GitHub API docs for remove_custom_property](https://docs.github.com/rest/orgs/custom-properties#remove-a-custom-property-for-an-organization)
+    ///
+    /// ---
+    pub async fn remove_custom_property_async(&self, org: &str, custom_property_name: &str) -> Result<(), OrgsRemoveCustomPropertyError> {
+
+        let request_uri = format!("{}/orgs/{}/properties/schema/{}", super::GITHUB_BASE_API_URL, org, custom_property_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(OrgsRemoveCustomPropertyError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OrgsRemoveCustomPropertyError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(OrgsRemoveCustomPropertyError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove a custom property for an organization
+    ///
+    /// Removes a custom property that is defined for an organization.
+    /// 
+    /// To use this endpoint, the authenticated user must be one of:
+    ///   - An administrator for the organization.
+    ///   - A user, or a user on a team, with the fine-grained permission of `custom_properties_org_definitions_manager` in the organization.
+    ///
+    /// [GitHub API docs for remove_custom_property](https://docs.github.com/rest/orgs/custom-properties#remove-a-custom-property-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn remove_custom_property(&self, org: &str, custom_property_name: &str) -> Result<(), OrgsRemoveCustomPropertyError> {
+
+        let request_uri = format!("{}/orgs/{}/properties/schema/{}", super::GITHUB_BASE_API_URL, org, custom_property_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(OrgsRemoveCustomPropertyError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(OrgsRemoveCustomPropertyError::Status404(crate::adapters::to_json(github_response)?)),
+                code => Err(OrgsRemoveCustomPropertyError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Remove an organization member
     ///
     /// Removing a user from this list will remove them from all teams and they will no longer have any access to the organization's repositories.
-    /// 
-    /// [GitHub API docs for remove_member](https://docs.github.com/rest/reference/orgs#remove-an-organization-member)
+    ///
+    /// [GitHub API docs for remove_member](https://docs.github.com/rest/orgs/members#remove-an-organization-member)
     ///
     /// ---
     pub async fn remove_member_async(&self, org: &str, username: &str) -> Result<(), OrgsRemoveMemberError> {
@@ -4475,8 +7554,8 @@ impl<'api> Orgs<'api> {
     /// # Remove an organization member
     ///
     /// Removing a user from this list will remove them from all teams and they will no longer have any access to the organization's repositories.
-    /// 
-    /// [GitHub API docs for remove_member](https://docs.github.com/rest/reference/orgs#remove-an-organization-member)
+    ///
+    /// [GitHub API docs for remove_member](https://docs.github.com/rest/orgs/members#remove-an-organization-member)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4517,8 +7596,8 @@ impl<'api> Orgs<'api> {
     /// In order to remove a user's membership with an organization, the authenticated user must be an organization owner.
     /// 
     /// If the specified user is an active member of the organization, this will remove them from the organization. If the specified user has been invited to the organization, this will cancel their invitation. The specified user will receive an email notification in both cases.
-    /// 
-    /// [GitHub API docs for remove_membership_for_user](https://docs.github.com/rest/reference/orgs#remove-organization-membership-for-a-user)
+    ///
+    /// [GitHub API docs for remove_membership_for_user](https://docs.github.com/rest/orgs/members#remove-organization-membership-for-a-user)
     ///
     /// ---
     pub async fn remove_membership_for_user_async(&self, org: &str, username: &str) -> Result<(), OrgsRemoveMembershipForUserError> {
@@ -4559,8 +7638,8 @@ impl<'api> Orgs<'api> {
     /// In order to remove a user's membership with an organization, the authenticated user must be an organization owner.
     /// 
     /// If the specified user is an active member of the organization, this will remove them from the organization. If the specified user has been invited to the organization, this will cancel their invitation. The specified user will receive an email notification in both cases.
-    /// 
-    /// [GitHub API docs for remove_membership_for_user](https://docs.github.com/rest/reference/orgs#remove-organization-membership-for-a-user)
+    ///
+    /// [GitHub API docs for remove_membership_for_user](https://docs.github.com/rest/orgs/members#remove-organization-membership-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4600,8 +7679,8 @@ impl<'api> Orgs<'api> {
     /// # Remove outside collaborator from an organization
     ///
     /// Removing a user from this list will remove them from all the organization's repositories.
-    /// 
-    /// [GitHub API docs for remove_outside_collaborator](https://docs.github.com/rest/reference/orgs#remove-outside-collaborator-from-an-organization)
+    ///
+    /// [GitHub API docs for remove_outside_collaborator](https://docs.github.com/rest/orgs/outside-collaborators#remove-outside-collaborator-from-an-organization)
     ///
     /// ---
     pub async fn remove_outside_collaborator_async(&self, org: &str, username: &str) -> Result<(), OrgsRemoveOutsideCollaboratorError> {
@@ -4639,8 +7718,8 @@ impl<'api> Orgs<'api> {
     /// # Remove outside collaborator from an organization
     ///
     /// Removing a user from this list will remove them from all the organization's repositories.
-    /// 
-    /// [GitHub API docs for remove_outside_collaborator](https://docs.github.com/rest/reference/orgs#remove-outside-collaborator-from-an-organization)
+    ///
+    /// [GitHub API docs for remove_outside_collaborator](https://docs.github.com/rest/orgs/outside-collaborators#remove-outside-collaborator-from-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4677,8 +7756,10 @@ impl<'api> Orgs<'api> {
     /// ---
     ///
     /// # Remove public organization membership for the authenticated user
-    /// 
-    /// [GitHub API docs for remove_public_membership_for_authenticated_user](https://docs.github.com/rest/reference/orgs#remove-public-organization-membership-for-the-authenticated-user)
+    ///
+    /// Removes the public membership for the authenticated user from the specified organization, unless public visibility is enforced by default.
+    ///
+    /// [GitHub API docs for remove_public_membership_for_authenticated_user](https://docs.github.com/rest/orgs/members#remove-public-organization-membership-for-the-authenticated-user)
     ///
     /// ---
     pub async fn remove_public_membership_for_authenticated_user_async(&self, org: &str, username: &str) -> Result<(), OrgsRemovePublicMembershipForAuthenticatedUserError> {
@@ -4713,8 +7794,10 @@ impl<'api> Orgs<'api> {
     /// ---
     ///
     /// # Remove public organization membership for the authenticated user
-    /// 
-    /// [GitHub API docs for remove_public_membership_for_authenticated_user](https://docs.github.com/rest/reference/orgs#remove-public-organization-membership-for-the-authenticated-user)
+    ///
+    /// Removes the public membership for the authenticated user from the specified organization, unless public visibility is enforced by default.
+    ///
+    /// [GitHub API docs for remove_public_membership_for_authenticated_user](https://docs.github.com/rest/orgs/members#remove-public-organization-membership-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4749,18 +7832,20 @@ impl<'api> Orgs<'api> {
 
     /// ---
     ///
-    /// # Remove a SAML SSO authorization for an organization
+    /// # Remove a security manager team
     ///
-    /// Listing and deleting credential authorizations is available to organizations with GitHub Enterprise Cloud. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products).
+    /// Removes the security manager role from a team for an organization. For more information, see "[Managing security managers in your organization](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-security-managers-in-your-organization) team from an organization."
     /// 
-    /// An authenticated organization owner with the `admin:org` scope can remove a credential authorization for an organization that uses SAML SSO. Once you remove someone's credential authorization, they will need to create a new personal access token or SSH key and authorize it for the organization they want to access.
+    /// The authenticated user must be an administrator for the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for remove_saml_sso_authorization](https://docs.github.com/rest/reference/orgs#remove-a-saml-sso-authorization-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for remove_security_manager_team](https://docs.github.com/rest/orgs/security-managers#remove-a-security-manager-team)
     ///
     /// ---
-    pub async fn remove_saml_sso_authorization_async(&self, org: &str, credential_id: i32) -> Result<(), OrgsRemoveSamlSsoAuthorizationError> {
+    pub async fn remove_security_manager_team_async(&self, org: &str, team_slug: &str) -> Result<(), OrgsRemoveSecurityManagerTeamError> {
 
-        let request_uri = format!("{}/orgs/{}/credential-authorizations/{}", super::GITHUB_BASE_API_URL, org, credential_id);
+        let request_uri = format!("{}/orgs/{}/security-managers/teams/{}", super::GITHUB_BASE_API_URL, org, team_slug);
 
 
         let req = GitHubRequest {
@@ -4782,27 +7867,28 @@ impl<'api> Orgs<'api> {
             Ok(crate::adapters::to_json_async(github_response).await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsRemoveSamlSsoAuthorizationError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsRemoveSamlSsoAuthorizationError::Generic { code }),
+                code => Err(OrgsRemoveSecurityManagerTeamError::Generic { code }),
             }
         }
     }
 
     /// ---
     ///
-    /// # Remove a SAML SSO authorization for an organization
+    /// # Remove a security manager team
     ///
-    /// Listing and deleting credential authorizations is available to organizations with GitHub Enterprise Cloud. For more information, see [GitHub's products](https://help.github.com/github/getting-started-with-github/githubs-products).
+    /// Removes the security manager role from a team for an organization. For more information, see "[Managing security managers in your organization](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-security-managers-in-your-organization) team from an organization."
     /// 
-    /// An authenticated organization owner with the `admin:org` scope can remove a credential authorization for an organization that uses SAML SSO. Once you remove someone's credential authorization, they will need to create a new personal access token or SSH key and authorize it for the organization they want to access.
+    /// The authenticated user must be an administrator for the organization to use this endpoint.
     /// 
-    /// [GitHub API docs for remove_saml_sso_authorization](https://docs.github.com/rest/reference/orgs#remove-a-saml-sso-authorization-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for remove_security_manager_team](https://docs.github.com/rest/orgs/security-managers#remove-a-security-manager-team)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_saml_sso_authorization(&self, org: &str, credential_id: i32) -> Result<(), OrgsRemoveSamlSsoAuthorizationError> {
+    pub fn remove_security_manager_team(&self, org: &str, team_slug: &str) -> Result<(), OrgsRemoveSecurityManagerTeamError> {
 
-        let request_uri = format!("{}/orgs/{}/credential-authorizations/{}", super::GITHUB_BASE_API_URL, org, credential_id);
+        let request_uri = format!("{}/orgs/{}/security-managers/teams/{}", super::GITHUB_BASE_API_URL, org, team_slug);
 
 
         let req = GitHubRequest {
@@ -4824,8 +7910,525 @@ impl<'api> Orgs<'api> {
             Ok(crate::adapters::to_json(github_response)?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsRemoveSamlSsoAuthorizationError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsRemoveSamlSsoAuthorizationError::Generic { code }),
+                code => Err(OrgsRemoveSecurityManagerTeamError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Review a request to access organization resources with a fine-grained personal access token
+    ///
+    /// Approves or denies a pending request to access organization resources via a fine-grained personal access token.
+    /// 
+    /// Only GitHub Apps can use this endpoint.
+    ///
+    /// [GitHub API docs for review_pat_grant_request](https://docs.github.com/rest/orgs/personal-access-tokens#review-a-request-to-access-organization-resources-with-a-fine-grained-personal-access-token)
+    ///
+    /// ---
+    pub async fn review_pat_grant_request_async(&self, org: &str, pat_request_id: i32, body: PostOrgsReviewPatGrantRequest) -> Result<(), OrgsReviewPatGrantRequestError> {
+
+        let request_uri = format!("{}/orgs/{}/personal-access-token-requests/{}", super::GITHUB_BASE_API_URL, org, pat_request_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostOrgsReviewPatGrantRequest::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(OrgsReviewPatGrantRequestError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(OrgsReviewPatGrantRequestError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OrgsReviewPatGrantRequestError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(OrgsReviewPatGrantRequestError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(OrgsReviewPatGrantRequestError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Review a request to access organization resources with a fine-grained personal access token
+    ///
+    /// Approves or denies a pending request to access organization resources via a fine-grained personal access token.
+    /// 
+    /// Only GitHub Apps can use this endpoint.
+    ///
+    /// [GitHub API docs for review_pat_grant_request](https://docs.github.com/rest/orgs/personal-access-tokens#review-a-request-to-access-organization-resources-with-a-fine-grained-personal-access-token)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn review_pat_grant_request(&self, org: &str, pat_request_id: i32, body: PostOrgsReviewPatGrantRequest) -> Result<(), OrgsReviewPatGrantRequestError> {
+
+        let request_uri = format!("{}/orgs/{}/personal-access-token-requests/{}", super::GITHUB_BASE_API_URL, org, pat_request_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostOrgsReviewPatGrantRequest::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(OrgsReviewPatGrantRequestError::Status500(crate::adapters::to_json(github_response)?)),
+                422 => Err(OrgsReviewPatGrantRequestError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(OrgsReviewPatGrantRequestError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(OrgsReviewPatGrantRequestError::Status403(crate::adapters::to_json(github_response)?)),
+                code => Err(OrgsReviewPatGrantRequestError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Review requests to access organization resources with fine-grained personal access tokens
+    ///
+    /// Approves or denies multiple pending requests to access organization resources via a fine-grained personal access token.
+    /// 
+    /// Only GitHub Apps can use this endpoint.
+    ///
+    /// [GitHub API docs for review_pat_grant_requests_in_bulk](https://docs.github.com/rest/orgs/personal-access-tokens#review-requests-to-access-organization-resources-with-fine-grained-personal-access-tokens)
+    ///
+    /// ---
+    pub async fn review_pat_grant_requests_in_bulk_async(&self, org: &str, body: PostOrgsReviewPatGrantRequestsInBulk) -> Result<HashMap<String, Value>, OrgsReviewPatGrantRequestsInBulkError> {
+
+        let request_uri = format!("{}/orgs/{}/personal-access-token-requests", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostOrgsReviewPatGrantRequestsInBulk::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(OrgsReviewPatGrantRequestsInBulkError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(OrgsReviewPatGrantRequestsInBulkError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OrgsReviewPatGrantRequestsInBulkError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(OrgsReviewPatGrantRequestsInBulkError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(OrgsReviewPatGrantRequestsInBulkError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Review requests to access organization resources with fine-grained personal access tokens
+    ///
+    /// Approves or denies multiple pending requests to access organization resources via a fine-grained personal access token.
+    /// 
+    /// Only GitHub Apps can use this endpoint.
+    ///
+    /// [GitHub API docs for review_pat_grant_requests_in_bulk](https://docs.github.com/rest/orgs/personal-access-tokens#review-requests-to-access-organization-resources-with-fine-grained-personal-access-tokens)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn review_pat_grant_requests_in_bulk(&self, org: &str, body: PostOrgsReviewPatGrantRequestsInBulk) -> Result<HashMap<String, Value>, OrgsReviewPatGrantRequestsInBulkError> {
+
+        let request_uri = format!("{}/orgs/{}/personal-access-token-requests", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostOrgsReviewPatGrantRequestsInBulk::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(OrgsReviewPatGrantRequestsInBulkError::Status500(crate::adapters::to_json(github_response)?)),
+                422 => Err(OrgsReviewPatGrantRequestsInBulkError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(OrgsReviewPatGrantRequestsInBulkError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(OrgsReviewPatGrantRequestsInBulkError::Status403(crate::adapters::to_json(github_response)?)),
+                code => Err(OrgsReviewPatGrantRequestsInBulkError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove all organization roles for a team
+    ///
+    /// Removes all assigned organization roles from a team. For more information on organization roles, see "[Using organization roles](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/using-organization-roles)."
+    /// 
+    /// The authenticated user must be an administrator for the organization to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for revoke_all_org_roles_team](https://docs.github.com/rest/orgs/organization-roles#remove-all-organization-roles-for-a-team)
+    ///
+    /// ---
+    pub async fn revoke_all_org_roles_team_async(&self, org: &str, team_slug: &str) -> Result<(), OrgsRevokeAllOrgRolesTeamError> {
+
+        let request_uri = format!("{}/orgs/{}/organization-roles/teams/{}", super::GITHUB_BASE_API_URL, org, team_slug);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsRevokeAllOrgRolesTeamError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove all organization roles for a team
+    ///
+    /// Removes all assigned organization roles from a team. For more information on organization roles, see "[Using organization roles](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/using-organization-roles)."
+    /// 
+    /// The authenticated user must be an administrator for the organization to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for revoke_all_org_roles_team](https://docs.github.com/rest/orgs/organization-roles#remove-all-organization-roles-for-a-team)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn revoke_all_org_roles_team(&self, org: &str, team_slug: &str) -> Result<(), OrgsRevokeAllOrgRolesTeamError> {
+
+        let request_uri = format!("{}/orgs/{}/organization-roles/teams/{}", super::GITHUB_BASE_API_URL, org, team_slug);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsRevokeAllOrgRolesTeamError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove all organization roles for a user
+    ///
+    /// Revokes all assigned organization roles from a user. For more information on organization roles, see "[Using organization roles](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/using-organization-roles)."
+    /// 
+    /// The authenticated user must be an administrator for the organization to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for revoke_all_org_roles_user](https://docs.github.com/rest/orgs/organization-roles#remove-all-organization-roles-for-a-user)
+    ///
+    /// ---
+    pub async fn revoke_all_org_roles_user_async(&self, org: &str, username: &str) -> Result<(), OrgsRevokeAllOrgRolesUserError> {
+
+        let request_uri = format!("{}/orgs/{}/organization-roles/users/{}", super::GITHUB_BASE_API_URL, org, username);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsRevokeAllOrgRolesUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove all organization roles for a user
+    ///
+    /// Revokes all assigned organization roles from a user. For more information on organization roles, see "[Using organization roles](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/using-organization-roles)."
+    /// 
+    /// The authenticated user must be an administrator for the organization to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for revoke_all_org_roles_user](https://docs.github.com/rest/orgs/organization-roles#remove-all-organization-roles-for-a-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn revoke_all_org_roles_user(&self, org: &str, username: &str) -> Result<(), OrgsRevokeAllOrgRolesUserError> {
+
+        let request_uri = format!("{}/orgs/{}/organization-roles/users/{}", super::GITHUB_BASE_API_URL, org, username);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsRevokeAllOrgRolesUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove an organization role from a team
+    ///
+    /// Removes an organization role from a team. For more information on organization roles, see "[Using organization roles](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/using-organization-roles)."
+    /// 
+    /// The authenticated user must be an administrator for the organization to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for revoke_org_role_team](https://docs.github.com/rest/orgs/organization-roles#remove-an-organization-role-from-a-team)
+    ///
+    /// ---
+    pub async fn revoke_org_role_team_async(&self, org: &str, team_slug: &str, role_id: i32) -> Result<(), OrgsRevokeOrgRoleTeamError> {
+
+        let request_uri = format!("{}/orgs/{}/organization-roles/teams/{}/{}", super::GITHUB_BASE_API_URL, org, team_slug, role_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsRevokeOrgRoleTeamError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove an organization role from a team
+    ///
+    /// Removes an organization role from a team. For more information on organization roles, see "[Using organization roles](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/using-organization-roles)."
+    /// 
+    /// The authenticated user must be an administrator for the organization to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for revoke_org_role_team](https://docs.github.com/rest/orgs/organization-roles#remove-an-organization-role-from-a-team)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn revoke_org_role_team(&self, org: &str, team_slug: &str, role_id: i32) -> Result<(), OrgsRevokeOrgRoleTeamError> {
+
+        let request_uri = format!("{}/orgs/{}/organization-roles/teams/{}/{}", super::GITHUB_BASE_API_URL, org, team_slug, role_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsRevokeOrgRoleTeamError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove an organization role from a user
+    ///
+    /// Remove an organization role from a user. For more information on organization roles, see "[Using organization roles](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/using-organization-roles)."
+    /// 
+    /// The authenticated user must be an administrator for the organization to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for revoke_org_role_user](https://docs.github.com/rest/orgs/organization-roles#remove-an-organization-role-from-a-user)
+    ///
+    /// ---
+    pub async fn revoke_org_role_user_async(&self, org: &str, username: &str, role_id: i32) -> Result<(), OrgsRevokeOrgRoleUserError> {
+
+        let request_uri = format!("{}/orgs/{}/organization-roles/users/{}/{}", super::GITHUB_BASE_API_URL, org, username, role_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsRevokeOrgRoleUserError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove an organization role from a user
+    ///
+    /// Remove an organization role from a user. For more information on organization roles, see "[Using organization roles](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/using-organization-roles)."
+    /// 
+    /// The authenticated user must be an administrator for the organization to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for revoke_org_role_user](https://docs.github.com/rest/orgs/organization-roles#remove-an-organization-role-from-a-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn revoke_org_role_user(&self, org: &str, username: &str, role_id: i32) -> Result<(), OrgsRevokeOrgRoleUserError> {
+
+        let request_uri = format!("{}/orgs/{}/organization-roles/users/{}/{}", super::GITHUB_BASE_API_URL, org, username, role_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsRevokeOrgRoleUserError::Generic { code }),
             }
         }
     }
@@ -4836,15 +8439,15 @@ impl<'api> Orgs<'api> {
     ///
     /// Only authenticated organization owners can add a member to the organization or update the member's role.
     /// 
-    /// *   If the authenticated user is _adding_ a member to the organization, the invited user will receive an email inviting them to the organization. The user's [membership status](https://docs.github.com/rest/reference/orgs#get-organization-membership-for-a-user) will be `pending` until they accept the invitation.
+    /// *   If the authenticated user is _adding_ a member to the organization, the invited user will receive an email inviting them to the organization. The user's [membership status](https://docs.github.com/rest/orgs/members#get-organization-membership-for-a-user) will be `pending` until they accept the invitation.
     ///     
     /// *   Authenticated users can _update_ a user's membership by passing the `role` parameter. If the authenticated user changes a member's role to `admin`, the affected user will receive an email notifying them that they've been made an organization owner. If the authenticated user changes an owner's role to `member`, no email will be sent.
     /// 
     /// **Rate limits**
     /// 
-    /// To prevent abuse, the authenticated user is limited to 50 organization invitations per 24 hour period. If the organization is more than one month old or on a paid plan, the limit is 500 invitations per 24 hour period.
-    /// 
-    /// [GitHub API docs for set_membership_for_user](https://docs.github.com/rest/reference/orgs#set-organization-membership-for-a-user)
+    /// To prevent abuse, organization owners are limited to creating 50 organization invitations for an organization within a 24 hour period. If the organization is more than one month old or on a paid plan, the limit is 500 invitations per 24 hour period.
+    ///
+    /// [GitHub API docs for set_membership_for_user](https://docs.github.com/rest/orgs/members#set-organization-membership-for-a-user)
     ///
     /// ---
     pub async fn set_membership_for_user_async(&self, org: &str, username: &str, body: PutOrgsSetMembershipForUser) -> Result<OrgMembership, OrgsSetMembershipForUserError> {
@@ -4884,15 +8487,15 @@ impl<'api> Orgs<'api> {
     ///
     /// Only authenticated organization owners can add a member to the organization or update the member's role.
     /// 
-    /// *   If the authenticated user is _adding_ a member to the organization, the invited user will receive an email inviting them to the organization. The user's [membership status](https://docs.github.com/rest/reference/orgs#get-organization-membership-for-a-user) will be `pending` until they accept the invitation.
+    /// *   If the authenticated user is _adding_ a member to the organization, the invited user will receive an email inviting them to the organization. The user's [membership status](https://docs.github.com/rest/orgs/members#get-organization-membership-for-a-user) will be `pending` until they accept the invitation.
     ///     
     /// *   Authenticated users can _update_ a user's membership by passing the `role` parameter. If the authenticated user changes a member's role to `admin`, the affected user will receive an email notifying them that they've been made an organization owner. If the authenticated user changes an owner's role to `member`, no email will be sent.
     /// 
     /// **Rate limits**
     /// 
-    /// To prevent abuse, the authenticated user is limited to 50 organization invitations per 24 hour period. If the organization is more than one month old or on a paid plan, the limit is 500 invitations per 24 hour period.
-    /// 
-    /// [GitHub API docs for set_membership_for_user](https://docs.github.com/rest/reference/orgs#set-organization-membership-for-a-user)
+    /// To prevent abuse, organization owners are limited to creating 50 organization invitations for an organization within a 24 hour period. If the organization is more than one month old or on a paid plan, the limit is 500 invitations per 24 hour period.
+    ///
+    /// [GitHub API docs for set_membership_for_user](https://docs.github.com/rest/orgs/members#set-organization-membership-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4933,9 +8536,9 @@ impl<'api> Orgs<'api> {
     ///
     /// The user can publicize their own membership. (A user cannot publicize the membership for another user.)
     /// 
-    /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
-    /// 
-    /// [GitHub API docs for set_public_membership_for_authenticated_user](https://docs.github.com/rest/reference/orgs#set-public-organization-membership-for-the-authenticated-user)
+    /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP method](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
+    ///
+    /// [GitHub API docs for set_public_membership_for_authenticated_user](https://docs.github.com/rest/orgs/members#set-public-organization-membership-for-the-authenticated-user)
     ///
     /// ---
     pub async fn set_public_membership_for_authenticated_user_async(&self, org: &str, username: &str) -> Result<(), OrgsSetPublicMembershipForAuthenticatedUserError> {
@@ -4974,9 +8577,9 @@ impl<'api> Orgs<'api> {
     ///
     /// The user can publicize their own membership. (A user cannot publicize the membership for another user.)
     /// 
-    /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
-    /// 
-    /// [GitHub API docs for set_public_membership_for_authenticated_user](https://docs.github.com/rest/reference/orgs#set-public-organization-membership-for-the-authenticated-user)
+    /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP method](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
+    ///
+    /// [GitHub API docs for set_public_membership_for_authenticated_user](https://docs.github.com/rest/orgs/members#set-public-organization-membership-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5013,8 +8616,10 @@ impl<'api> Orgs<'api> {
     /// ---
     ///
     /// # Unblock a user from an organization
-    /// 
-    /// [GitHub API docs for unblock_user](https://docs.github.com/rest/reference/orgs#unblock-a-user-from-an-organization)
+    ///
+    /// Unblocks the given user on behalf of the specified organization.
+    ///
+    /// [GitHub API docs for unblock_user](https://docs.github.com/rest/orgs/blocking#unblock-a-user-from-an-organization)
     ///
     /// ---
     pub async fn unblock_user_async(&self, org: &str, username: &str) -> Result<(), OrgsUnblockUserError> {
@@ -5049,8 +8654,10 @@ impl<'api> Orgs<'api> {
     /// ---
     ///
     /// # Unblock a user from an organization
-    /// 
-    /// [GitHub API docs for unblock_user](https://docs.github.com/rest/reference/orgs#unblock-a-user-from-an-organization)
+    ///
+    /// Unblocks the given user on behalf of the specified organization.
+    ///
+    /// [GitHub API docs for unblock_user](https://docs.github.com/rest/orgs/blocking#unblock-a-user-from-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5087,11 +8694,19 @@ impl<'api> Orgs<'api> {
     ///
     /// # Update an organization
     ///
-    /// **Parameter Deprecation Notice:** GitHub will replace and discontinue `members_allowed_repository_creation_type` in favor of more granular permissions. The new input parameters are `members_can_create_public_repositories`, `members_can_create_private_repositories` for all organizations and `members_can_create_internal_repositories` for organizations associated with an enterprise account using GitHub Enterprise Cloud or GitHub Enterprise Server 2.20+. For more information, see the [blog post](https://developer.github.com/changes/2019-12-03-internal-visibility-changes).
+    /// > [!WARNING]
+    /// > **Parameter deprecation notice:** GitHub will replace and discontinue `members_allowed_repository_creation_type` in favor of more granular permissions. The new input parameters are `members_can_create_public_repositories`, `members_can_create_private_repositories` for all organizations and `members_can_create_internal_repositories` for organizations associated with an enterprise account using GitHub Enterprise Cloud or GitHub Enterprise Server 2.20+. For more information, see the [blog post](https://developer.github.com/changes/2019-12-03-internal-visibility-changes).
     /// 
-    /// Enables an authenticated organization owner with the `admin:org` scope to update the organization's profile and member privileges.
+    /// > [!WARNING]
+    /// > **Parameter deprecation notice:** Code security product enablement for new repositories through the organization API is deprecated. Please use [code security configurations](https://docs.github.com/rest/code-security/configurations#set-a-code-security-configuration-as-a-default-for-an-organization) to set defaults instead. For more information on setting a default security configuration, see the [changelog](https://github.blog/changelog/2024-07-09-sunsetting-security-settings-defaults-parameters-in-the-organizations-rest-api/).
     /// 
-    /// [GitHub API docs for update](https://docs.github.com/rest/reference/orgs/#update-an-organization)
+    /// Updates the organization's profile and member privileges.
+    /// 
+    /// The authenticated user must be an organization owner to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` or `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for update](https://docs.github.com/rest/orgs/orgs#update-an-organization)
     ///
     /// ---
     pub async fn update_async(&self, org: &str, body: PatchOrgsUpdate) -> Result<OrganizationFull, OrgsUpdateError> {
@@ -5129,11 +8744,19 @@ impl<'api> Orgs<'api> {
     ///
     /// # Update an organization
     ///
-    /// **Parameter Deprecation Notice:** GitHub will replace and discontinue `members_allowed_repository_creation_type` in favor of more granular permissions. The new input parameters are `members_can_create_public_repositories`, `members_can_create_private_repositories` for all organizations and `members_can_create_internal_repositories` for organizations associated with an enterprise account using GitHub Enterprise Cloud or GitHub Enterprise Server 2.20+. For more information, see the [blog post](https://developer.github.com/changes/2019-12-03-internal-visibility-changes).
+    /// > [!WARNING]
+    /// > **Parameter deprecation notice:** GitHub will replace and discontinue `members_allowed_repository_creation_type` in favor of more granular permissions. The new input parameters are `members_can_create_public_repositories`, `members_can_create_private_repositories` for all organizations and `members_can_create_internal_repositories` for organizations associated with an enterprise account using GitHub Enterprise Cloud or GitHub Enterprise Server 2.20+. For more information, see the [blog post](https://developer.github.com/changes/2019-12-03-internal-visibility-changes).
     /// 
-    /// Enables an authenticated organization owner with the `admin:org` scope to update the organization's profile and member privileges.
+    /// > [!WARNING]
+    /// > **Parameter deprecation notice:** Code security product enablement for new repositories through the organization API is deprecated. Please use [code security configurations](https://docs.github.com/rest/code-security/configurations#set-a-code-security-configuration-as-a-default-for-an-organization) to set defaults instead. For more information on setting a default security configuration, see the [changelog](https://github.blog/changelog/2024-07-09-sunsetting-security-settings-defaults-parameters-in-the-organizations-rest-api/).
     /// 
-    /// [GitHub API docs for update](https://docs.github.com/rest/reference/orgs/#update-an-organization)
+    /// Updates the organization's profile and member privileges.
+    /// 
+    /// The authenticated user must be an organization owner to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` or `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for update](https://docs.github.com/rest/orgs/orgs#update-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5171,8 +8794,10 @@ impl<'api> Orgs<'api> {
     /// ---
     ///
     /// # Update an organization membership for the authenticated user
-    /// 
-    /// [GitHub API docs for update_membership_for_authenticated_user](https://docs.github.com/rest/reference/orgs#update-an-organization-membership-for-the-authenticated-user)
+    ///
+    /// Converts the authenticated user to an active member of the organization, if that user has a pending invitation from the organization.
+    ///
+    /// [GitHub API docs for update_membership_for_authenticated_user](https://docs.github.com/rest/orgs/members#update-an-organization-membership-for-the-authenticated-user)
     ///
     /// ---
     pub async fn update_membership_for_authenticated_user_async(&self, org: &str, body: PatchOrgsUpdateMembershipForAuthenticatedUser) -> Result<OrgMembership, OrgsUpdateMembershipForAuthenticatedUserError> {
@@ -5210,8 +8835,10 @@ impl<'api> Orgs<'api> {
     /// ---
     ///
     /// # Update an organization membership for the authenticated user
-    /// 
-    /// [GitHub API docs for update_membership_for_authenticated_user](https://docs.github.com/rest/reference/orgs#update-an-organization-membership-for-the-authenticated-user)
+    ///
+    /// Converts the authenticated user to an active member of the organization, if that user has a pending invitation from the organization.
+    ///
+    /// [GitHub API docs for update_membership_for_authenticated_user](https://docs.github.com/rest/orgs/members#update-an-organization-membership-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5249,11 +8876,198 @@ impl<'api> Orgs<'api> {
 
     /// ---
     ///
+    /// # Update the access a fine-grained personal access token has to organization resources
+    ///
+    /// Updates the access an organization member has to organization resources via a fine-grained personal access token. Limited to revoking the token's existing access. Limited to revoking a token's existing access.
+    /// 
+    /// Only GitHub Apps can use this endpoint.
+    ///
+    /// [GitHub API docs for update_pat_access](https://docs.github.com/rest/orgs/personal-access-tokens#update-the-access-a-fine-grained-personal-access-token-has-to-organization-resources)
+    ///
+    /// ---
+    pub async fn update_pat_access_async(&self, org: &str, pat_id: i32, body: PostOrgsUpdatePatAccess) -> Result<(), OrgsUpdatePatAccessError> {
+
+        let request_uri = format!("{}/orgs/{}/personal-access-tokens/{}", super::GITHUB_BASE_API_URL, org, pat_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostOrgsUpdatePatAccess::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(OrgsUpdatePatAccessError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OrgsUpdatePatAccessError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(OrgsUpdatePatAccessError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(OrgsUpdatePatAccessError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(OrgsUpdatePatAccessError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Update the access a fine-grained personal access token has to organization resources
+    ///
+    /// Updates the access an organization member has to organization resources via a fine-grained personal access token. Limited to revoking the token's existing access. Limited to revoking a token's existing access.
+    /// 
+    /// Only GitHub Apps can use this endpoint.
+    ///
+    /// [GitHub API docs for update_pat_access](https://docs.github.com/rest/orgs/personal-access-tokens#update-the-access-a-fine-grained-personal-access-token-has-to-organization-resources)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn update_pat_access(&self, org: &str, pat_id: i32, body: PostOrgsUpdatePatAccess) -> Result<(), OrgsUpdatePatAccessError> {
+
+        let request_uri = format!("{}/orgs/{}/personal-access-tokens/{}", super::GITHUB_BASE_API_URL, org, pat_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostOrgsUpdatePatAccess::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(OrgsUpdatePatAccessError::Status500(crate::adapters::to_json(github_response)?)),
+                404 => Err(OrgsUpdatePatAccessError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(OrgsUpdatePatAccessError::Status403(crate::adapters::to_json(github_response)?)),
+                422 => Err(OrgsUpdatePatAccessError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(OrgsUpdatePatAccessError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Update the access to organization resources via fine-grained personal access tokens
+    ///
+    /// Updates the access organization members have to organization resources via fine-grained personal access tokens. Limited to revoking a token's existing access.
+    /// 
+    /// Only GitHub Apps can use this endpoint.
+    ///
+    /// [GitHub API docs for update_pat_accesses](https://docs.github.com/rest/orgs/personal-access-tokens#update-the-access-to-organization-resources-via-fine-grained-personal-access-tokens)
+    ///
+    /// ---
+    pub async fn update_pat_accesses_async(&self, org: &str, body: PostOrgsUpdatePatAccesses) -> Result<HashMap<String, Value>, OrgsUpdatePatAccessesError> {
+
+        let request_uri = format!("{}/orgs/{}/personal-access-tokens", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostOrgsUpdatePatAccesses::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(OrgsUpdatePatAccessesError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(OrgsUpdatePatAccessesError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(OrgsUpdatePatAccessesError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(OrgsUpdatePatAccessesError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(OrgsUpdatePatAccessesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Update the access to organization resources via fine-grained personal access tokens
+    ///
+    /// Updates the access organization members have to organization resources via fine-grained personal access tokens. Limited to revoking a token's existing access.
+    /// 
+    /// Only GitHub Apps can use this endpoint.
+    ///
+    /// [GitHub API docs for update_pat_accesses](https://docs.github.com/rest/orgs/personal-access-tokens#update-the-access-to-organization-resources-via-fine-grained-personal-access-tokens)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn update_pat_accesses(&self, org: &str, body: PostOrgsUpdatePatAccesses) -> Result<HashMap<String, Value>, OrgsUpdatePatAccessesError> {
+
+        let request_uri = format!("{}/orgs/{}/personal-access-tokens", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostOrgsUpdatePatAccesses::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(OrgsUpdatePatAccessesError::Status500(crate::adapters::to_json(github_response)?)),
+                404 => Err(OrgsUpdatePatAccessesError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(OrgsUpdatePatAccessesError::Status403(crate::adapters::to_json(github_response)?)),
+                422 => Err(OrgsUpdatePatAccessesError::Status422(crate::adapters::to_json(github_response)?)),
+                code => Err(OrgsUpdatePatAccessesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Update an organization webhook
     ///
-    /// Updates a webhook configured in an organization. When you update a webhook, the `secret` will be overwritten. If you previously had a `secret` set, you must provide the same `secret` or set a new `secret` or the secret will be removed. If you are only updating individual webhook `config` properties, use "[Update a webhook configuration for an organization](/rest/reference/orgs#update-a-webhook-configuration-for-an-organization)."
+    /// Updates a webhook configured in an organization. When you update a webhook,
+    /// the `secret` will be overwritten. If you previously had a `secret` set, you must
+    /// provide the same `secret` or set a new `secret` or the secret will be removed. If
+    /// you are only updating individual webhook `config` properties, use "[Update a webhook
+    /// configuration for an organization](/rest/orgs/webhooks#update-a-webhook-configuration-for-an-organization)".
     /// 
-    /// [GitHub API docs for update_webhook](https://docs.github.com/rest/reference/orgs#update-an-organization-webhook)
+    /// You must be an organization owner to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
+    /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
+    ///
+    /// [GitHub API docs for update_webhook](https://docs.github.com/rest/orgs/webhooks#update-an-organization-webhook)
     ///
     /// ---
     pub async fn update_webhook_async(&self, org: &str, hook_id: i32, body: PatchOrgsUpdateWebhook) -> Result<OrgHook, OrgsUpdateWebhookError> {
@@ -5291,9 +9105,18 @@ impl<'api> Orgs<'api> {
     ///
     /// # Update an organization webhook
     ///
-    /// Updates a webhook configured in an organization. When you update a webhook, the `secret` will be overwritten. If you previously had a `secret` set, you must provide the same `secret` or set a new `secret` or the secret will be removed. If you are only updating individual webhook `config` properties, use "[Update a webhook configuration for an organization](/rest/reference/orgs#update-a-webhook-configuration-for-an-organization)."
+    /// Updates a webhook configured in an organization. When you update a webhook,
+    /// the `secret` will be overwritten. If you previously had a `secret` set, you must
+    /// provide the same `secret` or set a new `secret` or the secret will be removed. If
+    /// you are only updating individual webhook `config` properties, use "[Update a webhook
+    /// configuration for an organization](/rest/orgs/webhooks#update-a-webhook-configuration-for-an-organization)".
     /// 
-    /// [GitHub API docs for update_webhook](https://docs.github.com/rest/reference/orgs#update-an-organization-webhook)
+    /// You must be an organization owner to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
+    /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
+    ///
+    /// [GitHub API docs for update_webhook](https://docs.github.com/rest/orgs/webhooks#update-an-organization-webhook)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -5332,11 +9155,14 @@ impl<'api> Orgs<'api> {
     ///
     /// # Update a webhook configuration for an organization
     ///
-    /// Updates the webhook configuration for an organization. To update more information about the webhook, including the `active` state and `events`, use "[Update an organization webhook ](/rest/reference/orgs#update-an-organization-webhook)."
+    /// Updates the webhook configuration for an organization. To update more information about the webhook, including the `active` state and `events`, use "[Update an organization webhook ](/rest/orgs/webhooks#update-an-organization-webhook)."
     /// 
-    /// Access tokens must have the `admin:org_hook` scope, and GitHub Apps must have the `organization_hooks:write` permission.
+    /// You must be an organization owner to use this endpoint.
     /// 
-    /// [GitHub API docs for update_webhook_config_for_org](https://docs.github.com/rest/reference/orgs#update-a-webhook-configuration-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
+    /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
+    ///
+    /// [GitHub API docs for update_webhook_config_for_org](https://docs.github.com/rest/orgs/webhooks#update-a-webhook-configuration-for-an-organization)
     ///
     /// ---
     pub async fn update_webhook_config_for_org_async(&self, org: &str, hook_id: i32, body: PatchOrgsUpdateWebhookConfigForOrg) -> Result<WebhookConfig, OrgsUpdateWebhookConfigForOrgError> {
@@ -5372,11 +9198,14 @@ impl<'api> Orgs<'api> {
     ///
     /// # Update a webhook configuration for an organization
     ///
-    /// Updates the webhook configuration for an organization. To update more information about the webhook, including the `active` state and `events`, use "[Update an organization webhook ](/rest/reference/orgs#update-an-organization-webhook)."
+    /// Updates the webhook configuration for an organization. To update more information about the webhook, including the `active` state and `events`, use "[Update an organization webhook ](/rest/orgs/webhooks#update-an-organization-webhook)."
     /// 
-    /// Access tokens must have the `admin:org_hook` scope, and GitHub Apps must have the `organization_hooks:write` permission.
+    /// You must be an organization owner to use this endpoint.
     /// 
-    /// [GitHub API docs for update_webhook_config_for_org](https://docs.github.com/rest/reference/orgs#update-a-webhook-configuration-for-an-organization)
+    /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
+    /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
+    ///
+    /// [GitHub API docs for update_webhook_config_for_org](https://docs.github.com/rest/orgs/webhooks#update-a-webhook-configuration-for-an-organization)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

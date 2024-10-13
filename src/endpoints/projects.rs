@@ -1,6 +1,6 @@
 //! Method, error and parameter types for the Projects endpoint.
 #![allow(
-    unused_imports,
+    clippy::all
 )]
 /* 
  * GitHub v3 REST API
@@ -46,7 +46,7 @@ pub enum ProjectsAddCollaboratorError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
     Status304,
@@ -102,7 +102,7 @@ pub enum ProjectsCreateColumnError {
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Requires authentication")]
     Status401(BasicError),
@@ -129,9 +129,7 @@ pub enum ProjectsCreateForAuthenticatedUserError {
     Status403(BasicError),
     #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Preview header missing")]
-    Status415(PostProjectsCreateForAuthenticatedUserResponse415),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -158,7 +156,7 @@ pub enum ProjectsCreateForOrgError {
     Status404(BasicError),
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -185,7 +183,7 @@ pub enum ProjectsCreateForRepoError {
     Status404(BasicError),
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -354,7 +352,7 @@ pub enum ProjectsGetPermissionForUserError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
     Status304,
@@ -404,7 +402,7 @@ pub enum ProjectsListCollaboratorsError {
 
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
     Status304,
@@ -452,7 +450,7 @@ pub enum ProjectsListForOrgError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -479,7 +477,7 @@ pub enum ProjectsListForRepoError {
     Status404(BasicError),
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -498,7 +496,7 @@ pub enum ProjectsListForUserError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -525,7 +523,7 @@ pub enum ProjectsMoveCardError {
     Status401(BasicError),
     #[error("Response")]
     Status503(PostProjectsCreateCardResponse503),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -548,7 +546,7 @@ pub enum ProjectsMoveColumnError {
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Requires authentication")]
     Status401(BasicError),
@@ -575,7 +573,7 @@ pub enum ProjectsRemoveCollaboratorError {
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Requires authentication")]
     Status401(BasicError),
@@ -606,7 +604,7 @@ pub enum ProjectsUpdateError {
     Status401(BasicError),
     #[error("Gone")]
     Status410(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -633,7 +631,7 @@ pub enum ProjectsUpdateCardError {
     Status401(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -666,11 +664,11 @@ pub enum ProjectsUpdateColumnError {
 /// Query parameters for the [List project cards](Projects::list_cards_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ProjectsListCardsParams<'req> {
-    /// Filters the project cards that are returned by the card's state. Can be one of `all`,`archived`, or `not_archived`.
+    /// Filters the project cards that are returned by the card's state.
     archived_state: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -679,27 +677,27 @@ impl<'req> ProjectsListCardsParams<'req> {
         Self::default()
     }
 
-    /// Filters the project cards that are returned by the card's state. Can be one of `all`,`archived`, or `not_archived`.
+    /// Filters the project cards that are returned by the card's state.
     pub fn archived_state(self, archived_state: &'req str) -> Self {
-        Self { 
+        Self {
             archived_state: Some(archived_state),
             per_page: self.per_page, 
             page: self.page, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             archived_state: self.archived_state, 
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             archived_state: self.archived_state, 
             per_page: self.per_page, 
             page: Some(page),
@@ -719,11 +717,11 @@ impl<'enc> From<&'enc PerPage> for ProjectsListCardsParams<'enc> {
 /// Query parameters for the [List project collaborators](Projects::list_collaborators_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ProjectsListCollaboratorsParams<'req> {
-    /// Filters the collaborators by their affiliation. Can be one of:   \\* `outside`: Outside collaborators of a project that are not a member of the project's organization.   \\* `direct`: Collaborators with permissions to a project, regardless of organization membership status.   \\* `all`: All collaborators the authenticated user can see.
+    /// Filters the collaborators by their affiliation. `outside` means outside collaborators of a project that are not a member of the project's organization. `direct` means collaborators with permissions to a project, regardless of organization membership status. `all` means all collaborators the authenticated user can see.
     affiliation: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -732,27 +730,27 @@ impl<'req> ProjectsListCollaboratorsParams<'req> {
         Self::default()
     }
 
-    /// Filters the collaborators by their affiliation. Can be one of:   \\* `outside`: Outside collaborators of a project that are not a member of the project's organization.   \\* `direct`: Collaborators with permissions to a project, regardless of organization membership status.   \\* `all`: All collaborators the authenticated user can see.
+    /// Filters the collaborators by their affiliation. `outside` means outside collaborators of a project that are not a member of the project's organization. `direct` means collaborators with permissions to a project, regardless of organization membership status. `all` means all collaborators the authenticated user can see.
     pub fn affiliation(self, affiliation: &'req str) -> Self {
-        Self { 
+        Self {
             affiliation: Some(affiliation),
             per_page: self.per_page, 
             page: self.page, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             affiliation: self.affiliation, 
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             affiliation: self.affiliation, 
             per_page: self.per_page, 
             page: Some(page),
@@ -772,9 +770,9 @@ impl<'enc> From<&'enc PerPage> for ProjectsListCollaboratorsParams<'enc> {
 /// Query parameters for the [List project columns](Projects::list_columns_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ProjectsListColumnsParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -783,17 +781,17 @@ impl ProjectsListColumnsParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -812,11 +810,11 @@ impl<'enc> From<&'enc PerPage> for ProjectsListColumnsParams {
 /// Query parameters for the [List organization projects](Projects::list_for_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ProjectsListForOrgParams<'req> {
-    /// Indicates the state of the projects to return. Can be either `open`, `closed`, or `all`.
+    /// Indicates the state of the projects to return.
     state: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -825,27 +823,27 @@ impl<'req> ProjectsListForOrgParams<'req> {
         Self::default()
     }
 
-    /// Indicates the state of the projects to return. Can be either `open`, `closed`, or `all`.
+    /// Indicates the state of the projects to return.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             state: Some(state),
             per_page: self.per_page, 
             page: self.page, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             per_page: self.per_page, 
             page: Some(page),
@@ -865,11 +863,11 @@ impl<'enc> From<&'enc PerPage> for ProjectsListForOrgParams<'enc> {
 /// Query parameters for the [List repository projects](Projects::list_for_repo_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ProjectsListForRepoParams<'req> {
-    /// Indicates the state of the projects to return. Can be either `open`, `closed`, or `all`.
+    /// Indicates the state of the projects to return.
     state: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -878,27 +876,27 @@ impl<'req> ProjectsListForRepoParams<'req> {
         Self::default()
     }
 
-    /// Indicates the state of the projects to return. Can be either `open`, `closed`, or `all`.
+    /// Indicates the state of the projects to return.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             state: Some(state),
             per_page: self.per_page, 
             page: self.page, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             per_page: self.per_page, 
             page: Some(page),
@@ -918,11 +916,11 @@ impl<'enc> From<&'enc PerPage> for ProjectsListForRepoParams<'enc> {
 /// Query parameters for the [List user projects](Projects::list_for_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ProjectsListForUserParams<'req> {
-    /// Indicates the state of the projects to return. Can be either `open`, `closed`, or `all`.
+    /// Indicates the state of the projects to return.
     state: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -931,27 +929,27 @@ impl<'req> ProjectsListForUserParams<'req> {
         Self::default()
     }
 
-    /// Indicates the state of the projects to return. Can be either `open`, `closed`, or `all`.
+    /// Indicates the state of the projects to return.
     pub fn state(self, state: &'req str) -> Self {
-        Self { 
+        Self {
             state: Some(state),
             per_page: self.per_page, 
             page: self.page, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             state: self.state, 
             per_page: self.per_page, 
             page: Some(page),
@@ -975,8 +973,8 @@ impl<'api> Projects<'api> {
     /// # Add project collaborator
     ///
     /// Adds a collaborator to an organization project and sets their permission level. You must be an organization owner or a project `admin` to add a collaborator.
-    /// 
-    /// [GitHub API docs for add_collaborator](https://docs.github.com/rest/reference/projects#add-project-collaborator)
+    ///
+    /// [GitHub API docs for add_collaborator](https://docs.github.com/rest/projects/collaborators#add-project-collaborator)
     ///
     /// ---
     pub async fn add_collaborator_async(&self, project_id: i32, username: &str, body: PutProjectsAddCollaborator) -> Result<(), ProjectsAddCollaboratorError> {
@@ -1018,8 +1016,8 @@ impl<'api> Projects<'api> {
     /// # Add project collaborator
     ///
     /// Adds a collaborator to an organization project and sets their permission level. You must be an organization owner or a project `admin` to add a collaborator.
-    /// 
-    /// [GitHub API docs for add_collaborator](https://docs.github.com/rest/reference/projects#add-project-collaborator)
+    ///
+    /// [GitHub API docs for add_collaborator](https://docs.github.com/rest/projects/collaborators#add-project-collaborator)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1060,8 +1058,8 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Create a project card
-    /// 
-    /// [GitHub API docs for create_card](https://docs.github.com/rest/reference/projects#create-a-project-card)
+    ///
+    /// [GitHub API docs for create_card](https://docs.github.com/rest/projects/cards#create-a-project-card)
     ///
     /// ---
     pub async fn create_card_async(&self, column_id: i32, body: PostProjectsCreateCard) -> Result<ProjectCard, ProjectsCreateCardError> {
@@ -1101,8 +1099,8 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Create a project card
-    /// 
-    /// [GitHub API docs for create_card](https://docs.github.com/rest/reference/projects#create-a-project-card)
+    ///
+    /// [GitHub API docs for create_card](https://docs.github.com/rest/projects/cards#create-a-project-card)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1143,8 +1141,10 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Create a project column
-    /// 
-    /// [GitHub API docs for create_column](https://docs.github.com/rest/reference/projects#create-a-project-column)
+    ///
+    /// Creates a new project column.
+    ///
+    /// [GitHub API docs for create_column](https://docs.github.com/rest/projects/columns#create-a-project-column)
     ///
     /// ---
     pub async fn create_column_async(&self, project_id: i32, body: PostProjectsCreateColumn) -> Result<ProjectColumn, ProjectsCreateColumnError> {
@@ -1183,8 +1183,10 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Create a project column
-    /// 
-    /// [GitHub API docs for create_column](https://docs.github.com/rest/reference/projects#create-a-project-column)
+    ///
+    /// Creates a new project column.
+    ///
+    /// [GitHub API docs for create_column](https://docs.github.com/rest/projects/columns#create-a-project-column)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1224,8 +1226,10 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Create a user project
-    /// 
-    /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/reference/projects#create-a-user-project)
+    ///
+    /// Creates a user project board. Returns a `410 Gone` status if the user does not have existing classic projects. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
+    ///
+    /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/projects/projects#create-a-user-project)
     ///
     /// ---
     pub async fn create_for_authenticated_user_async(&self, body: PostProjectsCreateForAuthenticatedUser) -> Result<Project, ProjectsCreateForAuthenticatedUserError> {
@@ -1255,7 +1259,6 @@ impl<'api> Projects<'api> {
                 304 => Err(ProjectsCreateForAuthenticatedUserError::Status304),
                 403 => Err(ProjectsCreateForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
                 401 => Err(ProjectsCreateForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                415 => Err(ProjectsCreateForAuthenticatedUserError::Status415(crate::adapters::to_json_async(github_response).await?)),
                 422 => Err(ProjectsCreateForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
                 code => Err(ProjectsCreateForAuthenticatedUserError::Generic { code }),
             }
@@ -1265,8 +1268,10 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Create a user project
-    /// 
-    /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/reference/projects#create-a-user-project)
+    ///
+    /// Creates a user project board. Returns a `410 Gone` status if the user does not have existing classic projects. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
+    ///
+    /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/projects/projects#create-a-user-project)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1297,7 +1302,6 @@ impl<'api> Projects<'api> {
                 304 => Err(ProjectsCreateForAuthenticatedUserError::Status304),
                 403 => Err(ProjectsCreateForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
                 401 => Err(ProjectsCreateForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                415 => Err(ProjectsCreateForAuthenticatedUserError::Status415(crate::adapters::to_json(github_response)?)),
                 422 => Err(ProjectsCreateForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
                 code => Err(ProjectsCreateForAuthenticatedUserError::Generic { code }),
             }
@@ -1308,9 +1312,9 @@ impl<'api> Projects<'api> {
     ///
     /// # Create an organization project
     ///
-    /// Creates an organization project board. Returns a `404 Not Found` status if projects are disabled in the organization. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
-    /// [GitHub API docs for create_for_org](https://docs.github.com/rest/reference/projects#create-an-organization-project)
+    /// Creates an organization project board. Returns a `410 Gone` status if projects are disabled in the organization or if the organization does not have existing classic projects. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
+    ///
+    /// [GitHub API docs for create_for_org](https://docs.github.com/rest/projects/projects#create-an-organization-project)
     ///
     /// ---
     pub async fn create_for_org_async(&self, org: &str, body: PostProjectsCreateForOrg) -> Result<Project, ProjectsCreateForOrgError> {
@@ -1351,9 +1355,9 @@ impl<'api> Projects<'api> {
     ///
     /// # Create an organization project
     ///
-    /// Creates an organization project board. Returns a `404 Not Found` status if projects are disabled in the organization. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
-    /// [GitHub API docs for create_for_org](https://docs.github.com/rest/reference/projects#create-an-organization-project)
+    /// Creates an organization project board. Returns a `410 Gone` status if projects are disabled in the organization or if the organization does not have existing classic projects. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
+    ///
+    /// [GitHub API docs for create_for_org](https://docs.github.com/rest/projects/projects#create-an-organization-project)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1395,9 +1399,9 @@ impl<'api> Projects<'api> {
     ///
     /// # Create a repository project
     ///
-    /// Creates a repository project board. Returns a `404 Not Found` status if projects are disabled in the repository. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
-    /// [GitHub API docs for create_for_repo](https://docs.github.com/rest/reference/projects#create-a-repository-project)
+    /// Creates a repository project board. Returns a `410 Gone` status if projects are disabled in the repository or if the repository does not have existing classic projects. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
+    ///
+    /// [GitHub API docs for create_for_repo](https://docs.github.com/rest/projects/projects#create-a-repository-project)
     ///
     /// ---
     pub async fn create_for_repo_async(&self, owner: &str, repo: &str, body: PostProjectsCreateForRepo) -> Result<Project, ProjectsCreateForRepoError> {
@@ -1438,9 +1442,9 @@ impl<'api> Projects<'api> {
     ///
     /// # Create a repository project
     ///
-    /// Creates a repository project board. Returns a `404 Not Found` status if projects are disabled in the repository. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
-    /// [GitHub API docs for create_for_repo](https://docs.github.com/rest/reference/projects#create-a-repository-project)
+    /// Creates a repository project board. Returns a `410 Gone` status if projects are disabled in the repository or if the repository does not have existing classic projects. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
+    ///
+    /// [GitHub API docs for create_for_repo](https://docs.github.com/rest/projects/projects#create-a-repository-project)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1483,8 +1487,8 @@ impl<'api> Projects<'api> {
     /// # Delete a project
     ///
     /// Deletes a project board. Returns a `404 Not Found` status if projects are disabled.
-    /// 
-    /// [GitHub API docs for delete](https://docs.github.com/rest/reference/projects#delete-a-project)
+    ///
+    /// [GitHub API docs for delete](https://docs.github.com/rest/projects/projects#delete-a-project)
     ///
     /// ---
     pub async fn delete_async(&self, project_id: i32) -> Result<(), ProjectsDeleteError> {
@@ -1526,8 +1530,8 @@ impl<'api> Projects<'api> {
     /// # Delete a project
     ///
     /// Deletes a project board. Returns a `404 Not Found` status if projects are disabled.
-    /// 
-    /// [GitHub API docs for delete](https://docs.github.com/rest/reference/projects#delete-a-project)
+    ///
+    /// [GitHub API docs for delete](https://docs.github.com/rest/projects/projects#delete-a-project)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1568,8 +1572,10 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Delete a project card
-    /// 
-    /// [GitHub API docs for delete_card](https://docs.github.com/rest/reference/projects#delete-a-project-card)
+    ///
+    /// Deletes a project card
+    ///
+    /// [GitHub API docs for delete_card](https://docs.github.com/rest/projects/cards#delete-a-project-card)
     ///
     /// ---
     pub async fn delete_card_async(&self, card_id: i32) -> Result<(), ProjectsDeleteCardError> {
@@ -1608,8 +1614,10 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Delete a project card
-    /// 
-    /// [GitHub API docs for delete_card](https://docs.github.com/rest/reference/projects#delete-a-project-card)
+    ///
+    /// Deletes a project card
+    ///
+    /// [GitHub API docs for delete_card](https://docs.github.com/rest/projects/cards#delete-a-project-card)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1649,8 +1657,10 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Delete a project column
-    /// 
-    /// [GitHub API docs for delete_column](https://docs.github.com/rest/reference/projects#delete-a-project-column)
+    ///
+    /// Deletes a project column.
+    ///
+    /// [GitHub API docs for delete_column](https://docs.github.com/rest/projects/columns#delete-a-project-column)
     ///
     /// ---
     pub async fn delete_column_async(&self, column_id: i32) -> Result<(), ProjectsDeleteColumnError> {
@@ -1688,8 +1698,10 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Delete a project column
-    /// 
-    /// [GitHub API docs for delete_column](https://docs.github.com/rest/reference/projects#delete-a-project-column)
+    ///
+    /// Deletes a project column.
+    ///
+    /// [GitHub API docs for delete_column](https://docs.github.com/rest/projects/columns#delete-a-project-column)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1730,8 +1742,8 @@ impl<'api> Projects<'api> {
     /// # Get a project
     ///
     /// Gets a project by its `id`. Returns a `404 Not Found` status if projects are disabled. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/projects#get-a-project)
+    ///
+    /// [GitHub API docs for get](https://docs.github.com/rest/projects/projects#get-a-project)
     ///
     /// ---
     pub async fn get_async(&self, project_id: i32) -> Result<Project, ProjectsGetError> {
@@ -1771,8 +1783,8 @@ impl<'api> Projects<'api> {
     /// # Get a project
     ///
     /// Gets a project by its `id`. Returns a `404 Not Found` status if projects are disabled. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
-    /// [GitHub API docs for get](https://docs.github.com/rest/reference/projects#get-a-project)
+    ///
+    /// [GitHub API docs for get](https://docs.github.com/rest/projects/projects#get-a-project)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1811,8 +1823,10 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Get a project card
-    /// 
-    /// [GitHub API docs for get_card](https://docs.github.com/rest/reference/projects#get-a-project-card)
+    ///
+    /// Gets information about a project card.
+    ///
+    /// [GitHub API docs for get_card](https://docs.github.com/rest/projects/cards#get-a-project-card)
     ///
     /// ---
     pub async fn get_card_async(&self, card_id: i32) -> Result<ProjectCard, ProjectsGetCardError> {
@@ -1851,8 +1865,10 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Get a project card
-    /// 
-    /// [GitHub API docs for get_card](https://docs.github.com/rest/reference/projects#get-a-project-card)
+    ///
+    /// Gets information about a project card.
+    ///
+    /// [GitHub API docs for get_card](https://docs.github.com/rest/projects/cards#get-a-project-card)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1892,8 +1908,10 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Get a project column
-    /// 
-    /// [GitHub API docs for get_column](https://docs.github.com/rest/reference/projects#get-a-project-column)
+    ///
+    /// Gets information about a project column.
+    ///
+    /// [GitHub API docs for get_column](https://docs.github.com/rest/projects/columns#get-a-project-column)
     ///
     /// ---
     pub async fn get_column_async(&self, column_id: i32) -> Result<ProjectColumn, ProjectsGetColumnError> {
@@ -1932,8 +1950,10 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Get a project column
-    /// 
-    /// [GitHub API docs for get_column](https://docs.github.com/rest/reference/projects#get-a-project-column)
+    ///
+    /// Gets information about a project column.
+    ///
+    /// [GitHub API docs for get_column](https://docs.github.com/rest/projects/columns#get-a-project-column)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1975,8 +1995,8 @@ impl<'api> Projects<'api> {
     /// # Get project permission for a user
     ///
     /// Returns the collaborator's permission level for an organization project. Possible values for the `permission` key: `admin`, `write`, `read`, `none`. You must be an organization owner or a project `admin` to review a user's permission level.
-    /// 
-    /// [GitHub API docs for get_permission_for_user](https://docs.github.com/rest/reference/projects#get-project-permission-for-a-user)
+    ///
+    /// [GitHub API docs for get_permission_for_user](https://docs.github.com/rest/projects/collaborators#get-project-permission-for-a-user)
     ///
     /// ---
     pub async fn get_permission_for_user_async(&self, project_id: i32, username: &str) -> Result<ProjectCollaboratorPermission, ProjectsGetPermissionForUserError> {
@@ -2018,8 +2038,8 @@ impl<'api> Projects<'api> {
     /// # Get project permission for a user
     ///
     /// Returns the collaborator's permission level for an organization project. Possible values for the `permission` key: `admin`, `write`, `read`, `none`. You must be an organization owner or a project `admin` to review a user's permission level.
-    /// 
-    /// [GitHub API docs for get_permission_for_user](https://docs.github.com/rest/reference/projects#get-project-permission-for-a-user)
+    ///
+    /// [GitHub API docs for get_permission_for_user](https://docs.github.com/rest/projects/collaborators#get-project-permission-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2060,8 +2080,10 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # List project cards
-    /// 
-    /// [GitHub API docs for list_cards](https://docs.github.com/rest/reference/projects#list-project-cards)
+    ///
+    /// Lists the project cards in a project.
+    ///
+    /// [GitHub API docs for list_cards](https://docs.github.com/rest/projects/cards#list-project-cards)
     ///
     /// ---
     pub async fn list_cards_async(&self, column_id: i32, query_params: Option<impl Into<ProjectsListCardsParams<'api>>>) -> Result<Vec<ProjectCard>, ProjectsListCardsError> {
@@ -2103,8 +2125,10 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # List project cards
-    /// 
-    /// [GitHub API docs for list_cards](https://docs.github.com/rest/reference/projects#list-project-cards)
+    ///
+    /// Lists the project cards in a project.
+    ///
+    /// [GitHub API docs for list_cards](https://docs.github.com/rest/projects/cards#list-project-cards)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2150,8 +2174,8 @@ impl<'api> Projects<'api> {
     /// # List project collaborators
     ///
     /// Lists the collaborators for an organization project. For a project, the list of collaborators includes outside collaborators, organization members that are direct collaborators, organization members with access through team memberships, organization members with access through default organization permissions, and organization owners. You must be an organization owner or a project `admin` to list collaborators.
-    /// 
-    /// [GitHub API docs for list_collaborators](https://docs.github.com/rest/reference/projects#list-project-collaborators)
+    ///
+    /// [GitHub API docs for list_collaborators](https://docs.github.com/rest/projects/collaborators#list-project-collaborators)
     ///
     /// ---
     pub async fn list_collaborators_async(&self, project_id: i32, query_params: Option<impl Into<ProjectsListCollaboratorsParams<'api>>>) -> Result<Vec<SimpleUser>, ProjectsListCollaboratorsError> {
@@ -2197,8 +2221,8 @@ impl<'api> Projects<'api> {
     /// # List project collaborators
     ///
     /// Lists the collaborators for an organization project. For a project, the list of collaborators includes outside collaborators, organization members that are direct collaborators, organization members with access through team memberships, organization members with access through default organization permissions, and organization owners. You must be an organization owner or a project `admin` to list collaborators.
-    /// 
-    /// [GitHub API docs for list_collaborators](https://docs.github.com/rest/reference/projects#list-project-collaborators)
+    ///
+    /// [GitHub API docs for list_collaborators](https://docs.github.com/rest/projects/collaborators#list-project-collaborators)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2244,8 +2268,10 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # List project columns
-    /// 
-    /// [GitHub API docs for list_columns](https://docs.github.com/rest/reference/projects#list-project-columns)
+    ///
+    /// Lists the project columns in a project.
+    ///
+    /// [GitHub API docs for list_columns](https://docs.github.com/rest/projects/columns#list-project-columns)
     ///
     /// ---
     pub async fn list_columns_async(&self, project_id: i32, query_params: Option<impl Into<ProjectsListColumnsParams>>) -> Result<Vec<ProjectColumn>, ProjectsListColumnsError> {
@@ -2287,8 +2313,10 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # List project columns
-    /// 
-    /// [GitHub API docs for list_columns](https://docs.github.com/rest/reference/projects#list-project-columns)
+    ///
+    /// Lists the project columns in a project.
+    ///
+    /// [GitHub API docs for list_columns](https://docs.github.com/rest/projects/columns#list-project-columns)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2334,8 +2362,8 @@ impl<'api> Projects<'api> {
     /// # List organization projects
     ///
     /// Lists the projects in an organization. Returns a `404 Not Found` status if projects are disabled in the organization. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
-    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/projects#list-organization-projects)
+    ///
+    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/projects/projects#list-organization-projects)
     ///
     /// ---
     pub async fn list_for_org_async(&self, org: &str, query_params: Option<impl Into<ProjectsListForOrgParams<'api>>>) -> Result<Vec<Project>, ProjectsListForOrgError> {
@@ -2377,8 +2405,8 @@ impl<'api> Projects<'api> {
     /// # List organization projects
     ///
     /// Lists the projects in an organization. Returns a `404 Not Found` status if projects are disabled in the organization. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
-    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/reference/projects#list-organization-projects)
+    ///
+    /// [GitHub API docs for list_for_org](https://docs.github.com/rest/projects/projects#list-organization-projects)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2422,8 +2450,8 @@ impl<'api> Projects<'api> {
     /// # List repository projects
     ///
     /// Lists the projects in a repository. Returns a `404 Not Found` status if projects are disabled in the repository. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
-    /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/reference/projects#list-repository-projects)
+    ///
+    /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/projects/projects#list-repository-projects)
     ///
     /// ---
     pub async fn list_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ProjectsListForRepoParams<'api>>>) -> Result<Vec<Project>, ProjectsListForRepoError> {
@@ -2469,8 +2497,8 @@ impl<'api> Projects<'api> {
     /// # List repository projects
     ///
     /// Lists the projects in a repository. Returns a `404 Not Found` status if projects are disabled in the repository. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
-    /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/reference/projects#list-repository-projects)
+    ///
+    /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/projects/projects#list-repository-projects)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2516,8 +2544,10 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # List user projects
-    /// 
-    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/projects#list-user-projects)
+    ///
+    /// Lists projects for a user.
+    ///
+    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/projects/projects#list-user-projects)
     ///
     /// ---
     pub async fn list_for_user_async(&self, username: &str, query_params: Option<impl Into<ProjectsListForUserParams<'api>>>) -> Result<Vec<Project>, ProjectsListForUserError> {
@@ -2557,8 +2587,10 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # List user projects
-    /// 
-    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/reference/projects#list-user-projects)
+    ///
+    /// Lists projects for a user.
+    ///
+    /// [GitHub API docs for list_for_user](https://docs.github.com/rest/projects/projects#list-user-projects)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2600,8 +2632,8 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Move a project card
-    /// 
-    /// [GitHub API docs for move_card](https://docs.github.com/rest/reference/projects#move-a-project-card)
+    ///
+    /// [GitHub API docs for move_card](https://docs.github.com/rest/projects/cards#move-a-project-card)
     ///
     /// ---
     pub async fn move_card_async(&self, card_id: i32, body: PostProjectsMoveCard) -> Result<HashMap<String, Value>, ProjectsMoveCardError> {
@@ -2641,8 +2673,8 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Move a project card
-    /// 
-    /// [GitHub API docs for move_card](https://docs.github.com/rest/reference/projects#move-a-project-card)
+    ///
+    /// [GitHub API docs for move_card](https://docs.github.com/rest/projects/cards#move-a-project-card)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2683,8 +2715,8 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Move a project column
-    /// 
-    /// [GitHub API docs for move_column](https://docs.github.com/rest/reference/projects#move-a-project-column)
+    ///
+    /// [GitHub API docs for move_column](https://docs.github.com/rest/projects/columns#move-a-project-column)
     ///
     /// ---
     pub async fn move_column_async(&self, column_id: i32, body: PostProjectsMoveColumn) -> Result<HashMap<String, Value>, ProjectsMoveColumnError> {
@@ -2723,8 +2755,8 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Move a project column
-    /// 
-    /// [GitHub API docs for move_column](https://docs.github.com/rest/reference/projects#move-a-project-column)
+    ///
+    /// [GitHub API docs for move_column](https://docs.github.com/rest/projects/columns#move-a-project-column)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2766,8 +2798,8 @@ impl<'api> Projects<'api> {
     /// # Remove user as a collaborator
     ///
     /// Removes a collaborator from an organization project. You must be an organization owner or a project `admin` to remove a collaborator.
-    /// 
-    /// [GitHub API docs for remove_collaborator](https://docs.github.com/rest/reference/projects#remove-project-collaborator)
+    ///
+    /// [GitHub API docs for remove_collaborator](https://docs.github.com/rest/projects/collaborators#remove-user-as-a-collaborator)
     ///
     /// ---
     pub async fn remove_collaborator_async(&self, project_id: i32, username: &str) -> Result<(), ProjectsRemoveCollaboratorError> {
@@ -2809,8 +2841,8 @@ impl<'api> Projects<'api> {
     /// # Remove user as a collaborator
     ///
     /// Removes a collaborator from an organization project. You must be an organization owner or a project `admin` to remove a collaborator.
-    /// 
-    /// [GitHub API docs for remove_collaborator](https://docs.github.com/rest/reference/projects#remove-project-collaborator)
+    ///
+    /// [GitHub API docs for remove_collaborator](https://docs.github.com/rest/projects/collaborators#remove-user-as-a-collaborator)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2853,8 +2885,8 @@ impl<'api> Projects<'api> {
     /// # Update a project
     ///
     /// Updates a project board's information. Returns a `404 Not Found` status if projects are disabled. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
-    /// [GitHub API docs for update](https://docs.github.com/rest/reference/projects#update-a-project)
+    ///
+    /// [GitHub API docs for update](https://docs.github.com/rest/projects/projects#update-a-project)
     ///
     /// ---
     pub async fn update_async(&self, project_id: i32, body: PatchProjectsUpdate) -> Result<Project, ProjectsUpdateError> {
@@ -2897,8 +2929,8 @@ impl<'api> Projects<'api> {
     /// # Update a project
     ///
     /// Updates a project board's information. Returns a `404 Not Found` status if projects are disabled. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
-    /// 
-    /// [GitHub API docs for update](https://docs.github.com/rest/reference/projects#update-a-project)
+    ///
+    /// [GitHub API docs for update](https://docs.github.com/rest/projects/projects#update-a-project)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2940,8 +2972,8 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Update an existing project card
-    /// 
-    /// [GitHub API docs for update_card](https://docs.github.com/rest/reference/projects#update-a-project-card)
+    ///
+    /// [GitHub API docs for update_card](https://docs.github.com/rest/projects/cards#update-an-existing-project-card)
     ///
     /// ---
     pub async fn update_card_async(&self, card_id: i32, body: PatchProjectsUpdateCard) -> Result<ProjectCard, ProjectsUpdateCardError> {
@@ -2981,8 +3013,8 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Update an existing project card
-    /// 
-    /// [GitHub API docs for update_card](https://docs.github.com/rest/reference/projects#update-a-project-card)
+    ///
+    /// [GitHub API docs for update_card](https://docs.github.com/rest/projects/cards#update-an-existing-project-card)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3023,8 +3055,8 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Update an existing project column
-    /// 
-    /// [GitHub API docs for update_column](https://docs.github.com/rest/reference/projects#update-a-project-column)
+    ///
+    /// [GitHub API docs for update_column](https://docs.github.com/rest/projects/columns#update-an-existing-project-column)
     ///
     /// ---
     pub async fn update_column_async(&self, column_id: i32, body: PatchProjectsUpdateColumn) -> Result<ProjectColumn, ProjectsUpdateColumnError> {
@@ -3062,8 +3094,8 @@ impl<'api> Projects<'api> {
     /// ---
     ///
     /// # Update an existing project column
-    /// 
-    /// [GitHub API docs for update_column](https://docs.github.com/rest/reference/projects#update-a-project-column)
+    ///
+    /// [GitHub API docs for update_column](https://docs.github.com/rest/projects/columns#update-an-existing-project-column)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

@@ -1,6 +1,6 @@
 //! Method, error and parameter types for the Activity endpoint.
 #![allow(
-    unused_imports,
+    clippy::all
 )]
 /* 
  * GitHub v3 REST API
@@ -126,7 +126,7 @@ pub enum ActivityGetRepoSubscriptionError {
 
     // -- endpoint errors
 
-    #[error("Not Found if you don&#x27;t subscribe to the repository")]
+    #[error("Not Found if you don't subscribe to the repository")]
     Status404,
     #[error("Forbidden")]
     Status403(BasicError),
@@ -216,7 +216,7 @@ pub enum ActivityListNotificationsForAuthenticatedUserError {
     Status403(BasicError),
     #[error("Requires authentication")]
     Status401(BasicError),
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -257,7 +257,7 @@ pub enum ActivityListPublicEventsError {
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Service unavailable")]
-    Status503(GetSearchUsersResponse503),
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -459,7 +459,7 @@ pub enum ActivityListStargazersForRepoError {
 
     // -- endpoint errors
 
-    #[error("Validation failed")]
+    #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
@@ -545,6 +545,23 @@ pub enum ActivityMarkRepoNotificationsAsReadError {
 
     #[error("Reset Content")]
     Status205,
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Mark a thread as done](Activity::mark_thread_as_done_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActivityMarkThreadAsDoneError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -664,9 +681,9 @@ pub enum ActivityUnstarRepoForAuthenticatedUserError {
 /// Query parameters for the [List events for the authenticated user](Activity::list_events_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListEventsForAuthenticatedUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -675,17 +692,17 @@ impl ActivityListEventsForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -708,14 +725,14 @@ pub struct ActivityListNotificationsForAuthenticatedUserParams {
     all: Option<bool>, 
     /// If `true`, only shows notifications in which the user is directly participating or mentioned.
     participating: Option<bool>, 
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
     /// Only show notifications updated before the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     before: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100)
-    per_page: Option<u16>, 
-    /// Page number of the results to fetch.
-    page: Option<u16>
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>, 
+    /// The number of results per page (max 50). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>
 }
 
 impl ActivityListNotificationsForAuthenticatedUserParams {
@@ -725,73 +742,73 @@ impl ActivityListNotificationsForAuthenticatedUserParams {
 
     /// If `true`, show notifications marked as read.
     pub fn all(self, all: bool) -> Self {
-        Self { 
+        Self {
             all: Some(all),
             participating: self.participating, 
             since: self.since, 
             before: self.before, 
-            per_page: self.per_page, 
             page: self.page, 
+            per_page: self.per_page, 
         }
     }
 
     /// If `true`, only shows notifications in which the user is directly participating or mentioned.
     pub fn participating(self, participating: bool) -> Self {
-        Self { 
+        Self {
             all: self.all, 
             participating: Some(participating),
             since: self.since, 
             before: self.before, 
-            per_page: self.per_page, 
             page: self.page, 
+            per_page: self.per_page, 
         }
     }
 
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             all: self.all, 
             participating: self.participating, 
             since: Some(since),
             before: self.before, 
-            per_page: self.per_page, 
             page: self.page, 
+            per_page: self.per_page, 
         }
     }
 
     /// Only show notifications updated before the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn before(self, before: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             all: self.all, 
             participating: self.participating, 
             since: self.since, 
             before: Some(before),
+            page: self.page, 
             per_page: self.per_page, 
-            page: self.page, 
         }
     }
 
-    /// Results per page (max 100)
-    pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
-            all: self.all, 
-            participating: self.participating, 
-            since: self.since, 
-            before: self.before, 
-            per_page: Some(per_page),
-            page: self.page, 
-        }
-    }
-
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             all: self.all, 
             participating: self.participating, 
             since: self.since, 
             before: self.before, 
-            per_page: self.per_page, 
             page: Some(page),
+            per_page: self.per_page, 
+        }
+    }
+
+    /// The number of results per page (max 50). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            all: self.all, 
+            participating: self.participating, 
+            since: self.since, 
+            before: self.before, 
+            page: self.page, 
+            per_page: Some(per_page),
         }
     }
 }
@@ -808,9 +825,9 @@ impl<'enc> From<&'enc PerPage> for ActivityListNotificationsForAuthenticatedUser
 /// Query parameters for the [List organization events for the authenticated user](Activity::list_org_events_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListOrgEventsForAuthenticatedUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -819,17 +836,17 @@ impl ActivityListOrgEventsForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -848,9 +865,9 @@ impl<'enc> From<&'enc PerPage> for ActivityListOrgEventsForAuthenticatedUserPara
 /// Query parameters for the [List public events](Activity::list_public_events_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListPublicEventsParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -859,17 +876,17 @@ impl ActivityListPublicEventsParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -888,9 +905,9 @@ impl<'enc> From<&'enc PerPage> for ActivityListPublicEventsParams {
 /// Query parameters for the [List public events for a network of repositories](Activity::list_public_events_for_repo_network_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListPublicEventsForRepoNetworkParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -899,17 +916,17 @@ impl ActivityListPublicEventsForRepoNetworkParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -928,9 +945,9 @@ impl<'enc> From<&'enc PerPage> for ActivityListPublicEventsForRepoNetworkParams 
 /// Query parameters for the [List public events for a user](Activity::list_public_events_for_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListPublicEventsForUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -939,17 +956,17 @@ impl ActivityListPublicEventsForUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -968,9 +985,9 @@ impl<'enc> From<&'enc PerPage> for ActivityListPublicEventsForUserParams {
 /// Query parameters for the [List public organization events](Activity::list_public_org_events_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListPublicOrgEventsParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -979,17 +996,17 @@ impl ActivityListPublicOrgEventsParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1008,9 +1025,9 @@ impl<'enc> From<&'enc PerPage> for ActivityListPublicOrgEventsParams {
 /// Query parameters for the [List events received by the authenticated user](Activity::list_received_events_for_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListReceivedEventsForUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1019,17 +1036,17 @@ impl ActivityListReceivedEventsForUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1048,9 +1065,9 @@ impl<'enc> From<&'enc PerPage> for ActivityListReceivedEventsForUserParams {
 /// Query parameters for the [List public events received by a user](Activity::list_received_public_events_for_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListReceivedPublicEventsForUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1059,17 +1076,17 @@ impl ActivityListReceivedPublicEventsForUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1088,9 +1105,9 @@ impl<'enc> From<&'enc PerPage> for ActivityListReceivedPublicEventsForUserParams
 /// Query parameters for the [List repository events](Activity::list_repo_events_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListRepoEventsParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1099,17 +1116,17 @@ impl ActivityListRepoEventsParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1132,13 +1149,13 @@ pub struct ActivityListRepoNotificationsForAuthenticatedUserParams {
     all: Option<bool>, 
     /// If `true`, only shows notifications in which the user is directly participating or mentioned.
     participating: Option<bool>, 
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     since: Option<chrono::DateTime<chrono::Utc>>, 
     /// Only show notifications updated before the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     before: Option<chrono::DateTime<chrono::Utc>>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1149,7 +1166,7 @@ impl ActivityListRepoNotificationsForAuthenticatedUserParams {
 
     /// If `true`, show notifications marked as read.
     pub fn all(self, all: bool) -> Self {
-        Self { 
+        Self {
             all: Some(all),
             participating: self.participating, 
             since: self.since, 
@@ -1161,7 +1178,7 @@ impl ActivityListRepoNotificationsForAuthenticatedUserParams {
 
     /// If `true`, only shows notifications in which the user is directly participating or mentioned.
     pub fn participating(self, participating: bool) -> Self {
-        Self { 
+        Self {
             all: self.all, 
             participating: Some(participating),
             since: self.since, 
@@ -1171,9 +1188,9 @@ impl ActivityListRepoNotificationsForAuthenticatedUserParams {
         }
     }
 
-    /// Only show notifications updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    /// Only show results that were last updated after the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn since(self, since: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             all: self.all, 
             participating: self.participating, 
             since: Some(since),
@@ -1185,7 +1202,7 @@ impl ActivityListRepoNotificationsForAuthenticatedUserParams {
 
     /// Only show notifications updated before the given time. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn before(self, before: chrono::DateTime<chrono::Utc>) -> Self {
-        Self { 
+        Self {
             all: self.all, 
             participating: self.participating, 
             since: self.since, 
@@ -1195,9 +1212,9 @@ impl ActivityListRepoNotificationsForAuthenticatedUserParams {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             all: self.all, 
             participating: self.participating, 
             since: self.since, 
@@ -1207,9 +1224,9 @@ impl ActivityListRepoNotificationsForAuthenticatedUserParams {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             all: self.all, 
             participating: self.participating, 
             since: self.since, 
@@ -1232,13 +1249,13 @@ impl<'enc> From<&'enc PerPage> for ActivityListRepoNotificationsForAuthenticated
 /// Query parameters for the [List repositories starred by the authenticated user](Activity::list_repos_starred_by_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListReposStarredByAuthenticatedUserParams<'req> {
-    /// One of `created` (when the repository was starred) or `updated` (when it was last pushed to).
+    /// The property to sort the results by. `created` means when the repository was starred. `updated` means when the repository was last pushed to.
     sort: Option<&'req str>, 
-    /// One of `asc` (ascending) or `desc` (descending).
+    /// The direction to sort the results by.
     direction: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1247,9 +1264,9 @@ impl<'req> ActivityListReposStarredByAuthenticatedUserParams<'req> {
         Self::default()
     }
 
-    /// One of `created` (when the repository was starred) or `updated` (when it was last pushed to).
+    /// The property to sort the results by. `created` means when the repository was starred. `updated` means when the repository was last pushed to.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             sort: Some(sort),
             direction: self.direction, 
             per_page: self.per_page, 
@@ -1257,9 +1274,9 @@ impl<'req> ActivityListReposStarredByAuthenticatedUserParams<'req> {
         }
     }
 
-    /// One of `asc` (ascending) or `desc` (descending).
+    /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: Some(direction),
             per_page: self.per_page, 
@@ -1267,9 +1284,9 @@ impl<'req> ActivityListReposStarredByAuthenticatedUserParams<'req> {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: self.direction, 
             per_page: Some(per_page),
@@ -1277,9 +1294,9 @@ impl<'req> ActivityListReposStarredByAuthenticatedUserParams<'req> {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: self.direction, 
             per_page: self.per_page, 
@@ -1300,13 +1317,13 @@ impl<'enc> From<&'enc PerPage> for ActivityListReposStarredByAuthenticatedUserPa
 /// Query parameters for the [List repositories starred by a user](Activity::list_repos_starred_by_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListReposStarredByUserParams<'req> {
-    /// One of `created` (when the repository was starred) or `updated` (when it was last pushed to).
+    /// The property to sort the results by. `created` means when the repository was starred. `updated` means when the repository was last pushed to.
     sort: Option<&'req str>, 
-    /// One of `asc` (ascending) or `desc` (descending).
+    /// The direction to sort the results by.
     direction: Option<&'req str>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1315,9 +1332,9 @@ impl<'req> ActivityListReposStarredByUserParams<'req> {
         Self::default()
     }
 
-    /// One of `created` (when the repository was starred) or `updated` (when it was last pushed to).
+    /// The property to sort the results by. `created` means when the repository was starred. `updated` means when the repository was last pushed to.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             sort: Some(sort),
             direction: self.direction, 
             per_page: self.per_page, 
@@ -1325,9 +1342,9 @@ impl<'req> ActivityListReposStarredByUserParams<'req> {
         }
     }
 
-    /// One of `asc` (ascending) or `desc` (descending).
+    /// The direction to sort the results by.
     pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: Some(direction),
             per_page: self.per_page, 
@@ -1335,9 +1352,9 @@ impl<'req> ActivityListReposStarredByUserParams<'req> {
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: self.direction, 
             per_page: Some(per_page),
@@ -1345,9 +1362,9 @@ impl<'req> ActivityListReposStarredByUserParams<'req> {
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             sort: self.sort, 
             direction: self.direction, 
             per_page: self.per_page, 
@@ -1368,9 +1385,9 @@ impl<'enc> From<&'enc PerPage> for ActivityListReposStarredByUserParams<'enc> {
 /// Query parameters for the [List repositories watched by a user](Activity::list_repos_watched_by_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListReposWatchedByUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1379,17 +1396,17 @@ impl ActivityListReposWatchedByUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1408,9 +1425,9 @@ impl<'enc> From<&'enc PerPage> for ActivityListReposWatchedByUserParams {
 /// Query parameters for the [List stargazers](Activity::list_stargazers_for_repo_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListStargazersForRepoParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1419,17 +1436,17 @@ impl ActivityListStargazersForRepoParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1448,9 +1465,9 @@ impl<'enc> From<&'enc PerPage> for ActivityListStargazersForRepoParams {
 /// Query parameters for the [List repositories watched by the authenticated user](Activity::list_watched_repos_for_authenticated_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListWatchedReposForAuthenticatedUserParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1459,17 +1476,17 @@ impl ActivityListWatchedReposForAuthenticatedUserParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1488,9 +1505,9 @@ impl<'enc> From<&'enc PerPage> for ActivityListWatchedReposForAuthenticatedUserP
 /// Query parameters for the [List watchers](Activity::list_watchers_for_repo_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActivityListWatchersForRepoParams {
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>
 }
 
@@ -1499,17 +1516,17 @@ impl ActivityListWatchersForRepoParams {
         Self::default()
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             per_page: Some(per_page),
             page: self.page, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             per_page: self.per_page, 
             page: Some(page),
         }
@@ -1530,8 +1547,10 @@ impl<'api> Activity<'api> {
     /// ---
     ///
     /// # Check if a repository is starred by the authenticated user
-    /// 
-    /// [GitHub API docs for check_repo_is_starred_by_authenticated_user](https://docs.github.com/rest/reference/activity#check-if-a-repository-is-starred-by-the-authenticated-user)
+    ///
+    /// Whether the authenticated user has starred the repository.
+    ///
+    /// [GitHub API docs for check_repo_is_starred_by_authenticated_user](https://docs.github.com/rest/activity/starring#check-if-a-repository-is-starred-by-the-authenticated-user)
     ///
     /// ---
     pub async fn check_repo_is_starred_by_authenticated_user_async(&self, owner: &str, repo: &str) -> Result<(), ActivityCheckRepoIsStarredByAuthenticatedUserError> {
@@ -1570,8 +1589,10 @@ impl<'api> Activity<'api> {
     /// ---
     ///
     /// # Check if a repository is starred by the authenticated user
-    /// 
-    /// [GitHub API docs for check_repo_is_starred_by_authenticated_user](https://docs.github.com/rest/reference/activity#check-if-a-repository-is-starred-by-the-authenticated-user)
+    ///
+    /// Whether the authenticated user has starred the repository.
+    ///
+    /// [GitHub API docs for check_repo_is_starred_by_authenticated_user](https://docs.github.com/rest/activity/starring#check-if-a-repository-is-starred-by-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1612,9 +1633,9 @@ impl<'api> Activity<'api> {
     ///
     /// # Delete a repository subscription
     ///
-    /// This endpoint should only be used to stop watching a repository. To control whether or not you wish to receive notifications from a repository, [set the repository's subscription manually](https://docs.github.com/rest/reference/activity#set-a-repository-subscription).
-    /// 
-    /// [GitHub API docs for delete_repo_subscription](https://docs.github.com/rest/reference/activity#delete-a-repository-subscription)
+    /// This endpoint should only be used to stop watching a repository. To control whether or not you wish to receive notifications from a repository, [set the repository's subscription manually](https://docs.github.com/rest/activity/watching#set-a-repository-subscription).
+    ///
+    /// [GitHub API docs for delete_repo_subscription](https://docs.github.com/rest/activity/watching#delete-a-repository-subscription)
     ///
     /// ---
     pub async fn delete_repo_subscription_async(&self, owner: &str, repo: &str) -> Result<(), ActivityDeleteRepoSubscriptionError> {
@@ -1650,9 +1671,9 @@ impl<'api> Activity<'api> {
     ///
     /// # Delete a repository subscription
     ///
-    /// This endpoint should only be used to stop watching a repository. To control whether or not you wish to receive notifications from a repository, [set the repository's subscription manually](https://docs.github.com/rest/reference/activity#set-a-repository-subscription).
-    /// 
-    /// [GitHub API docs for delete_repo_subscription](https://docs.github.com/rest/reference/activity#delete-a-repository-subscription)
+    /// This endpoint should only be used to stop watching a repository. To control whether or not you wish to receive notifications from a repository, [set the repository's subscription manually](https://docs.github.com/rest/activity/watching#set-a-repository-subscription).
+    ///
+    /// [GitHub API docs for delete_repo_subscription](https://docs.github.com/rest/activity/watching#delete-a-repository-subscription)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1689,9 +1710,9 @@ impl<'api> Activity<'api> {
     ///
     /// # Delete a thread subscription
     ///
-    /// Mutes all future notifications for a conversation until you comment on the thread or get an **@mention**. If you are watching the repository of the thread, you will still receive notifications. To ignore future notifications for a repository you are watching, use the [Set a thread subscription](https://docs.github.com/rest/reference/activity#set-a-thread-subscription) endpoint and set `ignore` to `true`.
-    /// 
-    /// [GitHub API docs for delete_thread_subscription](https://docs.github.com/rest/reference/activity#delete-a-thread-subscription)
+    /// Mutes all future notifications for a conversation until you comment on the thread or get an **@mention**. If you are watching the repository of the thread, you will still receive notifications. To ignore future notifications for a repository you are watching, use the [Set a thread subscription](https://docs.github.com/rest/activity/notifications#set-a-thread-subscription) endpoint and set `ignore` to `true`.
+    ///
+    /// [GitHub API docs for delete_thread_subscription](https://docs.github.com/rest/activity/notifications#delete-a-thread-subscription)
     ///
     /// ---
     pub async fn delete_thread_subscription_async(&self, thread_id: i32) -> Result<(), ActivityDeleteThreadSubscriptionError> {
@@ -1730,9 +1751,9 @@ impl<'api> Activity<'api> {
     ///
     /// # Delete a thread subscription
     ///
-    /// Mutes all future notifications for a conversation until you comment on the thread or get an **@mention**. If you are watching the repository of the thread, you will still receive notifications. To ignore future notifications for a repository you are watching, use the [Set a thread subscription](https://docs.github.com/rest/reference/activity#set-a-thread-subscription) endpoint and set `ignore` to `true`.
-    /// 
-    /// [GitHub API docs for delete_thread_subscription](https://docs.github.com/rest/reference/activity#delete-a-thread-subscription)
+    /// Mutes all future notifications for a conversation until you comment on the thread or get an **@mention**. If you are watching the repository of the thread, you will still receive notifications. To ignore future notifications for a repository you are watching, use the [Set a thread subscription](https://docs.github.com/rest/activity/notifications#set-a-thread-subscription) endpoint and set `ignore` to `true`.
+    ///
+    /// [GitHub API docs for delete_thread_subscription](https://docs.github.com/rest/activity/notifications#delete-a-thread-subscription)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1772,19 +1793,22 @@ impl<'api> Activity<'api> {
     ///
     /// # Get feeds
     ///
-    /// GitHub provides several timeline resources in [Atom](http://en.wikipedia.org/wiki/Atom_(standard)) format. The Feeds API lists all the feeds available to the authenticated user:
+    /// Lists the feeds available to the authenticated user. The response provides a URL for each feed. You can then get a specific feed by sending a request to one of the feed URLs.
     /// 
     /// *   **Timeline**: The GitHub global public timeline
-    /// *   **User**: The public timeline for any user, using [URI template](https://docs.github.com/rest/overview/resources-in-the-rest-api#hypermedia)
+    /// *   **User**: The public timeline for any user, using `uri_template`. For more information, see "[Hypermedia](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#hypermedia)."
     /// *   **Current user public**: The public timeline for the authenticated user
     /// *   **Current user**: The private timeline for the authenticated user
     /// *   **Current user actor**: The private timeline for activity created by the authenticated user
     /// *   **Current user organizations**: The private timeline for the organizations the authenticated user is a member of.
     /// *   **Security advisories**: A collection of public announcements that provide information about security-related vulnerabilities in software on GitHub.
     /// 
-    /// **Note**: Private feeds are only returned when [authenticating via Basic Auth](https://docs.github.com/rest/overview/other-authentication-methods#basic-authentication) since current feed URIs use the older, non revocable auth tokens.
+    /// By default, timeline resources are returned in JSON. You can specify the `application/atom+xml` type in the `Accept` header to return timeline resources in Atom format. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
     /// 
-    /// [GitHub API docs for get_feeds](https://docs.github.com/rest/reference/activity#get-feeds)
+    /// > [!NOTE]
+    /// > Private feeds are only returned when [authenticating via Basic Auth](https://docs.github.com/rest/authentication/authenticating-to-the-rest-api#using-basic-authentication) since current feed URIs use the older, non revocable auth tokens.
+    ///
+    /// [GitHub API docs for get_feeds](https://docs.github.com/rest/activity/feeds#get-feeds)
     ///
     /// ---
     pub async fn get_feeds_async(&self) -> Result<Feed, ActivityGetFeedsError> {
@@ -1820,19 +1844,22 @@ impl<'api> Activity<'api> {
     ///
     /// # Get feeds
     ///
-    /// GitHub provides several timeline resources in [Atom](http://en.wikipedia.org/wiki/Atom_(standard)) format. The Feeds API lists all the feeds available to the authenticated user:
+    /// Lists the feeds available to the authenticated user. The response provides a URL for each feed. You can then get a specific feed by sending a request to one of the feed URLs.
     /// 
     /// *   **Timeline**: The GitHub global public timeline
-    /// *   **User**: The public timeline for any user, using [URI template](https://docs.github.com/rest/overview/resources-in-the-rest-api#hypermedia)
+    /// *   **User**: The public timeline for any user, using `uri_template`. For more information, see "[Hypermedia](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#hypermedia)."
     /// *   **Current user public**: The public timeline for the authenticated user
     /// *   **Current user**: The private timeline for the authenticated user
     /// *   **Current user actor**: The private timeline for activity created by the authenticated user
     /// *   **Current user organizations**: The private timeline for the organizations the authenticated user is a member of.
     /// *   **Security advisories**: A collection of public announcements that provide information about security-related vulnerabilities in software on GitHub.
     /// 
-    /// **Note**: Private feeds are only returned when [authenticating via Basic Auth](https://docs.github.com/rest/overview/other-authentication-methods#basic-authentication) since current feed URIs use the older, non revocable auth tokens.
+    /// By default, timeline resources are returned in JSON. You can specify the `application/atom+xml` type in the `Accept` header to return timeline resources in Atom format. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
     /// 
-    /// [GitHub API docs for get_feeds](https://docs.github.com/rest/reference/activity#get-feeds)
+    /// > [!NOTE]
+    /// > Private feeds are only returned when [authenticating via Basic Auth](https://docs.github.com/rest/authentication/authenticating-to-the-rest-api#using-basic-authentication) since current feed URIs use the older, non revocable auth tokens.
+    ///
+    /// [GitHub API docs for get_feeds](https://docs.github.com/rest/activity/feeds#get-feeds)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1868,8 +1895,10 @@ impl<'api> Activity<'api> {
     /// ---
     ///
     /// # Get a repository subscription
-    /// 
-    /// [GitHub API docs for get_repo_subscription](https://docs.github.com/rest/reference/activity#get-a-repository-subscription)
+    ///
+    /// Gets information about whether the authenticated user is subscribed to the repository.
+    ///
+    /// [GitHub API docs for get_repo_subscription](https://docs.github.com/rest/activity/watching#get-a-repository-subscription)
     ///
     /// ---
     pub async fn get_repo_subscription_async(&self, owner: &str, repo: &str) -> Result<RepositorySubscription, ActivityGetRepoSubscriptionError> {
@@ -1906,8 +1935,10 @@ impl<'api> Activity<'api> {
     /// ---
     ///
     /// # Get a repository subscription
-    /// 
-    /// [GitHub API docs for get_repo_subscription](https://docs.github.com/rest/reference/activity#get-a-repository-subscription)
+    ///
+    /// Gets information about whether the authenticated user is subscribed to the repository.
+    ///
+    /// [GitHub API docs for get_repo_subscription](https://docs.github.com/rest/activity/watching#get-a-repository-subscription)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1945,8 +1976,10 @@ impl<'api> Activity<'api> {
     /// ---
     ///
     /// # Get a thread
-    /// 
-    /// [GitHub API docs for get_thread](https://docs.github.com/rest/reference/activity#get-a-thread)
+    ///
+    /// Gets information about a notification thread.
+    ///
+    /// [GitHub API docs for get_thread](https://docs.github.com/rest/activity/notifications#get-a-thread)
     ///
     /// ---
     pub async fn get_thread_async(&self, thread_id: i32) -> Result<Thread, ActivityGetThreadError> {
@@ -1984,8 +2017,10 @@ impl<'api> Activity<'api> {
     /// ---
     ///
     /// # Get a thread
-    /// 
-    /// [GitHub API docs for get_thread](https://docs.github.com/rest/reference/activity#get-a-thread)
+    ///
+    /// Gets information about a notification thread.
+    ///
+    /// [GitHub API docs for get_thread](https://docs.github.com/rest/activity/notifications#get-a-thread)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2025,11 +2060,11 @@ impl<'api> Activity<'api> {
     ///
     /// # Get a thread subscription for the authenticated user
     ///
-    /// This checks to see if the current user is subscribed to a thread. You can also [get a repository subscription](https://docs.github.com/rest/reference/activity#get-a-repository-subscription).
+    /// This checks to see if the current user is subscribed to a thread. You can also [get a repository subscription](https://docs.github.com/rest/activity/watching#get-a-repository-subscription).
     /// 
     /// Note that subscriptions are only generated if a user is participating in a conversation--for example, they've replied to the thread, were **@mentioned**, or manually subscribe to a thread.
-    /// 
-    /// [GitHub API docs for get_thread_subscription_for_authenticated_user](https://docs.github.com/rest/reference/activity#get-a-thread-subscription-for-the-authenticated-user)
+    ///
+    /// [GitHub API docs for get_thread_subscription_for_authenticated_user](https://docs.github.com/rest/activity/notifications#get-a-thread-subscription-for-the-authenticated-user)
     ///
     /// ---
     pub async fn get_thread_subscription_for_authenticated_user_async(&self, thread_id: i32) -> Result<ThreadSubscription, ActivityGetThreadSubscriptionForAuthenticatedUserError> {
@@ -2068,11 +2103,11 @@ impl<'api> Activity<'api> {
     ///
     /// # Get a thread subscription for the authenticated user
     ///
-    /// This checks to see if the current user is subscribed to a thread. You can also [get a repository subscription](https://docs.github.com/rest/reference/activity#get-a-repository-subscription).
+    /// This checks to see if the current user is subscribed to a thread. You can also [get a repository subscription](https://docs.github.com/rest/activity/watching#get-a-repository-subscription).
     /// 
     /// Note that subscriptions are only generated if a user is participating in a conversation--for example, they've replied to the thread, were **@mentioned**, or manually subscribe to a thread.
-    /// 
-    /// [GitHub API docs for get_thread_subscription_for_authenticated_user](https://docs.github.com/rest/reference/activity#get-a-thread-subscription-for-the-authenticated-user)
+    ///
+    /// [GitHub API docs for get_thread_subscription_for_authenticated_user](https://docs.github.com/rest/activity/notifications#get-a-thread-subscription-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2114,7 +2149,10 @@ impl<'api> Activity<'api> {
     ///
     /// If you are authenticated as the given user, you will see your private events. Otherwise, you'll only see public events.
     /// 
-    /// [GitHub API docs for list_events_for_authenticated_user](https://docs.github.com/rest/reference/activity#list-events-for-the-authenticated-user)
+    /// > [!NOTE]
+    /// > This API is not built to serve real-time use cases. Depending on the time of day, event latency can be anywhere from 30s to 6h.
+    ///
+    /// [GitHub API docs for list_events_for_authenticated_user](https://docs.github.com/rest/activity/events#list-events-for-the-authenticated-user)
     ///
     /// ---
     pub async fn list_events_for_authenticated_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListEventsForAuthenticatedUserParams>>) -> Result<Vec<Event>, ActivityListEventsForAuthenticatedUserError> {
@@ -2156,7 +2194,10 @@ impl<'api> Activity<'api> {
     ///
     /// If you are authenticated as the given user, you will see your private events. Otherwise, you'll only see public events.
     /// 
-    /// [GitHub API docs for list_events_for_authenticated_user](https://docs.github.com/rest/reference/activity#list-events-for-the-authenticated-user)
+    /// > [!NOTE]
+    /// > This API is not built to serve real-time use cases. Depending on the time of day, event latency can be anywhere from 30s to 6h.
+    ///
+    /// [GitHub API docs for list_events_for_authenticated_user](https://docs.github.com/rest/activity/events#list-events-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2199,8 +2240,8 @@ impl<'api> Activity<'api> {
     /// # List notifications for the authenticated user
     ///
     /// List all notifications for the current user, sorted by most recently updated.
-    /// 
-    /// [GitHub API docs for list_notifications_for_authenticated_user](https://docs.github.com/rest/reference/activity#list-notifications-for-the-authenticated-user)
+    ///
+    /// [GitHub API docs for list_notifications_for_authenticated_user](https://docs.github.com/rest/activity/notifications#list-notifications-for-the-authenticated-user)
     ///
     /// ---
     pub async fn list_notifications_for_authenticated_user_async(&self, query_params: Option<impl Into<ActivityListNotificationsForAuthenticatedUserParams>>) -> Result<Vec<Thread>, ActivityListNotificationsForAuthenticatedUserError> {
@@ -2245,8 +2286,8 @@ impl<'api> Activity<'api> {
     /// # List notifications for the authenticated user
     ///
     /// List all notifications for the current user, sorted by most recently updated.
-    /// 
-    /// [GitHub API docs for list_notifications_for_authenticated_user](https://docs.github.com/rest/reference/activity#list-notifications-for-the-authenticated-user)
+    ///
+    /// [GitHub API docs for list_notifications_for_authenticated_user](https://docs.github.com/rest/activity/notifications#list-notifications-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2294,7 +2335,10 @@ impl<'api> Activity<'api> {
     ///
     /// This is the user's organization dashboard. You must be authenticated as the user to view this.
     /// 
-    /// [GitHub API docs for list_org_events_for_authenticated_user](https://docs.github.com/rest/reference/activity#list-organization-events-for-the-authenticated-user)
+    /// > [!NOTE]
+    /// > This API is not built to serve real-time use cases. Depending on the time of day, event latency can be anywhere from 30s to 6h.
+    ///
+    /// [GitHub API docs for list_org_events_for_authenticated_user](https://docs.github.com/rest/activity/events#list-organization-events-for-the-authenticated-user)
     ///
     /// ---
     pub async fn list_org_events_for_authenticated_user_async(&self, username: &str, org: &str, query_params: Option<impl Into<ActivityListOrgEventsForAuthenticatedUserParams>>) -> Result<Vec<Event>, ActivityListOrgEventsForAuthenticatedUserError> {
@@ -2336,7 +2380,10 @@ impl<'api> Activity<'api> {
     ///
     /// This is the user's organization dashboard. You must be authenticated as the user to view this.
     /// 
-    /// [GitHub API docs for list_org_events_for_authenticated_user](https://docs.github.com/rest/reference/activity#list-organization-events-for-the-authenticated-user)
+    /// > [!NOTE]
+    /// > This API is not built to serve real-time use cases. Depending on the time of day, event latency can be anywhere from 30s to 6h.
+    ///
+    /// [GitHub API docs for list_org_events_for_authenticated_user](https://docs.github.com/rest/activity/events#list-organization-events-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2378,9 +2425,10 @@ impl<'api> Activity<'api> {
     ///
     /// # List public events
     ///
-    /// We delay the public events feed by five minutes, which means the most recent event returned by the public events API actually occurred at least five minutes ago.
-    /// 
-    /// [GitHub API docs for list_public_events](https://docs.github.com/rest/reference/activity#list-public-events)
+    /// > [!NOTE]
+    /// > This API is not built to serve real-time use cases. Depending on the time of day, event latency can be anywhere from 30s to 6h.
+    ///
+    /// [GitHub API docs for list_public_events](https://docs.github.com/rest/activity/events#list-public-events)
     ///
     /// ---
     pub async fn list_public_events_async(&self, query_params: Option<impl Into<ActivityListPublicEventsParams>>) -> Result<Vec<Event>, ActivityListPublicEventsError> {
@@ -2423,9 +2471,10 @@ impl<'api> Activity<'api> {
     ///
     /// # List public events
     ///
-    /// We delay the public events feed by five minutes, which means the most recent event returned by the public events API actually occurred at least five minutes ago.
-    /// 
-    /// [GitHub API docs for list_public_events](https://docs.github.com/rest/reference/activity#list-public-events)
+    /// > [!NOTE]
+    /// > This API is not built to serve real-time use cases. Depending on the time of day, event latency can be anywhere from 30s to 6h.
+    ///
+    /// [GitHub API docs for list_public_events](https://docs.github.com/rest/activity/events#list-public-events)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2469,8 +2518,11 @@ impl<'api> Activity<'api> {
     /// ---
     ///
     /// # List public events for a network of repositories
-    /// 
-    /// [GitHub API docs for list_public_events_for_repo_network](https://docs.github.com/rest/reference/activity#list-public-events-for-a-network-of-repositories)
+    ///
+    /// > [!NOTE]
+    /// > This API is not built to serve real-time use cases. Depending on the time of day, event latency can be anywhere from 30s to 6h.
+    ///
+    /// [GitHub API docs for list_public_events_for_repo_network](https://docs.github.com/rest/activity/events#list-public-events-for-a-network-of-repositories)
     ///
     /// ---
     pub async fn list_public_events_for_repo_network_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListPublicEventsForRepoNetworkParams>>) -> Result<Vec<Event>, ActivityListPublicEventsForRepoNetworkError> {
@@ -2513,8 +2565,11 @@ impl<'api> Activity<'api> {
     /// ---
     ///
     /// # List public events for a network of repositories
-    /// 
-    /// [GitHub API docs for list_public_events_for_repo_network](https://docs.github.com/rest/reference/activity#list-public-events-for-a-network-of-repositories)
+    ///
+    /// > [!NOTE]
+    /// > This API is not built to serve real-time use cases. Depending on the time of day, event latency can be anywhere from 30s to 6h.
+    ///
+    /// [GitHub API docs for list_public_events_for_repo_network](https://docs.github.com/rest/activity/events#list-public-events-for-a-network-of-repositories)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2559,8 +2614,11 @@ impl<'api> Activity<'api> {
     /// ---
     ///
     /// # List public events for a user
-    /// 
-    /// [GitHub API docs for list_public_events_for_user](https://docs.github.com/rest/reference/activity#list-public-events-for-a-user)
+    ///
+    /// > [!NOTE]
+    /// > This API is not built to serve real-time use cases. Depending on the time of day, event latency can be anywhere from 30s to 6h.
+    ///
+    /// [GitHub API docs for list_public_events_for_user](https://docs.github.com/rest/activity/events#list-public-events-for-a-user)
     ///
     /// ---
     pub async fn list_public_events_for_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListPublicEventsForUserParams>>) -> Result<Vec<Event>, ActivityListPublicEventsForUserError> {
@@ -2599,8 +2657,11 @@ impl<'api> Activity<'api> {
     /// ---
     ///
     /// # List public events for a user
-    /// 
-    /// [GitHub API docs for list_public_events_for_user](https://docs.github.com/rest/reference/activity#list-public-events-for-a-user)
+    ///
+    /// > [!NOTE]
+    /// > This API is not built to serve real-time use cases. Depending on the time of day, event latency can be anywhere from 30s to 6h.
+    ///
+    /// [GitHub API docs for list_public_events_for_user](https://docs.github.com/rest/activity/events#list-public-events-for-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2641,8 +2702,11 @@ impl<'api> Activity<'api> {
     /// ---
     ///
     /// # List public organization events
-    /// 
-    /// [GitHub API docs for list_public_org_events](https://docs.github.com/rest/reference/activity#list-public-organization-events)
+    ///
+    /// > [!NOTE]
+    /// > This API is not built to serve real-time use cases. Depending on the time of day, event latency can be anywhere from 30s to 6h.
+    ///
+    /// [GitHub API docs for list_public_org_events](https://docs.github.com/rest/activity/events#list-public-organization-events)
     ///
     /// ---
     pub async fn list_public_org_events_async(&self, org: &str, query_params: Option<impl Into<ActivityListPublicOrgEventsParams>>) -> Result<Vec<Event>, ActivityListPublicOrgEventsError> {
@@ -2681,8 +2745,11 @@ impl<'api> Activity<'api> {
     /// ---
     ///
     /// # List public organization events
-    /// 
-    /// [GitHub API docs for list_public_org_events](https://docs.github.com/rest/reference/activity#list-public-organization-events)
+    ///
+    /// > [!NOTE]
+    /// > This API is not built to serve real-time use cases. Depending on the time of day, event latency can be anywhere from 30s to 6h.
+    ///
+    /// [GitHub API docs for list_public_org_events](https://docs.github.com/rest/activity/events#list-public-organization-events)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2724,9 +2791,13 @@ impl<'api> Activity<'api> {
     ///
     /// # List events received by the authenticated user
     ///
-    /// These are events that you've received by watching repos and following users. If you are authenticated as the given user, you will see private events. Otherwise, you'll only see public events.
+    /// These are events that you've received by watching repositories and following users. If you are authenticated as the
+    /// given user, you will see private events. Otherwise, you'll only see public events.
     /// 
-    /// [GitHub API docs for list_received_events_for_user](https://docs.github.com/rest/reference/activity#list-events-received-by-the-authenticated-user)
+    /// > [!NOTE]
+    /// > This API is not built to serve real-time use cases. Depending on the time of day, event latency can be anywhere from 30s to 6h.
+    ///
+    /// [GitHub API docs for list_received_events_for_user](https://docs.github.com/rest/activity/events#list-events-received-by-the-authenticated-user)
     ///
     /// ---
     pub async fn list_received_events_for_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListReceivedEventsForUserParams>>) -> Result<Vec<Event>, ActivityListReceivedEventsForUserError> {
@@ -2766,9 +2837,13 @@ impl<'api> Activity<'api> {
     ///
     /// # List events received by the authenticated user
     ///
-    /// These are events that you've received by watching repos and following users. If you are authenticated as the given user, you will see private events. Otherwise, you'll only see public events.
+    /// These are events that you've received by watching repositories and following users. If you are authenticated as the
+    /// given user, you will see private events. Otherwise, you'll only see public events.
     /// 
-    /// [GitHub API docs for list_received_events_for_user](https://docs.github.com/rest/reference/activity#list-events-received-by-the-authenticated-user)
+    /// > [!NOTE]
+    /// > This API is not built to serve real-time use cases. Depending on the time of day, event latency can be anywhere from 30s to 6h.
+    ///
+    /// [GitHub API docs for list_received_events_for_user](https://docs.github.com/rest/activity/events#list-events-received-by-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2809,8 +2884,11 @@ impl<'api> Activity<'api> {
     /// ---
     ///
     /// # List public events received by a user
-    /// 
-    /// [GitHub API docs for list_received_public_events_for_user](https://docs.github.com/rest/reference/activity#list-public-events-received-by-a-user)
+    ///
+    /// > [!NOTE]
+    /// > This API is not built to serve real-time use cases. Depending on the time of day, event latency can be anywhere from 30s to 6h.
+    ///
+    /// [GitHub API docs for list_received_public_events_for_user](https://docs.github.com/rest/activity/events#list-public-events-received-by-a-user)
     ///
     /// ---
     pub async fn list_received_public_events_for_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListReceivedPublicEventsForUserParams>>) -> Result<Vec<Event>, ActivityListReceivedPublicEventsForUserError> {
@@ -2849,8 +2927,11 @@ impl<'api> Activity<'api> {
     /// ---
     ///
     /// # List public events received by a user
-    /// 
-    /// [GitHub API docs for list_received_public_events_for_user](https://docs.github.com/rest/reference/activity#list-public-events-received-by-a-user)
+    ///
+    /// > [!NOTE]
+    /// > This API is not built to serve real-time use cases. Depending on the time of day, event latency can be anywhere from 30s to 6h.
+    ///
+    /// [GitHub API docs for list_received_public_events_for_user](https://docs.github.com/rest/activity/events#list-public-events-received-by-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2891,8 +2972,11 @@ impl<'api> Activity<'api> {
     /// ---
     ///
     /// # List repository events
-    /// 
-    /// [GitHub API docs for list_repo_events](https://docs.github.com/rest/reference/activity#list-repository-events)
+    ///
+    /// > [!NOTE]
+    /// > This API is not built to serve real-time use cases. Depending on the time of day, event latency can be anywhere from 30s to 6h.
+    ///
+    /// [GitHub API docs for list_repo_events](https://docs.github.com/rest/activity/events#list-repository-events)
     ///
     /// ---
     pub async fn list_repo_events_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListRepoEventsParams>>) -> Result<Vec<Event>, ActivityListRepoEventsError> {
@@ -2931,8 +3015,11 @@ impl<'api> Activity<'api> {
     /// ---
     ///
     /// # List repository events
-    /// 
-    /// [GitHub API docs for list_repo_events](https://docs.github.com/rest/reference/activity#list-repository-events)
+    ///
+    /// > [!NOTE]
+    /// > This API is not built to serve real-time use cases. Depending on the time of day, event latency can be anywhere from 30s to 6h.
+    ///
+    /// [GitHub API docs for list_repo_events](https://docs.github.com/rest/activity/events#list-repository-events)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -2974,9 +3061,9 @@ impl<'api> Activity<'api> {
     ///
     /// # List repository notifications for the authenticated user
     ///
-    /// List all notifications for the current user.
-    /// 
-    /// [GitHub API docs for list_repo_notifications_for_authenticated_user](https://docs.github.com/rest/reference/activity#list-repository-notifications-for-the-authenticated-user)
+    /// Lists all notifications for the current user in the specified repository.
+    ///
+    /// [GitHub API docs for list_repo_notifications_for_authenticated_user](https://docs.github.com/rest/activity/notifications#list-repository-notifications-for-the-authenticated-user)
     ///
     /// ---
     pub async fn list_repo_notifications_for_authenticated_user_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListRepoNotificationsForAuthenticatedUserParams>>) -> Result<Vec<Thread>, ActivityListRepoNotificationsForAuthenticatedUserError> {
@@ -3016,9 +3103,9 @@ impl<'api> Activity<'api> {
     ///
     /// # List repository notifications for the authenticated user
     ///
-    /// List all notifications for the current user.
-    /// 
-    /// [GitHub API docs for list_repo_notifications_for_authenticated_user](https://docs.github.com/rest/reference/activity#list-repository-notifications-for-the-authenticated-user)
+    /// Lists all notifications for the current user in the specified repository.
+    ///
+    /// [GitHub API docs for list_repo_notifications_for_authenticated_user](https://docs.github.com/rest/activity/notifications#list-repository-notifications-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3062,9 +3149,11 @@ impl<'api> Activity<'api> {
     ///
     /// Lists repositories the authenticated user has starred.
     /// 
-    /// You can also find out _when_ stars were created by passing the following custom [media type](https://docs.github.com/rest/overview/media-types/) via the `Accept` header:
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
     /// 
-    /// [GitHub API docs for list_repos_starred_by_authenticated_user](https://docs.github.com/rest/reference/activity#list-repositories-starred-by-the-authenticated-user)
+    /// - **`application/vnd.github.star+json`**: Includes a timestamp of when the star was created.
+    ///
+    /// [GitHub API docs for list_repos_starred_by_authenticated_user](https://docs.github.com/rest/activity/starring#list-repositories-starred-by-the-authenticated-user)
     ///
     /// ---
     pub async fn list_repos_starred_by_authenticated_user_async(&self, query_params: Option<impl Into<ActivityListReposStarredByAuthenticatedUserParams<'api>>>) -> Result<Vec<Repository>, ActivityListReposStarredByAuthenticatedUserError> {
@@ -3109,9 +3198,11 @@ impl<'api> Activity<'api> {
     ///
     /// Lists repositories the authenticated user has starred.
     /// 
-    /// You can also find out _when_ stars were created by passing the following custom [media type](https://docs.github.com/rest/overview/media-types/) via the `Accept` header:
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
     /// 
-    /// [GitHub API docs for list_repos_starred_by_authenticated_user](https://docs.github.com/rest/reference/activity#list-repositories-starred-by-the-authenticated-user)
+    /// - **`application/vnd.github.star+json`**: Includes a timestamp of when the star was created.
+    ///
+    /// [GitHub API docs for list_repos_starred_by_authenticated_user](https://docs.github.com/rest/activity/starring#list-repositories-starred-by-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3158,9 +3249,11 @@ impl<'api> Activity<'api> {
     ///
     /// Lists repositories a user has starred.
     /// 
-    /// You can also find out _when_ stars were created by passing the following custom [media type](https://docs.github.com/rest/overview/media-types/) via the `Accept` header:
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
     /// 
-    /// [GitHub API docs for list_repos_starred_by_user](https://docs.github.com/rest/reference/activity#list-repositories-starred-by-a-user)
+    /// - **`application/vnd.github.star+json`**: Includes a timestamp of when the star was created.
+    ///
+    /// [GitHub API docs for list_repos_starred_by_user](https://docs.github.com/rest/activity/starring#list-repositories-starred-by-a-user)
     ///
     /// ---
     pub async fn list_repos_starred_by_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListReposStarredByUserParams<'api>>>) -> Result<GetActivityListReposStarredByUserResponse200, ActivityListReposStarredByUserError> {
@@ -3202,9 +3295,11 @@ impl<'api> Activity<'api> {
     ///
     /// Lists repositories a user has starred.
     /// 
-    /// You can also find out _when_ stars were created by passing the following custom [media type](https://docs.github.com/rest/overview/media-types/) via the `Accept` header:
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
     /// 
-    /// [GitHub API docs for list_repos_starred_by_user](https://docs.github.com/rest/reference/activity#list-repositories-starred-by-a-user)
+    /// - **`application/vnd.github.star+json`**: Includes a timestamp of when the star was created.
+    ///
+    /// [GitHub API docs for list_repos_starred_by_user](https://docs.github.com/rest/activity/starring#list-repositories-starred-by-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3247,8 +3342,8 @@ impl<'api> Activity<'api> {
     /// # List repositories watched by a user
     ///
     /// Lists repositories a user is watching.
-    /// 
-    /// [GitHub API docs for list_repos_watched_by_user](https://docs.github.com/rest/reference/activity#list-repositories-watched-by-a-user)
+    ///
+    /// [GitHub API docs for list_repos_watched_by_user](https://docs.github.com/rest/activity/watching#list-repositories-watched-by-a-user)
     ///
     /// ---
     pub async fn list_repos_watched_by_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListReposWatchedByUserParams>>) -> Result<Vec<MinimalRepository>, ActivityListReposWatchedByUserError> {
@@ -3289,8 +3384,8 @@ impl<'api> Activity<'api> {
     /// # List repositories watched by a user
     ///
     /// Lists repositories a user is watching.
-    /// 
-    /// [GitHub API docs for list_repos_watched_by_user](https://docs.github.com/rest/reference/activity#list-repositories-watched-by-a-user)
+    ///
+    /// [GitHub API docs for list_repos_watched_by_user](https://docs.github.com/rest/activity/watching#list-repositories-watched-by-a-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3334,9 +3429,11 @@ impl<'api> Activity<'api> {
     ///
     /// Lists the people that have starred the repository.
     /// 
-    /// You can also find out _when_ stars were created by passing the following custom [media type](https://docs.github.com/rest/overview/media-types/) via the `Accept` header:
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
     /// 
-    /// [GitHub API docs for list_stargazers_for_repo](https://docs.github.com/rest/reference/activity#list-stargazers)
+    /// - **`application/vnd.github.star+json`**: Includes a timestamp of when the star was created.
+    ///
+    /// [GitHub API docs for list_stargazers_for_repo](https://docs.github.com/rest/activity/starring#list-stargazers)
     ///
     /// ---
     pub async fn list_stargazers_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListStargazersForRepoParams>>) -> Result<GetActivityListStargazersForRepoResponse200, ActivityListStargazersForRepoError> {
@@ -3379,9 +3476,11 @@ impl<'api> Activity<'api> {
     ///
     /// Lists the people that have starred the repository.
     /// 
-    /// You can also find out _when_ stars were created by passing the following custom [media type](https://docs.github.com/rest/overview/media-types/) via the `Accept` header:
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
     /// 
-    /// [GitHub API docs for list_stargazers_for_repo](https://docs.github.com/rest/reference/activity#list-stargazers)
+    /// - **`application/vnd.github.star+json`**: Includes a timestamp of when the star was created.
+    ///
+    /// [GitHub API docs for list_stargazers_for_repo](https://docs.github.com/rest/activity/starring#list-stargazers)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3425,8 +3524,8 @@ impl<'api> Activity<'api> {
     /// # List repositories watched by the authenticated user
     ///
     /// Lists repositories the authenticated user is watching.
-    /// 
-    /// [GitHub API docs for list_watched_repos_for_authenticated_user](https://docs.github.com/rest/reference/activity#list-repositories-watched-by-the-authenticated-user)
+    ///
+    /// [GitHub API docs for list_watched_repos_for_authenticated_user](https://docs.github.com/rest/activity/watching#list-repositories-watched-by-the-authenticated-user)
     ///
     /// ---
     pub async fn list_watched_repos_for_authenticated_user_async(&self, query_params: Option<impl Into<ActivityListWatchedReposForAuthenticatedUserParams>>) -> Result<Vec<MinimalRepository>, ActivityListWatchedReposForAuthenticatedUserError> {
@@ -3470,8 +3569,8 @@ impl<'api> Activity<'api> {
     /// # List repositories watched by the authenticated user
     ///
     /// Lists repositories the authenticated user is watching.
-    /// 
-    /// [GitHub API docs for list_watched_repos_for_authenticated_user](https://docs.github.com/rest/reference/activity#list-repositories-watched-by-the-authenticated-user)
+    ///
+    /// [GitHub API docs for list_watched_repos_for_authenticated_user](https://docs.github.com/rest/activity/watching#list-repositories-watched-by-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3517,8 +3616,8 @@ impl<'api> Activity<'api> {
     /// # List watchers
     ///
     /// Lists the people watching the specified repository.
-    /// 
-    /// [GitHub API docs for list_watchers_for_repo](https://docs.github.com/rest/reference/activity#list-watchers)
+    ///
+    /// [GitHub API docs for list_watchers_for_repo](https://docs.github.com/rest/activity/watching#list-watchers)
     ///
     /// ---
     pub async fn list_watchers_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListWatchersForRepoParams>>) -> Result<Vec<SimpleUser>, ActivityListWatchersForRepoError> {
@@ -3559,8 +3658,8 @@ impl<'api> Activity<'api> {
     /// # List watchers
     ///
     /// Lists the people watching the specified repository.
-    /// 
-    /// [GitHub API docs for list_watchers_for_repo](https://docs.github.com/rest/reference/activity#list-watchers)
+    ///
+    /// [GitHub API docs for list_watchers_for_repo](https://docs.github.com/rest/activity/watching#list-watchers)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3602,9 +3701,9 @@ impl<'api> Activity<'api> {
     ///
     /// # Mark notifications as read
     ///
-    /// Marks all notifications as "read" removes it from the [default view on GitHub](https://github.com/notifications). If the number of notifications is too large to complete in one request, you will receive a `202 Accepted` status and GitHub will run an asynchronous process to mark notifications as "read." To check whether any "unread" notifications remain, you can use the [List notifications for the authenticated user](https://docs.github.com/rest/reference/activity#list-notifications-for-the-authenticated-user) endpoint and pass the query parameter `all=false`.
-    /// 
-    /// [GitHub API docs for mark_notifications_as_read](https://docs.github.com/rest/reference/activity#mark-notifications-as-read)
+    /// Marks all notifications as "read" for the current user. If the number of notifications is too large to complete in one request, you will receive a `202 Accepted` status and GitHub will run an asynchronous process to mark notifications as "read." To check whether any "unread" notifications remain, you can use the [List notifications for the authenticated user](https://docs.github.com/rest/activity/notifications#list-notifications-for-the-authenticated-user) endpoint and pass the query parameter `all=false`.
+    ///
+    /// [GitHub API docs for mark_notifications_as_read](https://docs.github.com/rest/activity/notifications#mark-notifications-as-read)
     ///
     /// ---
     pub async fn mark_notifications_as_read_async(&self, body: PutActivityMarkNotificationsAsRead) -> Result<PostReposCreateDeploymentResponse202, ActivityMarkNotificationsAsReadError> {
@@ -3644,9 +3743,9 @@ impl<'api> Activity<'api> {
     ///
     /// # Mark notifications as read
     ///
-    /// Marks all notifications as "read" removes it from the [default view on GitHub](https://github.com/notifications). If the number of notifications is too large to complete in one request, you will receive a `202 Accepted` status and GitHub will run an asynchronous process to mark notifications as "read." To check whether any "unread" notifications remain, you can use the [List notifications for the authenticated user](https://docs.github.com/rest/reference/activity#list-notifications-for-the-authenticated-user) endpoint and pass the query parameter `all=false`.
-    /// 
-    /// [GitHub API docs for mark_notifications_as_read](https://docs.github.com/rest/reference/activity#mark-notifications-as-read)
+    /// Marks all notifications as "read" for the current user. If the number of notifications is too large to complete in one request, you will receive a `202 Accepted` status and GitHub will run an asynchronous process to mark notifications as "read." To check whether any "unread" notifications remain, you can use the [List notifications for the authenticated user](https://docs.github.com/rest/activity/notifications#list-notifications-for-the-authenticated-user) endpoint and pass the query parameter `all=false`.
+    ///
+    /// [GitHub API docs for mark_notifications_as_read](https://docs.github.com/rest/activity/notifications#mark-notifications-as-read)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3687,9 +3786,9 @@ impl<'api> Activity<'api> {
     ///
     /// # Mark repository notifications as read
     ///
-    /// Marks all notifications in a repository as "read" removes them from the [default view on GitHub](https://github.com/notifications). If the number of notifications is too large to complete in one request, you will receive a `202 Accepted` status and GitHub will run an asynchronous process to mark notifications as "read." To check whether any "unread" notifications remain, you can use the [List repository notifications for the authenticated user](https://docs.github.com/rest/reference/activity#list-repository-notifications-for-the-authenticated-user) endpoint and pass the query parameter `all=false`.
-    /// 
-    /// [GitHub API docs for mark_repo_notifications_as_read](https://docs.github.com/rest/reference/activity#mark-repository-notifications-as-read)
+    /// Marks all notifications in a repository as "read" for the current user. If the number of notifications is too large to complete in one request, you will receive a `202 Accepted` status and GitHub will run an asynchronous process to mark notifications as "read." To check whether any "unread" notifications remain, you can use the [List repository notifications for the authenticated user](https://docs.github.com/rest/activity/notifications#list-repository-notifications-for-the-authenticated-user) endpoint and pass the query parameter `all=false`.
+    ///
+    /// [GitHub API docs for mark_repo_notifications_as_read](https://docs.github.com/rest/activity/notifications#mark-repository-notifications-as-read)
     ///
     /// ---
     pub async fn mark_repo_notifications_as_read_async(&self, owner: &str, repo: &str, body: PutActivityMarkRepoNotificationsAsRead) -> Result<PutPullsUpdateBranchResponse202, ActivityMarkRepoNotificationsAsReadError> {
@@ -3726,9 +3825,9 @@ impl<'api> Activity<'api> {
     ///
     /// # Mark repository notifications as read
     ///
-    /// Marks all notifications in a repository as "read" removes them from the [default view on GitHub](https://github.com/notifications). If the number of notifications is too large to complete in one request, you will receive a `202 Accepted` status and GitHub will run an asynchronous process to mark notifications as "read." To check whether any "unread" notifications remain, you can use the [List repository notifications for the authenticated user](https://docs.github.com/rest/reference/activity#list-repository-notifications-for-the-authenticated-user) endpoint and pass the query parameter `all=false`.
-    /// 
-    /// [GitHub API docs for mark_repo_notifications_as_read](https://docs.github.com/rest/reference/activity#mark-repository-notifications-as-read)
+    /// Marks all notifications in a repository as "read" for the current user. If the number of notifications is too large to complete in one request, you will receive a `202 Accepted` status and GitHub will run an asynchronous process to mark notifications as "read." To check whether any "unread" notifications remain, you can use the [List repository notifications for the authenticated user](https://docs.github.com/rest/activity/notifications#list-repository-notifications-for-the-authenticated-user) endpoint and pass the query parameter `all=false`.
+    ///
+    /// [GitHub API docs for mark_repo_notifications_as_read](https://docs.github.com/rest/activity/notifications#mark-repository-notifications-as-read)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3764,9 +3863,88 @@ impl<'api> Activity<'api> {
 
     /// ---
     ///
+    /// # Mark a thread as done
+    ///
+    /// Marks a thread as "done." Marking a thread as "done" is equivalent to marking a notification in your notification inbox on GitHub as done: https://github.com/notifications.
+    ///
+    /// [GitHub API docs for mark_thread_as_done](https://docs.github.com/rest/activity/notifications#mark-a-thread-as-done)
+    ///
+    /// ---
+    pub async fn mark_thread_as_done_async(&self, thread_id: i32) -> Result<(), ActivityMarkThreadAsDoneError> {
+
+        let request_uri = format!("{}/notifications/threads/{}", super::GITHUB_BASE_API_URL, thread_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActivityMarkThreadAsDoneError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Mark a thread as done
+    ///
+    /// Marks a thread as "done." Marking a thread as "done" is equivalent to marking a notification in your notification inbox on GitHub as done: https://github.com/notifications.
+    ///
+    /// [GitHub API docs for mark_thread_as_done](https://docs.github.com/rest/activity/notifications#mark-a-thread-as-done)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn mark_thread_as_done(&self, thread_id: i32) -> Result<(), ActivityMarkThreadAsDoneError> {
+
+        let request_uri = format!("{}/notifications/threads/{}", super::GITHUB_BASE_API_URL, thread_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActivityMarkThreadAsDoneError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Mark a thread as read
-    /// 
-    /// [GitHub API docs for mark_thread_as_read](https://docs.github.com/rest/reference/activity#mark-a-thread-as-read)
+    ///
+    /// Marks a thread as "read." Marking a thread as "read" is equivalent to clicking a notification in your notification inbox on GitHub: https://github.com/notifications.
+    ///
+    /// [GitHub API docs for mark_thread_as_read](https://docs.github.com/rest/activity/notifications#mark-a-thread-as-read)
     ///
     /// ---
     pub async fn mark_thread_as_read_async(&self, thread_id: i32) -> Result<(), ActivityMarkThreadAsReadError> {
@@ -3803,8 +3981,10 @@ impl<'api> Activity<'api> {
     /// ---
     ///
     /// # Mark a thread as read
-    /// 
-    /// [GitHub API docs for mark_thread_as_read](https://docs.github.com/rest/reference/activity#mark-a-thread-as-read)
+    ///
+    /// Marks a thread as "read." Marking a thread as "read" is equivalent to clicking a notification in your notification inbox on GitHub: https://github.com/notifications.
+    ///
+    /// [GitHub API docs for mark_thread_as_read](https://docs.github.com/rest/activity/notifications#mark-a-thread-as-read)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3843,9 +4023,9 @@ impl<'api> Activity<'api> {
     ///
     /// # Set a repository subscription
     ///
-    /// If you would like to watch a repository, set `subscribed` to `true`. If you would like to ignore notifications made within a repository, set `ignored` to `true`. If you would like to stop watching a repository, [delete the repository's subscription](https://docs.github.com/rest/reference/activity#delete-a-repository-subscription) completely.
-    /// 
-    /// [GitHub API docs for set_repo_subscription](https://docs.github.com/rest/reference/activity#set-a-repository-subscription)
+    /// If you would like to watch a repository, set `subscribed` to `true`. If you would like to ignore notifications made within a repository, set `ignored` to `true`. If you would like to stop watching a repository, [delete the repository's subscription](https://docs.github.com/rest/activity/watching#delete-a-repository-subscription) completely.
+    ///
+    /// [GitHub API docs for set_repo_subscription](https://docs.github.com/rest/activity/watching#set-a-repository-subscription)
     ///
     /// ---
     pub async fn set_repo_subscription_async(&self, owner: &str, repo: &str, body: PutActivitySetRepoSubscription) -> Result<RepositorySubscription, ActivitySetRepoSubscriptionError> {
@@ -3881,9 +4061,9 @@ impl<'api> Activity<'api> {
     ///
     /// # Set a repository subscription
     ///
-    /// If you would like to watch a repository, set `subscribed` to `true`. If you would like to ignore notifications made within a repository, set `ignored` to `true`. If you would like to stop watching a repository, [delete the repository's subscription](https://docs.github.com/rest/reference/activity#delete-a-repository-subscription) completely.
-    /// 
-    /// [GitHub API docs for set_repo_subscription](https://docs.github.com/rest/reference/activity#set-a-repository-subscription)
+    /// If you would like to watch a repository, set `subscribed` to `true`. If you would like to ignore notifications made within a repository, set `ignored` to `true`. If you would like to stop watching a repository, [delete the repository's subscription](https://docs.github.com/rest/activity/watching#delete-a-repository-subscription) completely.
+    ///
+    /// [GitHub API docs for set_repo_subscription](https://docs.github.com/rest/activity/watching#set-a-repository-subscription)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -3924,9 +4104,9 @@ impl<'api> Activity<'api> {
     /// 
     /// You can also use this endpoint to subscribe to threads that you are currently not receiving notifications for or to subscribed to threads that you have previously ignored.
     /// 
-    /// Unsubscribing from a conversation in a repository that you are not watching is functionally equivalent to the [Delete a thread subscription](https://docs.github.com/rest/reference/activity#delete-a-thread-subscription) endpoint.
-    /// 
-    /// [GitHub API docs for set_thread_subscription](https://docs.github.com/rest/reference/activity#set-a-thread-subscription)
+    /// Unsubscribing from a conversation in a repository that you are not watching is functionally equivalent to the [Delete a thread subscription](https://docs.github.com/rest/activity/notifications#delete-a-thread-subscription) endpoint.
+    ///
+    /// [GitHub API docs for set_thread_subscription](https://docs.github.com/rest/activity/notifications#set-a-thread-subscription)
     ///
     /// ---
     pub async fn set_thread_subscription_async(&self, thread_id: i32, body: PutActivitySetThreadSubscription) -> Result<ThreadSubscription, ActivitySetThreadSubscriptionError> {
@@ -3969,9 +4149,9 @@ impl<'api> Activity<'api> {
     /// 
     /// You can also use this endpoint to subscribe to threads that you are currently not receiving notifications for or to subscribed to threads that you have previously ignored.
     /// 
-    /// Unsubscribing from a conversation in a repository that you are not watching is functionally equivalent to the [Delete a thread subscription](https://docs.github.com/rest/reference/activity#delete-a-thread-subscription) endpoint.
-    /// 
-    /// [GitHub API docs for set_thread_subscription](https://docs.github.com/rest/reference/activity#set-a-thread-subscription)
+    /// Unsubscribing from a conversation in a repository that you are not watching is functionally equivalent to the [Delete a thread subscription](https://docs.github.com/rest/activity/notifications#delete-a-thread-subscription) endpoint.
+    ///
+    /// [GitHub API docs for set_thread_subscription](https://docs.github.com/rest/activity/notifications#set-a-thread-subscription)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4011,9 +4191,9 @@ impl<'api> Activity<'api> {
     ///
     /// # Star a repository for the authenticated user
     ///
-    /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
-    /// 
-    /// [GitHub API docs for star_repo_for_authenticated_user](https://docs.github.com/rest/reference/activity#star-a-repository-for-the-authenticated-user)
+    /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP method](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
+    ///
+    /// [GitHub API docs for star_repo_for_authenticated_user](https://docs.github.com/rest/activity/starring#star-a-repository-for-the-authenticated-user)
     ///
     /// ---
     pub async fn star_repo_for_authenticated_user_async(&self, owner: &str, repo: &str) -> Result<(), ActivityStarRepoForAuthenticatedUserError> {
@@ -4053,9 +4233,9 @@ impl<'api> Activity<'api> {
     ///
     /// # Star a repository for the authenticated user
     ///
-    /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
-    /// 
-    /// [GitHub API docs for star_repo_for_authenticated_user](https://docs.github.com/rest/reference/activity#star-a-repository-for-the-authenticated-user)
+    /// Note that you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP method](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
+    ///
+    /// [GitHub API docs for star_repo_for_authenticated_user](https://docs.github.com/rest/activity/starring#star-a-repository-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -4095,8 +4275,10 @@ impl<'api> Activity<'api> {
     /// ---
     ///
     /// # Unstar a repository for the authenticated user
-    /// 
-    /// [GitHub API docs for unstar_repo_for_authenticated_user](https://docs.github.com/rest/reference/activity#unstar-a-repository-for-the-authenticated-user)
+    ///
+    /// Unstar a repository that the authenticated user has previously starred.
+    ///
+    /// [GitHub API docs for unstar_repo_for_authenticated_user](https://docs.github.com/rest/activity/starring#unstar-a-repository-for-the-authenticated-user)
     ///
     /// ---
     pub async fn unstar_repo_for_authenticated_user_async(&self, owner: &str, repo: &str) -> Result<(), ActivityUnstarRepoForAuthenticatedUserError> {
@@ -4135,8 +4317,10 @@ impl<'api> Activity<'api> {
     /// ---
     ///
     /// # Unstar a repository for the authenticated user
-    /// 
-    /// [GitHub API docs for unstar_repo_for_authenticated_user](https://docs.github.com/rest/reference/activity#unstar-a-repository-for-the-authenticated-user)
+    ///
+    /// Unstar a repository that the authenticated user has previously starred.
+    ///
+    /// [GitHub API docs for unstar_repo_for_authenticated_user](https://docs.github.com/rest/activity/starring#unstar-a-repository-for-the-authenticated-user)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

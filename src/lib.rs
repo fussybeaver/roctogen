@@ -44,20 +44,24 @@
 //!   - [RateLimit](https://docs.rs/roctogen/latest/roctogen/endpoints/rate_limit/struct.RateLimit.html)
 //!   - [Repos](https://docs.rs/roctogen/latest/roctogen/endpoints/repos/struct.Repos.html)
 //!   - [SecretScanning](https://docs.rs/roctogen/latest/roctogen/endpoints/secret_scanning/struct.SecretScanning.html)
+//!   - [SecurityAdvisories](https://docs.rs/roctogen/latest/roctogen/endpoints/security_advisories/struct.SecurityAdvisories.html)
 //!   - [Packages](https://docs.rs/roctogen/latest/roctogen/endpoints/packages/struct.Packages.html)
 //!   - [Search](https://docs.rs/roctogen/latest/roctogen/endpoints/search/struct.Search.html)
+//!   - [Classroom](https://docs.rs/roctogen/latest/roctogen/endpoints/classroom/struct.Classroom.html)
 //!   - [Teams](https://docs.rs/roctogen/latest/roctogen/endpoints/teams/struct.Teams.html)
+//!   - [Oidc](https://docs.rs/roctogen/latest/roctogen/endpoints/oidc/struct.Oidc.html)
 //!   - [Markdown](https://docs.rs/roctogen/latest/roctogen/endpoints/markdown/struct.Markdown.html)
-//!   - [OauthAuthorizations](https://docs.rs/roctogen/latest/roctogen/endpoints/oauth_authorizations/struct.OauthAuthorizations.html)
 //!   - [Actions](https://docs.rs/roctogen/latest/roctogen/endpoints/actions/struct.Actions.html)
 //!   - [Migrations](https://docs.rs/roctogen/latest/roctogen/endpoints/migrations/struct.Migrations.html)
 //!   - [Gists](https://docs.rs/roctogen/latest/roctogen/endpoints/gists/struct.Gists.html)
+//!   - [CodeSecurity](https://docs.rs/roctogen/latest/roctogen/endpoints/code_security/struct.CodeSecurity.html)
+//!   - [DependencyGraph](https://docs.rs/roctogen/latest/roctogen/endpoints/dependency_graph/struct.DependencyGraph.html)
+//!   - [Copilot](https://docs.rs/roctogen/latest/roctogen/endpoints/copilot/struct.Copilot.html)
+//!   - [Dependabot](https://docs.rs/roctogen/latest/roctogen/endpoints/dependabot/struct.Dependabot.html)
 //!   - [CodesOfConduct](https://docs.rs/roctogen/latest/roctogen/endpoints/codes_of_conduct/struct.CodesOfConduct.html)
 //!   - [Pulls](https://docs.rs/roctogen/latest/roctogen/endpoints/pulls/struct.Pulls.html)
 //!   - [Gitignore](https://docs.rs/roctogen/latest/roctogen/endpoints/gitignore/struct.Gitignore.html)
-//!   - [EnterpriseAdmin](https://docs.rs/roctogen/latest/roctogen/endpoints/enterprise_admin/struct.EnterpriseAdmin.html)
 //!   - [Git](https://docs.rs/roctogen/latest/roctogen/endpoints/git/struct.Git.html)
-//!   - [Scim](https://docs.rs/roctogen/latest/roctogen/endpoints/scim/struct.Scim.html)
 //!   - [CodeScanning](https://docs.rs/roctogen/latest/roctogen/endpoints/code_scanning/struct.CodeScanning.html)
 //!   - [Checks](https://docs.rs/roctogen/latest/roctogen/endpoints/checks/struct.Checks.html)
 //!   - [Billing](https://docs.rs/roctogen/latest/roctogen/endpoints/billing/struct.Billing.html)
@@ -133,15 +137,6 @@
 //!
 //! ```nocompile
 //! $ cargo build --features ureq
-//! ```
-//!
-//! # GitHub preview features
-//!
-//! GitHub supports a phased rollout of non-stable endpoints behind header flags. These are
-//! supported in this library through cargo feature flags. 
-//!
-//! ```nocompile
-//! $ cargo build --features squirrel-girl
 //! ```
 //!
 //! # Generate the API

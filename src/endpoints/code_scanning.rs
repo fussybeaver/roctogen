@@ -1,6 +1,6 @@
 //! Method, error and parameter types for the CodeScanning endpoint.
 #![allow(
-    unused_imports,
+    clippy::all
 )]
 /* 
  * GitHub v3 REST API
@@ -31,6 +31,29 @@ pub fn new(auth: &Auth) -> CodeScanning {
     CodeScanning { auth }
 }
 
+/// Errors for the [Create a CodeQL variant analysis](CodeScanning::create_variant_analysis_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodeScanningCreateVariantAnalysisError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Unable to process variant analysis submission")]
+    Status422(BasicError),
+    #[error("Service unavailable")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
 /// Errors for the [Delete a code scanning analysis from a repository](CodeScanning::delete_analysis_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeScanningDeleteAnalysisError {
@@ -46,12 +69,12 @@ pub enum CodeScanningDeleteAnalysisError {
 
     #[error("Bad Request")]
     Status400(BasicError),
-    #[error("Response if the repository is archived or if github advanced security is not enabled for this repository")]
+    #[error("Response if the repository is archived or if GitHub Advanced Security is not enabled for this repository")]
     Status403(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Service unavailable")]
-    Status503(GetSearchUsersResponse503),
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -76,7 +99,7 @@ pub enum CodeScanningGetAlertError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Service unavailable")]
-    Status503(GetSearchUsersResponse503),
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -99,7 +122,55 @@ pub enum CodeScanningGetAnalysisError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Service unavailable")]
-    Status503(GetSearchUsersResponse503),
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get a CodeQL database for a repository](CodeScanning::get_codeql_database_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodeScanningGetCodeqlDatabaseError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Found")]
+    Status302,
+    #[error("Response if GitHub Advanced Security is not enabled for this repository")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Service unavailable")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get a code scanning default setup configuration](CodeScanning::get_default_setup_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodeScanningGetDefaultSetupError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Response if GitHub Advanced Security is not enabled for this repository")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Service unavailable")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -122,7 +193,49 @@ pub enum CodeScanningGetSarifError {
     #[error("Not Found if the sarif id does not match any upload")]
     Status404,
     #[error("Service unavailable")]
-    Status503(GetSearchUsersResponse503),
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get the summary of a CodeQL variant analysis](CodeScanning::get_variant_analysis_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodeScanningGetVariantAnalysisError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Service unavailable")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Get the analysis status of a repository in a CodeQL variant analysis](CodeScanning::get_variant_analysis_repo_task_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodeScanningGetVariantAnalysisRepoTaskError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Service unavailable")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -145,7 +258,28 @@ pub enum CodeScanningListAlertInstancesError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Service unavailable")]
-    Status503(GetSearchUsersResponse503),
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List code scanning alerts for an organization](CodeScanning::list_alerts_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodeScanningListAlertsForOrgError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Service unavailable")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -170,7 +304,30 @@ pub enum CodeScanningListAlertsForRepoError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Service unavailable")]
-    Status503(GetSearchUsersResponse503),
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [List CodeQL databases for a repository](CodeScanning::list_codeql_databases_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodeScanningListCodeqlDatabasesError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Response if GitHub Advanced Security is not enabled for this repository")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Service unavailable")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -193,7 +350,7 @@ pub enum CodeScanningListRecentAnalysesError {
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Service unavailable")]
-    Status503(GetSearchUsersResponse503),
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -211,12 +368,39 @@ pub enum CodeScanningUpdateAlertError {
 
     // -- endpoint errors
 
-    #[error("Response if the repository is archived or if github advanced security is not enabled for this repository")]
+    #[error("Response if the repository is archived or if GitHub Advanced Security is not enabled for this repository")]
     Status403(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Service unavailable")]
-    Status503(GetSearchUsersResponse503),
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+/// Errors for the [Update a code scanning default setup configuration](CodeScanning::update_default_setup_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodeScanningUpdateDefaultSetupError {
+    #[error(transparent)]
+    AdapterError(#[from] AdapterError),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    SerdeUrl(#[from] serde_urlencoded::ser::Error),
+
+
+    // -- endpoint errors
+
+    #[error("Response")]
+    Status202(CodeScanningDefaultSetupUpdateResponse),
+    #[error("Response if the repository is archived or if GitHub Advanced Security is not enabled for this repository")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Response if there is already a validation run in progress with a different default setup configuration")]
+    Status409(BasicError),
+    #[error("Service unavailable")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -236,14 +420,14 @@ pub enum CodeScanningUploadSarifError {
 
     #[error("Bad Request if the sarif field is invalid")]
     Status400,
-    #[error("Response if the repository is archived or if github advanced security is not enabled for this repository")]
+    #[error("Response if the repository is archived or if GitHub Advanced Security is not enabled for this repository")]
     Status403(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Payload Too Large if the sarif field is too large")]
     Status413,
     #[error("Service unavailable")]
-    Status503(GetSearchUsersResponse503),
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -263,7 +447,7 @@ impl<'req> CodeScanningDeleteAnalysisParams<'req> {
 
     /// Allow deletion if the specified analysis is the last in a set. If you attempt to delete the final analysis in a set without setting this parameter to `true`, you'll get a 400 response with the message: `Analysis is last of its type and deletion may result in the loss of historical alert data. Please specify confirm_delete.`
     pub fn confirm_delete(self, confirm_delete: &'req str) -> Self {
-        Self { 
+        Self {
             confirm_delete: Some(confirm_delete),
         }
     }
@@ -272,12 +456,14 @@ impl<'req> CodeScanningDeleteAnalysisParams<'req> {
 /// Query parameters for the [List instances of a code scanning alert](CodeScanning::list_alert_instances_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct CodeScanningListAlertInstancesParams {
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
     /// The Git reference for the results you want to list. The `ref` for a branch can be formatted either as `refs/heads/<branch name>` or simply `<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
-    git_ref: Option<CodeScanningRef>
+    git_ref: Option<CodeScanningRef>, 
+    /// The number of the pull request for the results you want to list.
+    pr: Option<i32>
 }
 
 impl CodeScanningListAlertInstancesParams {
@@ -285,35 +471,248 @@ impl CodeScanningListAlertInstancesParams {
         Self::default()
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             page: Some(page),
             per_page: self.per_page, 
             git_ref: self.git_ref, 
+            pr: self.pr, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             page: self.page, 
             per_page: Some(per_page),
             git_ref: self.git_ref, 
+            pr: self.pr, 
         }
     }
 
     /// The Git reference for the results you want to list. The `ref` for a branch can be formatted either as `refs/heads/<branch name>` or simply `<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
     pub fn git_ref(self, git_ref: CodeScanningRef) -> Self {
-        Self { 
+        Self {
             page: self.page, 
             per_page: self.per_page, 
             git_ref: Some(git_ref),
+            pr: self.pr, 
+        }
+    }
+
+    /// The number of the pull request for the results you want to list.
+    pub fn pr(self, pr: i32) -> Self {
+        Self {
+            page: self.page, 
+            per_page: self.per_page, 
+            git_ref: self.git_ref, 
+            pr: Some(pr),
         }
     }
 }
 
 impl<'enc> From<&'enc PerPage> for CodeScanningListAlertInstancesParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [List code scanning alerts for an organization](CodeScanning::list_alerts_for_org_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct CodeScanningListAlertsForOrgParams<'req> {
+    /// The name of a code scanning tool. Only results by this tool will be listed. You can specify the tool by using either `tool_name` or `tool_guid`, but not both.
+    tool_name: Option<CodeScanningAnalysisToolName>, 
+    /// The GUID of a code scanning tool. Only results by this tool will be listed. Note that some code scanning tools may not include a GUID in their analysis data. You can specify the tool by using either `tool_guid` or `tool_name`, but not both.
+    tool_guid: Option<CodeScanningAnalysisToolGuid>, 
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    before: Option<&'req str>, 
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    after: Option<&'req str>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>, 
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The direction to sort the results by.
+    direction: Option<&'req str>, 
+    /// If specified, only code scanning alerts with this state will be returned.
+    state: Option<CodeScanningAlertStateQuery>, 
+    /// The property by which to sort the results.
+    sort: Option<&'req str>, 
+    /// If specified, only code scanning alerts with this severity will be returned.
+    severity: Option<CodeScanningAlertSeverity>
+}
+
+impl<'req> CodeScanningListAlertsForOrgParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The name of a code scanning tool. Only results by this tool will be listed. You can specify the tool by using either `tool_name` or `tool_guid`, but not both.
+    pub fn tool_name(self, tool_name: CodeScanningAnalysisToolName) -> Self {
+        Self {
+            tool_name: Some(tool_name),
+            tool_guid: self.tool_guid, 
+            before: self.before, 
+            after: self.after, 
+            page: self.page, 
+            per_page: self.per_page, 
+            direction: self.direction, 
+            state: self.state, 
+            sort: self.sort, 
+            severity: self.severity, 
+        }
+    }
+
+    /// The GUID of a code scanning tool. Only results by this tool will be listed. Note that some code scanning tools may not include a GUID in their analysis data. You can specify the tool by using either `tool_guid` or `tool_name`, but not both.
+    pub fn tool_guid(self, tool_guid: CodeScanningAnalysisToolGuid) -> Self {
+        Self {
+            tool_name: self.tool_name, 
+            tool_guid: Some(tool_guid),
+            before: self.before, 
+            after: self.after, 
+            page: self.page, 
+            per_page: self.per_page, 
+            direction: self.direction, 
+            state: self.state, 
+            sort: self.sort, 
+            severity: self.severity, 
+        }
+    }
+
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn before(self, before: &'req str) -> Self {
+        Self {
+            tool_name: self.tool_name, 
+            tool_guid: self.tool_guid, 
+            before: Some(before),
+            after: self.after, 
+            page: self.page, 
+            per_page: self.per_page, 
+            direction: self.direction, 
+            state: self.state, 
+            sort: self.sort, 
+            severity: self.severity, 
+        }
+    }
+
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn after(self, after: &'req str) -> Self {
+        Self {
+            tool_name: self.tool_name, 
+            tool_guid: self.tool_guid, 
+            before: self.before, 
+            after: Some(after),
+            page: self.page, 
+            per_page: self.per_page, 
+            direction: self.direction, 
+            state: self.state, 
+            sort: self.sort, 
+            severity: self.severity, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            tool_name: self.tool_name, 
+            tool_guid: self.tool_guid, 
+            before: self.before, 
+            after: self.after, 
+            page: Some(page),
+            per_page: self.per_page, 
+            direction: self.direction, 
+            state: self.state, 
+            sort: self.sort, 
+            severity: self.severity, 
+        }
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            tool_name: self.tool_name, 
+            tool_guid: self.tool_guid, 
+            before: self.before, 
+            after: self.after, 
+            page: self.page, 
+            per_page: Some(per_page),
+            direction: self.direction, 
+            state: self.state, 
+            sort: self.sort, 
+            severity: self.severity, 
+        }
+    }
+
+    /// The direction to sort the results by.
+    pub fn direction(self, direction: &'req str) -> Self {
+        Self {
+            tool_name: self.tool_name, 
+            tool_guid: self.tool_guid, 
+            before: self.before, 
+            after: self.after, 
+            page: self.page, 
+            per_page: self.per_page, 
+            direction: Some(direction),
+            state: self.state, 
+            sort: self.sort, 
+            severity: self.severity, 
+        }
+    }
+
+    /// If specified, only code scanning alerts with this state will be returned.
+    pub fn state(self, state: CodeScanningAlertStateQuery) -> Self {
+        Self {
+            tool_name: self.tool_name, 
+            tool_guid: self.tool_guid, 
+            before: self.before, 
+            after: self.after, 
+            page: self.page, 
+            per_page: self.per_page, 
+            direction: self.direction, 
+            state: Some(state),
+            sort: self.sort, 
+            severity: self.severity, 
+        }
+    }
+
+    /// The property by which to sort the results.
+    pub fn sort(self, sort: &'req str) -> Self {
+        Self {
+            tool_name: self.tool_name, 
+            tool_guid: self.tool_guid, 
+            before: self.before, 
+            after: self.after, 
+            page: self.page, 
+            per_page: self.per_page, 
+            direction: self.direction, 
+            state: self.state, 
+            sort: Some(sort),
+            severity: self.severity, 
+        }
+    }
+
+    /// If specified, only code scanning alerts with this severity will be returned.
+    pub fn severity(self, severity: CodeScanningAlertSeverity) -> Self {
+        Self {
+            tool_name: self.tool_name, 
+            tool_guid: self.tool_guid, 
+            before: self.before, 
+            after: self.after, 
+            page: self.page, 
+            per_page: self.per_page, 
+            direction: self.direction, 
+            state: self.state, 
+            sort: self.sort, 
+            severity: Some(severity),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for CodeScanningListAlertsForOrgParams<'enc> {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -329,18 +728,22 @@ pub struct CodeScanningListAlertsForRepoParams<'req> {
     tool_name: Option<CodeScanningAnalysisToolName>, 
     /// The GUID of a code scanning tool. Only results by this tool will be listed. Note that some code scanning tools may not include a GUID in their analysis data. You can specify the tool by using either `tool_guid` or `tool_name`, but not both.
     tool_guid: Option<CodeScanningAnalysisToolGuid>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
     /// The Git reference for the results you want to list. The `ref` for a branch can be formatted either as `refs/heads/<branch name>` or simply `<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
     git_ref: Option<CodeScanningRef>, 
-    /// One of `asc` (ascending) or `desc` (descending).
+    /// The number of the pull request for the results you want to list.
+    pr: Option<i32>, 
+    /// The direction to sort the results by.
     direction: Option<&'req str>, 
-    /// Can be one of `created`, `updated`, `number`.
+    /// The property by which to sort the results.
     sort: Option<&'req str>, 
-    /// Set to `open`, `fixed`, or `dismissed` to list code scanning alerts in a specific state.
-    state: Option<CodeScanningAlertState>
+    /// If specified, only code scanning alerts with this state will be returned.
+    state: Option<CodeScanningAlertStateQuery>, 
+    /// If specified, only code scanning alerts with this severity will be returned.
+    severity: Option<CodeScanningAlertSeverity>
 }
 
 impl<'req> CodeScanningListAlertsForRepoParams<'req> {
@@ -350,113 +753,161 @@ impl<'req> CodeScanningListAlertsForRepoParams<'req> {
 
     /// The name of a code scanning tool. Only results by this tool will be listed. You can specify the tool by using either `tool_name` or `tool_guid`, but not both.
     pub fn tool_name(self, tool_name: CodeScanningAnalysisToolName) -> Self {
-        Self { 
+        Self {
             tool_name: Some(tool_name),
             tool_guid: self.tool_guid, 
             page: self.page, 
             per_page: self.per_page, 
             git_ref: self.git_ref, 
+            pr: self.pr, 
             direction: self.direction, 
             sort: self.sort, 
             state: self.state, 
+            severity: self.severity, 
         }
     }
 
     /// The GUID of a code scanning tool. Only results by this tool will be listed. Note that some code scanning tools may not include a GUID in their analysis data. You can specify the tool by using either `tool_guid` or `tool_name`, but not both.
     pub fn tool_guid(self, tool_guid: CodeScanningAnalysisToolGuid) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: Some(tool_guid),
             page: self.page, 
             per_page: self.per_page, 
             git_ref: self.git_ref, 
+            pr: self.pr, 
             direction: self.direction, 
             sort: self.sort, 
             state: self.state, 
+            severity: self.severity, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: Some(page),
             per_page: self.per_page, 
             git_ref: self.git_ref, 
+            pr: self.pr, 
             direction: self.direction, 
             sort: self.sort, 
             state: self.state, 
+            severity: self.severity, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: self.page, 
             per_page: Some(per_page),
             git_ref: self.git_ref, 
+            pr: self.pr, 
             direction: self.direction, 
             sort: self.sort, 
             state: self.state, 
+            severity: self.severity, 
         }
     }
 
     /// The Git reference for the results you want to list. The `ref` for a branch can be formatted either as `refs/heads/<branch name>` or simply `<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
     pub fn git_ref(self, git_ref: CodeScanningRef) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: self.page, 
             per_page: self.per_page, 
             git_ref: Some(git_ref),
+            pr: self.pr, 
             direction: self.direction, 
             sort: self.sort, 
             state: self.state, 
+            severity: self.severity, 
         }
     }
 
-    /// One of `asc` (ascending) or `desc` (descending).
-    pub fn direction(self, direction: &'req str) -> Self {
-        Self { 
+    /// The number of the pull request for the results you want to list.
+    pub fn pr(self, pr: i32) -> Self {
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: self.page, 
             per_page: self.per_page, 
             git_ref: self.git_ref, 
+            pr: Some(pr),
+            direction: self.direction, 
+            sort: self.sort, 
+            state: self.state, 
+            severity: self.severity, 
+        }
+    }
+
+    /// The direction to sort the results by.
+    pub fn direction(self, direction: &'req str) -> Self {
+        Self {
+            tool_name: self.tool_name, 
+            tool_guid: self.tool_guid, 
+            page: self.page, 
+            per_page: self.per_page, 
+            git_ref: self.git_ref, 
+            pr: self.pr, 
             direction: Some(direction),
             sort: self.sort, 
             state: self.state, 
+            severity: self.severity, 
         }
     }
 
-    /// Can be one of `created`, `updated`, `number`.
+    /// The property by which to sort the results.
     pub fn sort(self, sort: &'req str) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: self.page, 
             per_page: self.per_page, 
             git_ref: self.git_ref, 
+            pr: self.pr, 
             direction: self.direction, 
             sort: Some(sort),
             state: self.state, 
+            severity: self.severity, 
         }
     }
 
-    /// Set to `open`, `fixed`, or `dismissed` to list code scanning alerts in a specific state.
-    pub fn state(self, state: CodeScanningAlertState) -> Self {
-        Self { 
+    /// If specified, only code scanning alerts with this state will be returned.
+    pub fn state(self, state: CodeScanningAlertStateQuery) -> Self {
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: self.page, 
             per_page: self.per_page, 
             git_ref: self.git_ref, 
+            pr: self.pr, 
             direction: self.direction, 
             sort: self.sort, 
             state: Some(state),
+            severity: self.severity, 
+        }
+    }
+
+    /// If specified, only code scanning alerts with this severity will be returned.
+    pub fn severity(self, severity: CodeScanningAlertSeverity) -> Self {
+        Self {
+            tool_name: self.tool_name, 
+            tool_guid: self.tool_guid, 
+            page: self.page, 
+            per_page: self.per_page, 
+            git_ref: self.git_ref, 
+            pr: self.pr, 
+            direction: self.direction, 
+            sort: self.sort, 
+            state: self.state, 
+            severity: Some(severity),
         }
     }
 }
@@ -472,100 +923,169 @@ impl<'enc> From<&'enc PerPage> for CodeScanningListAlertsForRepoParams<'enc> {
 }
 /// Query parameters for the [List code scanning analyses for a repository](CodeScanning::list_recent_analyses_async()) endpoint.
 #[derive(Default, Serialize)]
-pub struct CodeScanningListRecentAnalysesParams {
+pub struct CodeScanningListRecentAnalysesParams<'req> {
     /// The name of a code scanning tool. Only results by this tool will be listed. You can specify the tool by using either `tool_name` or `tool_guid`, but not both.
     tool_name: Option<CodeScanningAnalysisToolName>, 
     /// The GUID of a code scanning tool. Only results by this tool will be listed. Note that some code scanning tools may not include a GUID in their analysis data. You can specify the tool by using either `tool_guid` or `tool_name`, but not both.
     tool_guid: Option<CodeScanningAnalysisToolGuid>, 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>, 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
+    /// The number of the pull request for the results you want to list.
+    pr: Option<i32>, 
     /// The Git reference for the analyses you want to list. The `ref` for a branch can be formatted either as `refs/heads/<branch name>` or simply `<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
     git_ref: Option<CodeScanningRef>, 
     /// Filter analyses belonging to the same SARIF upload.
-    sarif_id: Option<CodeScanningAnalysisSarifId>
+    sarif_id: Option<CodeScanningAnalysisSarifId>, 
+    /// The direction to sort the results by.
+    direction: Option<&'req str>, 
+    /// The property by which to sort the results.
+    sort: Option<&'req str>
 }
 
-impl CodeScanningListRecentAnalysesParams {
+impl<'req> CodeScanningListRecentAnalysesParams<'req> {
     pub fn new() -> Self {
         Self::default()
     }
 
     /// The name of a code scanning tool. Only results by this tool will be listed. You can specify the tool by using either `tool_name` or `tool_guid`, but not both.
     pub fn tool_name(self, tool_name: CodeScanningAnalysisToolName) -> Self {
-        Self { 
+        Self {
             tool_name: Some(tool_name),
             tool_guid: self.tool_guid, 
             page: self.page, 
             per_page: self.per_page, 
+            pr: self.pr, 
             git_ref: self.git_ref, 
             sarif_id: self.sarif_id, 
+            direction: self.direction, 
+            sort: self.sort, 
         }
     }
 
     /// The GUID of a code scanning tool. Only results by this tool will be listed. Note that some code scanning tools may not include a GUID in their analysis data. You can specify the tool by using either `tool_guid` or `tool_name`, but not both.
     pub fn tool_guid(self, tool_guid: CodeScanningAnalysisToolGuid) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: Some(tool_guid),
             page: self.page, 
             per_page: self.per_page, 
+            pr: self.pr, 
             git_ref: self.git_ref, 
             sarif_id: self.sarif_id, 
+            direction: self.direction, 
+            sort: self.sort, 
         }
     }
 
-    /// Page number of the results to fetch.
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn page(self, page: u16) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: Some(page),
             per_page: self.per_page, 
+            pr: self.pr, 
             git_ref: self.git_ref, 
             sarif_id: self.sarif_id, 
+            direction: self.direction, 
+            sort: self.sort, 
         }
     }
 
-    /// Results per page (max 100)
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     pub fn per_page(self, per_page: u16) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: self.page, 
             per_page: Some(per_page),
+            pr: self.pr, 
             git_ref: self.git_ref, 
             sarif_id: self.sarif_id, 
+            direction: self.direction, 
+            sort: self.sort, 
+        }
+    }
+
+    /// The number of the pull request for the results you want to list.
+    pub fn pr(self, pr: i32) -> Self {
+        Self {
+            tool_name: self.tool_name, 
+            tool_guid: self.tool_guid, 
+            page: self.page, 
+            per_page: self.per_page, 
+            pr: Some(pr),
+            git_ref: self.git_ref, 
+            sarif_id: self.sarif_id, 
+            direction: self.direction, 
+            sort: self.sort, 
         }
     }
 
     /// The Git reference for the analyses you want to list. The `ref` for a branch can be formatted either as `refs/heads/<branch name>` or simply `<branch name>`. To reference a pull request use `refs/pull/<number>/merge`.
     pub fn git_ref(self, git_ref: CodeScanningRef) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: self.page, 
             per_page: self.per_page, 
+            pr: self.pr, 
             git_ref: Some(git_ref),
             sarif_id: self.sarif_id, 
+            direction: self.direction, 
+            sort: self.sort, 
         }
     }
 
     /// Filter analyses belonging to the same SARIF upload.
     pub fn sarif_id(self, sarif_id: CodeScanningAnalysisSarifId) -> Self {
-        Self { 
+        Self {
             tool_name: self.tool_name, 
             tool_guid: self.tool_guid, 
             page: self.page, 
             per_page: self.per_page, 
+            pr: self.pr, 
             git_ref: self.git_ref, 
             sarif_id: Some(sarif_id),
+            direction: self.direction, 
+            sort: self.sort, 
+        }
+    }
+
+    /// The direction to sort the results by.
+    pub fn direction(self, direction: &'req str) -> Self {
+        Self {
+            tool_name: self.tool_name, 
+            tool_guid: self.tool_guid, 
+            page: self.page, 
+            per_page: self.per_page, 
+            pr: self.pr, 
+            git_ref: self.git_ref, 
+            sarif_id: self.sarif_id, 
+            direction: Some(direction),
+            sort: self.sort, 
+        }
+    }
+
+    /// The property by which to sort the results.
+    pub fn sort(self, sort: &'req str) -> Self {
+        Self {
+            tool_name: self.tool_name, 
+            tool_guid: self.tool_guid, 
+            page: self.page, 
+            per_page: self.per_page, 
+            pr: self.pr, 
+            git_ref: self.git_ref, 
+            sarif_id: self.sarif_id, 
+            direction: self.direction, 
+            sort: Some(sort),
         }
     }
 }
 
-impl<'enc> From<&'enc PerPage> for CodeScanningListRecentAnalysesParams {
+impl<'enc> From<&'enc PerPage> for CodeScanningListRecentAnalysesParams<'enc> {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -578,12 +1098,106 @@ impl<'enc> From<&'enc PerPage> for CodeScanningListRecentAnalysesParams {
 impl<'api> CodeScanning<'api> {
     /// ---
     ///
+    /// # Create a CodeQL variant analysis
+    ///
+    /// Creates a new CodeQL variant analysis, which will run a CodeQL query against one or more repositories.
+    /// 
+    /// Get started by learning more about [running CodeQL queries at scale with Multi-Repository Variant Analysis](https://docs.github.com/code-security/codeql-for-vs-code/getting-started-with-codeql-for-vs-code/running-codeql-queries-at-scale-with-multi-repository-variant-analysis).
+    /// 
+    /// Use the `owner` and `repo` parameters in the URL to specify the controller repository that
+    /// will be used for running GitHub Actions workflows and storing the results of the CodeQL variant analysis.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_variant_analysis](https://docs.github.com/rest/code-scanning/code-scanning#create-a-codeql-variant-analysis)
+    ///
+    /// ---
+    pub async fn create_variant_analysis_async(&self, owner: &str, repo: &str, body: PostCodeScanningCreateVariantAnalysis) -> Result<CodeScanningVariantAnalysis, CodeScanningCreateVariantAnalysisError> {
+
+        let request_uri = format!("{}/repos/{}/{}/code-scanning/codeql/variant-analyses", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostCodeScanningCreateVariantAnalysis::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(CodeScanningCreateVariantAnalysisError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(CodeScanningCreateVariantAnalysisError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(CodeScanningCreateVariantAnalysisError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodeScanningCreateVariantAnalysisError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create a CodeQL variant analysis
+    ///
+    /// Creates a new CodeQL variant analysis, which will run a CodeQL query against one or more repositories.
+    /// 
+    /// Get started by learning more about [running CodeQL queries at scale with Multi-Repository Variant Analysis](https://docs.github.com/code-security/codeql-for-vs-code/getting-started-with-codeql-for-vs-code/running-codeql-queries-at-scale-with-multi-repository-variant-analysis).
+    /// 
+    /// Use the `owner` and `repo` parameters in the URL to specify the controller repository that
+    /// will be used for running GitHub Actions workflows and storing the results of the CodeQL variant analysis.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_variant_analysis](https://docs.github.com/rest/code-scanning/code-scanning#create-a-codeql-variant-analysis)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn create_variant_analysis(&self, owner: &str, repo: &str, body: PostCodeScanningCreateVariantAnalysis) -> Result<CodeScanningVariantAnalysis, CodeScanningCreateVariantAnalysisError> {
+
+        let request_uri = format!("{}/repos/{}/{}/code-scanning/codeql/variant-analyses", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PostCodeScanningCreateVariantAnalysis::from_json(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(CodeScanningCreateVariantAnalysisError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(CodeScanningCreateVariantAnalysisError::Status422(crate::adapters::to_json(github_response)?)),
+                503 => Err(CodeScanningCreateVariantAnalysisError::Status503(crate::adapters::to_json(github_response)?)),
+                code => Err(CodeScanningCreateVariantAnalysisError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Delete a code scanning analysis from a repository
     ///
-    /// Deletes a specified code scanning analysis from a repository. For
-    /// private repositories, you must use an access token with the `repo` scope. For public repositories,
-    /// you must use an access token with `public_repo` scope.
-    /// GitHub Apps must have the `security_events` write permission to use this endpoint.
+    /// Deletes a specified code scanning analysis from a repository.
     /// 
     /// You can delete one analysis at a time.
     /// To delete a series of analyses, start with the most recent analysis and work backwards.
@@ -603,8 +1217,7 @@ impl<'api> CodeScanning<'api> {
     /// 
     /// * `ref`
     /// * `tool`
-    /// * `analysis_key`
-    /// * `environment`
+    /// * `category`
     /// 
     /// If you attempt to delete an analysis that is not the most recent in a set,
     /// you'll get a 400 response with the message:
@@ -647,7 +1260,9 @@ impl<'api> CodeScanning<'api> {
     /// 
     /// The above process assumes that you want to remove all trace of the tool's analyses from the GitHub user interface, for the specified repository, and it therefore uses the `confirm_delete_url` value. Alternatively, you could use the `next_analysis_url` value, which would leave the last analysis in each set undeleted to avoid removing a tool's analysis entirely.
     /// 
-    /// [GitHub API docs for delete_analysis](https://docs.github.com/rest/reference/code-scanning#delete-a-code-scanning-analysis-from-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for delete_analysis](https://docs.github.com/rest/code-scanning/code-scanning#delete-a-code-scanning-analysis-from-a-repository)
     ///
     /// ---
     pub async fn delete_analysis_async(&self, owner: &str, repo: &str, analysis_id: i32, query_params: Option<impl Into<CodeScanningDeleteAnalysisParams<'api>>>) -> Result<CodeScanningAnalysisDeletion, CodeScanningDeleteAnalysisError> {
@@ -691,10 +1306,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// # Delete a code scanning analysis from a repository
     ///
-    /// Deletes a specified code scanning analysis from a repository. For
-    /// private repositories, you must use an access token with the `repo` scope. For public repositories,
-    /// you must use an access token with `public_repo` scope.
-    /// GitHub Apps must have the `security_events` write permission to use this endpoint.
+    /// Deletes a specified code scanning analysis from a repository.
     /// 
     /// You can delete one analysis at a time.
     /// To delete a series of analyses, start with the most recent analysis and work backwards.
@@ -714,8 +1326,7 @@ impl<'api> CodeScanning<'api> {
     /// 
     /// * `ref`
     /// * `tool`
-    /// * `analysis_key`
-    /// * `environment`
+    /// * `category`
     /// 
     /// If you attempt to delete an analysis that is not the most recent in a set,
     /// you'll get a 400 response with the message:
@@ -758,7 +1369,9 @@ impl<'api> CodeScanning<'api> {
     /// 
     /// The above process assumes that you want to remove all trace of the tool's analyses from the GitHub user interface, for the specified repository, and it therefore uses the `confirm_delete_url` value. Alternatively, you could use the `next_analysis_url` value, which would leave the last analysis in each set undeleted to avoid removing a tool's analysis entirely.
     /// 
-    /// [GitHub API docs for delete_analysis](https://docs.github.com/rest/reference/code-scanning#delete-a-code-scanning-analysis-from-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for delete_analysis](https://docs.github.com/rest/code-scanning/code-scanning#delete-a-code-scanning-analysis-from-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -804,12 +1417,11 @@ impl<'api> CodeScanning<'api> {
     ///
     /// # Get a code scanning alert
     ///
-    /// Gets a single code scanning alert. You must use an access token with the `security_events` scope to use this endpoint with private repos, the `public_repo` scope also grants permission to read security events on public repos only. GitHub Apps must have the `security_events` read permission to use this endpoint.
+    /// Gets a single code scanning alert.
     /// 
-    /// **Deprecation notice**:
-    /// The instances field is deprecated and will, in future, not be included in the response for this endpoint. The example response reflects this change. The same information can now be retrieved via a GET request to the URL specified by `instances_url`.
-    /// 
-    /// [GitHub API docs for get_alert](https://docs.github.com/rest/reference/code-scanning#get-a-code-scanning-alert)
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for get_alert](https://docs.github.com/rest/code-scanning/code-scanning#get-a-code-scanning-alert)
     ///
     /// ---
     pub async fn get_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber) -> Result<CodeScanningAlert, CodeScanningGetAlertError> {
@@ -849,12 +1461,11 @@ impl<'api> CodeScanning<'api> {
     ///
     /// # Get a code scanning alert
     ///
-    /// Gets a single code scanning alert. You must use an access token with the `security_events` scope to use this endpoint with private repos, the `public_repo` scope also grants permission to read security events on public repos only. GitHub Apps must have the `security_events` read permission to use this endpoint.
+    /// Gets a single code scanning alert.
     /// 
-    /// **Deprecation notice**:
-    /// The instances field is deprecated and will, in future, not be included in the response for this endpoint. The example response reflects this change. The same information can now be retrieved via a GET request to the URL specified by `instances_url`.
-    /// 
-    /// [GitHub API docs for get_alert](https://docs.github.com/rest/reference/code-scanning#get-a-code-scanning-alert)
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for get_alert](https://docs.github.com/rest/code-scanning/code-scanning#get-a-code-scanning-alert)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -896,9 +1507,6 @@ impl<'api> CodeScanning<'api> {
     /// # Get a code scanning analysis for a repository
     ///
     /// Gets a specified code scanning analysis for a repository.
-    /// You must use an access token with the `security_events` scope to use this endpoint with private repos,
-    /// the `public_repo` scope also grants permission to read security events on public repos only.
-    /// GitHub Apps must have the `security_events` read permission to use this endpoint.
     /// 
     /// The default JSON response contains fields that describe the analysis.
     /// This includes the Git reference and commit SHA to which the analysis relates,
@@ -910,15 +1518,16 @@ impl<'api> CodeScanning<'api> {
     /// For very old analyses this data is not available,
     /// and `0` is returned in this field.
     /// 
-    /// If you use the Accept header `application/sarif+json`,
-    /// the response contains the analysis data that was uploaded.
-    /// This is formatted as
-    /// [SARIF version 2.1.0](https://docs.oasis-open.org/sarif/sarif/v2.1.0/cs01/sarif-v2.1.0-cs01.html).
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
     /// 
-    /// [GitHub API docs for get_analysis](https://docs.github.com/rest/reference/code-scanning#get-a-code-scanning-analysis-for-a-repository)
+    /// - **`application/sarif+json`**: Instead of returning a summary of the analysis, this endpoint returns a subset of the analysis data that was uploaded. The data is formatted as [SARIF version 2.1.0](https://docs.oasis-open.org/sarif/sarif/v2.1.0/cs01/sarif-v2.1.0-cs01.html). It also returns additional data such as the `github/alertNumber` and `github/alertUrl` properties.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for get_analysis](https://docs.github.com/rest/code-scanning/code-scanning#get-a-code-scanning-analysis-for-a-repository)
     ///
     /// ---
-    pub async fn get_analysis_async(&self, owner: &str, repo: &str, analysis_id: i32) -> Result<String, CodeScanningGetAnalysisError> {
+    pub async fn get_analysis_async(&self, owner: &str, repo: &str, analysis_id: i32) -> Result<CodeScanningAnalysis, CodeScanningGetAnalysisError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/analyses/{}", super::GITHUB_BASE_API_URL, owner, repo, analysis_id);
 
@@ -955,9 +1564,6 @@ impl<'api> CodeScanning<'api> {
     /// # Get a code scanning analysis for a repository
     ///
     /// Gets a specified code scanning analysis for a repository.
-    /// You must use an access token with the `security_events` scope to use this endpoint with private repos,
-    /// the `public_repo` scope also grants permission to read security events on public repos only.
-    /// GitHub Apps must have the `security_events` read permission to use this endpoint.
     /// 
     /// The default JSON response contains fields that describe the analysis.
     /// This includes the Git reference and commit SHA to which the analysis relates,
@@ -969,16 +1575,17 @@ impl<'api> CodeScanning<'api> {
     /// For very old analyses this data is not available,
     /// and `0` is returned in this field.
     /// 
-    /// If you use the Accept header `application/sarif+json`,
-    /// the response contains the analysis data that was uploaded.
-    /// This is formatted as
-    /// [SARIF version 2.1.0](https://docs.oasis-open.org/sarif/sarif/v2.1.0/cs01/sarif-v2.1.0-cs01.html).
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
     /// 
-    /// [GitHub API docs for get_analysis](https://docs.github.com/rest/reference/code-scanning#get-a-code-scanning-analysis-for-a-repository)
+    /// - **`application/sarif+json`**: Instead of returning a summary of the analysis, this endpoint returns a subset of the analysis data that was uploaded. The data is formatted as [SARIF version 2.1.0](https://docs.oasis-open.org/sarif/sarif/v2.1.0/cs01/sarif-v2.1.0-cs01.html). It also returns additional data such as the `github/alertNumber` and `github/alertUrl` properties.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for get_analysis](https://docs.github.com/rest/code-scanning/code-scanning#get-a-code-scanning-analysis-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_analysis(&self, owner: &str, repo: &str, analysis_id: i32) -> Result<String, CodeScanningGetAnalysisError> {
+    pub fn get_analysis(&self, owner: &str, repo: &str, analysis_id: i32) -> Result<CodeScanningAnalysis, CodeScanningGetAnalysisError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/analyses/{}", super::GITHUB_BASE_API_URL, owner, repo, analysis_id);
 
@@ -1012,11 +1619,200 @@ impl<'api> CodeScanning<'api> {
 
     /// ---
     ///
+    /// # Get a CodeQL database for a repository
+    ///
+    /// Gets a CodeQL database for a language in a repository.
+    /// 
+    /// By default this endpoint returns JSON metadata about the CodeQL database. To
+    /// download the CodeQL database binary content, set the `Accept` header of the request
+    /// to [`application/zip`](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types), and make sure
+    /// your HTTP client is configured to follow redirects or use the `Location` header
+    /// to make a second request to get the redirect URL.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for get_codeql_database](https://docs.github.com/rest/code-scanning/code-scanning#get-a-codeql-database-for-a-repository)
+    ///
+    /// ---
+    pub async fn get_codeql_database_async(&self, owner: &str, repo: &str, language: &str) -> Result<CodeScanningCodeqlDatabase, CodeScanningGetCodeqlDatabaseError> {
+
+        let request_uri = format!("{}/repos/{}/{}/code-scanning/codeql/databases/{}", super::GITHUB_BASE_API_URL, owner, repo, language);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                302 => Err(CodeScanningGetCodeqlDatabaseError::Status302),
+                403 => Err(CodeScanningGetCodeqlDatabaseError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodeScanningGetCodeqlDatabaseError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(CodeScanningGetCodeqlDatabaseError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodeScanningGetCodeqlDatabaseError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get a CodeQL database for a repository
+    ///
+    /// Gets a CodeQL database for a language in a repository.
+    /// 
+    /// By default this endpoint returns JSON metadata about the CodeQL database. To
+    /// download the CodeQL database binary content, set the `Accept` header of the request
+    /// to [`application/zip`](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types), and make sure
+    /// your HTTP client is configured to follow redirects or use the `Location` header
+    /// to make a second request to get the redirect URL.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for get_codeql_database](https://docs.github.com/rest/code-scanning/code-scanning#get-a-codeql-database-for-a-repository)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_codeql_database(&self, owner: &str, repo: &str, language: &str) -> Result<CodeScanningCodeqlDatabase, CodeScanningGetCodeqlDatabaseError> {
+
+        let request_uri = format!("{}/repos/{}/{}/code-scanning/codeql/databases/{}", super::GITHUB_BASE_API_URL, owner, repo, language);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                302 => Err(CodeScanningGetCodeqlDatabaseError::Status302),
+                403 => Err(CodeScanningGetCodeqlDatabaseError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodeScanningGetCodeqlDatabaseError::Status404(crate::adapters::to_json(github_response)?)),
+                503 => Err(CodeScanningGetCodeqlDatabaseError::Status503(crate::adapters::to_json(github_response)?)),
+                code => Err(CodeScanningGetCodeqlDatabaseError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get a code scanning default setup configuration
+    ///
+    /// Gets a code scanning default setup configuration.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for get_default_setup](https://docs.github.com/rest/code-scanning/code-scanning#get-a-code-scanning-default-setup-configuration)
+    ///
+    /// ---
+    pub async fn get_default_setup_async(&self, owner: &str, repo: &str) -> Result<CodeScanningDefaultSetup, CodeScanningGetDefaultSetupError> {
+
+        let request_uri = format!("{}/repos/{}/{}/code-scanning/default-setup", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(CodeScanningGetDefaultSetupError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodeScanningGetDefaultSetupError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(CodeScanningGetDefaultSetupError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodeScanningGetDefaultSetupError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get a code scanning default setup configuration
+    ///
+    /// Gets a code scanning default setup configuration.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for get_default_setup](https://docs.github.com/rest/code-scanning/code-scanning#get-a-code-scanning-default-setup-configuration)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_default_setup(&self, owner: &str, repo: &str) -> Result<CodeScanningDefaultSetup, CodeScanningGetDefaultSetupError> {
+
+        let request_uri = format!("{}/repos/{}/{}/code-scanning/default-setup", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(CodeScanningGetDefaultSetupError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodeScanningGetDefaultSetupError::Status404(crate::adapters::to_json(github_response)?)),
+                503 => Err(CodeScanningGetDefaultSetupError::Status503(crate::adapters::to_json(github_response)?)),
+                code => Err(CodeScanningGetDefaultSetupError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Get information about a SARIF upload
     ///
-    /// Gets information about a SARIF upload, including the status and the URL of the analysis that was uploaded so that you can retrieve details of the analysis. For more information, see "[Get a code scanning analysis for a repository](/rest/reference/code-scanning#get-a-code-scanning-analysis-for-a-repository)." You must use an access token with the `security_events` scope to use this endpoint with private repos, the `public_repo` scope also grants permission to read security events on public repos only. GitHub Apps must have the `security_events` read permission to use this endpoint.
-    /// 
-    /// [GitHub API docs for get_sarif](https://docs.github.com/rest/reference/code-scanning#list-recent-code-scanning-analyses-for-a-repository)
+    /// Gets information about a SARIF upload, including the status and the URL of the analysis that was uploaded so that you can retrieve details of the analysis. For more information, see "[Get a code scanning analysis for a repository](/rest/code-scanning/code-scanning#get-a-code-scanning-analysis-for-a-repository)."
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for get_sarif](https://docs.github.com/rest/code-scanning/code-scanning#get-information-about-a-sarif-upload)
     ///
     /// ---
     pub async fn get_sarif_async(&self, owner: &str, repo: &str, sarif_id: &str) -> Result<CodeScanningSarifsStatus, CodeScanningGetSarifError> {
@@ -1055,9 +1851,10 @@ impl<'api> CodeScanning<'api> {
     ///
     /// # Get information about a SARIF upload
     ///
-    /// Gets information about a SARIF upload, including the status and the URL of the analysis that was uploaded so that you can retrieve details of the analysis. For more information, see "[Get a code scanning analysis for a repository](/rest/reference/code-scanning#get-a-code-scanning-analysis-for-a-repository)." You must use an access token with the `security_events` scope to use this endpoint with private repos, the `public_repo` scope also grants permission to read security events on public repos only. GitHub Apps must have the `security_events` read permission to use this endpoint.
-    /// 
-    /// [GitHub API docs for get_sarif](https://docs.github.com/rest/reference/code-scanning#list-recent-code-scanning-analyses-for-a-repository)
+    /// Gets information about a SARIF upload, including the status and the URL of the analysis that was uploaded so that you can retrieve details of the analysis. For more information, see "[Get a code scanning analysis for a repository](/rest/code-scanning/code-scanning#get-a-code-scanning-analysis-for-a-repository)."
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for get_sarif](https://docs.github.com/rest/code-scanning/code-scanning#get-information-about-a-sarif-upload)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1095,14 +1892,183 @@ impl<'api> CodeScanning<'api> {
 
     /// ---
     ///
+    /// # Get the summary of a CodeQL variant analysis
+    ///
+    /// Gets the summary of a CodeQL variant analysis.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for get_variant_analysis](https://docs.github.com/rest/code-scanning/code-scanning#get-the-summary-of-a-codeql-variant-analysis)
+    ///
+    /// ---
+    pub async fn get_variant_analysis_async(&self, owner: &str, repo: &str, codeql_variant_analysis_id: i32) -> Result<CodeScanningVariantAnalysis, CodeScanningGetVariantAnalysisError> {
+
+        let request_uri = format!("{}/repos/{}/{}/code-scanning/codeql/variant-analyses/{}", super::GITHUB_BASE_API_URL, owner, repo, codeql_variant_analysis_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(CodeScanningGetVariantAnalysisError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(CodeScanningGetVariantAnalysisError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodeScanningGetVariantAnalysisError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get the summary of a CodeQL variant analysis
+    ///
+    /// Gets the summary of a CodeQL variant analysis.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for get_variant_analysis](https://docs.github.com/rest/code-scanning/code-scanning#get-the-summary-of-a-codeql-variant-analysis)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_variant_analysis(&self, owner: &str, repo: &str, codeql_variant_analysis_id: i32) -> Result<CodeScanningVariantAnalysis, CodeScanningGetVariantAnalysisError> {
+
+        let request_uri = format!("{}/repos/{}/{}/code-scanning/codeql/variant-analyses/{}", super::GITHUB_BASE_API_URL, owner, repo, codeql_variant_analysis_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(CodeScanningGetVariantAnalysisError::Status404(crate::adapters::to_json(github_response)?)),
+                503 => Err(CodeScanningGetVariantAnalysisError::Status503(crate::adapters::to_json(github_response)?)),
+                code => Err(CodeScanningGetVariantAnalysisError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get the analysis status of a repository in a CodeQL variant analysis
+    ///
+    /// Gets the analysis status of a repository in a CodeQL variant analysis.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for get_variant_analysis_repo_task](https://docs.github.com/rest/code-scanning/code-scanning#get-the-analysis-status-of-a-repository-in-a-codeql-variant-analysis)
+    ///
+    /// ---
+    pub async fn get_variant_analysis_repo_task_async(&self, owner: &str, repo: &str, codeql_variant_analysis_id: i32, repo_owner: &str, repo_name: &str) -> Result<CodeScanningVariantAnalysisRepoTask, CodeScanningGetVariantAnalysisRepoTaskError> {
+
+        let request_uri = format!("{}/repos/{}/{}/code-scanning/codeql/variant-analyses/{}/repos/{}/{}", super::GITHUB_BASE_API_URL, owner, repo, codeql_variant_analysis_id, repo_owner, repo_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(CodeScanningGetVariantAnalysisRepoTaskError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(CodeScanningGetVariantAnalysisRepoTaskError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodeScanningGetVariantAnalysisRepoTaskError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get the analysis status of a repository in a CodeQL variant analysis
+    ///
+    /// Gets the analysis status of a repository in a CodeQL variant analysis.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for get_variant_analysis_repo_task](https://docs.github.com/rest/code-scanning/code-scanning#get-the-analysis-status-of-a-repository-in-a-codeql-variant-analysis)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_variant_analysis_repo_task(&self, owner: &str, repo: &str, codeql_variant_analysis_id: i32, repo_owner: &str, repo_name: &str) -> Result<CodeScanningVariantAnalysisRepoTask, CodeScanningGetVariantAnalysisRepoTaskError> {
+
+        let request_uri = format!("{}/repos/{}/{}/code-scanning/codeql/variant-analyses/{}/repos/{}/{}", super::GITHUB_BASE_API_URL, owner, repo, codeql_variant_analysis_id, repo_owner, repo_name);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(CodeScanningGetVariantAnalysisRepoTaskError::Status404(crate::adapters::to_json(github_response)?)),
+                503 => Err(CodeScanningGetVariantAnalysisRepoTaskError::Status503(crate::adapters::to_json(github_response)?)),
+                code => Err(CodeScanningGetVariantAnalysisRepoTaskError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List instances of a code scanning alert
     ///
     /// Lists all instances of the specified code scanning alert.
-    /// You must use an access token with the `security_events` scope to use this endpoint with private repos,
-    /// the `public_repo` scope also grants permission to read security events on public repos only.
-    /// GitHub Apps must have the `security_events` read permission to use this endpoint.
     /// 
-    /// [GitHub API docs for list_alert_instances](https://docs.github.com/rest/reference/code-scanning#list-instances-of-a-code-scanning-alert)
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for list_alert_instances](https://docs.github.com/rest/code-scanning/code-scanning#list-instances-of-a-code-scanning-alert)
     ///
     /// ---
     pub async fn list_alert_instances_async(&self, owner: &str, repo: &str, alert_number: AlertNumber, query_params: Option<impl Into<CodeScanningListAlertInstancesParams>>) -> Result<Vec<CodeScanningAlertInstance>, CodeScanningListAlertInstancesError> {
@@ -1146,11 +2112,10 @@ impl<'api> CodeScanning<'api> {
     /// # List instances of a code scanning alert
     ///
     /// Lists all instances of the specified code scanning alert.
-    /// You must use an access token with the `security_events` scope to use this endpoint with private repos,
-    /// the `public_repo` scope also grants permission to read security events on public repos only.
-    /// GitHub Apps must have the `security_events` read permission to use this endpoint.
     /// 
-    /// [GitHub API docs for list_alert_instances](https://docs.github.com/rest/reference/code-scanning#list-instances-of-a-code-scanning-alert)
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for list_alert_instances](https://docs.github.com/rest/code-scanning/code-scanning#list-instances-of-a-code-scanning-alert)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1193,20 +2158,115 @@ impl<'api> CodeScanning<'api> {
 
     /// ---
     ///
+    /// # List code scanning alerts for an organization
+    ///
+    /// Lists code scanning alerts for the default branch for all eligible repositories in an organization. Eligible repositories are repositories that are owned by organizations that you own or for which you are a security manager. For more information, see "[Managing security managers in your organization](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-security-managers-in-your-organization)."
+    /// 
+    /// The authenticated user must be an owner or security manager for the organization to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` or `repo`s cope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for list_alerts_for_org](https://docs.github.com/rest/code-scanning/code-scanning#list-code-scanning-alerts-for-an-organization)
+    ///
+    /// ---
+    pub async fn list_alerts_for_org_async(&self, org: &str, query_params: Option<impl Into<CodeScanningListAlertsForOrgParams<'api>>>) -> Result<Vec<CodeScanningOrganizationAlertItems>, CodeScanningListAlertsForOrgError> {
+
+        let mut request_uri = format!("{}/orgs/{}/code-scanning/alerts", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(CodeScanningListAlertsForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(CodeScanningListAlertsForOrgError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodeScanningListAlertsForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List code scanning alerts for an organization
+    ///
+    /// Lists code scanning alerts for the default branch for all eligible repositories in an organization. Eligible repositories are repositories that are owned by organizations that you own or for which you are a security manager. For more information, see "[Managing security managers in your organization](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-security-managers-in-your-organization)."
+    /// 
+    /// The authenticated user must be an owner or security manager for the organization to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` or `repo`s cope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for list_alerts_for_org](https://docs.github.com/rest/code-scanning/code-scanning#list-code-scanning-alerts-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_alerts_for_org(&self, org: &str, query_params: Option<impl Into<CodeScanningListAlertsForOrgParams<'api>>>) -> Result<Vec<CodeScanningOrganizationAlertItems>, CodeScanningListAlertsForOrgError> {
+
+        let mut request_uri = format!("{}/orgs/{}/code-scanning/alerts", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: CodeScanningListAlertsForOrgParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(CodeScanningListAlertsForOrgError::Status404(crate::adapters::to_json(github_response)?)),
+                503 => Err(CodeScanningListAlertsForOrgError::Status503(crate::adapters::to_json(github_response)?)),
+                code => Err(CodeScanningListAlertsForOrgError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List code scanning alerts for a repository
     ///
-    /// Lists all open code scanning alerts for the default branch (usually `main`
-    /// or `master`). You must use an access token with the `security_events` scope to use
-    /// this endpoint with private repos, the `public_repo` scope also grants permission to read
-    /// security events on public repos only. GitHub Apps must have the `security_events` read
-    /// permission to use this endpoint.
+    /// Lists code scanning alerts.
     /// 
     /// The response includes a `most_recent_instance` object.
     /// This provides details of the most recent instance of this alert
-    /// for the default branch or for the specified Git reference
-    /// (if you used `ref` in the request).
+    /// for the default branch (or for the specified Git reference if you used `ref` in the request).
     /// 
-    /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/reference/code-scanning#list-code-scanning-alerts-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/code-scanning/code-scanning#list-code-scanning-alerts-for-a-repository)
     ///
     /// ---
     pub async fn list_alerts_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodeScanningListAlertsForRepoParams<'api>>>) -> Result<Vec<CodeScanningAlertItems>, CodeScanningListAlertsForRepoError> {
@@ -1250,18 +2310,15 @@ impl<'api> CodeScanning<'api> {
     ///
     /// # List code scanning alerts for a repository
     ///
-    /// Lists all open code scanning alerts for the default branch (usually `main`
-    /// or `master`). You must use an access token with the `security_events` scope to use
-    /// this endpoint with private repos, the `public_repo` scope also grants permission to read
-    /// security events on public repos only. GitHub Apps must have the `security_events` read
-    /// permission to use this endpoint.
+    /// Lists code scanning alerts.
     /// 
     /// The response includes a `most_recent_instance` object.
     /// This provides details of the most recent instance of this alert
-    /// for the default branch or for the specified Git reference
-    /// (if you used `ref` in the request).
+    /// for the default branch (or for the specified Git reference if you used `ref` in the request).
     /// 
-    /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/reference/code-scanning#list-code-scanning-alerts-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/code-scanning/code-scanning#list-code-scanning-alerts-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1305,6 +2362,93 @@ impl<'api> CodeScanning<'api> {
 
     /// ---
     ///
+    /// # List CodeQL databases for a repository
+    ///
+    /// Lists the CodeQL databases that are available in a repository.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for list_codeql_databases](https://docs.github.com/rest/code-scanning/code-scanning#list-codeql-databases-for-a-repository)
+    ///
+    /// ---
+    pub async fn list_codeql_databases_async(&self, owner: &str, repo: &str) -> Result<Vec<CodeScanningCodeqlDatabase>, CodeScanningListCodeqlDatabasesError> {
+
+        let request_uri = format!("{}/repos/{}/{}/code-scanning/codeql/databases", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(CodeScanningListCodeqlDatabasesError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodeScanningListCodeqlDatabasesError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(CodeScanningListCodeqlDatabasesError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodeScanningListCodeqlDatabasesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List CodeQL databases for a repository
+    ///
+    /// Lists the CodeQL databases that are available in a repository.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for list_codeql_databases](https://docs.github.com/rest/code-scanning/code-scanning#list-codeql-databases-for-a-repository)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_codeql_databases(&self, owner: &str, repo: &str) -> Result<Vec<CodeScanningCodeqlDatabase>, CodeScanningListCodeqlDatabasesError> {
+
+        let request_uri = format!("{}/repos/{}/{}/code-scanning/codeql/databases", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(CodeScanningListCodeqlDatabasesError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodeScanningListCodeqlDatabasesError::Status404(crate::adapters::to_json(github_response)?)),
+                503 => Err(CodeScanningListCodeqlDatabasesError::Status503(crate::adapters::to_json(github_response)?)),
+                code => Err(CodeScanningListCodeqlDatabasesError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # List code scanning analyses for a repository
     ///
     /// Lists the details of all code scanning analyses for a repository,
@@ -1318,17 +2462,15 @@ impl<'api> CodeScanning<'api> {
     /// For very old analyses this data is not available,
     /// and `0` is returned in this field.
     /// 
-    /// You must use an access token with the `security_events` scope to use this endpoint with private repos,
-    /// the `public_repo` scope also grants permission to read security events on public repos only.
-    /// GitHub Apps must have the `security_events` read permission to use this endpoint.
+    /// > [!WARNING]
+    /// > **Deprecation notice:** The `tool_name` field is deprecated and will, in future, not be included in the response for this endpoint. The example response reflects this change. The tool name can now be found inside the `tool` field.
     /// 
-    /// **Deprecation notice**:
-    /// The `tool_name` field is deprecated and will, in future, not be included in the response for this endpoint. The example response reflects this change. The tool name can now be found inside the `tool` field.
-    /// 
-    /// [GitHub API docs for list_recent_analyses](https://docs.github.com/rest/reference/code-scanning#list-code-scanning-analyses-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for list_recent_analyses](https://docs.github.com/rest/code-scanning/code-scanning#list-code-scanning-analyses-for-a-repository)
     ///
     /// ---
-    pub async fn list_recent_analyses_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodeScanningListRecentAnalysesParams>>) -> Result<Vec<CodeScanningAnalysis>, CodeScanningListRecentAnalysesError> {
+    pub async fn list_recent_analyses_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodeScanningListRecentAnalysesParams<'api>>>) -> Result<Vec<CodeScanningAnalysis>, CodeScanningListRecentAnalysesError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/code-scanning/analyses", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -1379,18 +2521,16 @@ impl<'api> CodeScanning<'api> {
     /// For very old analyses this data is not available,
     /// and `0` is returned in this field.
     /// 
-    /// You must use an access token with the `security_events` scope to use this endpoint with private repos,
-    /// the `public_repo` scope also grants permission to read security events on public repos only.
-    /// GitHub Apps must have the `security_events` read permission to use this endpoint.
+    /// > [!WARNING]
+    /// > **Deprecation notice:** The `tool_name` field is deprecated and will, in future, not be included in the response for this endpoint. The example response reflects this change. The tool name can now be found inside the `tool` field.
     /// 
-    /// **Deprecation notice**:
-    /// The `tool_name` field is deprecated and will, in future, not be included in the response for this endpoint. The example response reflects this change. The tool name can now be found inside the `tool` field.
-    /// 
-    /// [GitHub API docs for list_recent_analyses](https://docs.github.com/rest/reference/code-scanning#list-code-scanning-analyses-for-a-repository)
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for list_recent_analyses](https://docs.github.com/rest/code-scanning/code-scanning#list-code-scanning-analyses-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_recent_analyses(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodeScanningListRecentAnalysesParams>>) -> Result<Vec<CodeScanningAnalysis>, CodeScanningListRecentAnalysesError> {
+    pub fn list_recent_analyses(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodeScanningListRecentAnalysesParams<'api>>>) -> Result<Vec<CodeScanningAnalysis>, CodeScanningListRecentAnalysesError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/code-scanning/analyses", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -1431,9 +2571,10 @@ impl<'api> CodeScanning<'api> {
     ///
     /// # Update a code scanning alert
     ///
-    /// Updates the status of a single code scanning alert. You must use an access token with the `security_events` scope to use this endpoint with private repositories. You can also use tokens with the `public_repo` scope for public repositories only. GitHub Apps must have the `security_events` write permission to use this endpoint.
-    /// 
-    /// [GitHub API docs for update_alert](https://docs.github.com/rest/reference/code-scanning#update-a-code-scanning-alert)
+    /// Updates the status of a single code scanning alert.
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for update_alert](https://docs.github.com/rest/code-scanning/code-scanning#update-a-code-scanning-alert)
     ///
     /// ---
     pub async fn update_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber, body: PatchCodeScanningUpdateAlert) -> Result<CodeScanningAlert, CodeScanningUpdateAlertError> {
@@ -1472,9 +2613,10 @@ impl<'api> CodeScanning<'api> {
     ///
     /// # Update a code scanning alert
     ///
-    /// Updates the status of a single code scanning alert. You must use an access token with the `security_events` scope to use this endpoint with private repositories. You can also use tokens with the `public_repo` scope for public repositories only. GitHub Apps must have the `security_events` write permission to use this endpoint.
-    /// 
-    /// [GitHub API docs for update_alert](https://docs.github.com/rest/reference/code-scanning#update-a-code-scanning-alert)
+    /// Updates the status of a single code scanning alert.
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for update_alert](https://docs.github.com/rest/code-scanning/code-scanning#update-a-code-scanning-alert)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -1512,9 +2654,100 @@ impl<'api> CodeScanning<'api> {
 
     /// ---
     ///
+    /// # Update a code scanning default setup configuration
+    ///
+    /// Updates a code scanning default setup configuration.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for update_default_setup](https://docs.github.com/rest/code-scanning/code-scanning#update-a-code-scanning-default-setup-configuration)
+    ///
+    /// ---
+    pub async fn update_default_setup_async(&self, owner: &str, repo: &str, body: PatchCodeScanningUpdateDefaultSetup) -> Result<EmptyObject, CodeScanningUpdateDefaultSetupError> {
+
+        let request_uri = format!("{}/repos/{}/{}/code-scanning/default-setup", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PatchCodeScanningUpdateDefaultSetup::from_json(body)?),
+            method: "PATCH",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json_async(github_response).await?)
+        } else {
+            match github_response.status_code() {
+                202 => Err(CodeScanningUpdateDefaultSetupError::Status202(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(CodeScanningUpdateDefaultSetupError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodeScanningUpdateDefaultSetupError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                409 => Err(CodeScanningUpdateDefaultSetupError::Status409(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(CodeScanningUpdateDefaultSetupError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                code => Err(CodeScanningUpdateDefaultSetupError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Update a code scanning default setup configuration
+    ///
+    /// Updates a code scanning default setup configuration.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for update_default_setup](https://docs.github.com/rest/code-scanning/code-scanning#update-a-code-scanning-default-setup-configuration)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn update_default_setup(&self, owner: &str, repo: &str, body: PatchCodeScanningUpdateDefaultSetup) -> Result<EmptyObject, CodeScanningUpdateDefaultSetupError> {
+
+        let request_uri = format!("{}/repos/{}/{}/code-scanning/default-setup", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(PatchCodeScanningUpdateDefaultSetup::from_json(body)?),
+            method: "PATCH",
+            headers: vec![]
+        };
+
+        let request = GitHubRequestBuilder::build(req, self.auth)?;
+
+        // --
+
+        let github_response = crate::adapters::fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(crate::adapters::to_json(github_response)?)
+        } else {
+            match github_response.status_code() {
+                202 => Err(CodeScanningUpdateDefaultSetupError::Status202(crate::adapters::to_json(github_response)?)),
+                403 => Err(CodeScanningUpdateDefaultSetupError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodeScanningUpdateDefaultSetupError::Status404(crate::adapters::to_json(github_response)?)),
+                409 => Err(CodeScanningUpdateDefaultSetupError::Status409(crate::adapters::to_json(github_response)?)),
+                503 => Err(CodeScanningUpdateDefaultSetupError::Status503(crate::adapters::to_json(github_response)?)),
+                code => Err(CodeScanningUpdateDefaultSetupError::Generic { code }),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Upload an analysis as SARIF data
     ///
-    /// Uploads SARIF data containing the results of a code scanning analysis to make the results available in a repository. You must use an access token with the `security_events` scope to use this endpoint for private repositories. You can also use tokens with the `public_repo` scope for public repositories only. GitHub Apps must have the `security_events` write permission to use this endpoint.
+    /// Uploads SARIF data containing the results of a code scanning analysis to make the results available in a repository. For troubleshooting information, see "[Troubleshooting SARIF uploads](https://docs.github.com/code-security/code-scanning/troubleshooting-sarif)."
     /// 
     /// There are two places where you can upload code scanning results.
     ///  - If you upload to a pull request, for example `--ref refs/pull/42/merge` or `--ref refs/pull/42/head`, then the results appear as alerts in a pull request check. For more information, see "[Triaging code scanning alerts in pull requests](/code-security/secure-coding/triaging-code-scanning-alerts-in-pull-requests)."
@@ -1526,13 +2759,30 @@ impl<'api> CodeScanning<'api> {
     /// gzip -c analysis-data.sarif | base64 -w0
     /// ```
     /// 
-    /// SARIF upload supports a maximum of 5000 results per analysis run. Any results over this limit are ignored and any SARIF uploads with more than 25,000 results are rejected. Typically, but not necessarily, a SARIF file contains a single run of a single tool. If a code scanning tool generates too many results, you should update the analysis configuration to run only the most important rules or queries.
+    /// SARIF upload supports a maximum number of entries per the following data objects, and an analysis will be rejected if any of these objects is above its maximum value. For some objects, there are additional values over which the entries will be ignored while keeping the most important entries whenever applicable.
+    /// To get the most out of your analysis when it includes data above the supported limits, try to optimize the analysis configuration. For example, for the CodeQL tool, identify and remove the most noisy queries. For more information, see "[SARIF results exceed one or more limits](https://docs.github.com/code-security/code-scanning/troubleshooting-sarif/results-exceed-limit)."
     /// 
-    /// The `202 Accepted`, response includes an `id` value.
-    /// You can use this ID to check the status of the upload by using this for the `/sarifs/{sarif_id}` endpoint.
-    /// For more information, see "[Get information about a SARIF upload](/rest/reference/code-scanning#get-information-about-a-sarif-upload)."
     /// 
-    /// [GitHub API docs for upload_sarif](https://docs.github.com/rest/reference/code-scanning#upload-a-sarif-file)
+    /// | **SARIF data**                   | **Maximum values** | **Additional limits**                                                            |
+    /// |----------------------------------|:------------------:|----------------------------------------------------------------------------------|
+    /// | Runs per file                    |         20         |                                                                                  |
+    /// | Results per run                  |       25,000       | Only the top 5,000 results will be included, prioritized by severity.            |
+    /// | Rules per run                    |       25,000       |                                                                                  |
+    /// | Tool extensions per run          |        100         |                                                                                  |
+    /// | Thread Flow Locations per result |       10,000       | Only the top 1,000 Thread Flow Locations will be included, using prioritization. |
+    /// | Location per result	             |       1,000        | Only 100 locations will be included.                                             |
+    /// | Tags per rule	                   |         20         | Only 10 tags will be included.                                                   |
+    /// 
+    /// 
+    /// The `202 Accepted` response includes an `id` value.
+    /// You can use this ID to check the status of the upload by using it in the `/sarifs/{sarif_id}` endpoint.
+    /// For more information, see "[Get information about a SARIF upload](/rest/code-scanning/code-scanning#get-information-about-a-sarif-upload)."
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    /// 
+    /// This endpoint is limited to 1,000 requests per hour for each user or app installation calling it.
+    ///
+    /// [GitHub API docs for upload_sarif](https://docs.github.com/rest/code-scanning/code-scanning#upload-an-analysis-as-sarif-data)
     ///
     /// ---
     pub async fn upload_sarif_async(&self, owner: &str, repo: &str, body: PostCodeScanningUploadSarif) -> Result<CodeScanningSarifsReceipt, CodeScanningUploadSarifError> {
@@ -1573,7 +2823,7 @@ impl<'api> CodeScanning<'api> {
     ///
     /// # Upload an analysis as SARIF data
     ///
-    /// Uploads SARIF data containing the results of a code scanning analysis to make the results available in a repository. You must use an access token with the `security_events` scope to use this endpoint for private repositories. You can also use tokens with the `public_repo` scope for public repositories only. GitHub Apps must have the `security_events` write permission to use this endpoint.
+    /// Uploads SARIF data containing the results of a code scanning analysis to make the results available in a repository. For troubleshooting information, see "[Troubleshooting SARIF uploads](https://docs.github.com/code-security/code-scanning/troubleshooting-sarif)."
     /// 
     /// There are two places where you can upload code scanning results.
     ///  - If you upload to a pull request, for example `--ref refs/pull/42/merge` or `--ref refs/pull/42/head`, then the results appear as alerts in a pull request check. For more information, see "[Triaging code scanning alerts in pull requests](/code-security/secure-coding/triaging-code-scanning-alerts-in-pull-requests)."
@@ -1585,13 +2835,30 @@ impl<'api> CodeScanning<'api> {
     /// gzip -c analysis-data.sarif | base64 -w0
     /// ```
     /// 
-    /// SARIF upload supports a maximum of 5000 results per analysis run. Any results over this limit are ignored and any SARIF uploads with more than 25,000 results are rejected. Typically, but not necessarily, a SARIF file contains a single run of a single tool. If a code scanning tool generates too many results, you should update the analysis configuration to run only the most important rules or queries.
+    /// SARIF upload supports a maximum number of entries per the following data objects, and an analysis will be rejected if any of these objects is above its maximum value. For some objects, there are additional values over which the entries will be ignored while keeping the most important entries whenever applicable.
+    /// To get the most out of your analysis when it includes data above the supported limits, try to optimize the analysis configuration. For example, for the CodeQL tool, identify and remove the most noisy queries. For more information, see "[SARIF results exceed one or more limits](https://docs.github.com/code-security/code-scanning/troubleshooting-sarif/results-exceed-limit)."
     /// 
-    /// The `202 Accepted`, response includes an `id` value.
-    /// You can use this ID to check the status of the upload by using this for the `/sarifs/{sarif_id}` endpoint.
-    /// For more information, see "[Get information about a SARIF upload](/rest/reference/code-scanning#get-information-about-a-sarif-upload)."
     /// 
-    /// [GitHub API docs for upload_sarif](https://docs.github.com/rest/reference/code-scanning#upload-a-sarif-file)
+    /// | **SARIF data**                   | **Maximum values** | **Additional limits**                                                            |
+    /// |----------------------------------|:------------------:|----------------------------------------------------------------------------------|
+    /// | Runs per file                    |         20         |                                                                                  |
+    /// | Results per run                  |       25,000       | Only the top 5,000 results will be included, prioritized by severity.            |
+    /// | Rules per run                    |       25,000       |                                                                                  |
+    /// | Tool extensions per run          |        100         |                                                                                  |
+    /// | Thread Flow Locations per result |       10,000       | Only the top 1,000 Thread Flow Locations will be included, using prioritization. |
+    /// | Location per result	             |       1,000        | Only 100 locations will be included.                                             |
+    /// | Tags per rule	                   |         20         | Only 10 tags will be included.                                                   |
+    /// 
+    /// 
+    /// The `202 Accepted` response includes an `id` value.
+    /// You can use this ID to check the status of the upload by using it in the `/sarifs/{sarif_id}` endpoint.
+    /// For more information, see "[Get information about a SARIF upload](/rest/code-scanning/code-scanning#get-information-about-a-sarif-upload)."
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    /// 
+    /// This endpoint is limited to 1,000 requests per hour for each user or app installation calling it.
+    ///
+    /// [GitHub API docs for upload_sarif](https://docs.github.com/rest/code-scanning/code-scanning#upload-an-analysis-as-sarif-data)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
