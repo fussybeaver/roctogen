@@ -25,14 +25,8 @@ import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -57,7 +51,6 @@ public class GitHubCodegen extends RustServerCodegen {
 
     public GitHubCodegen() {
         super();
-
         additionalProperties.put("tags", tagList.values());
         supportingFiles.add(
                 new SupportingFile("lib.mustache", "src", "lib.rs")
@@ -73,6 +66,8 @@ public class GitHubCodegen extends RustServerCodegen {
             HashMap<String, Object>
             > patchOneOfProperties = new HashMap();
 
+    private static List<String> excludeBodyNames = Collections.emptyList();
+    private static HashMap<String, String> patchResponseNames = new HashMap();
 
     @Override
     public void preprocessOpenAPI(OpenAPI openAPI) {
@@ -93,6 +88,24 @@ public class GitHubCodegen extends RustServerCodegen {
         info.setVersion(StringUtils.join(versionComponents, "."));
 
         super.preprocessOpenAPI(openAPI);
+    }
+
+    @Override
+    public void processOpts() {
+        super.processOpts();
+
+        if (additionalProperties.containsKey("excludeBodyNames")) {
+            excludeBodyNames = Arrays.asList(((String) additionalProperties.get("excludeBodyNames")).split("\\+"));
+        }
+
+        if (additionalProperties.containsKey("patchResponseNames")) {
+            for (String ev : ((String) additionalProperties.get("patchResponseNames")).split("\\+")) {
+                String[] names = ev.split(":", 2);
+                if (names.length > 1) {
+                    patchResponseNames.put(names[0], names[1]);
+                }
+            }
+        }
     }
 
     @Override
@@ -345,7 +358,6 @@ public class GitHubCodegen extends RustServerCodegen {
                 String subName = name + "_sub_" + i;
                 CodegenProperty subMdl = fromProperty(subName, subSchema);
                 String type = getTypeDeclaration(subSchema);
-                
 
                 if (
                         !(subSchema instanceof BooleanSchema) &&
@@ -377,7 +389,6 @@ public class GitHubCodegen extends RustServerCodegen {
                     subModels.add(subMdl);
                     i++;
                 }
-
             }
 
             allowableValues.put("values", subModels);
@@ -741,7 +752,6 @@ public class GitHubCodegen extends RustServerCodegen {
                     }
                 }
             }
-
         }
         Map<String, Object> operations = (Map<String, Object>) objs.get(
                 "operations"
@@ -945,7 +955,7 @@ public class GitHubCodegen extends RustServerCodegen {
                 imports
         );
 
-        // patches the Body* Models with better names
+        // patches the Body* Models with better names - injected through additionalProperties
         if (body.getExtensions() != null) {
             Object operationName = body
                     .getExtensions()
@@ -955,7 +965,7 @@ public class GitHubCodegen extends RustServerCodegen {
                             !operationName.toString().isEmpty() &&
                             name != null
             ) {
-                if (!exclusionBodyNames.contains(camelize(name))) {
+                if (!excludeBodyNames.contains(camelize(name))) {
                     patchOperationBodyNames.put(camelize(name), operationName);
                 }
             }
@@ -1021,14 +1031,18 @@ public class GitHubCodegen extends RustServerCodegen {
                             operationName + "Response" + res.getCode()
                     );
                 }
-
-                }
             }
         }
 
-        // Special case
-        if (res.getDataType() != null && res.getDataType().equals("SelectedActions")) {
-            res.dataType = "PutActionsSetAllowedActionsRepository";
+        // Special cases injected through additionalProperties
+        for (Entry entry : patchResponseNames.entrySet()) {
+            if (
+                    res.getDataType() != null &&
+                            res.getDataType().equals(entry.getKey())
+            ) {
+                res.dataType = (String) entry.getValue();
+                patchOperationResponseNames.put(res.getDataType(), entry.getValue());
+            }
         }
 
         return res;
@@ -1038,7 +1052,10 @@ public class GitHubCodegen extends RustServerCodegen {
     public String getSchemaType(Schema property) {
         String schemaType = super.getSchemaType(property);
         if (schemaType != null) {
-            return schemaType.replace("UBUNTU", "ubuntu").replace("MACOS", "macos").replace("WINDOWS", "windows");
+            return schemaType
+                    .replace("UBUNTU", "ubuntu")
+                    .replace("MACOS", "macos")
+                    .replace("WINDOWS", "windows");
         } else {
             return null;
         }

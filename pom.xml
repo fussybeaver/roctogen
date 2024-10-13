@@ -29,6 +29,10 @@
                   <packageName>github-stubs-stubs</packageName>
                   <packageVersion>0</packageVersion>
                 </configOptions>
+                <additionalProperties>
+                  <additionalProperty>excludeBodyNames=OidcCustomSub+ActionsWorkflowAccessToRepository+PutActionsSetWorkflowAccessToRepository</additionalProperty>
+                  <additionalProperty>patchResponseNames=Classroom:crate::models::Classroom+SelectedActions:PutActionsSetAllowedActionsRepository</additionalProperty>
+                </additionalProperties>
               </configuration>
             </execution>
           </executions>
@@ -57,12 +61,12 @@
         <dependency>
             <groupId>io.swagger.codegen.v3</groupId>
             <artifactId>swagger-codegen</artifactId>
-            <version>3.0.25</version>
+            <version>3.0.62</version>
         </dependency>
         <dependency>
             <groupId>io.swagger.codegen.v3</groupId>
             <artifactId>swagger-codegen-generators</artifactId>
-            <version>1.0.25</version>
+            <version>1.0.52</version>
         </dependency>
     </dependencies>
 </project>
