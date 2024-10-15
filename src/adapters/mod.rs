@@ -1,3 +1,4 @@
+use http::{Request, Response};
 use serde::{ser, Deserialize};
 
 use crate::auth::Auth;
@@ -17,7 +18,7 @@ pub(crate) use {
 pub mod wasm;
 
 #[cfg(target_arch = "wasm32")]
-pub(crate) use {wasm::fetch_async, wasm::to_json_async};
+pub type Req = web_sys::Request;
 
 #[cfg(target_arch = "wasm32")]
 pub use wasm::AdapterError;
@@ -29,10 +30,7 @@ pub mod reqwest;
 pub use self::reqwest::AdapterError;
 
 #[cfg(feature = "reqwest")]
-pub(crate) use {
-    self::reqwest::fetch, self::reqwest::fetch_async, self::reqwest::to_json,
-    self::reqwest::to_json_async,
-};
+pub type Req = ::reqwest::Request;
 
 #[cfg(feature = "ureq")]
 pub mod ureq;
@@ -41,9 +39,7 @@ pub mod ureq;
 pub use self::ureq::AdapterError;
 
 #[cfg(feature = "ureq")]
-pub(crate) use {
-    self::ureq::fetch, self::ureq::fetch_async, self::ureq::to_json, self::ureq::to_json_async,
-};
+pub type Req = self::ureq::RequestWithBody;
 
 #[cfg(all(
     not(feature = "isahc"),
@@ -56,51 +52,14 @@ pub enum AdapterError {}
 
 #[cfg(all(
     not(feature = "isahc"),
-    not(feature = "reqwest"),
-    not(feature = "ureq"),
-    not(target_arch = "wasm32")
-))]
-pub(crate) fn fetch(
-    _request: http::Request<Vec<u8>>,
-) -> Result<http::Response<Vec<u8>>, AdapterError> {
-    unimplemented!("Use a client adapter feature, or target wasm");
-}
-
-#[cfg(all(
+    not(feature = "isahc"),
     not(feature = "isahc"),
     not(feature = "reqwest"),
     not(feature = "ureq"),
     not(target_arch = "wasm32")
 ))]
-pub(crate) async fn fetch_async(
-    _request: http::Request<Vec<u8>>,
-) -> Result<http::Response<Vec<u8>>, AdapterError> {
-    unimplemented!("Use a client adapter feature, or target wasm");
-}
-
-#[cfg(all(
     not(feature = "isahc"),
-    not(feature = "reqwest"),
-    not(feature = "ureq"),
-    not(target_arch = "wasm32")
-))]
-pub(crate) fn to_json<E: for<'de> Deserialize<'de>>(
-    _res: http::Response<Vec<u8>>,
-) -> Result<E, AdapterError> {
-    unimplemented!("Use a client adapter feature, or target wasm");
-}
-
-#[cfg(all(
-    not(feature = "isahc"),
-    not(feature = "reqwest"),
-    not(feature = "ureq"),
-    not(target_arch = "wasm32")
-))]
-pub(crate) async fn to_json_async<E: for<'de> Deserialize<'de>>(
-    _res: http::Response<Vec<u8>>,
-) -> Result<E, AdapterError> {
-    unimplemented!("Use a client adapter feature, or target wasm");
-}
+pub type Req = http::Request<Vec<u8>>;
 
 #[cfg(all(
     not(feature = "isahc"),
@@ -116,6 +75,16 @@ impl GitHubResponseExt for http::Response<Vec<u8>> {
     fn status_code(&self) -> u16 {
         unimplemented!("Use a client adapter feature, or target wasm");
     }
+    #[allow(refining_impl_trait)]
+    fn to_json<E: for<'de> Deserialize<'de> + std::fmt::Debug>(self) -> Result<E, AdapterError> {
+        unimplemented!("Use a client adapter feature, or target wasm");
+    }
+
+    async fn to_json_async<E: for<'de> Deserialize<'de> + Unpin + std::fmt::Debug>(
+        self,
+    ) -> Result<E, AdapterError> {
+        unimplemented!("Use a client adapter feature, or target wasm");
+    }
 }
 
 #[cfg(all(
@@ -124,8 +93,8 @@ impl GitHubResponseExt for http::Response<Vec<u8>> {
     not(feature = "ureq"),
     not(target_arch = "wasm32")
 ))]
-impl GitHubRequestBuilder<Vec<u8>> for http::Request<Vec<u8>> {
-    fn build(_req: GitHubRequest<Vec<u8>>, _auth: &Auth) -> Result<Self, AdapterError> {
+impl<C: Client> GitHubRequestBuilder<Vec<u8>, C> for http::Request<Vec<u8>> {
+    fn build(_req: GitHubRequest<Vec<u8>>, _client: &C) -> Result<Self, AdapterError> {
         unimplemented!("Use a client adapter feature, or target wasm");
     }
 }
@@ -160,14 +129,44 @@ pub(crate) struct GitHubRequest<T> {
     pub headers: Vec<(&'static str, &'static str)>,
 }
 
-pub(crate) trait GitHubRequestBuilder<T>
+pub(crate) trait GitHubRequestBuilder<T, C: Client>
 where
     Self: Sized,
 {
-    fn build(req: GitHubRequest<T>, auth: &Auth) -> Result<Self, AdapterError>;
+    fn build(req: GitHubRequest<T>, client: &C) -> Result<Self, AdapterError>;
 }
 
 pub(crate) trait GitHubResponseExt {
     fn is_success(&self) -> bool;
     fn status_code(&self) -> u16;
+    fn to_json<E: for<'de> Deserialize<'de> + std::fmt::Debug>(self) -> Result<E, AdapterError>;
+    #[allow(refining_impl_trait)]
+    async fn to_json_async<E: for<'de> Deserialize<'de> + Unpin + std::fmt::Debug>(
+        self,
+    ) -> Result<E, AdapterError>;
+}
+
+pub trait Client {
+    type Req;
+
+    fn new(auth: &Auth) -> Self
+    where
+        Self: Sized;
+    fn get_auth(&self) -> &Auth;
+    fn fetch(&self, req: Self::Req) -> Result<impl GitHubResponseExt, AdapterError>;
+    #[allow(async_fn_in_trait)]
+    async fn fetch_async(&self, req: Self::Req) -> Result<impl GitHubResponseExt, AdapterError>;
+}
+
+#[cfg(target_arch = "wasm32")]
+pub fn client(auth: &Auth) -> impl Client<Req = Req> {
+    wasm::Client::new(auth)
+}
+#[cfg(feature = "ureq")]
+pub fn client(auth: &Auth) -> impl Client<Req = Req> {
+    ureq::Client::new(auth)
+}
+#[cfg(feature = "reqwest")]
+pub fn client(auth: &Auth) -> impl Client<Req = Req> {
+    reqwest::Client::new(auth)
 }

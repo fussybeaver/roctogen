@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,12 +22,12 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Dependabot<'api> {
-    auth: &'api Auth
+pub struct Dependabot<'api, C: Client<Req = crate::adapters::Req>> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> Dependabot {
-    Dependabot { auth }
+pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> Dependabot<C> {
+    Dependabot { client }
 }
 
 /// Errors for the [Add selected repository to an organization secret](Dependabot::add_selected_repo_to_org_secret_async()) endpoint.
@@ -1358,7 +1357,7 @@ impl<'enc> From<&'enc PerPage> for DependabotListSelectedReposForOrgSecretParams
     }
 }
 
-impl<'api> Dependabot<'api> {
+impl<'api, C: Client<Req = crate::adapters::Req>> Dependabot<'api, C> {
     /// ---
     ///
     /// # Add selected repository to an organization secret
@@ -1384,16 +1383,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 409 => Err(DependabotAddSelectedRepoToOrgSecretError::Status409),
@@ -1428,16 +1427,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 409 => Err(DependabotAddSelectedRepoToOrgSecretError::Status409),
@@ -1470,16 +1469,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 204 => Err(DependabotCreateOrUpdateOrgSecretError::Status204),
@@ -1513,16 +1512,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 204 => Err(DependabotCreateOrUpdateOrgSecretError::Status204),
@@ -1555,16 +1554,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 204 => Err(DependabotCreateOrUpdateRepoSecretError::Status204),
@@ -1598,16 +1597,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 204 => Err(DependabotCreateOrUpdateRepoSecretError::Status204),
@@ -1639,16 +1638,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(DependabotDeleteOrgSecretError::Generic { code }),
@@ -1680,16 +1679,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(DependabotDeleteOrgSecretError::Generic { code }),
@@ -1720,16 +1719,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(DependabotDeleteRepoSecretError::Generic { code }),
@@ -1761,16 +1760,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(DependabotDeleteRepoSecretError::Generic { code }),
@@ -1799,21 +1798,21 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(DependabotGetAlertError::Status304),
-                403 => Err(DependabotGetAlertError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(DependabotGetAlertError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(DependabotGetAlertError::Status403(github_response.to_json_async().await?)),
+                404 => Err(DependabotGetAlertError::Status404(github_response.to_json_async().await?)),
                 code => Err(DependabotGetAlertError::Generic { code }),
             }
         }
@@ -1841,21 +1840,21 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(DependabotGetAlertError::Status304),
-                403 => Err(DependabotGetAlertError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(DependabotGetAlertError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(DependabotGetAlertError::Status403(github_response.to_json()?)),
+                404 => Err(DependabotGetAlertError::Status404(github_response.to_json()?)),
                 code => Err(DependabotGetAlertError::Generic { code }),
             }
         }
@@ -1885,16 +1884,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(DependabotGetOrgPublicKeyError::Generic { code }),
@@ -1927,16 +1926,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(DependabotGetOrgPublicKeyError::Generic { code }),
@@ -1967,16 +1966,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(DependabotGetOrgSecretError::Generic { code }),
@@ -2008,16 +2007,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(DependabotGetOrgSecretError::Generic { code }),
@@ -2050,16 +2049,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(DependabotGetRepoPublicKeyError::Generic { code }),
@@ -2093,16 +2092,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(DependabotGetRepoPublicKeyError::Generic { code }),
@@ -2133,16 +2132,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(DependabotGetRepoSecretError::Generic { code }),
@@ -2174,16 +2173,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(DependabotGetRepoSecretError::Generic { code }),
@@ -2222,22 +2221,22 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(DependabotListAlertsForEnterpriseError::Status304),
-                403 => Err(DependabotListAlertsForEnterpriseError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(DependabotListAlertsForEnterpriseError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(DependabotListAlertsForEnterpriseError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(DependabotListAlertsForEnterpriseError::Status403(github_response.to_json_async().await?)),
+                404 => Err(DependabotListAlertsForEnterpriseError::Status404(github_response.to_json_async().await?)),
+                422 => Err(DependabotListAlertsForEnterpriseError::Status422(github_response.to_json_async().await?)),
                 code => Err(DependabotListAlertsForEnterpriseError::Generic { code }),
             }
         }
@@ -2276,22 +2275,22 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(DependabotListAlertsForEnterpriseError::Status304),
-                403 => Err(DependabotListAlertsForEnterpriseError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(DependabotListAlertsForEnterpriseError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(DependabotListAlertsForEnterpriseError::Status422(crate::adapters::to_json(github_response)?)),
+                403 => Err(DependabotListAlertsForEnterpriseError::Status403(github_response.to_json()?)),
+                404 => Err(DependabotListAlertsForEnterpriseError::Status404(github_response.to_json()?)),
+                422 => Err(DependabotListAlertsForEnterpriseError::Status422(github_response.to_json()?)),
                 code => Err(DependabotListAlertsForEnterpriseError::Generic { code }),
             }
         }
@@ -2326,23 +2325,23 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(DependabotListAlertsForOrgError::Status304),
-                400 => Err(DependabotListAlertsForOrgError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(DependabotListAlertsForOrgError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(DependabotListAlertsForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(DependabotListAlertsForOrgError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                400 => Err(DependabotListAlertsForOrgError::Status400(github_response.to_json_async().await?)),
+                403 => Err(DependabotListAlertsForOrgError::Status403(github_response.to_json_async().await?)),
+                404 => Err(DependabotListAlertsForOrgError::Status404(github_response.to_json_async().await?)),
+                422 => Err(DependabotListAlertsForOrgError::Status422(github_response.to_json_async().await?)),
                 code => Err(DependabotListAlertsForOrgError::Generic { code }),
             }
         }
@@ -2379,23 +2378,23 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(DependabotListAlertsForOrgError::Status304),
-                400 => Err(DependabotListAlertsForOrgError::Status400(crate::adapters::to_json(github_response)?)),
-                403 => Err(DependabotListAlertsForOrgError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(DependabotListAlertsForOrgError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(DependabotListAlertsForOrgError::Status422(crate::adapters::to_json(github_response)?)),
+                400 => Err(DependabotListAlertsForOrgError::Status400(github_response.to_json()?)),
+                403 => Err(DependabotListAlertsForOrgError::Status403(github_response.to_json()?)),
+                404 => Err(DependabotListAlertsForOrgError::Status404(github_response.to_json()?)),
+                422 => Err(DependabotListAlertsForOrgError::Status422(github_response.to_json()?)),
                 code => Err(DependabotListAlertsForOrgError::Generic { code }),
             }
         }
@@ -2426,23 +2425,23 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(DependabotListAlertsForRepoError::Status304),
-                400 => Err(DependabotListAlertsForRepoError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(DependabotListAlertsForRepoError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(DependabotListAlertsForRepoError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(DependabotListAlertsForRepoError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                400 => Err(DependabotListAlertsForRepoError::Status400(github_response.to_json_async().await?)),
+                403 => Err(DependabotListAlertsForRepoError::Status403(github_response.to_json_async().await?)),
+                404 => Err(DependabotListAlertsForRepoError::Status404(github_response.to_json_async().await?)),
+                422 => Err(DependabotListAlertsForRepoError::Status422(github_response.to_json_async().await?)),
                 code => Err(DependabotListAlertsForRepoError::Generic { code }),
             }
         }
@@ -2475,23 +2474,23 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(DependabotListAlertsForRepoError::Status304),
-                400 => Err(DependabotListAlertsForRepoError::Status400(crate::adapters::to_json(github_response)?)),
-                403 => Err(DependabotListAlertsForRepoError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(DependabotListAlertsForRepoError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(DependabotListAlertsForRepoError::Status422(crate::adapters::to_json(github_response)?)),
+                400 => Err(DependabotListAlertsForRepoError::Status400(github_response.to_json()?)),
+                403 => Err(DependabotListAlertsForRepoError::Status403(github_response.to_json()?)),
+                404 => Err(DependabotListAlertsForRepoError::Status404(github_response.to_json()?)),
+                422 => Err(DependabotListAlertsForRepoError::Status422(github_response.to_json()?)),
                 code => Err(DependabotListAlertsForRepoError::Generic { code }),
             }
         }
@@ -2525,16 +2524,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(DependabotListOrgSecretsError::Generic { code }),
@@ -2572,16 +2571,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(DependabotListOrgSecretsError::Generic { code }),
@@ -2617,16 +2616,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(DependabotListRepoSecretsError::Generic { code }),
@@ -2664,16 +2663,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(DependabotListRepoSecretsError::Generic { code }),
@@ -2709,16 +2708,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(DependabotListSelectedReposForOrgSecretError::Generic { code }),
@@ -2756,16 +2755,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(DependabotListSelectedReposForOrgSecretError::Generic { code }),
@@ -2798,16 +2797,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 409 => Err(DependabotRemoveSelectedRepoFromOrgSecretError::Status409),
@@ -2842,16 +2841,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 409 => Err(DependabotRemoveSelectedRepoFromOrgSecretError::Status409),
@@ -2885,16 +2884,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(DependabotSetSelectedReposForOrgSecretError::Generic { code }),
@@ -2928,16 +2927,16 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(DependabotSetSelectedReposForOrgSecretError::Generic { code }),
@@ -2968,23 +2967,23 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(DependabotUpdateAlertError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(DependabotUpdateAlertError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(DependabotUpdateAlertError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                409 => Err(DependabotUpdateAlertError::Status409(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(DependabotUpdateAlertError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                400 => Err(DependabotUpdateAlertError::Status400(github_response.to_json_async().await?)),
+                403 => Err(DependabotUpdateAlertError::Status403(github_response.to_json_async().await?)),
+                404 => Err(DependabotUpdateAlertError::Status404(github_response.to_json_async().await?)),
+                409 => Err(DependabotUpdateAlertError::Status409(github_response.to_json_async().await?)),
+                422 => Err(DependabotUpdateAlertError::Status422(github_response.to_json_async().await?)),
                 code => Err(DependabotUpdateAlertError::Generic { code }),
             }
         }
@@ -3014,23 +3013,23 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(DependabotUpdateAlertError::Status400(crate::adapters::to_json(github_response)?)),
-                403 => Err(DependabotUpdateAlertError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(DependabotUpdateAlertError::Status404(crate::adapters::to_json(github_response)?)),
-                409 => Err(DependabotUpdateAlertError::Status409(crate::adapters::to_json(github_response)?)),
-                422 => Err(DependabotUpdateAlertError::Status422(crate::adapters::to_json(github_response)?)),
+                400 => Err(DependabotUpdateAlertError::Status400(github_response.to_json()?)),
+                403 => Err(DependabotUpdateAlertError::Status403(github_response.to_json()?)),
+                404 => Err(DependabotUpdateAlertError::Status404(github_response.to_json()?)),
+                409 => Err(DependabotUpdateAlertError::Status409(github_response.to_json()?)),
+                422 => Err(DependabotUpdateAlertError::Status422(github_response.to_json()?)),
                 code => Err(DependabotUpdateAlertError::Generic { code }),
             }
         }

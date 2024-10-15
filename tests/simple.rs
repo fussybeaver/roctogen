@@ -1,13 +1,9 @@
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen_test::*;
 
-#[cfg(not(target_arch = "wasm32"))]
 use roctogen::api::{self, repos};
+use roctogen::{adapters::client, auth::Auth};
 
-#[cfg(target_arch = "wasm32")]
-use roctogen::api::{self, repos};
-
-use roctogen::auth::Auth;
 use roctogen::models;
 
 use log::debug;
@@ -26,10 +22,11 @@ async fn get_wasm_fail() {
     init_log();
 
     let auth = Auth::None;
+    let client = client(&auth);
 
     let per_page = api::PerPage::new(1);
 
-    let req = repos::new(&auth)
+    let req = repos::new(&client)
         .list_commits_async("this-user-does-not-exist", "bollard", Some(&per_page))
         .await;
     match &req {
@@ -49,11 +46,12 @@ async fn get_wasm_fail() {
 #[test]
 fn get_sync_fail() {
     let auth = Auth::None;
+    let client = client(&auth);
 
     let per_page = api::PerPage::new(1);
 
     let req =
-        repos::new(&auth).list_commits("this-user-does-not-exist", "bollard", Some(&per_page));
+        repos::new(&client).list_commits("this-user-does-not-exist", "bollard", Some(&per_page));
     match &req {
         Ok(_) => {}
         Err(repos::ReposListCommitsError::Status404(e)) => {
@@ -72,10 +70,11 @@ fn get_sync_fail() {
 #[test]
 fn get_sync_ok() {
     let auth = Auth::None;
+    let client = client(&auth);
 
     let per_page = api::PerPage::new(1);
 
-    let req = repos::new(&auth).list_commits("fussybeaver", "bollard", Some(&per_page));
+    let req = repos::new(&client).list_commits("fussybeaver", "bollard", Some(&per_page));
     match &req {
         Ok(ref commits) => {
             assert!(!&commits.is_empty());
@@ -92,12 +91,13 @@ async fn get_wasm_ok() {
     init_log();
 
     let auth = Auth::None;
+    let client = client(&auth);
     let per_page = api::PerPage::new(1);
 
     let mut params: repos::ReposListCommitsParams = per_page.as_ref().into();
     params = params.author("fussybeaver").page(2);
 
-    let req = repos::new(&auth)
+    let req = repos::new(&client)
         .list_commits_async("fussybeaver", "bollard", Some(params))
         .await;
     match req {
@@ -115,11 +115,12 @@ async fn get_wasm_ok() {
 fn get_async_ok() {
     let req = futures_lite::future::block_on(async {
         let auth = Auth::None;
+        let client = client(&auth);
         let per_page = api::PerPage::new(1);
 
         let mut params: repos::ReposListCommitsParams = per_page.as_ref().into();
         params = params.author("fussybeaver").page(2);
-        repos::new(&auth)
+        repos::new(&client)
             .list_commits_async("fussybeaver", "bollard", Some(params))
             .await
     });
@@ -139,10 +140,11 @@ fn get_async_ok() {
 fn get_async_fail() {
     let req = futures_lite::future::block_on(async {
         let auth = Auth::None;
+        let client = client(&auth);
 
         let per_page = api::PerPage::new(1);
 
-        repos::new(&auth)
+        repos::new(&client)
             .list_commits_async("this-user-does-not-exist", "bollard", Some(&per_page))
             .await
     });
@@ -165,11 +167,12 @@ fn get_async_fail() {
 #[tokio::test]
 async fn get_async_ok() {
     let auth = Auth::None;
+    let client = client(&auth);
     let per_page = api::PerPage::new(1);
 
     let mut params: repos::ReposListCommitsParams = per_page.as_ref().into();
     params = params.author("fussybeaver").page(2);
-    let req = repos::new(&auth)
+    let req = repos::new(&client)
         .list_commits_async("fussybeaver", "bollard", Some(params))
         .await;
 
@@ -187,10 +190,11 @@ async fn get_async_ok() {
 #[tokio::test]
 async fn get_async_fail() {
     let auth = Auth::None;
+    let client = client(&auth);
 
     let per_page = api::PerPage::new(1);
 
-    let req = repos::new(&auth)
+    let req = repos::new(&client)
         .list_commits_async("this-user-does-not-exist", "bollard", Some(&per_page))
         .await;
     match &req {
@@ -213,10 +217,13 @@ async fn post_wasm_fail() {
     init_log();
 
     let auth = Auth::None;
+    let client = client(&auth);
 
-    let body = vec!["fussybeaver".to_string()].into();
+    let body = models::PostReposAddUserAccessRestrictions {
+        users: vec!["fussybeaver".to_string()].into(),
+    };
 
-    let req = repos::new(&auth)
+    let req = repos::new(&client)
         .add_user_access_restrictions_async("fussybeaver", "bollard", "master", body)
         .await;
     match &req {
@@ -236,13 +243,14 @@ async fn post_wasm_fail() {
 #[test]
 fn post_sync_fail() {
     let auth = Auth::None;
+    let client = client(&auth);
 
     let body = models::PostReposAddUserAccessRestrictions {
         users: vec!["fussybeaver".to_string()].into(),
     };
 
     let req =
-        repos::new(&auth).add_user_access_restrictions("fussybeaver", "bollard", "master", body);
+        repos::new(&client).add_user_access_restrictions("fussybeaver", "bollard", "master", body);
     match &req {
         Ok(_) => {}
         Err(repos::ReposAddUserAccessRestrictionsError::Generic { code }) => {
@@ -260,12 +268,13 @@ fn post_sync_fail() {
 #[tokio::test]
 async fn post_async_fail() {
     let auth = Auth::None;
+    let client = client(&auth);
 
     let body = models::PostReposAddUserAccessRestrictions {
         users: vec!["fussybeaver".to_string()].into(),
     };
 
-    let req = repos::new(&auth)
+    let req = repos::new(&client)
         .add_user_access_restrictions_async("fussybeaver", "bollard", "master", body)
         .await;
     match &req {
@@ -286,12 +295,13 @@ async fn post_async_fail() {
 fn post_async_fail() {
     let req = futures_lite::future::block_on(async {
         let auth = Auth::None;
+        let client = client(&auth);
 
         let body = models::PostReposAddUserAccessRestrictions {
             users: vec!["fussybeaver".to_string()].into(),
         };
 
-        repos::new(&auth)
+        repos::new(&client)
             .add_user_access_restrictions_async("fussybeaver", "bollard", "master", body)
             .await
     });

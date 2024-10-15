@@ -3,6 +3,7 @@ use roctogen::api::{
     self, activity, gists, issues, licenses, meta, rate_limit, reactions, repos, search, users,
 };
 
+use roctogen::adapters::client;
 use roctogen::auth::Auth;
 use roctogen::models;
 
@@ -12,12 +13,13 @@ use log::{debug, info};
 #[test]
 fn list_commits_sync_ok() {
     let auth = Auth::None;
+    let client = client(&auth);
     let per_page = api::PerPage::new(1);
 
     let mut params: repos::ReposListCommitsParams = per_page.as_ref().into();
     params = params.author("fussybeaver").page(2);
 
-    let req = repos::new(&auth).list_commits("fussybeaver", "bollard", Some(params));
+    let req = repos::new(&client).list_commits("fussybeaver", "bollard", Some(params));
 
     assert!(req.is_ok());
 }
@@ -26,7 +28,8 @@ fn list_commits_sync_ok() {
 #[test]
 fn search_sync_ok() {
     let auth = Auth::None;
-    let search = search::new(&auth);
+    let client = client(&auth);
+    let search = search::new(&client);
     let opts = search::SearchReposParams::new().q("bollard");
     let req = search.repos(opts);
 
@@ -37,7 +40,8 @@ fn search_sync_ok() {
 #[test]
 fn gists_sync_ok() {
     let auth = Auth::None;
-    let gists = gists::new(&auth);
+    let client = client(&auth);
+    let gists = gists::new(&client);
     let req = gists.list_public(Some(&api::PerPage::new(1)));
 
     assert!(req.is_ok());
@@ -47,7 +51,8 @@ fn gists_sync_ok() {
 #[test]
 fn users_sync_ok() {
     let auth = Auth::None;
-    let users = users::new(&auth);
+    let client = client(&auth);
+    let users = users::new(&client);
 
     let req = users.list(Some(users::UsersListParams::new().per_page(1)));
 
@@ -62,7 +67,8 @@ fn users_sync_ok() {
 #[test]
 fn meta_sync_ok() {
     let auth = Auth::None;
-    let meta = meta::new(&auth);
+    let client = client(&auth);
+    let meta = meta::new(&client);
     let req = meta.get();
 
     assert!(req.is_ok());
@@ -72,7 +78,8 @@ fn meta_sync_ok() {
 #[test]
 fn issues_sync_ok() {
     let auth = Auth::None;
-    let issues = issues::new(&auth);
+    let client = client(&auth);
+    let issues = issues::new(&client);
     let per_page = api::PerPage::new(1);
     let req = issues.list_for_repo("fussybeaver", "bollard", Some(&per_page));
 
@@ -101,7 +108,8 @@ fn license_sync_ok() {
     use roctogen::api::licenses::LicensesGetForRepoParams;
 
     let auth = Auth::None;
-    let license = licenses::new(&auth);
+    let client = client(&auth);
+    let license = licenses::new(&client);
     let req = license.get_for_repo("fussybeaver", "bollard", None::<LicensesGetForRepoParams>);
 
     assert!(req.is_ok());
@@ -119,8 +127,9 @@ fn license_sync_ok() {
 #[test]
 fn reactions_sync_ok() {
     let auth = Auth::None;
+    let client = client(&auth);
     let per_page = api::PerPage::new(1);
-    let reactions = reactions::new(&auth);
+    let reactions = reactions::new(&client);
     let req = reactions.list_for_issue("fussybeaver", "bollard", 86, Some(&per_page));
 
     assert!(req.is_ok());
@@ -130,8 +139,9 @@ fn reactions_sync_ok() {
 #[test]
 fn actions_sync_ok() {
     let auth = Auth::None;
+    let client = client(&auth);
     let per_page = api::PerPage::new(1);
-    let activity = activity::new(&auth);
+    let activity = activity::new(&client);
     let req = activity.list_watchers_for_repo("fussybeaver", "bollard", Some(&per_page));
 
     assert!(req.is_ok());
@@ -153,7 +163,8 @@ fn actions_sync_ok() {
 #[test]
 fn rate_limit_sync_ok() {
     let auth = Auth::None;
-    let rate_limit = rate_limit::new(&auth);
+    let client = client(&auth);
+    let rate_limit = rate_limit::new(&client);
     let req = rate_limit.get();
 
     match &req {
@@ -173,13 +184,14 @@ fn rate_limit_sync_ok() {
 #[test]
 fn post_sync_fail() {
     let auth = Auth::None;
+    let client = client(&auth);
 
     let body = models::PostReposAddUserAccessRestrictions {
         users: vec!["fussybeaver".to_string()].into(),
     };
 
     let req =
-        repos::new(&auth).add_user_access_restrictions("fussybeaver", "bollard", "master", body);
+        repos::new(&client).add_user_access_restrictions("fussybeaver", "bollard", "master", body);
     match &req {
         Ok(_) => {}
         Err(repos::ReposAddUserAccessRestrictionsError::Generic { code }) => {

@@ -6,12 +6,12 @@
 //!
 //! This client API is generated from the [upstream OpenAPI
 //! specification](https://github.com/github/rest-api-description/). The library currently supports
-//! webassembly and both tokio and non-tokio based asynchronous requests and minimal dependency blocking 
+//! webassembly and both tokio and non-tokio based asynchronous requests and minimal dependency blocking
 //! synchronous requests with a choice of different clients, enabled through cargo features:
 //!
 //!   - `isahc` feature (*sync* and non-tokio based *async*): [Isahc HTTP client](https://github.com/sagebind/isahc)
 //!   - `reqwest` feature (*async*) [Reqwest client](https://github.com/seanmonstar/reqwest)
-//!   - `ureq` feature (*sync*) [Ureq client](https://github.com/algesten/ureq) 
+//!   - `ureq` feature (*sync*) [Ureq client](https://github.com/algesten/ureq)
 //!
 //! # Install
 //!
@@ -26,12 +26,12 @@
 //! ## Documentation
 //!
 //! [API docs](https://docs.rs/roctogen/latest).
-//! 
+//!
 //! [Endpoints](https://docs.rs/roctogen/latest/roctogen/endpoints/index.html).
 //!
 //! Supported endpoints:
 //! ---
-//! 
+//!
 //!   - [Meta](https://docs.rs/roctogen/latest/roctogen/endpoints/meta/struct.Meta.html)
 //!   - [Issues](https://docs.rs/roctogen/latest/roctogen/endpoints/issues/struct.Issues.html)
 //!   - [Licenses](https://docs.rs/roctogen/latest/roctogen/endpoints/licenses/struct.Licenses.html)
@@ -75,15 +75,16 @@
 //!
 //! ```no_run
 //! use roctogen::api::{self, repos};
-//! use roctogen::auth::Auth;
+//! use roctogen::{adapters::client, auth::Auth};
 //!
 //! let auth = Auth::None;
+//! let client = client(&auth);
 //! let per_page = api::PerPage::new(10);
-//! 
+//!
 //! let mut params: repos::ReposListCommitsParams = per_page.as_ref().into();
 //! params = params.author("fussybeaver").page(2);
 //!
-//! repos::new(&auth).list_commits("fussybeaver", "bollard", Some(params));
+//! repos::new(&client).list_commits("fussybeaver", "bollard", Some(params));
 //! ```
 //!
 //! ## Async
@@ -139,6 +140,15 @@
 //! $ cargo build --features ureq
 //! ```
 //!
+//! # GitHub preview features
+//!
+//! GitHub supports a phased rollout of non-stable endpoints behind header flags. These are
+//! supported in this library through cargo feature flags.
+//!
+//! ```nocompile
+//! $ cargo build --features squirrel-girl
+//! ```
+//!
 //! # Generate the API
 //!
 //! The majority of code is generated through the [Swagger OpenAPI
@@ -150,14 +160,14 @@
 //! $ mvn -D org.slf4j.simpleLogger.defaultLogLevel=info clean compiler:compile generate-resources
 //! ```
 //!
-//! # Tests 
+//! # Tests
 //!
 //! Beware, tests that are not run with the `mock` feature are currently still doing real HTTP requests to the GitHub API.
 //!
 //! Run the wasm tests:
 //!
 //! ```nocompile
-//! $ wasm-pack test --firefox --headless 
+//! $ wasm-pack test --firefox --headless
 //! ```
 //!
 //! Run the sync tests:
@@ -182,10 +192,7 @@
 //! $ docker run -d --name wiremock -p 8080:8080 -v $PWD/tests/stubs:/home/wiremock -u (id -u):(id -g) rodolpheche/wiremock --verbose --proxy-all="https://api.github.com" --record-mappings
 //! ```
 //!
-#![allow(
-    missing_docs,
-    unused_imports,
-)]
+#![allow(missing_docs, unused_imports)]
 
 #[macro_use]
 extern crate serde_derive;
@@ -197,11 +204,10 @@ pub mod endpoints;
 pub mod models;
 
 pub mod auth {
+
+    #[derive(Clone, Debug)]
     pub enum Auth {
-        Basic {
-            user: String,
-            pass: String,
-        },
+        Basic { user: String, pass: String },
         Token(String),
         Bearer(String),
         None,

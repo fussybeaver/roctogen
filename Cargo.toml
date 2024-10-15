@@ -24,7 +24,7 @@ mock = []
 [dependencies]
 base64 = "0.22"
 chrono = { version = "0.4", features = ["serde"] }
-http = "0.2.3"
+http = "1.1"
 serde = "1.0"
 serde_derive = "1.0"
 serde_json = {version = "1.0"}
@@ -39,7 +39,7 @@ isahc = { version = "1", optional = true, features = ["json"] }
 reqwest = { version = "0.12", optional = true, features = ["json"] }
 
 # ureq
-ureq = { version = "2", optional = true, features = ["json"] }
+ureq = { version = "3.0.0-rc1", optional = true, features = ["json"] }
 
 # wasm 
 [target.'cfg(target_arch = "wasm32")'.dependencies]

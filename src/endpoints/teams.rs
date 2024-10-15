@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,12 +22,12 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Teams<'api> {
-    auth: &'api Auth
+pub struct Teams<'api, C: Client<Req = crate::adapters::Req>> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> Teams {
-    Teams { auth }
+pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> Teams<C> {
+    Teams { client }
 }
 
 /// Errors for the [Add team member (Legacy)](Teams::add_member_legacy_async()) endpoint.
@@ -1890,7 +1889,7 @@ impl<'enc> From<&'enc PerPage> for TeamsListReposLegacyParams {
     }
 }
 
-impl<'api> Teams<'api> {
+impl<'api, C: Client<Req = crate::adapters::Req>> Teams<'api, C> {
     /// ---
     ///
     /// # Add team member (Legacy)
@@ -1923,21 +1922,21 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsAddMemberLegacyError::Status404),
                 422 => Err(TeamsAddMemberLegacyError::Status422),
-                403 => Err(TeamsAddMemberLegacyError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(TeamsAddMemberLegacyError::Status403(github_response.to_json_async().await?)),
                 code => Err(TeamsAddMemberLegacyError::Generic { code }),
             }
         }
@@ -1976,21 +1975,21 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsAddMemberLegacyError::Status404),
                 422 => Err(TeamsAddMemberLegacyError::Status422),
-                403 => Err(TeamsAddMemberLegacyError::Status403(crate::adapters::to_json(github_response)?)),
+                403 => Err(TeamsAddMemberLegacyError::Status403(github_response.to_json()?)),
                 code => Err(TeamsAddMemberLegacyError::Generic { code }),
             }
         }
@@ -2029,16 +2028,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 403 => Err(TeamsAddOrUpdateMembershipForUserInOrgError::Status403),
@@ -2082,16 +2081,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 403 => Err(TeamsAddOrUpdateMembershipForUserInOrgError::Status403),
@@ -2134,21 +2133,21 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 403 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status403),
                 422 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status422),
-                404 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status404(github_response.to_json_async().await?)),
                 code => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Generic { code }),
             }
         }
@@ -2188,21 +2187,21 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 403 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status403),
                 422 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status422),
-                404 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status404(github_response.to_json()?)),
                 code => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Generic { code }),
             }
         }
@@ -2232,19 +2231,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsAddOrUpdateProjectPermissionsInOrgError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(TeamsAddOrUpdateProjectPermissionsInOrgError::Status403(github_response.to_json_async().await?)),
                 code => Err(TeamsAddOrUpdateProjectPermissionsInOrgError::Generic { code }),
             }
         }
@@ -2275,19 +2274,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsAddOrUpdateProjectPermissionsInOrgError::Status403(crate::adapters::to_json(github_response)?)),
+                403 => Err(TeamsAddOrUpdateProjectPermissionsInOrgError::Status403(github_response.to_json()?)),
                 code => Err(TeamsAddOrUpdateProjectPermissionsInOrgError::Generic { code }),
             }
         }
@@ -2317,21 +2316,21 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status403(github_response.to_json_async().await?)),
+                404 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status404(github_response.to_json_async().await?)),
+                422 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status422(github_response.to_json_async().await?)),
                 code => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Generic { code }),
             }
         }
@@ -2362,21 +2361,21 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status422(crate::adapters::to_json(github_response)?)),
+                403 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status403(github_response.to_json()?)),
+                404 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status404(github_response.to_json()?)),
+                422 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status422(github_response.to_json()?)),
                 code => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Generic { code }),
             }
         }
@@ -2408,16 +2407,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsAddOrUpdateRepoPermissionsInOrgError::Generic { code }),
@@ -2452,16 +2451,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsAddOrUpdateRepoPermissionsInOrgError::Generic { code }),
@@ -2495,20 +2494,20 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Status403(github_response.to_json_async().await?)),
+                422 => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Status422(github_response.to_json_async().await?)),
                 code => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Generic { code }),
             }
         }
@@ -2541,20 +2540,20 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Status403(crate::adapters::to_json(github_response)?)),
-                422 => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Status422(crate::adapters::to_json(github_response)?)),
+                403 => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Status403(github_response.to_json()?)),
+                422 => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Status422(github_response.to_json()?)),
                 code => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Generic { code }),
             }
         }
@@ -2584,16 +2583,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsCheckPermissionsForProjectInOrgError::Status404),
@@ -2627,16 +2626,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsCheckPermissionsForProjectInOrgError::Status404),
@@ -2669,16 +2668,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsCheckPermissionsForProjectLegacyError::Status404),
@@ -2712,16 +2711,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsCheckPermissionsForProjectLegacyError::Status404),
@@ -2760,16 +2759,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 204 => Err(TeamsCheckPermissionsForRepoInOrgError::Status204),
@@ -2810,16 +2809,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 204 => Err(TeamsCheckPermissionsForRepoInOrgError::Status204),
@@ -2856,16 +2855,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 204 => Err(TeamsCheckPermissionsForRepoLegacyError::Status204),
@@ -2903,16 +2902,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 204 => Err(TeamsCheckPermissionsForRepoLegacyError::Status204),
@@ -2945,20 +2944,20 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(TeamsCreateError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(TeamsCreateError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(TeamsCreateError::Status422(github_response.to_json_async().await?)),
+                403 => Err(TeamsCreateError::Status403(github_response.to_json_async().await?)),
                 code => Err(TeamsCreateError::Generic { code }),
             }
         }
@@ -2988,20 +2987,20 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(TeamsCreateError::Status422(crate::adapters::to_json(github_response)?)),
-                403 => Err(TeamsCreateError::Status403(crate::adapters::to_json(github_response)?)),
+                422 => Err(TeamsCreateError::Status422(github_response.to_json()?)),
+                403 => Err(TeamsCreateError::Status403(github_response.to_json()?)),
                 code => Err(TeamsCreateError::Generic { code }),
             }
         }
@@ -3035,16 +3034,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsCreateDiscussionCommentInOrgError::Generic { code }),
@@ -3081,16 +3080,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsCreateDiscussionCommentInOrgError::Generic { code }),
@@ -3126,16 +3125,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsCreateDiscussionCommentLegacyError::Generic { code }),
@@ -3172,16 +3171,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsCreateDiscussionCommentLegacyError::Generic { code }),
@@ -3217,16 +3216,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsCreateDiscussionInOrgError::Generic { code }),
@@ -3263,16 +3262,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsCreateDiscussionInOrgError::Generic { code }),
@@ -3308,16 +3307,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsCreateDiscussionLegacyError::Generic { code }),
@@ -3354,16 +3353,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsCreateDiscussionLegacyError::Generic { code }),
@@ -3397,16 +3396,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsDeleteDiscussionCommentInOrgError::Generic { code }),
@@ -3441,16 +3440,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsDeleteDiscussionCommentInOrgError::Generic { code }),
@@ -3484,16 +3483,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsDeleteDiscussionCommentLegacyError::Generic { code }),
@@ -3528,16 +3527,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsDeleteDiscussionCommentLegacyError::Generic { code }),
@@ -3571,16 +3570,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsDeleteDiscussionInOrgError::Generic { code }),
@@ -3615,16 +3614,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsDeleteDiscussionInOrgError::Generic { code }),
@@ -3658,16 +3657,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsDeleteDiscussionLegacyError::Generic { code }),
@@ -3702,16 +3701,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsDeleteDiscussionLegacyError::Generic { code }),
@@ -3745,16 +3744,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsDeleteInOrgError::Generic { code }),
@@ -3789,16 +3788,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsDeleteInOrgError::Generic { code }),
@@ -3832,20 +3831,20 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsDeleteLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(TeamsDeleteLegacyError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(TeamsDeleteLegacyError::Status404(github_response.to_json_async().await?)),
+                422 => Err(TeamsDeleteLegacyError::Status422(github_response.to_json_async().await?)),
                 code => Err(TeamsDeleteLegacyError::Generic { code }),
             }
         }
@@ -3878,20 +3877,20 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsDeleteLegacyError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(TeamsDeleteLegacyError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(TeamsDeleteLegacyError::Status404(github_response.to_json()?)),
+                422 => Err(TeamsDeleteLegacyError::Status422(github_response.to_json()?)),
                 code => Err(TeamsDeleteLegacyError::Generic { code }),
             }
         }
@@ -3921,19 +3920,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsGetByNameError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(TeamsGetByNameError::Status404(github_response.to_json_async().await?)),
                 code => Err(TeamsGetByNameError::Generic { code }),
             }
         }
@@ -3964,19 +3963,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsGetByNameError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(TeamsGetByNameError::Status404(github_response.to_json()?)),
                 code => Err(TeamsGetByNameError::Generic { code }),
             }
         }
@@ -4008,16 +4007,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsGetDiscussionCommentInOrgError::Generic { code }),
@@ -4052,16 +4051,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsGetDiscussionCommentInOrgError::Generic { code }),
@@ -4095,16 +4094,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsGetDiscussionCommentLegacyError::Generic { code }),
@@ -4139,16 +4138,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsGetDiscussionCommentLegacyError::Generic { code }),
@@ -4182,16 +4181,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsGetDiscussionInOrgError::Generic { code }),
@@ -4226,16 +4225,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsGetDiscussionInOrgError::Generic { code }),
@@ -4269,16 +4268,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsGetDiscussionLegacyError::Generic { code }),
@@ -4313,16 +4312,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsGetDiscussionLegacyError::Generic { code }),
@@ -4352,19 +4351,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsGetLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(TeamsGetLegacyError::Status404(github_response.to_json_async().await?)),
                 code => Err(TeamsGetLegacyError::Generic { code }),
             }
         }
@@ -4393,19 +4392,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsGetLegacyError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(TeamsGetLegacyError::Status404(github_response.to_json()?)),
                 code => Err(TeamsGetLegacyError::Generic { code }),
             }
         }
@@ -4436,16 +4435,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsGetMemberLegacyError::Status404),
@@ -4480,16 +4479,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsGetMemberLegacyError::Status404),
@@ -4529,16 +4528,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsGetMembershipForUserInOrgError::Status404),
@@ -4579,16 +4578,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsGetMembershipForUserInOrgError::Status404),
@@ -4628,19 +4627,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsGetMembershipForUserLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(TeamsGetMembershipForUserLegacyError::Status404(github_response.to_json_async().await?)),
                 code => Err(TeamsGetMembershipForUserLegacyError::Generic { code }),
             }
         }
@@ -4678,19 +4677,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsGetMembershipForUserLegacyError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(TeamsGetMembershipForUserLegacyError::Status404(github_response.to_json()?)),
                 code => Err(TeamsGetMembershipForUserLegacyError::Generic { code }),
             }
         }
@@ -4721,19 +4720,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsListError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(TeamsListError::Status403(github_response.to_json_async().await?)),
                 code => Err(TeamsListError::Generic { code }),
             }
         }
@@ -4766,19 +4765,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsListError::Status403(crate::adapters::to_json(github_response)?)),
+                403 => Err(TeamsListError::Status403(github_response.to_json()?)),
                 code => Err(TeamsListError::Generic { code }),
             }
         }
@@ -4812,16 +4811,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsListChildInOrgError::Generic { code }),
@@ -4859,16 +4858,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsListChildInOrgError::Generic { code }),
@@ -4902,21 +4901,21 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsListChildLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(TeamsListChildLegacyError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(TeamsListChildLegacyError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(TeamsListChildLegacyError::Status404(github_response.to_json_async().await?)),
+                403 => Err(TeamsListChildLegacyError::Status403(github_response.to_json_async().await?)),
+                422 => Err(TeamsListChildLegacyError::Status422(github_response.to_json_async().await?)),
                 code => Err(TeamsListChildLegacyError::Generic { code }),
             }
         }
@@ -4950,21 +4949,21 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsListChildLegacyError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(TeamsListChildLegacyError::Status403(crate::adapters::to_json(github_response)?)),
-                422 => Err(TeamsListChildLegacyError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(TeamsListChildLegacyError::Status404(github_response.to_json()?)),
+                403 => Err(TeamsListChildLegacyError::Status403(github_response.to_json()?)),
+                422 => Err(TeamsListChildLegacyError::Status422(github_response.to_json()?)),
                 code => Err(TeamsListChildLegacyError::Generic { code }),
             }
         }
@@ -5000,16 +4999,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsListDiscussionCommentsInOrgError::Generic { code }),
@@ -5049,16 +5048,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsListDiscussionCommentsInOrgError::Generic { code }),
@@ -5096,16 +5095,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsListDiscussionCommentsLegacyError::Generic { code }),
@@ -5145,16 +5144,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsListDiscussionCommentsLegacyError::Generic { code }),
@@ -5192,16 +5191,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsListDiscussionsInOrgError::Generic { code }),
@@ -5241,16 +5240,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsListDiscussionsInOrgError::Generic { code }),
@@ -5288,16 +5287,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsListDiscussionsLegacyError::Generic { code }),
@@ -5337,16 +5336,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsListDiscussionsLegacyError::Generic { code }),
@@ -5384,21 +5383,21 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(TeamsListForAuthenticatedUserError::Status304),
-                404 => Err(TeamsListForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(TeamsListForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(TeamsListForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
+                403 => Err(TeamsListForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
                 code => Err(TeamsListForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -5436,21 +5435,21 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(TeamsListForAuthenticatedUserError::Status304),
-                404 => Err(TeamsListForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(TeamsListForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(TeamsListForAuthenticatedUserError::Status404(github_response.to_json()?)),
+                403 => Err(TeamsListForAuthenticatedUserError::Status403(github_response.to_json()?)),
                 code => Err(TeamsListForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -5483,16 +5482,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsListMembersInOrgError::Generic { code }),
@@ -5529,16 +5528,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsListMembersInOrgError::Generic { code }),
@@ -5574,19 +5573,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsListMembersLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(TeamsListMembersLegacyError::Status404(github_response.to_json_async().await?)),
                 code => Err(TeamsListMembersLegacyError::Generic { code }),
             }
         }
@@ -5622,19 +5621,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsListMembersLegacyError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(TeamsListMembersLegacyError::Status404(github_response.to_json()?)),
                 code => Err(TeamsListMembersLegacyError::Generic { code }),
             }
         }
@@ -5668,16 +5667,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsListPendingInvitationsInOrgError::Generic { code }),
@@ -5715,16 +5714,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsListPendingInvitationsInOrgError::Generic { code }),
@@ -5760,16 +5759,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsListPendingInvitationsLegacyError::Generic { code }),
@@ -5807,16 +5806,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsListPendingInvitationsLegacyError::Generic { code }),
@@ -5852,16 +5851,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsListProjectsInOrgError::Generic { code }),
@@ -5899,16 +5898,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsListProjectsInOrgError::Generic { code }),
@@ -5944,19 +5943,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsListProjectsLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(TeamsListProjectsLegacyError::Status404(github_response.to_json_async().await?)),
                 code => Err(TeamsListProjectsLegacyError::Generic { code }),
             }
         }
@@ -5992,19 +5991,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsListProjectsLegacyError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(TeamsListProjectsLegacyError::Status404(github_response.to_json()?)),
                 code => Err(TeamsListProjectsLegacyError::Generic { code }),
             }
         }
@@ -6038,16 +6037,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsListReposInOrgError::Generic { code }),
@@ -6085,16 +6084,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsListReposInOrgError::Generic { code }),
@@ -6128,19 +6127,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsListReposLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(TeamsListReposLegacyError::Status404(github_response.to_json_async().await?)),
                 code => Err(TeamsListReposLegacyError::Generic { code }),
             }
         }
@@ -6174,19 +6173,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsListReposLegacyError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(TeamsListReposLegacyError::Status404(github_response.to_json()?)),
                 code => Err(TeamsListReposLegacyError::Generic { code }),
             }
         }
@@ -6222,16 +6221,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsRemoveMemberLegacyError::Status404),
@@ -6271,16 +6270,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsRemoveMemberLegacyError::Status404),
@@ -6318,16 +6317,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 403 => Err(TeamsRemoveMembershipForUserInOrgError::Status403),
@@ -6366,16 +6365,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 403 => Err(TeamsRemoveMembershipForUserInOrgError::Status403),
@@ -6413,16 +6412,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 403 => Err(TeamsRemoveMembershipForUserLegacyError::Status403),
@@ -6461,16 +6460,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 403 => Err(TeamsRemoveMembershipForUserLegacyError::Status403),
@@ -6503,16 +6502,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsRemoveProjectInOrgError::Generic { code }),
@@ -6545,16 +6544,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsRemoveProjectInOrgError::Generic { code }),
@@ -6586,20 +6585,20 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsRemoveProjectLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(TeamsRemoveProjectLegacyError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(TeamsRemoveProjectLegacyError::Status404(github_response.to_json_async().await?)),
+                422 => Err(TeamsRemoveProjectLegacyError::Status422(github_response.to_json_async().await?)),
                 code => Err(TeamsRemoveProjectLegacyError::Generic { code }),
             }
         }
@@ -6630,20 +6629,20 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsRemoveProjectLegacyError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(TeamsRemoveProjectLegacyError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(TeamsRemoveProjectLegacyError::Status404(github_response.to_json()?)),
+                422 => Err(TeamsRemoveProjectLegacyError::Status422(github_response.to_json()?)),
                 code => Err(TeamsRemoveProjectLegacyError::Generic { code }),
             }
         }
@@ -6673,16 +6672,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsRemoveRepoInOrgError::Generic { code }),
@@ -6715,16 +6714,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsRemoveRepoInOrgError::Generic { code }),
@@ -6756,16 +6755,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsRemoveRepoLegacyError::Generic { code }),
@@ -6798,16 +6797,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsRemoveRepoLegacyError::Generic { code }),
@@ -6841,16 +6840,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsUpdateDiscussionCommentInOrgError::Generic { code }),
@@ -6885,16 +6884,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsUpdateDiscussionCommentInOrgError::Generic { code }),
@@ -6928,16 +6927,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsUpdateDiscussionCommentLegacyError::Generic { code }),
@@ -6972,16 +6971,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsUpdateDiscussionCommentLegacyError::Generic { code }),
@@ -7015,16 +7014,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsUpdateDiscussionInOrgError::Generic { code }),
@@ -7059,16 +7058,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsUpdateDiscussionInOrgError::Generic { code }),
@@ -7102,16 +7101,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsUpdateDiscussionLegacyError::Generic { code }),
@@ -7146,16 +7145,16 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(TeamsUpdateDiscussionLegacyError::Generic { code }),
@@ -7187,22 +7186,22 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                201 => Err(TeamsUpdateInOrgError::Status201(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(TeamsUpdateInOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(TeamsUpdateInOrgError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(TeamsUpdateInOrgError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                201 => Err(TeamsUpdateInOrgError::Status201(github_response.to_json_async().await?)),
+                404 => Err(TeamsUpdateInOrgError::Status404(github_response.to_json_async().await?)),
+                422 => Err(TeamsUpdateInOrgError::Status422(github_response.to_json_async().await?)),
+                403 => Err(TeamsUpdateInOrgError::Status403(github_response.to_json_async().await?)),
                 code => Err(TeamsUpdateInOrgError::Generic { code }),
             }
         }
@@ -7233,22 +7232,22 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                201 => Err(TeamsUpdateInOrgError::Status201(crate::adapters::to_json(github_response)?)),
-                404 => Err(TeamsUpdateInOrgError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(TeamsUpdateInOrgError::Status422(crate::adapters::to_json(github_response)?)),
-                403 => Err(TeamsUpdateInOrgError::Status403(crate::adapters::to_json(github_response)?)),
+                201 => Err(TeamsUpdateInOrgError::Status201(github_response.to_json()?)),
+                404 => Err(TeamsUpdateInOrgError::Status404(github_response.to_json()?)),
+                422 => Err(TeamsUpdateInOrgError::Status422(github_response.to_json()?)),
+                403 => Err(TeamsUpdateInOrgError::Status403(github_response.to_json()?)),
                 code => Err(TeamsUpdateInOrgError::Generic { code }),
             }
         }
@@ -7281,22 +7280,22 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                201 => Err(TeamsUpdateLegacyError::Status201(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(TeamsUpdateLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(TeamsUpdateLegacyError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(TeamsUpdateLegacyError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                201 => Err(TeamsUpdateLegacyError::Status201(github_response.to_json_async().await?)),
+                404 => Err(TeamsUpdateLegacyError::Status404(github_response.to_json_async().await?)),
+                422 => Err(TeamsUpdateLegacyError::Status422(github_response.to_json_async().await?)),
+                403 => Err(TeamsUpdateLegacyError::Status403(github_response.to_json_async().await?)),
                 code => Err(TeamsUpdateLegacyError::Generic { code }),
             }
         }
@@ -7330,22 +7329,22 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                201 => Err(TeamsUpdateLegacyError::Status201(crate::adapters::to_json(github_response)?)),
-                404 => Err(TeamsUpdateLegacyError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(TeamsUpdateLegacyError::Status422(crate::adapters::to_json(github_response)?)),
-                403 => Err(TeamsUpdateLegacyError::Status403(crate::adapters::to_json(github_response)?)),
+                201 => Err(TeamsUpdateLegacyError::Status201(github_response.to_json()?)),
+                404 => Err(TeamsUpdateLegacyError::Status404(github_response.to_json()?)),
+                422 => Err(TeamsUpdateLegacyError::Status422(github_response.to_json()?)),
+                403 => Err(TeamsUpdateLegacyError::Status403(github_response.to_json()?)),
                 code => Err(TeamsUpdateLegacyError::Generic { code }),
             }
         }

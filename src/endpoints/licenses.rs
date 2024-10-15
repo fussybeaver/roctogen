@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,12 +22,12 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Licenses<'api> {
-    auth: &'api Auth
+pub struct Licenses<'api, C: Client<Req = crate::adapters::Req>> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> Licenses {
-    Licenses { auth }
+pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> Licenses<C> {
+    Licenses { client }
 }
 
 /// Errors for the [Get a license](Licenses::get_async()) endpoint.
@@ -167,7 +166,7 @@ impl LicensesGetForRepoParams {
 }
 
 
-impl<'api> Licenses<'api> {
+impl<'api, C: Client<Req = crate::adapters::Req>> Licenses<'api, C> {
     /// ---
     ///
     /// # Get a license
@@ -189,20 +188,20 @@ impl<'api> Licenses<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(LicensesGetError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(LicensesGetError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(LicensesGetError::Status403(github_response.to_json_async().await?)),
+                404 => Err(LicensesGetError::Status404(github_response.to_json_async().await?)),
                 304 => Err(LicensesGetError::Status304),
                 code => Err(LicensesGetError::Generic { code }),
             }
@@ -231,20 +230,20 @@ impl<'api> Licenses<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(LicensesGetError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(LicensesGetError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(LicensesGetError::Status403(github_response.to_json()?)),
+                404 => Err(LicensesGetError::Status404(github_response.to_json()?)),
                 304 => Err(LicensesGetError::Status304),
                 code => Err(LicensesGetError::Generic { code }),
             }
@@ -276,16 +275,16 @@ impl<'api> Licenses<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(LicensesGetAllCommonlyUsedError::Status304),
@@ -321,16 +320,16 @@ impl<'api> Licenses<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(LicensesGetAllCommonlyUsedError::Status304),
@@ -369,19 +368,19 @@ impl<'api> Licenses<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(LicensesGetForRepoError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(LicensesGetForRepoError::Status404(github_response.to_json_async().await?)),
                 code => Err(LicensesGetForRepoError::Generic { code }),
             }
         }
@@ -419,19 +418,19 @@ impl<'api> Licenses<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(LicensesGetForRepoError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(LicensesGetForRepoError::Status404(github_response.to_json()?)),
                 code => Err(LicensesGetForRepoError::Generic { code }),
             }
         }

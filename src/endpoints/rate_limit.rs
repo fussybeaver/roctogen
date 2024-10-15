@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,12 +22,12 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct RateLimit<'api> {
-    auth: &'api Auth
+pub struct RateLimit<'api, C: Client<Req = crate::adapters::Req>> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> RateLimit {
-    RateLimit { auth }
+pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> RateLimit<C> {
+    RateLimit { client }
 }
 
 /// Errors for the [Get rate limit status for the authenticated user](RateLimit::get_async()) endpoint.
@@ -54,7 +53,7 @@ pub enum RateLimitGetError {
 
 
 
-impl<'api> RateLimit<'api> {
+impl<'api, C: Client<Req = crate::adapters::Req>> RateLimit<'api, C> {
     /// ---
     ///
     /// # Get rate limit status for the authenticated user
@@ -91,20 +90,20 @@ impl<'api> RateLimit<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(RateLimitGetError::Status304),
-                404 => Err(RateLimitGetError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(RateLimitGetError::Status404(github_response.to_json_async().await?)),
                 code => Err(RateLimitGetError::Generic { code }),
             }
         }
@@ -147,20 +146,20 @@ impl<'api> RateLimit<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(RateLimitGetError::Status304),
-                404 => Err(RateLimitGetError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(RateLimitGetError::Status404(github_response.to_json()?)),
                 code => Err(RateLimitGetError::Generic { code }),
             }
         }

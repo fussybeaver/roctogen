@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,12 +22,12 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct DependencyGraph<'api> {
-    auth: &'api Auth
+pub struct DependencyGraph<'api, C: Client<Req = crate::adapters::Req>> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> DependencyGraph {
-    DependencyGraph { auth }
+pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> DependencyGraph<C> {
+    DependencyGraph { client }
 }
 
 /// Errors for the [Create a snapshot of dependencies for a repository](DependencyGraph::create_repository_snapshot_async()) endpoint.
@@ -112,7 +111,7 @@ impl<'req> DependencyGraphDiffRangeParams<'req> {
 }
 
 
-impl<'api> DependencyGraph<'api> {
+impl<'api, C: Client<Req = crate::adapters::Req>> DependencyGraph<'api, C> {
     /// ---
     ///
     /// # Create a snapshot of dependencies for a repository
@@ -138,16 +137,16 @@ impl<'api> DependencyGraph<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(DependencyGraphCreateRepositorySnapshotError::Generic { code }),
@@ -181,16 +180,16 @@ impl<'api> DependencyGraph<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(DependencyGraphCreateRepositorySnapshotError::Generic { code }),
@@ -223,20 +222,20 @@ impl<'api> DependencyGraph<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(DependencyGraphDiffRangeError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(DependencyGraphDiffRangeError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(DependencyGraphDiffRangeError::Status404(github_response.to_json_async().await?)),
+                403 => Err(DependencyGraphDiffRangeError::Status403(github_response.to_json_async().await?)),
                 code => Err(DependencyGraphDiffRangeError::Generic { code }),
             }
         }
@@ -269,20 +268,20 @@ impl<'api> DependencyGraph<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(DependencyGraphDiffRangeError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(DependencyGraphDiffRangeError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(DependencyGraphDiffRangeError::Status404(github_response.to_json()?)),
+                403 => Err(DependencyGraphDiffRangeError::Status403(github_response.to_json()?)),
                 code => Err(DependencyGraphDiffRangeError::Generic { code }),
             }
         }
@@ -309,20 +308,20 @@ impl<'api> DependencyGraph<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(DependencyGraphExportSbomError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(DependencyGraphExportSbomError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(DependencyGraphExportSbomError::Status404(github_response.to_json_async().await?)),
+                403 => Err(DependencyGraphExportSbomError::Status403(github_response.to_json_async().await?)),
                 code => Err(DependencyGraphExportSbomError::Generic { code }),
             }
         }
@@ -350,20 +349,20 @@ impl<'api> DependencyGraph<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(DependencyGraphExportSbomError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(DependencyGraphExportSbomError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(DependencyGraphExportSbomError::Status404(github_response.to_json()?)),
+                403 => Err(DependencyGraphExportSbomError::Status403(github_response.to_json()?)),
                 code => Err(DependencyGraphExportSbomError::Generic { code }),
             }
         }

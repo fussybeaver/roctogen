@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,12 +22,12 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Reactions<'api> {
-    auth: &'api Auth
+pub struct Reactions<'api, C: Client<Req = crate::adapters::Req>> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> Reactions {
-    Reactions { auth }
+pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> Reactions<C> {
+    Reactions { client }
 }
 
 /// Errors for the [Create reaction for a commit comment](Reactions::create_for_commit_comment_async()) endpoint.
@@ -971,7 +970,7 @@ impl<'enc> From<&'enc PerPage> for ReactionsListForTeamDiscussionLegacyParams<'e
     }
 }
 
-impl<'api> Reactions<'api> {
+impl<'api, C: Client<Req = crate::adapters::Req>> Reactions<'api, C> {
     /// ---
     ///
     /// # Create reaction for a commit comment
@@ -993,20 +992,20 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForCommitCommentError::Status201(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(ReactionsCreateForCommitCommentError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                201 => Err(ReactionsCreateForCommitCommentError::Status201(github_response.to_json_async().await?)),
+                422 => Err(ReactionsCreateForCommitCommentError::Status422(github_response.to_json_async().await?)),
                 code => Err(ReactionsCreateForCommitCommentError::Generic { code }),
             }
         }
@@ -1034,20 +1033,20 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForCommitCommentError::Status201(crate::adapters::to_json(github_response)?)),
-                422 => Err(ReactionsCreateForCommitCommentError::Status422(crate::adapters::to_json(github_response)?)),
+                201 => Err(ReactionsCreateForCommitCommentError::Status201(github_response.to_json()?)),
+                422 => Err(ReactionsCreateForCommitCommentError::Status422(github_response.to_json()?)),
                 code => Err(ReactionsCreateForCommitCommentError::Generic { code }),
             }
         }
@@ -1074,20 +1073,20 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForIssueError::Status201(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(ReactionsCreateForIssueError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                201 => Err(ReactionsCreateForIssueError::Status201(github_response.to_json_async().await?)),
+                422 => Err(ReactionsCreateForIssueError::Status422(github_response.to_json_async().await?)),
                 code => Err(ReactionsCreateForIssueError::Generic { code }),
             }
         }
@@ -1115,20 +1114,20 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForIssueError::Status201(crate::adapters::to_json(github_response)?)),
-                422 => Err(ReactionsCreateForIssueError::Status422(crate::adapters::to_json(github_response)?)),
+                201 => Err(ReactionsCreateForIssueError::Status201(github_response.to_json()?)),
+                422 => Err(ReactionsCreateForIssueError::Status422(github_response.to_json()?)),
                 code => Err(ReactionsCreateForIssueError::Generic { code }),
             }
         }
@@ -1155,20 +1154,20 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForIssueCommentError::Status201(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(ReactionsCreateForIssueCommentError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                201 => Err(ReactionsCreateForIssueCommentError::Status201(github_response.to_json_async().await?)),
+                422 => Err(ReactionsCreateForIssueCommentError::Status422(github_response.to_json_async().await?)),
                 code => Err(ReactionsCreateForIssueCommentError::Generic { code }),
             }
         }
@@ -1196,20 +1195,20 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForIssueCommentError::Status201(crate::adapters::to_json(github_response)?)),
-                422 => Err(ReactionsCreateForIssueCommentError::Status422(crate::adapters::to_json(github_response)?)),
+                201 => Err(ReactionsCreateForIssueCommentError::Status201(github_response.to_json()?)),
+                422 => Err(ReactionsCreateForIssueCommentError::Status422(github_response.to_json()?)),
                 code => Err(ReactionsCreateForIssueCommentError::Generic { code }),
             }
         }
@@ -1236,20 +1235,20 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForPullRequestReviewCommentError::Status201(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(ReactionsCreateForPullRequestReviewCommentError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                201 => Err(ReactionsCreateForPullRequestReviewCommentError::Status201(github_response.to_json_async().await?)),
+                422 => Err(ReactionsCreateForPullRequestReviewCommentError::Status422(github_response.to_json_async().await?)),
                 code => Err(ReactionsCreateForPullRequestReviewCommentError::Generic { code }),
             }
         }
@@ -1277,20 +1276,20 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForPullRequestReviewCommentError::Status201(crate::adapters::to_json(github_response)?)),
-                422 => Err(ReactionsCreateForPullRequestReviewCommentError::Status422(crate::adapters::to_json(github_response)?)),
+                201 => Err(ReactionsCreateForPullRequestReviewCommentError::Status201(github_response.to_json()?)),
+                422 => Err(ReactionsCreateForPullRequestReviewCommentError::Status422(github_response.to_json()?)),
                 code => Err(ReactionsCreateForPullRequestReviewCommentError::Generic { code }),
             }
         }
@@ -1317,20 +1316,20 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForReleaseError::Status201(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(ReactionsCreateForReleaseError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                201 => Err(ReactionsCreateForReleaseError::Status201(github_response.to_json_async().await?)),
+                422 => Err(ReactionsCreateForReleaseError::Status422(github_response.to_json_async().await?)),
                 code => Err(ReactionsCreateForReleaseError::Generic { code }),
             }
         }
@@ -1358,20 +1357,20 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForReleaseError::Status201(crate::adapters::to_json(github_response)?)),
-                422 => Err(ReactionsCreateForReleaseError::Status422(crate::adapters::to_json(github_response)?)),
+                201 => Err(ReactionsCreateForReleaseError::Status201(github_response.to_json()?)),
+                422 => Err(ReactionsCreateForReleaseError::Status422(github_response.to_json()?)),
                 code => Err(ReactionsCreateForReleaseError::Generic { code }),
             }
         }
@@ -1405,19 +1404,19 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForTeamDiscussionCommentInOrgError::Status201(crate::adapters::to_json_async(github_response).await?)),
+                201 => Err(ReactionsCreateForTeamDiscussionCommentInOrgError::Status201(github_response.to_json_async().await?)),
                 code => Err(ReactionsCreateForTeamDiscussionCommentInOrgError::Generic { code }),
             }
         }
@@ -1452,19 +1451,19 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForTeamDiscussionCommentInOrgError::Status201(crate::adapters::to_json(github_response)?)),
+                201 => Err(ReactionsCreateForTeamDiscussionCommentInOrgError::Status201(github_response.to_json()?)),
                 code => Err(ReactionsCreateForTeamDiscussionCommentInOrgError::Generic { code }),
             }
         }
@@ -1498,16 +1497,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsCreateForTeamDiscussionCommentLegacyError::Generic { code }),
@@ -1544,16 +1543,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsCreateForTeamDiscussionCommentLegacyError::Generic { code }),
@@ -1589,19 +1588,19 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForTeamDiscussionInOrgError::Status201(crate::adapters::to_json_async(github_response).await?)),
+                201 => Err(ReactionsCreateForTeamDiscussionInOrgError::Status201(github_response.to_json_async().await?)),
                 code => Err(ReactionsCreateForTeamDiscussionInOrgError::Generic { code }),
             }
         }
@@ -1636,19 +1635,19 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForTeamDiscussionInOrgError::Status201(crate::adapters::to_json(github_response)?)),
+                201 => Err(ReactionsCreateForTeamDiscussionInOrgError::Status201(github_response.to_json()?)),
                 code => Err(ReactionsCreateForTeamDiscussionInOrgError::Generic { code }),
             }
         }
@@ -1682,16 +1681,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsCreateForTeamDiscussionLegacyError::Generic { code }),
@@ -1728,16 +1727,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsCreateForTeamDiscussionLegacyError::Generic { code }),
@@ -1769,16 +1768,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForCommitCommentError::Generic { code }),
@@ -1811,16 +1810,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForCommitCommentError::Generic { code }),
@@ -1852,16 +1851,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForIssueError::Generic { code }),
@@ -1894,16 +1893,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForIssueError::Generic { code }),
@@ -1935,16 +1934,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForIssueCommentError::Generic { code }),
@@ -1977,16 +1976,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForIssueCommentError::Generic { code }),
@@ -2018,16 +2017,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForPullRequestCommentError::Generic { code }),
@@ -2060,16 +2059,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForPullRequestCommentError::Generic { code }),
@@ -2101,16 +2100,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForReleaseError::Generic { code }),
@@ -2143,16 +2142,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForReleaseError::Generic { code }),
@@ -2186,16 +2185,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForTeamDiscussionError::Generic { code }),
@@ -2230,16 +2229,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForTeamDiscussionError::Generic { code }),
@@ -2273,16 +2272,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForTeamDiscussionCommentError::Generic { code }),
@@ -2317,16 +2316,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForTeamDiscussionCommentError::Generic { code }),
@@ -2359,19 +2358,19 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForCommitCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReactionsListForCommitCommentError::Status404(github_response.to_json_async().await?)),
                 code => Err(ReactionsListForCommitCommentError::Generic { code }),
             }
         }
@@ -2404,19 +2403,19 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForCommitCommentError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReactionsListForCommitCommentError::Status404(github_response.to_json()?)),
                 code => Err(ReactionsListForCommitCommentError::Generic { code }),
             }
         }
@@ -2447,20 +2446,20 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForIssueError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                410 => Err(ReactionsListForIssueError::Status410(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReactionsListForIssueError::Status404(github_response.to_json_async().await?)),
+                410 => Err(ReactionsListForIssueError::Status410(github_response.to_json_async().await?)),
                 code => Err(ReactionsListForIssueError::Generic { code }),
             }
         }
@@ -2493,20 +2492,20 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForIssueError::Status404(crate::adapters::to_json(github_response)?)),
-                410 => Err(ReactionsListForIssueError::Status410(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReactionsListForIssueError::Status404(github_response.to_json()?)),
+                410 => Err(ReactionsListForIssueError::Status410(github_response.to_json()?)),
                 code => Err(ReactionsListForIssueError::Generic { code }),
             }
         }
@@ -2537,19 +2536,19 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForIssueCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReactionsListForIssueCommentError::Status404(github_response.to_json_async().await?)),
                 code => Err(ReactionsListForIssueCommentError::Generic { code }),
             }
         }
@@ -2582,19 +2581,19 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForIssueCommentError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReactionsListForIssueCommentError::Status404(github_response.to_json()?)),
                 code => Err(ReactionsListForIssueCommentError::Generic { code }),
             }
         }
@@ -2625,19 +2624,19 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForPullRequestReviewCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReactionsListForPullRequestReviewCommentError::Status404(github_response.to_json_async().await?)),
                 code => Err(ReactionsListForPullRequestReviewCommentError::Generic { code }),
             }
         }
@@ -2670,19 +2669,19 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForPullRequestReviewCommentError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReactionsListForPullRequestReviewCommentError::Status404(github_response.to_json()?)),
                 code => Err(ReactionsListForPullRequestReviewCommentError::Generic { code }),
             }
         }
@@ -2713,19 +2712,19 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForReleaseError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(ReactionsListForReleaseError::Status404(github_response.to_json_async().await?)),
                 code => Err(ReactionsListForReleaseError::Generic { code }),
             }
         }
@@ -2758,19 +2757,19 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForReleaseError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(ReactionsListForReleaseError::Status404(github_response.to_json()?)),
                 code => Err(ReactionsListForReleaseError::Generic { code }),
             }
         }
@@ -2806,16 +2805,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsListForTeamDiscussionCommentInOrgError::Generic { code }),
@@ -2855,16 +2854,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsListForTeamDiscussionCommentInOrgError::Generic { code }),
@@ -2902,16 +2901,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsListForTeamDiscussionCommentLegacyError::Generic { code }),
@@ -2951,16 +2950,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsListForTeamDiscussionCommentLegacyError::Generic { code }),
@@ -2998,16 +2997,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsListForTeamDiscussionInOrgError::Generic { code }),
@@ -3047,16 +3046,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsListForTeamDiscussionInOrgError::Generic { code }),
@@ -3094,16 +3093,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsListForTeamDiscussionLegacyError::Generic { code }),
@@ -3143,16 +3142,16 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsListForTeamDiscussionLegacyError::Generic { code }),

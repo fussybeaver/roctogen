@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,12 +22,12 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct SecurityAdvisories<'api> {
-    auth: &'api Auth
+pub struct SecurityAdvisories<'api, C: Client<Req = crate::adapters::Req>> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> SecurityAdvisories {
-    SecurityAdvisories { auth }
+pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> SecurityAdvisories<C> {
+    SecurityAdvisories { client }
 }
 
 /// Errors for the [Create a temporary private fork](SecurityAdvisories::create_fork_async()) endpoint.
@@ -924,7 +923,7 @@ impl<'req> SecurityAdvisoriesListRepositoryAdvisoriesParams<'req> {
 }
 
 
-impl<'api> SecurityAdvisories<'api> {
+impl<'api, C: Client<Req = crate::adapters::Req>> SecurityAdvisories<'api, C> {
     /// ---
     ///
     /// # Create a temporary private fork
@@ -949,22 +948,22 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(SecurityAdvisoriesCreateForkError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(SecurityAdvisoriesCreateForkError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(SecurityAdvisoriesCreateForkError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(SecurityAdvisoriesCreateForkError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                400 => Err(SecurityAdvisoriesCreateForkError::Status400(github_response.to_json_async().await?)),
+                422 => Err(SecurityAdvisoriesCreateForkError::Status422(github_response.to_json_async().await?)),
+                403 => Err(SecurityAdvisoriesCreateForkError::Status403(github_response.to_json_async().await?)),
+                404 => Err(SecurityAdvisoriesCreateForkError::Status404(github_response.to_json_async().await?)),
                 code => Err(SecurityAdvisoriesCreateForkError::Generic { code }),
             }
         }
@@ -995,22 +994,22 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(SecurityAdvisoriesCreateForkError::Status400(crate::adapters::to_json(github_response)?)),
-                422 => Err(SecurityAdvisoriesCreateForkError::Status422(crate::adapters::to_json(github_response)?)),
-                403 => Err(SecurityAdvisoriesCreateForkError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(SecurityAdvisoriesCreateForkError::Status404(crate::adapters::to_json(github_response)?)),
+                400 => Err(SecurityAdvisoriesCreateForkError::Status400(github_response.to_json()?)),
+                422 => Err(SecurityAdvisoriesCreateForkError::Status422(github_response.to_json()?)),
+                403 => Err(SecurityAdvisoriesCreateForkError::Status403(github_response.to_json()?)),
+                404 => Err(SecurityAdvisoriesCreateForkError::Status404(github_response.to_json()?)),
                 code => Err(SecurityAdvisoriesCreateForkError::Generic { code }),
             }
         }
@@ -1038,21 +1037,21 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status403(github_response.to_json_async().await?)),
+                404 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status404(github_response.to_json_async().await?)),
+                422 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status422(github_response.to_json_async().await?)),
                 code => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Generic { code }),
             }
         }
@@ -1081,21 +1080,21 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status422(crate::adapters::to_json(github_response)?)),
+                403 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status403(github_response.to_json()?)),
+                404 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status404(github_response.to_json()?)),
+                422 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status422(github_response.to_json()?)),
                 code => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Generic { code }),
             }
         }
@@ -1126,21 +1125,21 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status403(github_response.to_json_async().await?)),
+                404 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status404(github_response.to_json_async().await?)),
+                422 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status422(github_response.to_json_async().await?)),
                 code => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Generic { code }),
             }
         }
@@ -1172,21 +1171,21 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status422(crate::adapters::to_json(github_response)?)),
+                403 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status403(github_response.to_json()?)),
+                404 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status404(github_response.to_json()?)),
+                422 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status422(github_response.to_json()?)),
                 code => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Generic { code }),
             }
         }
@@ -1219,22 +1218,22 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                400 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status400(github_response.to_json_async().await?)),
+                403 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status403(github_response.to_json_async().await?)),
+                404 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status404(github_response.to_json_async().await?)),
+                422 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status422(github_response.to_json_async().await?)),
                 code => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Generic { code }),
             }
         }
@@ -1268,22 +1267,22 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status400(crate::adapters::to_json(github_response)?)),
-                403 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status422(crate::adapters::to_json(github_response)?)),
+                400 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status400(github_response.to_json()?)),
+                403 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status403(github_response.to_json()?)),
+                404 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status404(github_response.to_json()?)),
+                422 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status422(github_response.to_json()?)),
                 code => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Generic { code }),
             }
         }
@@ -1310,19 +1309,19 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(SecurityAdvisoriesGetGlobalAdvisoryError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(SecurityAdvisoriesGetGlobalAdvisoryError::Status404(github_response.to_json_async().await?)),
                 code => Err(SecurityAdvisoriesGetGlobalAdvisoryError::Generic { code }),
             }
         }
@@ -1350,19 +1349,19 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(SecurityAdvisoriesGetGlobalAdvisoryError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(SecurityAdvisoriesGetGlobalAdvisoryError::Status404(github_response.to_json()?)),
                 code => Err(SecurityAdvisoriesGetGlobalAdvisoryError::Generic { code }),
             }
         }
@@ -1396,20 +1395,20 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(SecurityAdvisoriesGetRepositoryAdvisoryError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(SecurityAdvisoriesGetRepositoryAdvisoryError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(SecurityAdvisoriesGetRepositoryAdvisoryError::Status403(github_response.to_json_async().await?)),
+                404 => Err(SecurityAdvisoriesGetRepositoryAdvisoryError::Status404(github_response.to_json_async().await?)),
                 code => Err(SecurityAdvisoriesGetRepositoryAdvisoryError::Generic { code }),
             }
         }
@@ -1444,20 +1443,20 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(SecurityAdvisoriesGetRepositoryAdvisoryError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(SecurityAdvisoriesGetRepositoryAdvisoryError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(SecurityAdvisoriesGetRepositoryAdvisoryError::Status403(github_response.to_json()?)),
+                404 => Err(SecurityAdvisoriesGetRepositoryAdvisoryError::Status404(github_response.to_json()?)),
                 code => Err(SecurityAdvisoriesGetRepositoryAdvisoryError::Generic { code }),
             }
         }
@@ -1490,20 +1489,20 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                429 => Err(SecurityAdvisoriesListGlobalAdvisoriesError::Status429(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(SecurityAdvisoriesListGlobalAdvisoriesError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                429 => Err(SecurityAdvisoriesListGlobalAdvisoriesError::Status429(github_response.to_json_async().await?)),
+                422 => Err(SecurityAdvisoriesListGlobalAdvisoriesError::Status422(github_response.to_json_async().await?)),
                 code => Err(SecurityAdvisoriesListGlobalAdvisoriesError::Generic { code }),
             }
         }
@@ -1538,20 +1537,20 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                429 => Err(SecurityAdvisoriesListGlobalAdvisoriesError::Status429(crate::adapters::to_json(github_response)?)),
-                422 => Err(SecurityAdvisoriesListGlobalAdvisoriesError::Status422(crate::adapters::to_json(github_response)?)),
+                429 => Err(SecurityAdvisoriesListGlobalAdvisoriesError::Status429(github_response.to_json()?)),
+                422 => Err(SecurityAdvisoriesListGlobalAdvisoriesError::Status422(github_response.to_json()?)),
                 code => Err(SecurityAdvisoriesListGlobalAdvisoriesError::Generic { code }),
             }
         }
@@ -1586,20 +1585,20 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                400 => Err(SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Status400(github_response.to_json_async().await?)),
+                404 => Err(SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Status404(github_response.to_json_async().await?)),
                 code => Err(SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Generic { code }),
             }
         }
@@ -1636,20 +1635,20 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Status400(crate::adapters::to_json(github_response)?)),
-                404 => Err(SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Status404(crate::adapters::to_json(github_response)?)),
+                400 => Err(SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Status400(github_response.to_json()?)),
+                404 => Err(SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Status404(github_response.to_json()?)),
                 code => Err(SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Generic { code }),
             }
         }
@@ -1684,20 +1683,20 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(SecurityAdvisoriesListRepositoryAdvisoriesError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(SecurityAdvisoriesListRepositoryAdvisoriesError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                400 => Err(SecurityAdvisoriesListRepositoryAdvisoriesError::Status400(github_response.to_json_async().await?)),
+                404 => Err(SecurityAdvisoriesListRepositoryAdvisoriesError::Status404(github_response.to_json_async().await?)),
                 code => Err(SecurityAdvisoriesListRepositoryAdvisoriesError::Generic { code }),
             }
         }
@@ -1734,20 +1733,20 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(SecurityAdvisoriesListRepositoryAdvisoriesError::Status400(crate::adapters::to_json(github_response)?)),
-                404 => Err(SecurityAdvisoriesListRepositoryAdvisoriesError::Status404(crate::adapters::to_json(github_response)?)),
+                400 => Err(SecurityAdvisoriesListRepositoryAdvisoriesError::Status400(github_response.to_json()?)),
+                404 => Err(SecurityAdvisoriesListRepositoryAdvisoriesError::Status404(github_response.to_json()?)),
                 code => Err(SecurityAdvisoriesListRepositoryAdvisoriesError::Generic { code }),
             }
         }
@@ -1779,21 +1778,21 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status403(github_response.to_json_async().await?)),
+                404 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status404(github_response.to_json_async().await?)),
+                422 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status422(github_response.to_json_async().await?)),
                 code => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Generic { code }),
             }
         }
@@ -1826,21 +1825,21 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status422(crate::adapters::to_json(github_response)?)),
+                403 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status403(github_response.to_json()?)),
+                404 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status404(github_response.to_json()?)),
+                422 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status422(github_response.to_json()?)),
                 code => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Generic { code }),
             }
         }

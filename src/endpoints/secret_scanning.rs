@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,12 +22,12 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct SecretScanning<'api> {
-    auth: &'api Auth
+pub struct SecretScanning<'api, C: Client<Req = crate::adapters::Req>> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> SecretScanning {
-    SecretScanning { auth }
+pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> SecretScanning<C> {
+    SecretScanning { client }
 }
 
 /// Errors for the [Create a push protection bypass](SecretScanning::create_push_protection_bypass_async()) endpoint.
@@ -794,7 +793,7 @@ impl<'enc> From<&'enc PerPage> for SecretScanningListLocationsForAlertParams {
     }
 }
 
-impl<'api> SecretScanning<'api> {
+impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
     /// ---
     ///
     /// # Create a push protection bypass
@@ -820,22 +819,22 @@ impl<'api> SecretScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 403 => Err(SecretScanningCreatePushProtectionBypassError::Status403),
                 404 => Err(SecretScanningCreatePushProtectionBypassError::Status404),
                 422 => Err(SecretScanningCreatePushProtectionBypassError::Status422),
-                503 => Err(SecretScanningCreatePushProtectionBypassError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(SecretScanningCreatePushProtectionBypassError::Status503(github_response.to_json_async().await?)),
                 code => Err(SecretScanningCreatePushProtectionBypassError::Generic { code }),
             }
         }
@@ -867,22 +866,22 @@ impl<'api> SecretScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 403 => Err(SecretScanningCreatePushProtectionBypassError::Status403),
                 404 => Err(SecretScanningCreatePushProtectionBypassError::Status404),
                 422 => Err(SecretScanningCreatePushProtectionBypassError::Status422),
-                503 => Err(SecretScanningCreatePushProtectionBypassError::Status503(crate::adapters::to_json(github_response)?)),
+                503 => Err(SecretScanningCreatePushProtectionBypassError::Status503(github_response.to_json()?)),
                 code => Err(SecretScanningCreatePushProtectionBypassError::Generic { code }),
             }
         }
@@ -913,21 +912,21 @@ impl<'api> SecretScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(SecretScanningGetAlertError::Status304),
                 404 => Err(SecretScanningGetAlertError::Status404),
-                503 => Err(SecretScanningGetAlertError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(SecretScanningGetAlertError::Status503(github_response.to_json_async().await?)),
                 code => Err(SecretScanningGetAlertError::Generic { code }),
             }
         }
@@ -959,21 +958,21 @@ impl<'api> SecretScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(SecretScanningGetAlertError::Status304),
                 404 => Err(SecretScanningGetAlertError::Status404),
-                503 => Err(SecretScanningGetAlertError::Status503(crate::adapters::to_json(github_response)?)),
+                503 => Err(SecretScanningGetAlertError::Status503(github_response.to_json()?)),
                 code => Err(SecretScanningGetAlertError::Generic { code }),
             }
         }
@@ -1010,20 +1009,20 @@ impl<'api> SecretScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(SecretScanningListAlertsForEnterpriseError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(SecretScanningListAlertsForEnterpriseError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(SecretScanningListAlertsForEnterpriseError::Status404(github_response.to_json_async().await?)),
+                503 => Err(SecretScanningListAlertsForEnterpriseError::Status503(github_response.to_json_async().await?)),
                 code => Err(SecretScanningListAlertsForEnterpriseError::Generic { code }),
             }
         }
@@ -1062,20 +1061,20 @@ impl<'api> SecretScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(SecretScanningListAlertsForEnterpriseError::Status404(crate::adapters::to_json(github_response)?)),
-                503 => Err(SecretScanningListAlertsForEnterpriseError::Status503(crate::adapters::to_json(github_response)?)),
+                404 => Err(SecretScanningListAlertsForEnterpriseError::Status404(github_response.to_json()?)),
+                503 => Err(SecretScanningListAlertsForEnterpriseError::Status503(github_response.to_json()?)),
                 code => Err(SecretScanningListAlertsForEnterpriseError::Generic { code }),
             }
         }
@@ -1110,20 +1109,20 @@ impl<'api> SecretScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(SecretScanningListAlertsForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(SecretScanningListAlertsForOrgError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(SecretScanningListAlertsForOrgError::Status404(github_response.to_json_async().await?)),
+                503 => Err(SecretScanningListAlertsForOrgError::Status503(github_response.to_json_async().await?)),
                 code => Err(SecretScanningListAlertsForOrgError::Generic { code }),
             }
         }
@@ -1160,20 +1159,20 @@ impl<'api> SecretScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(SecretScanningListAlertsForOrgError::Status404(crate::adapters::to_json(github_response)?)),
-                503 => Err(SecretScanningListAlertsForOrgError::Status503(crate::adapters::to_json(github_response)?)),
+                404 => Err(SecretScanningListAlertsForOrgError::Status404(github_response.to_json()?)),
+                503 => Err(SecretScanningListAlertsForOrgError::Status503(github_response.to_json()?)),
                 code => Err(SecretScanningListAlertsForOrgError::Generic { code }),
             }
         }
@@ -1208,20 +1207,20 @@ impl<'api> SecretScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 404 => Err(SecretScanningListAlertsForRepoError::Status404),
-                503 => Err(SecretScanningListAlertsForRepoError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(SecretScanningListAlertsForRepoError::Status503(github_response.to_json_async().await?)),
                 code => Err(SecretScanningListAlertsForRepoError::Generic { code }),
             }
         }
@@ -1258,20 +1257,20 @@ impl<'api> SecretScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 404 => Err(SecretScanningListAlertsForRepoError::Status404),
-                503 => Err(SecretScanningListAlertsForRepoError::Status503(crate::adapters::to_json(github_response)?)),
+                503 => Err(SecretScanningListAlertsForRepoError::Status503(github_response.to_json()?)),
                 code => Err(SecretScanningListAlertsForRepoError::Generic { code }),
             }
         }
@@ -1306,20 +1305,20 @@ impl<'api> SecretScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 404 => Err(SecretScanningListLocationsForAlertError::Status404),
-                503 => Err(SecretScanningListLocationsForAlertError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(SecretScanningListLocationsForAlertError::Status503(github_response.to_json_async().await?)),
                 code => Err(SecretScanningListLocationsForAlertError::Generic { code }),
             }
         }
@@ -1356,20 +1355,20 @@ impl<'api> SecretScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 404 => Err(SecretScanningListLocationsForAlertError::Status404),
-                503 => Err(SecretScanningListLocationsForAlertError::Status503(crate::adapters::to_json(github_response)?)),
+                503 => Err(SecretScanningListLocationsForAlertError::Status503(github_response.to_json()?)),
                 code => Err(SecretScanningListLocationsForAlertError::Generic { code }),
             }
         }
@@ -1400,22 +1399,22 @@ impl<'api> SecretScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 400 => Err(SecretScanningUpdateAlertError::Status400),
                 404 => Err(SecretScanningUpdateAlertError::Status404),
                 422 => Err(SecretScanningUpdateAlertError::Status422),
-                503 => Err(SecretScanningUpdateAlertError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(SecretScanningUpdateAlertError::Status503(github_response.to_json_async().await?)),
                 code => Err(SecretScanningUpdateAlertError::Generic { code }),
             }
         }
@@ -1447,22 +1446,22 @@ impl<'api> SecretScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 400 => Err(SecretScanningUpdateAlertError::Status400),
                 404 => Err(SecretScanningUpdateAlertError::Status404),
                 422 => Err(SecretScanningUpdateAlertError::Status422),
-                503 => Err(SecretScanningUpdateAlertError::Status503(crate::adapters::to_json(github_response)?)),
+                503 => Err(SecretScanningUpdateAlertError::Status503(github_response.to_json()?)),
                 code => Err(SecretScanningUpdateAlertError::Generic { code }),
             }
         }

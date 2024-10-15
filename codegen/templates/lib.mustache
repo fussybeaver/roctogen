@@ -171,6 +171,8 @@ pub mod endpoints;
 pub mod models;
 
 pub mod auth {
+    
+    #[derive(Clone, Debug)]
     pub enum Auth {
         Basic {
             user: String,

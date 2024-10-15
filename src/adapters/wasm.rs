@@ -44,6 +44,10 @@ pub enum AdapterError {
     Value(JsValueError),
     #[error(transparent)]
     Object(ObjectError),
+    #[error(transparent)]
+    Serde(#[from] serde_json::Error),
+    #[error(transparent)]
+    IOError(#[from] std::io::Error),
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -58,6 +62,47 @@ pub struct JsValueError {
 pub struct ObjectError {
     msg: String,
     origin: Object,
+}
+
+impl super::Client for Client {
+    type Req = web_sys::Request;
+
+    fn new(auth: &Auth) -> Self {
+        Self {
+            auth: auth.to_owned(),
+            scope: scope().expect("Cannot fetch wasm scope"),
+        }
+    }
+
+    fn get_auth(&self) -> &Auth {
+        &self.auth
+    }
+
+    fn fetch(&self, _request: Self::Req) -> Result<impl GitHubResponseExt, AdapterError> {
+        unimplemented!("Wasm adapter only has async fetch implemented");
+        Err::<GitHubResponse, _>(std::io::Error::new(std::io::ErrorKind::Other, "oh no!").into())
+    }
+
+    async fn fetch_async(
+        &self,
+        request: Self::Req,
+    ) -> Result<impl GitHubResponseExt, AdapterError> {
+        let resp_value = JsFuture::from(self.scope.fetch(&request)).await?;
+
+        debug!("Response: {:?}", &resp_value);
+
+        let resp: Response = resp_value.dyn_into()?;
+        let json: JsValue = JsFuture::from(resp.json()?).await?;
+
+        debug!("Body: {:?}", &json);
+
+        Ok(GitHubResponse { json, resp })
+    }
+}
+
+pub struct Client {
+    pub(crate) auth: Auth,
+    pub(crate) scope: Box<dyn WasmScope>,
 }
 
 impl From<JsValue> for AdapterError {
@@ -78,21 +123,6 @@ impl From<Object> for AdapterError {
     }
 }
 
-pub(crate) async fn fetch_async(request: Request) -> Result<GitHubResponse, AdapterError> {
-    let scope = scope()?;
-
-    let resp_value = JsFuture::from(scope.fetch(&request)).await?;
-
-    debug!("Response: {:?}", &resp_value);
-
-    let resp: Response = resp_value.dyn_into()?;
-    let json: JsValue = JsFuture::from(resp.json()?).await?;
-
-    debug!("Body: {:?}", &json);
-
-    Ok(GitHubResponse { json, resp })
-}
-
 pub(crate) struct GitHubResponse {
     pub json: JsValue,
     pub resp: Response,
@@ -106,12 +136,15 @@ impl GitHubResponseExt for GitHubResponse {
     fn status_code(&self) -> u16 {
         self.resp.status()
     }
-}
+    fn to_json<E: for<'de> Deserialize<'de> + std::fmt::Debug>(self) -> Result<E, AdapterError> {
+        unimplemented!("Reqwest adapter only has async json conversion implemented");
+    }
 
-pub(crate) async fn to_json_async<E: for<'de> Deserialize<'de>>(
-    res: GitHubResponse,
-) -> Result<E, serde_json::Error> {
-    res.json.into_serde()
+    async fn to_json_async<E: for<'de> Deserialize<'de> + Unpin + std::fmt::Debug>(
+        self,
+    ) -> Result<E, AdapterError> {
+        Ok(self.json.into_serde()?)
+    }
 }
 
 impl<E> FromJson<E, JsValue> for E
@@ -123,8 +156,8 @@ where
     }
 }
 
-impl GitHubRequestBuilder<JsValue> for Request {
-    fn build(req: GitHubRequest<JsValue>, auth: &Auth) -> Result<Self, AdapterError> {
+impl<C: super::Client> GitHubRequestBuilder<JsValue, C> for Request {
+    fn build(req: GitHubRequest<JsValue>, client: &C) -> Result<Self, AdapterError> {
         let opts = RequestInit::new();
         opts.set_method(&req.method);
         if let Some(body) = req.body {
@@ -143,7 +176,7 @@ impl GitHubRequestBuilder<JsValue> for Request {
             headers.set(header.0, header.1)?;
         }
 
-        match auth {
+        match client.get_auth() {
             Auth::Basic { user, pass } => {
                 let creds = format!("{}:{}", user, pass);
                 headers.set(

@@ -6,8 +6,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -15,12 +14,12 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct {{classname}}<'api> {
-    auth: &'api Auth
+pub struct {{classname}}<'api, C: Client<Req = crate::adapters::Req>> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> {{classname}} {
-    {{classname}} { auth }
+pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> {{classname}}<C> {
+    {{classname}} { client }
 }
 
 {{#operations}}{{#operation}}{{#contents}}
@@ -87,7 +86,7 @@ impl<'enc> From<&'enc PerPage> for {{classname}}{{operationIdCamelCase}}Params{{
 {{/hasQueryParams}}
 {{/contents}}{{/operation}}
 
-impl<'api> {{classname}}<'api> {
+impl<'api, C: Client<Req = crate::adapters::Req>> {{classname}}<'api, C> {
 {{#operation}}{{#contents}}
     /// ---
     ///
@@ -130,20 +129,20 @@ impl<'api> {{classname}}<'api> {
             headers: vec![{{#vendorExtensions.x-github.previews}}("Accept", "application/vnd.github.{{name}}-preview+json"), {{/vendorExtensions.x-github.previews}}]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
 {{#responses}}{{#vendorExtensions}}{{^x-is-default}}
-                {{code}} => {{#dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}(crate::adapters::to_json_async(github_response).await?)){{/dataType}}{{^dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}){{/dataType}},
+                {{code}} => {{#dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}(github_response.to_json_async().await?)){{/dataType}}{{^dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}){{/dataType}},
 {{/x-is-default}}{{/vendorExtensions}}{{/responses}}
                 code => Err({{classname}}{{operationIdCamelCase}}Error::Generic { code }),
             }
@@ -194,20 +193,20 @@ impl<'api> {{classname}}<'api> {
             headers: vec![{{#vendorExtensions.x-github.previews}}("Accept", "application/vnd.github.{{name}}-preview+json"), {{/vendorExtensions.x-github.previews}}]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
 {{#responses}}{{#vendorExtensions}}{{^x-is-default}}
-                {{code}} => {{#dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}(crate::adapters::to_json(github_response)?)){{/dataType}}{{^dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}){{/dataType}},
+                {{code}} => {{#dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}(github_response.to_json()?)){{/dataType}}{{^dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}){{/dataType}},
 {{/x-is-default}}{{/vendorExtensions}}{{/responses}}
                 code => Err({{classname}}{{operationIdCamelCase}}Error::Generic { code }),
             }
