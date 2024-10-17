@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,12 +22,12 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct CodeScanning<'api> {
-    auth: &'api Auth
+pub struct CodeScanning<'api, C: Client<Req = crate::adapters::Req>> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> CodeScanning {
-    CodeScanning { auth }
+pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> CodeScanning<C> {
+    CodeScanning { client }
 }
 
 /// Errors for the [Create a CodeQL variant analysis](CodeScanning::create_variant_analysis_async()) endpoint.
@@ -1095,7 +1094,7 @@ impl<'enc> From<&'enc PerPage> for CodeScanningListRecentAnalysesParams<'enc> {
     }
 }
 
-impl<'api> CodeScanning<'api> {
+impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     /// ---
     ///
     /// # Create a CodeQL variant analysis
@@ -1124,21 +1123,21 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodeScanningCreateVariantAnalysisError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(CodeScanningCreateVariantAnalysisError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(CodeScanningCreateVariantAnalysisError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodeScanningCreateVariantAnalysisError::Status404(github_response.to_json_async().await?)),
+                422 => Err(CodeScanningCreateVariantAnalysisError::Status422(github_response.to_json_async().await?)),
+                503 => Err(CodeScanningCreateVariantAnalysisError::Status503(github_response.to_json_async().await?)),
                 code => Err(CodeScanningCreateVariantAnalysisError::Generic { code }),
             }
         }
@@ -1173,21 +1172,21 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodeScanningCreateVariantAnalysisError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(CodeScanningCreateVariantAnalysisError::Status422(crate::adapters::to_json(github_response)?)),
-                503 => Err(CodeScanningCreateVariantAnalysisError::Status503(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodeScanningCreateVariantAnalysisError::Status404(github_response.to_json()?)),
+                422 => Err(CodeScanningCreateVariantAnalysisError::Status422(github_response.to_json()?)),
+                503 => Err(CodeScanningCreateVariantAnalysisError::Status503(github_response.to_json()?)),
                 code => Err(CodeScanningCreateVariantAnalysisError::Generic { code }),
             }
         }
@@ -1281,22 +1280,22 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(CodeScanningDeleteAnalysisError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodeScanningDeleteAnalysisError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodeScanningDeleteAnalysisError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(CodeScanningDeleteAnalysisError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                400 => Err(CodeScanningDeleteAnalysisError::Status400(github_response.to_json_async().await?)),
+                403 => Err(CodeScanningDeleteAnalysisError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodeScanningDeleteAnalysisError::Status404(github_response.to_json_async().await?)),
+                503 => Err(CodeScanningDeleteAnalysisError::Status503(github_response.to_json_async().await?)),
                 code => Err(CodeScanningDeleteAnalysisError::Generic { code }),
             }
         }
@@ -1392,22 +1391,22 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(CodeScanningDeleteAnalysisError::Status400(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodeScanningDeleteAnalysisError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodeScanningDeleteAnalysisError::Status404(crate::adapters::to_json(github_response)?)),
-                503 => Err(CodeScanningDeleteAnalysisError::Status503(crate::adapters::to_json(github_response)?)),
+                400 => Err(CodeScanningDeleteAnalysisError::Status400(github_response.to_json()?)),
+                403 => Err(CodeScanningDeleteAnalysisError::Status403(github_response.to_json()?)),
+                404 => Err(CodeScanningDeleteAnalysisError::Status404(github_response.to_json()?)),
+                503 => Err(CodeScanningDeleteAnalysisError::Status503(github_response.to_json()?)),
                 code => Err(CodeScanningDeleteAnalysisError::Generic { code }),
             }
         }
@@ -1436,22 +1435,22 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodeScanningGetAlertError::Status304),
-                403 => Err(CodeScanningGetAlertError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodeScanningGetAlertError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(CodeScanningGetAlertError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(CodeScanningGetAlertError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodeScanningGetAlertError::Status404(github_response.to_json_async().await?)),
+                503 => Err(CodeScanningGetAlertError::Status503(github_response.to_json_async().await?)),
                 code => Err(CodeScanningGetAlertError::Generic { code }),
             }
         }
@@ -1481,22 +1480,22 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodeScanningGetAlertError::Status304),
-                403 => Err(CodeScanningGetAlertError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodeScanningGetAlertError::Status404(crate::adapters::to_json(github_response)?)),
-                503 => Err(CodeScanningGetAlertError::Status503(crate::adapters::to_json(github_response)?)),
+                403 => Err(CodeScanningGetAlertError::Status403(github_response.to_json()?)),
+                404 => Err(CodeScanningGetAlertError::Status404(github_response.to_json()?)),
+                503 => Err(CodeScanningGetAlertError::Status503(github_response.to_json()?)),
                 code => Err(CodeScanningGetAlertError::Generic { code }),
             }
         }
@@ -1539,21 +1538,21 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningGetAnalysisError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodeScanningGetAnalysisError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(CodeScanningGetAnalysisError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(CodeScanningGetAnalysisError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodeScanningGetAnalysisError::Status404(github_response.to_json_async().await?)),
+                503 => Err(CodeScanningGetAnalysisError::Status503(github_response.to_json_async().await?)),
                 code => Err(CodeScanningGetAnalysisError::Generic { code }),
             }
         }
@@ -1597,21 +1596,21 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningGetAnalysisError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodeScanningGetAnalysisError::Status404(crate::adapters::to_json(github_response)?)),
-                503 => Err(CodeScanningGetAnalysisError::Status503(crate::adapters::to_json(github_response)?)),
+                403 => Err(CodeScanningGetAnalysisError::Status403(github_response.to_json()?)),
+                404 => Err(CodeScanningGetAnalysisError::Status404(github_response.to_json()?)),
+                503 => Err(CodeScanningGetAnalysisError::Status503(github_response.to_json()?)),
                 code => Err(CodeScanningGetAnalysisError::Generic { code }),
             }
         }
@@ -1646,22 +1645,22 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 302 => Err(CodeScanningGetCodeqlDatabaseError::Status302),
-                403 => Err(CodeScanningGetCodeqlDatabaseError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodeScanningGetCodeqlDatabaseError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(CodeScanningGetCodeqlDatabaseError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(CodeScanningGetCodeqlDatabaseError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodeScanningGetCodeqlDatabaseError::Status404(github_response.to_json_async().await?)),
+                503 => Err(CodeScanningGetCodeqlDatabaseError::Status503(github_response.to_json_async().await?)),
                 code => Err(CodeScanningGetCodeqlDatabaseError::Generic { code }),
             }
         }
@@ -1697,22 +1696,22 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 302 => Err(CodeScanningGetCodeqlDatabaseError::Status302),
-                403 => Err(CodeScanningGetCodeqlDatabaseError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodeScanningGetCodeqlDatabaseError::Status404(crate::adapters::to_json(github_response)?)),
-                503 => Err(CodeScanningGetCodeqlDatabaseError::Status503(crate::adapters::to_json(github_response)?)),
+                403 => Err(CodeScanningGetCodeqlDatabaseError::Status403(github_response.to_json()?)),
+                404 => Err(CodeScanningGetCodeqlDatabaseError::Status404(github_response.to_json()?)),
+                503 => Err(CodeScanningGetCodeqlDatabaseError::Status503(github_response.to_json()?)),
                 code => Err(CodeScanningGetCodeqlDatabaseError::Generic { code }),
             }
         }
@@ -1741,21 +1740,21 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningGetDefaultSetupError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodeScanningGetDefaultSetupError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(CodeScanningGetDefaultSetupError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(CodeScanningGetDefaultSetupError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodeScanningGetDefaultSetupError::Status404(github_response.to_json_async().await?)),
+                503 => Err(CodeScanningGetDefaultSetupError::Status503(github_response.to_json_async().await?)),
                 code => Err(CodeScanningGetDefaultSetupError::Generic { code }),
             }
         }
@@ -1785,21 +1784,21 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningGetDefaultSetupError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodeScanningGetDefaultSetupError::Status404(crate::adapters::to_json(github_response)?)),
-                503 => Err(CodeScanningGetDefaultSetupError::Status503(crate::adapters::to_json(github_response)?)),
+                403 => Err(CodeScanningGetDefaultSetupError::Status403(github_response.to_json()?)),
+                404 => Err(CodeScanningGetDefaultSetupError::Status404(github_response.to_json()?)),
+                503 => Err(CodeScanningGetDefaultSetupError::Status503(github_response.to_json()?)),
                 code => Err(CodeScanningGetDefaultSetupError::Generic { code }),
             }
         }
@@ -1827,21 +1826,21 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningGetSarifError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(CodeScanningGetSarifError::Status403(github_response.to_json_async().await?)),
                 404 => Err(CodeScanningGetSarifError::Status404),
-                503 => Err(CodeScanningGetSarifError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(CodeScanningGetSarifError::Status503(github_response.to_json_async().await?)),
                 code => Err(CodeScanningGetSarifError::Generic { code }),
             }
         }
@@ -1870,21 +1869,21 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningGetSarifError::Status403(crate::adapters::to_json(github_response)?)),
+                403 => Err(CodeScanningGetSarifError::Status403(github_response.to_json()?)),
                 404 => Err(CodeScanningGetSarifError::Status404),
-                503 => Err(CodeScanningGetSarifError::Status503(crate::adapters::to_json(github_response)?)),
+                503 => Err(CodeScanningGetSarifError::Status503(github_response.to_json()?)),
                 code => Err(CodeScanningGetSarifError::Generic { code }),
             }
         }
@@ -1913,20 +1912,20 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodeScanningGetVariantAnalysisError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(CodeScanningGetVariantAnalysisError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodeScanningGetVariantAnalysisError::Status404(github_response.to_json_async().await?)),
+                503 => Err(CodeScanningGetVariantAnalysisError::Status503(github_response.to_json_async().await?)),
                 code => Err(CodeScanningGetVariantAnalysisError::Generic { code }),
             }
         }
@@ -1956,20 +1955,20 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodeScanningGetVariantAnalysisError::Status404(crate::adapters::to_json(github_response)?)),
-                503 => Err(CodeScanningGetVariantAnalysisError::Status503(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodeScanningGetVariantAnalysisError::Status404(github_response.to_json()?)),
+                503 => Err(CodeScanningGetVariantAnalysisError::Status503(github_response.to_json()?)),
                 code => Err(CodeScanningGetVariantAnalysisError::Generic { code }),
             }
         }
@@ -1998,20 +1997,20 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodeScanningGetVariantAnalysisRepoTaskError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(CodeScanningGetVariantAnalysisRepoTaskError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodeScanningGetVariantAnalysisRepoTaskError::Status404(github_response.to_json_async().await?)),
+                503 => Err(CodeScanningGetVariantAnalysisRepoTaskError::Status503(github_response.to_json_async().await?)),
                 code => Err(CodeScanningGetVariantAnalysisRepoTaskError::Generic { code }),
             }
         }
@@ -2041,20 +2040,20 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodeScanningGetVariantAnalysisRepoTaskError::Status404(crate::adapters::to_json(github_response)?)),
-                503 => Err(CodeScanningGetVariantAnalysisRepoTaskError::Status503(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodeScanningGetVariantAnalysisRepoTaskError::Status404(github_response.to_json()?)),
+                503 => Err(CodeScanningGetVariantAnalysisRepoTaskError::Status503(github_response.to_json()?)),
                 code => Err(CodeScanningGetVariantAnalysisRepoTaskError::Generic { code }),
             }
         }
@@ -2087,21 +2086,21 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningListAlertInstancesError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodeScanningListAlertInstancesError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(CodeScanningListAlertInstancesError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(CodeScanningListAlertInstancesError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodeScanningListAlertInstancesError::Status404(github_response.to_json_async().await?)),
+                503 => Err(CodeScanningListAlertInstancesError::Status503(github_response.to_json_async().await?)),
                 code => Err(CodeScanningListAlertInstancesError::Generic { code }),
             }
         }
@@ -2136,21 +2135,21 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningListAlertInstancesError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodeScanningListAlertInstancesError::Status404(crate::adapters::to_json(github_response)?)),
-                503 => Err(CodeScanningListAlertInstancesError::Status503(crate::adapters::to_json(github_response)?)),
+                403 => Err(CodeScanningListAlertInstancesError::Status403(github_response.to_json()?)),
+                404 => Err(CodeScanningListAlertInstancesError::Status404(github_response.to_json()?)),
+                503 => Err(CodeScanningListAlertInstancesError::Status503(github_response.to_json()?)),
                 code => Err(CodeScanningListAlertInstancesError::Generic { code }),
             }
         }
@@ -2185,20 +2184,20 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodeScanningListAlertsForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(CodeScanningListAlertsForOrgError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodeScanningListAlertsForOrgError::Status404(github_response.to_json_async().await?)),
+                503 => Err(CodeScanningListAlertsForOrgError::Status503(github_response.to_json_async().await?)),
                 code => Err(CodeScanningListAlertsForOrgError::Generic { code }),
             }
         }
@@ -2235,20 +2234,20 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodeScanningListAlertsForOrgError::Status404(crate::adapters::to_json(github_response)?)),
-                503 => Err(CodeScanningListAlertsForOrgError::Status503(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodeScanningListAlertsForOrgError::Status404(github_response.to_json()?)),
+                503 => Err(CodeScanningListAlertsForOrgError::Status503(github_response.to_json()?)),
                 code => Err(CodeScanningListAlertsForOrgError::Generic { code }),
             }
         }
@@ -2285,22 +2284,22 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodeScanningListAlertsForRepoError::Status304),
-                403 => Err(CodeScanningListAlertsForRepoError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodeScanningListAlertsForRepoError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(CodeScanningListAlertsForRepoError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(CodeScanningListAlertsForRepoError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodeScanningListAlertsForRepoError::Status404(github_response.to_json_async().await?)),
+                503 => Err(CodeScanningListAlertsForRepoError::Status503(github_response.to_json_async().await?)),
                 code => Err(CodeScanningListAlertsForRepoError::Generic { code }),
             }
         }
@@ -2339,22 +2338,22 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodeScanningListAlertsForRepoError::Status304),
-                403 => Err(CodeScanningListAlertsForRepoError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodeScanningListAlertsForRepoError::Status404(crate::adapters::to_json(github_response)?)),
-                503 => Err(CodeScanningListAlertsForRepoError::Status503(crate::adapters::to_json(github_response)?)),
+                403 => Err(CodeScanningListAlertsForRepoError::Status403(github_response.to_json()?)),
+                404 => Err(CodeScanningListAlertsForRepoError::Status404(github_response.to_json()?)),
+                503 => Err(CodeScanningListAlertsForRepoError::Status503(github_response.to_json()?)),
                 code => Err(CodeScanningListAlertsForRepoError::Generic { code }),
             }
         }
@@ -2383,21 +2382,21 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningListCodeqlDatabasesError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodeScanningListCodeqlDatabasesError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(CodeScanningListCodeqlDatabasesError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(CodeScanningListCodeqlDatabasesError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodeScanningListCodeqlDatabasesError::Status404(github_response.to_json_async().await?)),
+                503 => Err(CodeScanningListCodeqlDatabasesError::Status503(github_response.to_json_async().await?)),
                 code => Err(CodeScanningListCodeqlDatabasesError::Generic { code }),
             }
         }
@@ -2427,21 +2426,21 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningListCodeqlDatabasesError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodeScanningListCodeqlDatabasesError::Status404(crate::adapters::to_json(github_response)?)),
-                503 => Err(CodeScanningListCodeqlDatabasesError::Status503(crate::adapters::to_json(github_response)?)),
+                403 => Err(CodeScanningListCodeqlDatabasesError::Status403(github_response.to_json()?)),
+                404 => Err(CodeScanningListCodeqlDatabasesError::Status404(github_response.to_json()?)),
+                503 => Err(CodeScanningListCodeqlDatabasesError::Status503(github_response.to_json()?)),
                 code => Err(CodeScanningListCodeqlDatabasesError::Generic { code }),
             }
         }
@@ -2486,21 +2485,21 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningListRecentAnalysesError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodeScanningListRecentAnalysesError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(CodeScanningListRecentAnalysesError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(CodeScanningListRecentAnalysesError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodeScanningListRecentAnalysesError::Status404(github_response.to_json_async().await?)),
+                503 => Err(CodeScanningListRecentAnalysesError::Status503(github_response.to_json_async().await?)),
                 code => Err(CodeScanningListRecentAnalysesError::Generic { code }),
             }
         }
@@ -2547,21 +2546,21 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningListRecentAnalysesError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodeScanningListRecentAnalysesError::Status404(crate::adapters::to_json(github_response)?)),
-                503 => Err(CodeScanningListRecentAnalysesError::Status503(crate::adapters::to_json(github_response)?)),
+                403 => Err(CodeScanningListRecentAnalysesError::Status403(github_response.to_json()?)),
+                404 => Err(CodeScanningListRecentAnalysesError::Status404(github_response.to_json()?)),
+                503 => Err(CodeScanningListRecentAnalysesError::Status503(github_response.to_json()?)),
                 code => Err(CodeScanningListRecentAnalysesError::Generic { code }),
             }
         }
@@ -2589,21 +2588,21 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningUpdateAlertError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodeScanningUpdateAlertError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(CodeScanningUpdateAlertError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(CodeScanningUpdateAlertError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodeScanningUpdateAlertError::Status404(github_response.to_json_async().await?)),
+                503 => Err(CodeScanningUpdateAlertError::Status503(github_response.to_json_async().await?)),
                 code => Err(CodeScanningUpdateAlertError::Generic { code }),
             }
         }
@@ -2632,21 +2631,21 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningUpdateAlertError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodeScanningUpdateAlertError::Status404(crate::adapters::to_json(github_response)?)),
-                503 => Err(CodeScanningUpdateAlertError::Status503(crate::adapters::to_json(github_response)?)),
+                403 => Err(CodeScanningUpdateAlertError::Status403(github_response.to_json()?)),
+                404 => Err(CodeScanningUpdateAlertError::Status404(github_response.to_json()?)),
+                503 => Err(CodeScanningUpdateAlertError::Status503(github_response.to_json()?)),
                 code => Err(CodeScanningUpdateAlertError::Generic { code }),
             }
         }
@@ -2675,23 +2674,23 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                202 => Err(CodeScanningUpdateDefaultSetupError::Status202(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodeScanningUpdateDefaultSetupError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodeScanningUpdateDefaultSetupError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                409 => Err(CodeScanningUpdateDefaultSetupError::Status409(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(CodeScanningUpdateDefaultSetupError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                202 => Err(CodeScanningUpdateDefaultSetupError::Status202(github_response.to_json_async().await?)),
+                403 => Err(CodeScanningUpdateDefaultSetupError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodeScanningUpdateDefaultSetupError::Status404(github_response.to_json_async().await?)),
+                409 => Err(CodeScanningUpdateDefaultSetupError::Status409(github_response.to_json_async().await?)),
+                503 => Err(CodeScanningUpdateDefaultSetupError::Status503(github_response.to_json_async().await?)),
                 code => Err(CodeScanningUpdateDefaultSetupError::Generic { code }),
             }
         }
@@ -2721,23 +2720,23 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                202 => Err(CodeScanningUpdateDefaultSetupError::Status202(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodeScanningUpdateDefaultSetupError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodeScanningUpdateDefaultSetupError::Status404(crate::adapters::to_json(github_response)?)),
-                409 => Err(CodeScanningUpdateDefaultSetupError::Status409(crate::adapters::to_json(github_response)?)),
-                503 => Err(CodeScanningUpdateDefaultSetupError::Status503(crate::adapters::to_json(github_response)?)),
+                202 => Err(CodeScanningUpdateDefaultSetupError::Status202(github_response.to_json()?)),
+                403 => Err(CodeScanningUpdateDefaultSetupError::Status403(github_response.to_json()?)),
+                404 => Err(CodeScanningUpdateDefaultSetupError::Status404(github_response.to_json()?)),
+                409 => Err(CodeScanningUpdateDefaultSetupError::Status409(github_response.to_json()?)),
+                503 => Err(CodeScanningUpdateDefaultSetupError::Status503(github_response.to_json()?)),
                 code => Err(CodeScanningUpdateDefaultSetupError::Generic { code }),
             }
         }
@@ -2797,23 +2796,23 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 400 => Err(CodeScanningUploadSarifError::Status400),
-                403 => Err(CodeScanningUploadSarifError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodeScanningUploadSarifError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(CodeScanningUploadSarifError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodeScanningUploadSarifError::Status404(github_response.to_json_async().await?)),
                 413 => Err(CodeScanningUploadSarifError::Status413),
-                503 => Err(CodeScanningUploadSarifError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                503 => Err(CodeScanningUploadSarifError::Status503(github_response.to_json_async().await?)),
                 code => Err(CodeScanningUploadSarifError::Generic { code }),
             }
         }
@@ -2874,23 +2873,23 @@ impl<'api> CodeScanning<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 400 => Err(CodeScanningUploadSarifError::Status400),
-                403 => Err(CodeScanningUploadSarifError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodeScanningUploadSarifError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(CodeScanningUploadSarifError::Status403(github_response.to_json()?)),
+                404 => Err(CodeScanningUploadSarifError::Status404(github_response.to_json()?)),
                 413 => Err(CodeScanningUploadSarifError::Status413),
-                503 => Err(CodeScanningUploadSarifError::Status503(crate::adapters::to_json(github_response)?)),
+                503 => Err(CodeScanningUploadSarifError::Status503(github_response.to_json()?)),
                 code => Err(CodeScanningUploadSarifError::Generic { code }),
             }
         }
