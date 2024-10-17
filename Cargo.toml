@@ -32,9 +32,6 @@ serde_urlencoded = { version = "0.7" }
 thiserror = "1"
 log = "0.4"
 
-# isahc 
-isahc = { version = "1", optional = true, features = ["json"] }
-
 # reqwest
 reqwest = { version = "0.12", optional = true, features = ["json"] }
 

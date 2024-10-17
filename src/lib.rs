@@ -114,15 +114,7 @@
 //! ## Client adapters
 //!
 //! Building on non-`wasm` targets generally requires adopting a feature for the desired
-//! client adapter. 
-//!
-//! ### Isahc
-//!
-//! Compiling for the [`isahc`](https://github.com/sagebind/isahc) client required the `isahc` feature:
-//!
-//! ```nocompile
-//! $ cargo build --features isahc
-//! ```
+//! client adapter.
 //!
 //! ### Reqwest
 //!

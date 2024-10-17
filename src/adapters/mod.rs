@@ -3,17 +3,6 @@ use serde::{ser, Deserialize};
 
 use crate::auth::Auth;
 
-#[cfg(feature = "isahc")]
-pub mod isahc;
-
-#[cfg(feature = "isahc")]
-pub use self::isahc::AdapterError;
-
-#[cfg(feature = "isahc")]
-pub(crate) use {
-    self::isahc::fetch, self::isahc::fetch_async, self::isahc::to_json, self::isahc::to_json_async,
-};
-
 #[cfg(target_arch = "wasm32")]
 pub mod wasm;
 
@@ -42,7 +31,6 @@ pub use self::ureq::AdapterError;
 pub type Req = self::ureq::RequestWithBody;
 
 #[cfg(all(
-    not(feature = "isahc"),
     not(feature = "reqwest"),
     not(feature = "ureq"),
     not(target_arch = "wasm32")
@@ -51,18 +39,13 @@ pub type Req = self::ureq::RequestWithBody;
 pub enum AdapterError {}
 
 #[cfg(all(
-    not(feature = "isahc"),
-    not(feature = "isahc"),
-    not(feature = "isahc"),
     not(feature = "reqwest"),
     not(feature = "ureq"),
     not(target_arch = "wasm32")
 ))]
-    not(feature = "isahc"),
 pub type Req = http::Request<Vec<u8>>;
 
 #[cfg(all(
-    not(feature = "isahc"),
     not(feature = "reqwest"),
     not(feature = "ureq"),
     not(target_arch = "wasm32")
@@ -88,7 +71,6 @@ impl GitHubResponseExt for http::Response<Vec<u8>> {
 }
 
 #[cfg(all(
-    not(feature = "isahc"),
     not(feature = "reqwest"),
     not(feature = "ureq"),
     not(target_arch = "wasm32")
@@ -100,7 +82,6 @@ impl<C: Client> GitHubRequestBuilder<Vec<u8>, C> for http::Request<Vec<u8>> {
 }
 
 #[cfg(all(
-    not(feature = "isahc"),
     not(feature = "reqwest"),
     not(feature = "ureq"),
     not(target_arch = "wasm32")

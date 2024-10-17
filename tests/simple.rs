@@ -110,59 +110,6 @@ async fn get_wasm_ok() {
     assert!(req.is_ok());
 }
 
-#[cfg(all(not(target_arch = "wasm32"), feature = "isahc"))]
-#[test]
-fn get_async_ok() {
-    let req = futures_lite::future::block_on(async {
-        let auth = Auth::None;
-        let client = client(&auth);
-        let per_page = api::PerPage::new(1);
-
-        let mut params: repos::ReposListCommitsParams = per_page.as_ref().into();
-        params = params.author("fussybeaver").page(2);
-        repos::new(&client)
-            .list_commits_async("fussybeaver", "bollard", Some(params))
-            .await
-    });
-
-    match req {
-        Ok(ref repos) => {
-            assert!(!&repos.is_empty());
-        }
-        Err(ref e) => debug!("err: {}", e),
-    };
-
-    assert!(req.is_ok());
-}
-
-#[cfg(all(not(target_arch = "wasm32"), feature = "isahc"))]
-#[test]
-fn get_async_fail() {
-    let req = futures_lite::future::block_on(async {
-        let auth = Auth::None;
-        let client = client(&auth);
-
-        let per_page = api::PerPage::new(1);
-
-        repos::new(&client)
-            .list_commits_async("this-user-does-not-exist", "bollard", Some(&per_page))
-            .await
-    });
-
-    match &req {
-        Ok(_) => {}
-        Err(repos::ReposListCommitsError::Status404(e)) => {
-            debug!("{}", e.message.as_ref().unwrap());
-        }
-        Err(x) => {
-            debug!("{:?}", x);
-            assert!(false);
-        }
-    };
-
-    assert!(req.is_err());
-}
-
 #[cfg(all(not(target_arch = "wasm32"), feature = "reqwest"))]
 #[tokio::test]
 async fn get_async_ok() {
@@ -277,35 +224,6 @@ async fn post_async_fail() {
     let req = repos::new(&client)
         .add_user_access_restrictions_async("fussybeaver", "bollard", "master", body)
         .await;
-    match &req {
-        Ok(_) => {}
-        Err(repos::ReposAddUserAccessRestrictionsError::Generic { code }) => {
-            assert_eq!(404, *code);
-        }
-        Err(_) => {
-            assert!(false);
-        }
-    };
-
-    assert!(req.is_err());
-}
-
-#[cfg(all(not(target_arch = "wasm32"), feature = "isahc"))]
-#[test]
-fn post_async_fail() {
-    let req = futures_lite::future::block_on(async {
-        let auth = Auth::None;
-        let client = client(&auth);
-
-        let body = models::PostReposAddUserAccessRestrictions {
-            users: vec!["fussybeaver".to_string()].into(),
-        };
-
-        repos::new(&client)
-            .add_user_access_restrictions_async("fussybeaver", "bollard", "master", body)
-            .await
-    });
-
     match &req {
         Ok(_) => {}
         Err(repos::ReposAddUserAccessRestrictionsError::Generic { code }) => {
