@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,12 +22,12 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Codespaces<'api> {
-    auth: &'api Auth
+pub struct Codespaces<'api, C: Client<Req = crate::adapters::Req>> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> Codespaces {
-    Codespaces { auth }
+pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> Codespaces<C> {
+    Codespaces { client }
 }
 
 /// Errors for the [Add a selected repository to a user secret](Codespaces::add_repository_for_secret_for_authenticated_user_async()) endpoint.
@@ -1630,7 +1629,7 @@ impl<'req> CodespacesRepoMachinesForAuthenticatedUserParams<'req> {
 }
 
 
-impl<'api> Codespaces<'api> {
+impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// ---
     ///
     /// # Add a selected repository to a user secret
@@ -1656,22 +1655,22 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                500 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
+                500 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
                 code => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -1703,22 +1702,22 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
-                500 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status500(crate::adapters::to_json(github_response)?)),
+                401 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status404(github_response.to_json()?)),
+                500 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status500(github_response.to_json()?)),
                 code => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -1746,21 +1745,21 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status404(github_response.to_json_async().await?)),
                 409 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status409),
-                422 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status422(github_response.to_json_async().await?)),
                 code => Err(CodespacesAddSelectedRepoToOrgSecretError::Generic { code }),
             }
         }
@@ -1789,21 +1788,21 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status404(github_response.to_json()?)),
                 409 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status409),
-                422 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status422(crate::adapters::to_json(github_response)?)),
+                422 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status422(github_response.to_json()?)),
                 code => Err(CodespacesAddSelectedRepoToOrgSecretError::Generic { code }),
             }
         }
@@ -1834,23 +1833,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesCheckPermissionsForDevcontainerError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesCheckPermissionsForDevcontainerError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesCheckPermissionsForDevcontainerError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(CodespacesCheckPermissionsForDevcontainerError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(CodespacesCheckPermissionsForDevcontainerError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(CodespacesCheckPermissionsForDevcontainerError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesCheckPermissionsForDevcontainerError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesCheckPermissionsForDevcontainerError::Status404(github_response.to_json_async().await?)),
+                422 => Err(CodespacesCheckPermissionsForDevcontainerError::Status422(github_response.to_json_async().await?)),
+                503 => Err(CodespacesCheckPermissionsForDevcontainerError::Status503(github_response.to_json_async().await?)),
                 code => Err(CodespacesCheckPermissionsForDevcontainerError::Generic { code }),
             }
         }
@@ -1883,23 +1882,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesCheckPermissionsForDevcontainerError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesCheckPermissionsForDevcontainerError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesCheckPermissionsForDevcontainerError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(CodespacesCheckPermissionsForDevcontainerError::Status422(crate::adapters::to_json(github_response)?)),
-                503 => Err(CodespacesCheckPermissionsForDevcontainerError::Status503(crate::adapters::to_json(github_response)?)),
+                401 => Err(CodespacesCheckPermissionsForDevcontainerError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesCheckPermissionsForDevcontainerError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesCheckPermissionsForDevcontainerError::Status404(github_response.to_json()?)),
+                422 => Err(CodespacesCheckPermissionsForDevcontainerError::Status422(github_response.to_json()?)),
+                503 => Err(CodespacesCheckPermissionsForDevcontainerError::Status503(github_response.to_json()?)),
                 code => Err(CodespacesCheckPermissionsForDevcontainerError::Generic { code }),
             }
         }
@@ -1928,23 +1927,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                500 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
+                401 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
                 code => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -1974,23 +1973,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status500(crate::adapters::to_json(github_response)?)),
-                401 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                500 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status500(github_response.to_json()?)),
+                401 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status404(github_response.to_json()?)),
                 code => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2021,23 +2020,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                202 => Err(CodespacesCreateForAuthenticatedUserError::Status202(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(CodespacesCreateForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesCreateForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesCreateForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(CodespacesCreateForAuthenticatedUserError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                202 => Err(CodespacesCreateForAuthenticatedUserError::Status202(github_response.to_json_async().await?)),
+                401 => Err(CodespacesCreateForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesCreateForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesCreateForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
+                503 => Err(CodespacesCreateForAuthenticatedUserError::Status503(github_response.to_json_async().await?)),
                 code => Err(CodespacesCreateForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2069,23 +2068,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                202 => Err(CodespacesCreateForAuthenticatedUserError::Status202(crate::adapters::to_json(github_response)?)),
-                401 => Err(CodespacesCreateForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesCreateForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesCreateForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
-                503 => Err(CodespacesCreateForAuthenticatedUserError::Status503(crate::adapters::to_json(github_response)?)),
+                202 => Err(CodespacesCreateForAuthenticatedUserError::Status202(github_response.to_json()?)),
+                401 => Err(CodespacesCreateForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesCreateForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesCreateForAuthenticatedUserError::Status404(github_response.to_json()?)),
+                503 => Err(CodespacesCreateForAuthenticatedUserError::Status503(github_response.to_json()?)),
                 code => Err(CodespacesCreateForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2115,21 +2114,21 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 204 => Err(CodespacesCreateOrUpdateOrgSecretError::Status204),
-                404 => Err(CodespacesCreateOrUpdateOrgSecretError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(CodespacesCreateOrUpdateOrgSecretError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodespacesCreateOrUpdateOrgSecretError::Status404(github_response.to_json_async().await?)),
+                422 => Err(CodespacesCreateOrUpdateOrgSecretError::Status422(github_response.to_json_async().await?)),
                 code => Err(CodespacesCreateOrUpdateOrgSecretError::Generic { code }),
             }
         }
@@ -2160,21 +2159,21 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 204 => Err(CodespacesCreateOrUpdateOrgSecretError::Status204),
-                404 => Err(CodespacesCreateOrUpdateOrgSecretError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(CodespacesCreateOrUpdateOrgSecretError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodespacesCreateOrUpdateOrgSecretError::Status404(github_response.to_json()?)),
+                422 => Err(CodespacesCreateOrUpdateOrgSecretError::Status422(github_response.to_json()?)),
                 code => Err(CodespacesCreateOrUpdateOrgSecretError::Generic { code }),
             }
         }
@@ -2204,16 +2203,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 204 => Err(CodespacesCreateOrUpdateRepoSecretError::Status204),
@@ -2247,16 +2246,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 204 => Err(CodespacesCreateOrUpdateRepoSecretError::Status204),
@@ -2291,21 +2290,21 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 204 => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status204),
-                422 => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status422(github_response.to_json_async().await?)),
+                404 => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
                 code => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2338,21 +2337,21 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 204 => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status204),
-                422 => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status422(github_response.to_json()?)),
+                404 => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status404(github_response.to_json()?)),
                 code => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2381,23 +2380,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                202 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status202(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                202 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status202(github_response.to_json_async().await?)),
+                401 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
+                503 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status503(github_response.to_json_async().await?)),
                 code => Err(CodespacesCreateWithPrForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2427,23 +2426,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                202 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status202(crate::adapters::to_json(github_response)?)),
-                401 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
-                503 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status503(crate::adapters::to_json(github_response)?)),
+                202 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status202(github_response.to_json()?)),
+                401 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status404(github_response.to_json()?)),
+                503 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status503(github_response.to_json()?)),
                 code => Err(CodespacesCreateWithPrForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2472,24 +2471,24 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                202 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status202(crate::adapters::to_json_async(github_response).await?)),
-                400 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status503(crate::adapters::to_json_async(github_response).await?)),
+                202 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status202(github_response.to_json_async().await?)),
+                400 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status400(github_response.to_json_async().await?)),
+                401 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
+                503 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status503(github_response.to_json_async().await?)),
                 code => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2519,24 +2518,24 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                202 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status202(crate::adapters::to_json(github_response)?)),
-                400 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status400(crate::adapters::to_json(github_response)?)),
-                401 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
-                503 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status503(crate::adapters::to_json(github_response)?)),
+                202 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status202(github_response.to_json()?)),
+                400 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status400(github_response.to_json()?)),
+                401 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status404(github_response.to_json()?)),
+                503 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status503(github_response.to_json()?)),
                 code => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2568,23 +2567,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesDeleteCodespacesAccessUsersError::Status304),
                 400 => Err(CodespacesDeleteCodespacesAccessUsersError::Status400),
-                404 => Err(CodespacesDeleteCodespacesAccessUsersError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(CodespacesDeleteCodespacesAccessUsersError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                500 => Err(CodespacesDeleteCodespacesAccessUsersError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodespacesDeleteCodespacesAccessUsersError::Status404(github_response.to_json_async().await?)),
+                422 => Err(CodespacesDeleteCodespacesAccessUsersError::Status422(github_response.to_json_async().await?)),
+                500 => Err(CodespacesDeleteCodespacesAccessUsersError::Status500(github_response.to_json_async().await?)),
                 code => Err(CodespacesDeleteCodespacesAccessUsersError::Generic { code }),
             }
         }
@@ -2617,23 +2616,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesDeleteCodespacesAccessUsersError::Status304),
                 400 => Err(CodespacesDeleteCodespacesAccessUsersError::Status400),
-                404 => Err(CodespacesDeleteCodespacesAccessUsersError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(CodespacesDeleteCodespacesAccessUsersError::Status422(crate::adapters::to_json(github_response)?)),
-                500 => Err(CodespacesDeleteCodespacesAccessUsersError::Status500(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodespacesDeleteCodespacesAccessUsersError::Status404(github_response.to_json()?)),
+                422 => Err(CodespacesDeleteCodespacesAccessUsersError::Status422(github_response.to_json()?)),
+                500 => Err(CodespacesDeleteCodespacesAccessUsersError::Status500(github_response.to_json()?)),
                 code => Err(CodespacesDeleteCodespacesAccessUsersError::Generic { code }),
             }
         }
@@ -2662,23 +2661,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesDeleteForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesDeleteForAuthenticatedUserError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(CodespacesDeleteForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesDeleteForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesDeleteForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                500 => Err(CodespacesDeleteForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
+                401 => Err(CodespacesDeleteForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesDeleteForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesDeleteForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
                 code => Err(CodespacesDeleteForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2708,23 +2707,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesDeleteForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesDeleteForAuthenticatedUserError::Status500(crate::adapters::to_json(github_response)?)),
-                401 => Err(CodespacesDeleteForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesDeleteForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesDeleteForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                500 => Err(CodespacesDeleteForAuthenticatedUserError::Status500(github_response.to_json()?)),
+                401 => Err(CodespacesDeleteForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesDeleteForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesDeleteForAuthenticatedUserError::Status404(github_response.to_json()?)),
                 code => Err(CodespacesDeleteForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -2753,23 +2752,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesDeleteFromOrganizationError::Status304),
-                500 => Err(CodespacesDeleteFromOrganizationError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(CodespacesDeleteFromOrganizationError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesDeleteFromOrganizationError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesDeleteFromOrganizationError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                500 => Err(CodespacesDeleteFromOrganizationError::Status500(github_response.to_json_async().await?)),
+                401 => Err(CodespacesDeleteFromOrganizationError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesDeleteFromOrganizationError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesDeleteFromOrganizationError::Status404(github_response.to_json_async().await?)),
                 code => Err(CodespacesDeleteFromOrganizationError::Generic { code }),
             }
         }
@@ -2799,23 +2798,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesDeleteFromOrganizationError::Status304),
-                500 => Err(CodespacesDeleteFromOrganizationError::Status500(crate::adapters::to_json(github_response)?)),
-                401 => Err(CodespacesDeleteFromOrganizationError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesDeleteFromOrganizationError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesDeleteFromOrganizationError::Status404(crate::adapters::to_json(github_response)?)),
+                500 => Err(CodespacesDeleteFromOrganizationError::Status500(github_response.to_json()?)),
+                401 => Err(CodespacesDeleteFromOrganizationError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesDeleteFromOrganizationError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesDeleteFromOrganizationError::Status404(github_response.to_json()?)),
                 code => Err(CodespacesDeleteFromOrganizationError::Generic { code }),
             }
         }
@@ -2844,19 +2843,19 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesDeleteOrgSecretError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodespacesDeleteOrgSecretError::Status404(github_response.to_json_async().await?)),
                 code => Err(CodespacesDeleteOrgSecretError::Generic { code }),
             }
         }
@@ -2886,19 +2885,19 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesDeleteOrgSecretError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodespacesDeleteOrgSecretError::Status404(github_response.to_json()?)),
                 code => Err(CodespacesDeleteOrgSecretError::Generic { code }),
             }
         }
@@ -2927,16 +2926,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesDeleteRepoSecretError::Generic { code }),
@@ -2968,16 +2967,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesDeleteRepoSecretError::Generic { code }),
@@ -3010,16 +3009,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesDeleteSecretForAuthenticatedUserError::Generic { code }),
@@ -3053,16 +3052,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesDeleteSecretForAuthenticatedUserError::Generic { code }),
@@ -3095,23 +3094,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(CodespacesExportForAuthenticatedUserError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(CodespacesExportForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesExportForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesExportForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(CodespacesExportForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                500 => Err(CodespacesExportForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
+                401 => Err(CodespacesExportForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesExportForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesExportForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
+                422 => Err(CodespacesExportForAuthenticatedUserError::Status422(github_response.to_json_async().await?)),
                 code => Err(CodespacesExportForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -3143,23 +3142,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(CodespacesExportForAuthenticatedUserError::Status500(crate::adapters::to_json(github_response)?)),
-                401 => Err(CodespacesExportForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesExportForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesExportForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(CodespacesExportForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
+                500 => Err(CodespacesExportForAuthenticatedUserError::Status500(github_response.to_json()?)),
+                401 => Err(CodespacesExportForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesExportForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesExportForAuthenticatedUserError::Status404(github_response.to_json()?)),
+                422 => Err(CodespacesExportForAuthenticatedUserError::Status422(github_response.to_json()?)),
                 code => Err(CodespacesExportForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -3192,23 +3191,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesGetCodespacesForUserInOrgError::Status304),
-                500 => Err(CodespacesGetCodespacesForUserInOrgError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(CodespacesGetCodespacesForUserInOrgError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesGetCodespacesForUserInOrgError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesGetCodespacesForUserInOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                500 => Err(CodespacesGetCodespacesForUserInOrgError::Status500(github_response.to_json_async().await?)),
+                401 => Err(CodespacesGetCodespacesForUserInOrgError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesGetCodespacesForUserInOrgError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesGetCodespacesForUserInOrgError::Status404(github_response.to_json_async().await?)),
                 code => Err(CodespacesGetCodespacesForUserInOrgError::Generic { code }),
             }
         }
@@ -3243,23 +3242,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesGetCodespacesForUserInOrgError::Status304),
-                500 => Err(CodespacesGetCodespacesForUserInOrgError::Status500(crate::adapters::to_json(github_response)?)),
-                401 => Err(CodespacesGetCodespacesForUserInOrgError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesGetCodespacesForUserInOrgError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesGetCodespacesForUserInOrgError::Status404(crate::adapters::to_json(github_response)?)),
+                500 => Err(CodespacesGetCodespacesForUserInOrgError::Status500(github_response.to_json()?)),
+                401 => Err(CodespacesGetCodespacesForUserInOrgError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesGetCodespacesForUserInOrgError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesGetCodespacesForUserInOrgError::Status404(github_response.to_json()?)),
                 code => Err(CodespacesGetCodespacesForUserInOrgError::Generic { code }),
             }
         }
@@ -3288,19 +3287,19 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesGetExportDetailsForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodespacesGetExportDetailsForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
                 code => Err(CodespacesGetExportDetailsForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -3330,19 +3329,19 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesGetExportDetailsForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodespacesGetExportDetailsForAuthenticatedUserError::Status404(github_response.to_json()?)),
                 code => Err(CodespacesGetExportDetailsForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -3371,23 +3370,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesGetForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesGetForAuthenticatedUserError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(CodespacesGetForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesGetForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesGetForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                500 => Err(CodespacesGetForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
+                401 => Err(CodespacesGetForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesGetForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesGetForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
                 code => Err(CodespacesGetForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -3417,23 +3416,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesGetForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesGetForAuthenticatedUserError::Status500(crate::adapters::to_json(github_response)?)),
-                401 => Err(CodespacesGetForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesGetForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesGetForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                500 => Err(CodespacesGetForAuthenticatedUserError::Status500(github_response.to_json()?)),
+                401 => Err(CodespacesGetForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesGetForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesGetForAuthenticatedUserError::Status404(github_response.to_json()?)),
                 code => Err(CodespacesGetForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -3461,16 +3460,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesGetOrgPublicKeyError::Generic { code }),
@@ -3501,16 +3500,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesGetOrgPublicKeyError::Generic { code }),
@@ -3541,16 +3540,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesGetOrgSecretError::Generic { code }),
@@ -3582,16 +3581,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesGetOrgSecretError::Generic { code }),
@@ -3624,16 +3623,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesGetPublicKeyForAuthenticatedUserError::Generic { code }),
@@ -3667,16 +3666,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesGetPublicKeyForAuthenticatedUserError::Generic { code }),
@@ -3708,16 +3707,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesGetRepoPublicKeyError::Generic { code }),
@@ -3750,16 +3749,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesGetRepoPublicKeyError::Generic { code }),
@@ -3790,16 +3789,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesGetRepoSecretError::Generic { code }),
@@ -3831,16 +3830,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesGetRepoSecretError::Generic { code }),
@@ -3873,16 +3872,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesGetSecretForAuthenticatedUserError::Generic { code }),
@@ -3916,16 +3915,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesGetSecretForAuthenticatedUserError::Generic { code }),
@@ -3961,23 +3960,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                400 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                500 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
+                400 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status400(github_response.to_json_async().await?)),
+                401 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
                 code => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -4013,23 +4012,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status500(crate::adapters::to_json(github_response)?)),
-                400 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status400(crate::adapters::to_json(github_response)?)),
-                401 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                500 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status500(github_response.to_json()?)),
+                400 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status400(github_response.to_json()?)),
+                401 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status404(github_response.to_json()?)),
                 code => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -4062,23 +4061,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesListForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesListForAuthenticatedUserError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(CodespacesListForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesListForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesListForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                500 => Err(CodespacesListForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
+                401 => Err(CodespacesListForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesListForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesListForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
                 code => Err(CodespacesListForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -4113,23 +4112,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesListForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesListForAuthenticatedUserError::Status500(crate::adapters::to_json(github_response)?)),
-                401 => Err(CodespacesListForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesListForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesListForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                500 => Err(CodespacesListForAuthenticatedUserError::Status500(github_response.to_json()?)),
+                401 => Err(CodespacesListForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesListForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesListForAuthenticatedUserError::Status404(github_response.to_json()?)),
                 code => Err(CodespacesListForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -4162,23 +4161,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesListInOrganizationError::Status304),
-                500 => Err(CodespacesListInOrganizationError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(CodespacesListInOrganizationError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesListInOrganizationError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesListInOrganizationError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                500 => Err(CodespacesListInOrganizationError::Status500(github_response.to_json_async().await?)),
+                401 => Err(CodespacesListInOrganizationError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesListInOrganizationError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesListInOrganizationError::Status404(github_response.to_json_async().await?)),
                 code => Err(CodespacesListInOrganizationError::Generic { code }),
             }
         }
@@ -4213,23 +4212,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesListInOrganizationError::Status304),
-                500 => Err(CodespacesListInOrganizationError::Status500(crate::adapters::to_json(github_response)?)),
-                401 => Err(CodespacesListInOrganizationError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesListInOrganizationError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesListInOrganizationError::Status404(crate::adapters::to_json(github_response)?)),
+                500 => Err(CodespacesListInOrganizationError::Status500(github_response.to_json()?)),
+                401 => Err(CodespacesListInOrganizationError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesListInOrganizationError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesListInOrganizationError::Status404(github_response.to_json()?)),
                 code => Err(CodespacesListInOrganizationError::Generic { code }),
             }
         }
@@ -4262,22 +4261,22 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                500 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
+                401 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
                 code => Err(CodespacesListInRepositoryForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -4312,22 +4311,22 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status500(crate::adapters::to_json(github_response)?)),
-                401 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                500 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status500(github_response.to_json()?)),
+                401 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status404(github_response.to_json()?)),
                 code => Err(CodespacesListInRepositoryForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -4361,16 +4360,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesListOrgSecretsError::Generic { code }),
@@ -4408,16 +4407,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesListOrgSecretsError::Generic { code }),
@@ -4453,16 +4452,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesListRepoSecretsError::Generic { code }),
@@ -4500,16 +4499,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesListRepoSecretsError::Generic { code }),
@@ -4542,22 +4541,22 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                500 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
+                500 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
                 code => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -4589,22 +4588,22 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
-                500 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status500(crate::adapters::to_json(github_response)?)),
+                401 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status404(github_response.to_json()?)),
+                500 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status500(github_response.to_json()?)),
                 code => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -4640,16 +4639,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesListSecretsForAuthenticatedUserError::Generic { code }),
@@ -4689,16 +4688,16 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesListSecretsForAuthenticatedUserError::Generic { code }),
@@ -4734,19 +4733,19 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesListSelectedReposForOrgSecretError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodespacesListSelectedReposForOrgSecretError::Status404(github_response.to_json_async().await?)),
                 code => Err(CodespacesListSelectedReposForOrgSecretError::Generic { code }),
             }
         }
@@ -4782,19 +4781,19 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesListSelectedReposForOrgSecretError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodespacesListSelectedReposForOrgSecretError::Status404(github_response.to_json()?)),
                 code => Err(CodespacesListSelectedReposForOrgSecretError::Generic { code }),
             }
         }
@@ -4827,21 +4826,21 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
                 code => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -4876,21 +4875,21 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                401 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status404(github_response.to_json()?)),
                 code => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -4923,22 +4922,22 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesPublishForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesPublishForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesPublishForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(CodespacesPublishForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(CodespacesPublishForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesPublishForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesPublishForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
+                422 => Err(CodespacesPublishForAuthenticatedUserError::Status422(github_response.to_json_async().await?)),
                 code => Err(CodespacesPublishForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -4972,22 +4971,22 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesPublishForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesPublishForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesPublishForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(CodespacesPublishForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
+                401 => Err(CodespacesPublishForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesPublishForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesPublishForAuthenticatedUserError::Status404(github_response.to_json()?)),
+                422 => Err(CodespacesPublishForAuthenticatedUserError::Status422(github_response.to_json()?)),
                 code => Err(CodespacesPublishForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -5018,22 +5017,22 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                500 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
+                500 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
                 code => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -5065,22 +5064,22 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
-                500 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status500(crate::adapters::to_json(github_response)?)),
+                401 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status404(github_response.to_json()?)),
+                500 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status500(github_response.to_json()?)),
                 code => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -5111,21 +5110,21 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status404(github_response.to_json_async().await?)),
                 409 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status409),
-                422 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status422(github_response.to_json_async().await?)),
                 code => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Generic { code }),
             }
         }
@@ -5157,21 +5156,21 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status404(github_response.to_json()?)),
                 409 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status409),
-                422 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status422(crate::adapters::to_json(github_response)?)),
+                422 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status422(github_response.to_json()?)),
                 code => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Generic { code }),
             }
         }
@@ -5204,23 +5203,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                500 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
+                401 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
                 code => Err(CodespacesRepoMachinesForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -5255,23 +5254,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status500(crate::adapters::to_json(github_response)?)),
-                401 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                500 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status500(github_response.to_json()?)),
+                401 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status404(github_response.to_json()?)),
                 code => Err(CodespacesRepoMachinesForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -5299,23 +5298,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesSetCodespacesAccessError::Status304),
                 400 => Err(CodespacesSetCodespacesAccessError::Status400),
-                404 => Err(CodespacesSetCodespacesAccessError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(CodespacesSetCodespacesAccessError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                500 => Err(CodespacesSetCodespacesAccessError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodespacesSetCodespacesAccessError::Status404(github_response.to_json_async().await?)),
+                422 => Err(CodespacesSetCodespacesAccessError::Status422(github_response.to_json_async().await?)),
+                500 => Err(CodespacesSetCodespacesAccessError::Status500(github_response.to_json_async().await?)),
                 code => Err(CodespacesSetCodespacesAccessError::Generic { code }),
             }
         }
@@ -5344,23 +5343,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesSetCodespacesAccessError::Status304),
                 400 => Err(CodespacesSetCodespacesAccessError::Status400),
-                404 => Err(CodespacesSetCodespacesAccessError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(CodespacesSetCodespacesAccessError::Status422(crate::adapters::to_json(github_response)?)),
-                500 => Err(CodespacesSetCodespacesAccessError::Status500(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodespacesSetCodespacesAccessError::Status404(github_response.to_json()?)),
+                422 => Err(CodespacesSetCodespacesAccessError::Status422(github_response.to_json()?)),
+                500 => Err(CodespacesSetCodespacesAccessError::Status500(github_response.to_json()?)),
                 code => Err(CodespacesSetCodespacesAccessError::Generic { code }),
             }
         }
@@ -5392,23 +5391,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesSetCodespacesAccessUsersError::Status304),
                 400 => Err(CodespacesSetCodespacesAccessUsersError::Status400),
-                404 => Err(CodespacesSetCodespacesAccessUsersError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(CodespacesSetCodespacesAccessUsersError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                500 => Err(CodespacesSetCodespacesAccessUsersError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodespacesSetCodespacesAccessUsersError::Status404(github_response.to_json_async().await?)),
+                422 => Err(CodespacesSetCodespacesAccessUsersError::Status422(github_response.to_json_async().await?)),
+                500 => Err(CodespacesSetCodespacesAccessUsersError::Status500(github_response.to_json_async().await?)),
                 code => Err(CodespacesSetCodespacesAccessUsersError::Generic { code }),
             }
         }
@@ -5441,23 +5440,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesSetCodespacesAccessUsersError::Status304),
                 400 => Err(CodespacesSetCodespacesAccessUsersError::Status400),
-                404 => Err(CodespacesSetCodespacesAccessUsersError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(CodespacesSetCodespacesAccessUsersError::Status422(crate::adapters::to_json(github_response)?)),
-                500 => Err(CodespacesSetCodespacesAccessUsersError::Status500(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodespacesSetCodespacesAccessUsersError::Status404(github_response.to_json()?)),
+                422 => Err(CodespacesSetCodespacesAccessUsersError::Status422(github_response.to_json()?)),
+                500 => Err(CodespacesSetCodespacesAccessUsersError::Status500(github_response.to_json()?)),
                 code => Err(CodespacesSetCodespacesAccessUsersError::Generic { code }),
             }
         }
@@ -5488,22 +5487,22 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                500 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status500(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
+                500 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
                 code => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -5535,22 +5534,22 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
-                500 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status500(crate::adapters::to_json(github_response)?)),
+                401 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status404(github_response.to_json()?)),
+                500 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status500(github_response.to_json()?)),
                 code => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -5581,19 +5580,19 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesSetSelectedReposForOrgSecretError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(CodespacesSetSelectedReposForOrgSecretError::Status404(github_response.to_json_async().await?)),
                 409 => Err(CodespacesSetSelectedReposForOrgSecretError::Status409),
                 code => Err(CodespacesSetSelectedReposForOrgSecretError::Generic { code }),
             }
@@ -5626,19 +5625,19 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesSetSelectedReposForOrgSecretError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(CodespacesSetSelectedReposForOrgSecretError::Status404(github_response.to_json()?)),
                 409 => Err(CodespacesSetSelectedReposForOrgSecretError::Status409),
                 code => Err(CodespacesSetSelectedReposForOrgSecretError::Generic { code }),
             }
@@ -5668,26 +5667,26 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesStartForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesStartForAuthenticatedUserError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                400 => Err(CodespacesStartForAuthenticatedUserError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(CodespacesStartForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                402 => Err(CodespacesStartForAuthenticatedUserError::Status402(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesStartForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesStartForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                409 => Err(CodespacesStartForAuthenticatedUserError::Status409(crate::adapters::to_json_async(github_response).await?)),
+                500 => Err(CodespacesStartForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
+                400 => Err(CodespacesStartForAuthenticatedUserError::Status400(github_response.to_json_async().await?)),
+                401 => Err(CodespacesStartForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
+                402 => Err(CodespacesStartForAuthenticatedUserError::Status402(github_response.to_json_async().await?)),
+                403 => Err(CodespacesStartForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesStartForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
+                409 => Err(CodespacesStartForAuthenticatedUserError::Status409(github_response.to_json_async().await?)),
                 code => Err(CodespacesStartForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -5717,26 +5716,26 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesStartForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesStartForAuthenticatedUserError::Status500(crate::adapters::to_json(github_response)?)),
-                400 => Err(CodespacesStartForAuthenticatedUserError::Status400(crate::adapters::to_json(github_response)?)),
-                401 => Err(CodespacesStartForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                402 => Err(CodespacesStartForAuthenticatedUserError::Status402(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesStartForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesStartForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
-                409 => Err(CodespacesStartForAuthenticatedUserError::Status409(crate::adapters::to_json(github_response)?)),
+                500 => Err(CodespacesStartForAuthenticatedUserError::Status500(github_response.to_json()?)),
+                400 => Err(CodespacesStartForAuthenticatedUserError::Status400(github_response.to_json()?)),
+                401 => Err(CodespacesStartForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                402 => Err(CodespacesStartForAuthenticatedUserError::Status402(github_response.to_json()?)),
+                403 => Err(CodespacesStartForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesStartForAuthenticatedUserError::Status404(github_response.to_json()?)),
+                409 => Err(CodespacesStartForAuthenticatedUserError::Status409(github_response.to_json()?)),
                 code => Err(CodespacesStartForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -5765,22 +5764,22 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(CodespacesStopForAuthenticatedUserError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(CodespacesStopForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesStopForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesStopForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                500 => Err(CodespacesStopForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
+                401 => Err(CodespacesStopForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesStopForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesStopForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
                 code => Err(CodespacesStopForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -5810,22 +5809,22 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(CodespacesStopForAuthenticatedUserError::Status500(crate::adapters::to_json(github_response)?)),
-                401 => Err(CodespacesStopForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesStopForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesStopForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                500 => Err(CodespacesStopForAuthenticatedUserError::Status500(github_response.to_json()?)),
+                401 => Err(CodespacesStopForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesStopForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesStopForAuthenticatedUserError::Status404(github_response.to_json()?)),
                 code => Err(CodespacesStopForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -5854,23 +5853,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesStopInOrganizationError::Status304),
-                500 => Err(CodespacesStopInOrganizationError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(CodespacesStopInOrganizationError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesStopInOrganizationError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesStopInOrganizationError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                500 => Err(CodespacesStopInOrganizationError::Status500(github_response.to_json_async().await?)),
+                401 => Err(CodespacesStopInOrganizationError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesStopInOrganizationError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesStopInOrganizationError::Status404(github_response.to_json_async().await?)),
                 code => Err(CodespacesStopInOrganizationError::Generic { code }),
             }
         }
@@ -5900,23 +5899,23 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesStopInOrganizationError::Status304),
-                500 => Err(CodespacesStopInOrganizationError::Status500(crate::adapters::to_json(github_response)?)),
-                401 => Err(CodespacesStopInOrganizationError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesStopInOrganizationError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesStopInOrganizationError::Status404(crate::adapters::to_json(github_response)?)),
+                500 => Err(CodespacesStopInOrganizationError::Status500(github_response.to_json()?)),
+                401 => Err(CodespacesStopInOrganizationError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesStopInOrganizationError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesStopInOrganizationError::Status404(github_response.to_json()?)),
                 code => Err(CodespacesStopInOrganizationError::Generic { code }),
             }
         }
@@ -5947,21 +5946,21 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesUpdateForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(CodespacesUpdateForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(CodespacesUpdateForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(CodespacesUpdateForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
+                403 => Err(CodespacesUpdateForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
+                404 => Err(CodespacesUpdateForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
                 code => Err(CodespacesUpdateForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -5993,21 +5992,21 @@ impl<'api> Codespaces<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesUpdateForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(CodespacesUpdateForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(CodespacesUpdateForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                401 => Err(CodespacesUpdateForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                403 => Err(CodespacesUpdateForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                404 => Err(CodespacesUpdateForAuthenticatedUserError::Status404(github_response.to_json()?)),
                 code => Err(CodespacesUpdateForAuthenticatedUserError::Generic { code }),
             }
         }

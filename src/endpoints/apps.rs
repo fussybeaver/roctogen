@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,12 +22,12 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Apps<'api> {
-    auth: &'api Auth
+pub struct Apps<'api, C: Client<Req = crate::adapters::Req>> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> Apps {
-    Apps { auth }
+pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> Apps<C> {
+    Apps { client }
 }
 
 /// Errors for the [Add a repository to an app installation](Apps::add_repo_to_installation_for_authenticated_user_async()) endpoint.
@@ -1356,7 +1355,7 @@ impl<'req> AppsListWebhookDeliveriesParams<'req> {
 }
 
 
-impl<'api> Apps<'api> {
+impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// ---
     ///
     /// # Add a repository to an app installation
@@ -1380,21 +1379,21 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
                 304 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status304),
-                404 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
                 code => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -1424,21 +1423,21 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                403 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status403(github_response.to_json()?)),
                 304 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status304),
-                404 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status404(github_response.to_json()?)),
                 code => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -1465,20 +1464,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsCheckTokenError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(AppsCheckTokenError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(AppsCheckTokenError::Status422(github_response.to_json_async().await?)),
+                404 => Err(AppsCheckTokenError::Status404(github_response.to_json_async().await?)),
                 code => Err(AppsCheckTokenError::Generic { code }),
             }
         }
@@ -1506,20 +1505,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsCheckTokenError::Status422(crate::adapters::to_json(github_response)?)),
-                404 => Err(AppsCheckTokenError::Status404(crate::adapters::to_json(github_response)?)),
+                422 => Err(AppsCheckTokenError::Status422(github_response.to_json()?)),
+                404 => Err(AppsCheckTokenError::Status404(github_response.to_json()?)),
                 code => Err(AppsCheckTokenError::Generic { code }),
             }
         }
@@ -1546,20 +1545,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsCreateFromManifestError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(AppsCreateFromManifestError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(AppsCreateFromManifestError::Status404(github_response.to_json_async().await?)),
+                422 => Err(AppsCreateFromManifestError::Status422(github_response.to_json_async().await?)),
                 code => Err(AppsCreateFromManifestError::Generic { code }),
             }
         }
@@ -1587,20 +1586,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsCreateFromManifestError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(AppsCreateFromManifestError::Status422(crate::adapters::to_json(github_response)?)),
+                404 => Err(AppsCreateFromManifestError::Status404(github_response.to_json()?)),
+                422 => Err(AppsCreateFromManifestError::Status422(github_response.to_json()?)),
                 code => Err(AppsCreateFromManifestError::Generic { code }),
             }
         }
@@ -1635,22 +1634,22 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsCreateInstallationAccessTokenError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(AppsCreateInstallationAccessTokenError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(AppsCreateInstallationAccessTokenError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(AppsCreateInstallationAccessTokenError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(AppsCreateInstallationAccessTokenError::Status403(github_response.to_json_async().await?)),
+                401 => Err(AppsCreateInstallationAccessTokenError::Status401(github_response.to_json_async().await?)),
+                404 => Err(AppsCreateInstallationAccessTokenError::Status404(github_response.to_json_async().await?)),
+                422 => Err(AppsCreateInstallationAccessTokenError::Status422(github_response.to_json_async().await?)),
                 code => Err(AppsCreateInstallationAccessTokenError::Generic { code }),
             }
         }
@@ -1686,22 +1685,22 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsCreateInstallationAccessTokenError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(AppsCreateInstallationAccessTokenError::Status401(crate::adapters::to_json(github_response)?)),
-                404 => Err(AppsCreateInstallationAccessTokenError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(AppsCreateInstallationAccessTokenError::Status422(crate::adapters::to_json(github_response)?)),
+                403 => Err(AppsCreateInstallationAccessTokenError::Status403(github_response.to_json()?)),
+                401 => Err(AppsCreateInstallationAccessTokenError::Status401(github_response.to_json()?)),
+                404 => Err(AppsCreateInstallationAccessTokenError::Status404(github_response.to_json()?)),
+                422 => Err(AppsCreateInstallationAccessTokenError::Status422(github_response.to_json()?)),
                 code => Err(AppsCreateInstallationAccessTokenError::Generic { code }),
             }
         }
@@ -1729,19 +1728,19 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsDeleteAuthorizationError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(AppsDeleteAuthorizationError::Status422(github_response.to_json_async().await?)),
                 code => Err(AppsDeleteAuthorizationError::Generic { code }),
             }
         }
@@ -1770,19 +1769,19 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsDeleteAuthorizationError::Status422(crate::adapters::to_json(github_response)?)),
+                422 => Err(AppsDeleteAuthorizationError::Status422(github_response.to_json()?)),
                 code => Err(AppsDeleteAuthorizationError::Generic { code }),
             }
         }
@@ -1811,19 +1810,19 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsDeleteInstallationError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(AppsDeleteInstallationError::Status404(github_response.to_json_async().await?)),
                 code => Err(AppsDeleteInstallationError::Generic { code }),
             }
         }
@@ -1853,19 +1852,19 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsDeleteInstallationError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(AppsDeleteInstallationError::Status404(github_response.to_json()?)),
                 code => Err(AppsDeleteInstallationError::Generic { code }),
             }
         }
@@ -1892,19 +1891,19 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsDeleteTokenError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(AppsDeleteTokenError::Status422(github_response.to_json_async().await?)),
                 code => Err(AppsDeleteTokenError::Generic { code }),
             }
         }
@@ -1932,19 +1931,19 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsDeleteTokenError::Status422(crate::adapters::to_json(github_response)?)),
+                422 => Err(AppsDeleteTokenError::Status422(github_response.to_json()?)),
                 code => Err(AppsDeleteTokenError::Generic { code }),
             }
         }
@@ -1973,16 +1972,16 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsGetAuthenticatedError::Generic { code }),
@@ -2014,16 +2013,16 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsGetAuthenticatedError::Generic { code }),
@@ -2053,20 +2052,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsGetBySlugError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(AppsGetBySlugError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(AppsGetBySlugError::Status403(github_response.to_json_async().await?)),
+                404 => Err(AppsGetBySlugError::Status404(github_response.to_json_async().await?)),
                 code => Err(AppsGetBySlugError::Generic { code }),
             }
         }
@@ -2095,20 +2094,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsGetBySlugError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(AppsGetBySlugError::Status404(crate::adapters::to_json(github_response)?)),
+                403 => Err(AppsGetBySlugError::Status403(github_response.to_json()?)),
+                404 => Err(AppsGetBySlugError::Status404(github_response.to_json()?)),
                 code => Err(AppsGetBySlugError::Generic { code }),
             }
         }
@@ -2137,19 +2136,19 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsGetInstallationError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(AppsGetInstallationError::Status404(github_response.to_json_async().await?)),
                 code => Err(AppsGetInstallationError::Generic { code }),
             }
         }
@@ -2179,19 +2178,19 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsGetInstallationError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(AppsGetInstallationError::Status404(github_response.to_json()?)),
                 code => Err(AppsGetInstallationError::Generic { code }),
             }
         }
@@ -2220,16 +2219,16 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsGetOrgInstallationError::Generic { code }),
@@ -2261,16 +2260,16 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsGetOrgInstallationError::Generic { code }),
@@ -2301,20 +2300,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                301 => Err(AppsGetRepoInstallationError::Status301(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(AppsGetRepoInstallationError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                301 => Err(AppsGetRepoInstallationError::Status301(github_response.to_json_async().await?)),
+                404 => Err(AppsGetRepoInstallationError::Status404(github_response.to_json_async().await?)),
                 code => Err(AppsGetRepoInstallationError::Generic { code }),
             }
         }
@@ -2344,20 +2343,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                301 => Err(AppsGetRepoInstallationError::Status301(crate::adapters::to_json(github_response)?)),
-                404 => Err(AppsGetRepoInstallationError::Status404(crate::adapters::to_json(github_response)?)),
+                301 => Err(AppsGetRepoInstallationError::Status301(github_response.to_json()?)),
+                404 => Err(AppsGetRepoInstallationError::Status404(github_response.to_json()?)),
                 code => Err(AppsGetRepoInstallationError::Generic { code }),
             }
         }
@@ -2386,20 +2385,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsGetSubscriptionPlanForAccountError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(AppsGetSubscriptionPlanForAccountError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(AppsGetSubscriptionPlanForAccountError::Status404(github_response.to_json_async().await?)),
+                401 => Err(AppsGetSubscriptionPlanForAccountError::Status401(github_response.to_json_async().await?)),
                 code => Err(AppsGetSubscriptionPlanForAccountError::Generic { code }),
             }
         }
@@ -2429,20 +2428,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsGetSubscriptionPlanForAccountError::Status404(crate::adapters::to_json(github_response)?)),
-                401 => Err(AppsGetSubscriptionPlanForAccountError::Status401(crate::adapters::to_json(github_response)?)),
+                404 => Err(AppsGetSubscriptionPlanForAccountError::Status404(github_response.to_json()?)),
+                401 => Err(AppsGetSubscriptionPlanForAccountError::Status401(github_response.to_json()?)),
                 code => Err(AppsGetSubscriptionPlanForAccountError::Generic { code }),
             }
         }
@@ -2471,20 +2470,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 404 => Err(AppsGetSubscriptionPlanForAccountStubbedError::Status404),
-                401 => Err(AppsGetSubscriptionPlanForAccountStubbedError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(AppsGetSubscriptionPlanForAccountStubbedError::Status401(github_response.to_json_async().await?)),
                 code => Err(AppsGetSubscriptionPlanForAccountStubbedError::Generic { code }),
             }
         }
@@ -2514,20 +2513,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 404 => Err(AppsGetSubscriptionPlanForAccountStubbedError::Status404),
-                401 => Err(AppsGetSubscriptionPlanForAccountStubbedError::Status401(crate::adapters::to_json(github_response)?)),
+                401 => Err(AppsGetSubscriptionPlanForAccountStubbedError::Status401(github_response.to_json()?)),
                 code => Err(AppsGetSubscriptionPlanForAccountStubbedError::Generic { code }),
             }
         }
@@ -2556,16 +2555,16 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsGetUserInstallationError::Generic { code }),
@@ -2597,16 +2596,16 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsGetUserInstallationError::Generic { code }),
@@ -2637,16 +2636,16 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsGetWebhookConfigForAppError::Generic { code }),
@@ -2678,16 +2677,16 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsGetWebhookConfigForAppError::Generic { code }),
@@ -2718,20 +2717,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(AppsGetWebhookDeliveryError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(AppsGetWebhookDeliveryError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                400 => Err(AppsGetWebhookDeliveryError::Status400(github_response.to_json_async().await?)),
+                422 => Err(AppsGetWebhookDeliveryError::Status422(github_response.to_json_async().await?)),
                 code => Err(AppsGetWebhookDeliveryError::Generic { code }),
             }
         }
@@ -2761,20 +2760,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(AppsGetWebhookDeliveryError::Status400(crate::adapters::to_json(github_response)?)),
-                422 => Err(AppsGetWebhookDeliveryError::Status422(crate::adapters::to_json(github_response)?)),
+                400 => Err(AppsGetWebhookDeliveryError::Status400(github_response.to_json()?)),
+                422 => Err(AppsGetWebhookDeliveryError::Status422(github_response.to_json()?)),
                 code => Err(AppsGetWebhookDeliveryError::Generic { code }),
             }
         }
@@ -2807,21 +2806,21 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsListAccountsForPlanError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(AppsListAccountsForPlanError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(AppsListAccountsForPlanError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(AppsListAccountsForPlanError::Status404(github_response.to_json_async().await?)),
+                422 => Err(AppsListAccountsForPlanError::Status422(github_response.to_json_async().await?)),
+                401 => Err(AppsListAccountsForPlanError::Status401(github_response.to_json_async().await?)),
                 code => Err(AppsListAccountsForPlanError::Generic { code }),
             }
         }
@@ -2856,21 +2855,21 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsListAccountsForPlanError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(AppsListAccountsForPlanError::Status422(crate::adapters::to_json(github_response)?)),
-                401 => Err(AppsListAccountsForPlanError::Status401(crate::adapters::to_json(github_response)?)),
+                404 => Err(AppsListAccountsForPlanError::Status404(github_response.to_json()?)),
+                422 => Err(AppsListAccountsForPlanError::Status422(github_response.to_json()?)),
+                401 => Err(AppsListAccountsForPlanError::Status401(github_response.to_json()?)),
                 code => Err(AppsListAccountsForPlanError::Generic { code }),
             }
         }
@@ -2903,19 +2902,19 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(AppsListAccountsForPlanStubbedError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(AppsListAccountsForPlanStubbedError::Status401(github_response.to_json_async().await?)),
                 code => Err(AppsListAccountsForPlanStubbedError::Generic { code }),
             }
         }
@@ -2950,19 +2949,19 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(AppsListAccountsForPlanStubbedError::Status401(crate::adapters::to_json(github_response)?)),
+                401 => Err(AppsListAccountsForPlanStubbedError::Status401(github_response.to_json()?)),
                 code => Err(AppsListAccountsForPlanStubbedError::Generic { code }),
             }
         }
@@ -2997,20 +2996,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsListInstallationReposForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(AppsListInstallationReposForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(AppsListInstallationReposForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
+                403 => Err(AppsListInstallationReposForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
                 304 => Err(AppsListInstallationReposForAuthenticatedUserError::Status304),
                 code => Err(AppsListInstallationReposForAuthenticatedUserError::Generic { code }),
             }
@@ -3048,20 +3047,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsListInstallationReposForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(AppsListInstallationReposForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                404 => Err(AppsListInstallationReposForAuthenticatedUserError::Status404(github_response.to_json()?)),
+                403 => Err(AppsListInstallationReposForAuthenticatedUserError::Status403(github_response.to_json()?)),
                 304 => Err(AppsListInstallationReposForAuthenticatedUserError::Status304),
                 code => Err(AppsListInstallationReposForAuthenticatedUserError::Generic { code }),
             }
@@ -3093,20 +3092,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(AppsListInstallationRequestsForAuthenticatedAppError::Status304),
-                401 => Err(AppsListInstallationRequestsForAuthenticatedAppError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(AppsListInstallationRequestsForAuthenticatedAppError::Status401(github_response.to_json_async().await?)),
                 code => Err(AppsListInstallationRequestsForAuthenticatedAppError::Generic { code }),
             }
         }
@@ -3139,20 +3138,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(AppsListInstallationRequestsForAuthenticatedAppError::Status304),
-                401 => Err(AppsListInstallationRequestsForAuthenticatedAppError::Status401(crate::adapters::to_json(github_response)?)),
+                401 => Err(AppsListInstallationRequestsForAuthenticatedAppError::Status401(github_response.to_json()?)),
                 code => Err(AppsListInstallationRequestsForAuthenticatedAppError::Generic { code }),
             }
         }
@@ -3185,16 +3184,16 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsListInstallationsError::Generic { code }),
@@ -3231,16 +3230,16 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsListInstallationsError::Generic { code }),
@@ -3277,21 +3276,21 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(AppsListInstallationsForAuthenticatedUserError::Status304),
-                403 => Err(AppsListInstallationsForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(AppsListInstallationsForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(AppsListInstallationsForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
+                401 => Err(AppsListInstallationsForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
                 code => Err(AppsListInstallationsForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -3328,21 +3327,21 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(AppsListInstallationsForAuthenticatedUserError::Status304),
-                403 => Err(AppsListInstallationsForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(AppsListInstallationsForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
+                403 => Err(AppsListInstallationsForAuthenticatedUserError::Status403(github_response.to_json()?)),
+                401 => Err(AppsListInstallationsForAuthenticatedUserError::Status401(github_response.to_json()?)),
                 code => Err(AppsListInstallationsForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -3375,20 +3374,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsListPlansError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(AppsListPlansError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(AppsListPlansError::Status404(github_response.to_json_async().await?)),
+                401 => Err(AppsListPlansError::Status401(github_response.to_json_async().await?)),
                 code => Err(AppsListPlansError::Generic { code }),
             }
         }
@@ -3423,20 +3422,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsListPlansError::Status404(crate::adapters::to_json(github_response)?)),
-                401 => Err(AppsListPlansError::Status401(crate::adapters::to_json(github_response)?)),
+                404 => Err(AppsListPlansError::Status404(github_response.to_json()?)),
+                401 => Err(AppsListPlansError::Status401(github_response.to_json()?)),
                 code => Err(AppsListPlansError::Generic { code }),
             }
         }
@@ -3469,19 +3468,19 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(AppsListPlansStubbedError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(AppsListPlansStubbedError::Status401(github_response.to_json_async().await?)),
                 code => Err(AppsListPlansStubbedError::Generic { code }),
             }
         }
@@ -3516,19 +3515,19 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(AppsListPlansStubbedError::Status401(crate::adapters::to_json(github_response)?)),
+                401 => Err(AppsListPlansStubbedError::Status401(github_response.to_json()?)),
                 code => Err(AppsListPlansStubbedError::Generic { code }),
             }
         }
@@ -3559,21 +3558,21 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsListReposAccessibleToInstallationError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(AppsListReposAccessibleToInstallationError::Status403(github_response.to_json_async().await?)),
                 304 => Err(AppsListReposAccessibleToInstallationError::Status304),
-                401 => Err(AppsListReposAccessibleToInstallationError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(AppsListReposAccessibleToInstallationError::Status401(github_response.to_json_async().await?)),
                 code => Err(AppsListReposAccessibleToInstallationError::Generic { code }),
             }
         }
@@ -3606,21 +3605,21 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsListReposAccessibleToInstallationError::Status403(crate::adapters::to_json(github_response)?)),
+                403 => Err(AppsListReposAccessibleToInstallationError::Status403(github_response.to_json()?)),
                 304 => Err(AppsListReposAccessibleToInstallationError::Status304),
-                401 => Err(AppsListReposAccessibleToInstallationError::Status401(crate::adapters::to_json(github_response)?)),
+                401 => Err(AppsListReposAccessibleToInstallationError::Status401(github_response.to_json()?)),
                 code => Err(AppsListReposAccessibleToInstallationError::Generic { code }),
             }
         }
@@ -3651,21 +3650,21 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status304),
-                401 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
+                404 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
                 code => Err(AppsListSubscriptionsForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -3698,21 +3697,21 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status304),
-                401 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                404 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                401 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status401(github_response.to_json()?)),
+                404 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status404(github_response.to_json()?)),
                 code => Err(AppsListSubscriptionsForAuthenticatedUserError::Generic { code }),
             }
         }
@@ -3743,20 +3742,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 304 => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Status304),
-                401 => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Status401(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Status401(github_response.to_json_async().await?)),
                 code => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Generic { code }),
             }
         }
@@ -3789,20 +3788,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 304 => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Status304),
-                401 => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Status401(crate::adapters::to_json(github_response)?)),
+                401 => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Status401(github_response.to_json()?)),
                 code => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Generic { code }),
             }
         }
@@ -3835,20 +3834,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(AppsListWebhookDeliveriesError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(AppsListWebhookDeliveriesError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                400 => Err(AppsListWebhookDeliveriesError::Status400(github_response.to_json_async().await?)),
+                422 => Err(AppsListWebhookDeliveriesError::Status422(github_response.to_json_async().await?)),
                 code => Err(AppsListWebhookDeliveriesError::Generic { code }),
             }
         }
@@ -3883,20 +3882,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(AppsListWebhookDeliveriesError::Status400(crate::adapters::to_json(github_response)?)),
-                422 => Err(AppsListWebhookDeliveriesError::Status422(crate::adapters::to_json(github_response)?)),
+                400 => Err(AppsListWebhookDeliveriesError::Status400(github_response.to_json()?)),
+                422 => Err(AppsListWebhookDeliveriesError::Status422(github_response.to_json()?)),
                 code => Err(AppsListWebhookDeliveriesError::Generic { code }),
             }
         }
@@ -3925,20 +3924,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(AppsRedeliverWebhookDeliveryError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(AppsRedeliverWebhookDeliveryError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                400 => Err(AppsRedeliverWebhookDeliveryError::Status400(github_response.to_json_async().await?)),
+                422 => Err(AppsRedeliverWebhookDeliveryError::Status422(github_response.to_json_async().await?)),
                 code => Err(AppsRedeliverWebhookDeliveryError::Generic { code }),
             }
         }
@@ -3968,20 +3967,20 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(AppsRedeliverWebhookDeliveryError::Status400(crate::adapters::to_json(github_response)?)),
-                422 => Err(AppsRedeliverWebhookDeliveryError::Status422(crate::adapters::to_json(github_response)?)),
+                400 => Err(AppsRedeliverWebhookDeliveryError::Status400(github_response.to_json()?)),
+                422 => Err(AppsRedeliverWebhookDeliveryError::Status422(github_response.to_json()?)),
                 code => Err(AppsRedeliverWebhookDeliveryError::Generic { code }),
             }
         }
@@ -4010,21 +4009,21 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
+                403 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
                 304 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status304),
-                404 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
                 422 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status422),
                 code => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Generic { code }),
             }
@@ -4055,21 +4054,21 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
+                403 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status403(github_response.to_json()?)),
                 304 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status304),
-                404 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status404(github_response.to_json()?)),
                 422 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status422),
                 code => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Generic { code }),
             }
@@ -4097,19 +4096,19 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsResetTokenError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                422 => Err(AppsResetTokenError::Status422(github_response.to_json_async().await?)),
                 code => Err(AppsResetTokenError::Generic { code }),
             }
         }
@@ -4137,19 +4136,19 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsResetTokenError::Status422(crate::adapters::to_json(github_response)?)),
+                422 => Err(AppsResetTokenError::Status422(github_response.to_json()?)),
                 code => Err(AppsResetTokenError::Generic { code }),
             }
         }
@@ -4178,16 +4177,16 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsRevokeInstallationAccessTokenError::Generic { code }),
@@ -4219,16 +4218,16 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsRevokeInstallationAccessTokenError::Generic { code }),
@@ -4261,22 +4260,22 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(AppsScopeTokenError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(AppsScopeTokenError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(AppsScopeTokenError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(AppsScopeTokenError::Status422(crate::adapters::to_json_async(github_response).await?)),
+                401 => Err(AppsScopeTokenError::Status401(github_response.to_json_async().await?)),
+                403 => Err(AppsScopeTokenError::Status403(github_response.to_json_async().await?)),
+                404 => Err(AppsScopeTokenError::Status404(github_response.to_json_async().await?)),
+                422 => Err(AppsScopeTokenError::Status422(github_response.to_json_async().await?)),
                 code => Err(AppsScopeTokenError::Generic { code }),
             }
         }
@@ -4308,22 +4307,22 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(AppsScopeTokenError::Status401(crate::adapters::to_json(github_response)?)),
-                403 => Err(AppsScopeTokenError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(AppsScopeTokenError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(AppsScopeTokenError::Status422(crate::adapters::to_json(github_response)?)),
+                401 => Err(AppsScopeTokenError::Status401(github_response.to_json()?)),
+                403 => Err(AppsScopeTokenError::Status403(github_response.to_json()?)),
+                404 => Err(AppsScopeTokenError::Status404(github_response.to_json()?)),
+                422 => Err(AppsScopeTokenError::Status422(github_response.to_json()?)),
                 code => Err(AppsScopeTokenError::Generic { code }),
             }
         }
@@ -4352,19 +4351,19 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsSuspendInstallationError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(AppsSuspendInstallationError::Status404(github_response.to_json_async().await?)),
                 code => Err(AppsSuspendInstallationError::Generic { code }),
             }
         }
@@ -4394,19 +4393,19 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsSuspendInstallationError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(AppsSuspendInstallationError::Status404(github_response.to_json()?)),
                 code => Err(AppsSuspendInstallationError::Generic { code }),
             }
         }
@@ -4435,19 +4434,19 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsUnsuspendInstallationError::Status404(crate::adapters::to_json_async(github_response).await?)),
+                404 => Err(AppsUnsuspendInstallationError::Status404(github_response.to_json_async().await?)),
                 code => Err(AppsUnsuspendInstallationError::Generic { code }),
             }
         }
@@ -4477,19 +4476,19 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsUnsuspendInstallationError::Status404(crate::adapters::to_json(github_response)?)),
+                404 => Err(AppsUnsuspendInstallationError::Status404(github_response.to_json()?)),
                 code => Err(AppsUnsuspendInstallationError::Generic { code }),
             }
         }
@@ -4518,16 +4517,16 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsUpdateWebhookConfigForAppError::Generic { code }),
@@ -4559,16 +4558,16 @@ impl<'api> Apps<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = GitHubRequestBuilder::build(req, self.client)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
                 code => Err(AppsUpdateWebhookConfigForAppError::Generic { code }),
