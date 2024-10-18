@@ -19,7 +19,7 @@
 //!
 //! ```nocompile
 //! [dependencies]
-//! roctogen = "0.12"
+//! roctogen = "*"
 //! ```
 //!
 //! # API
@@ -78,7 +78,7 @@
 //! use roctogen::{adapters::client, auth::Auth};
 //!
 //! let auth = Auth::None;
-//! let client = client(&auth);
+//! let client = client(&auth).expect("Cannot create client");
 //! let per_page = api::PerPage::new(10);
 //!
 //! let mut params: repos::ReposListCommitsParams = per_page.as_ref().into();

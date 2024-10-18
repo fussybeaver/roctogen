@@ -19,16 +19,18 @@ pub enum AdapterError {
     Reqwest(#[from] reqwest::Error),
     #[error(transparent)]
     IOError(#[from] std::io::Error),
+    #[error("Reqwest adapter only has async fetch implemented")]
+    UnimplementedSync,
 }
 
 impl super::Client for Client {
     type Req = ::reqwest::Request;
 
-    fn new(auth: &Auth) -> Self {
-        Self {
+    fn new(auth: &Auth) -> Result<Self, AdapterError> {
+        Ok(Self {
             auth: auth.to_owned(),
             pool: reqwest::Client::new(),
-        }
+        })
     }
 
     fn get_auth(&self) -> &Auth {
@@ -36,8 +38,7 @@ impl super::Client for Client {
     }
 
     fn fetch(&self, _request: Self::Req) -> Result<impl GitHubResponseExt, AdapterError> {
-        unimplemented!("Reqwest adapter only has async fetch implemented");
-        Err::<Response, _>(std::io::Error::new(std::io::ErrorKind::Other, "oh no!").into())
+        Err::<Response, _>(AdapterError::UnimplementedSync)
     }
 
     async fn fetch_async(
@@ -53,8 +54,8 @@ impl super::Client for Client {
 }
 
 pub struct Client {
-    pub(crate) auth: Auth,
-    pub(crate) pool: reqwest::Client,
+    auth: Auth,
+    pool: reqwest::Client,
 }
 
 impl GitHubResponseExt for Response {

@@ -22,7 +22,7 @@ async fn get_wasm_fail() {
     init_log();
 
     let auth = Auth::None;
-    let client = client(&auth);
+    let client = client(&auth).expect("Cannot create client");
 
     let per_page = api::PerPage::new(1);
 
@@ -46,7 +46,7 @@ async fn get_wasm_fail() {
 #[test]
 fn get_sync_fail() {
     let auth = Auth::None;
-    let client = client(&auth);
+    let client = client(&auth).expect("Cannot create client");
 
     let per_page = api::PerPage::new(1);
 
@@ -70,7 +70,7 @@ fn get_sync_fail() {
 #[test]
 fn get_sync_ok() {
     let auth = Auth::None;
-    let client = client(&auth);
+    let client = client(&auth).expect("Cannot create client");
 
     let per_page = api::PerPage::new(1);
 
@@ -91,7 +91,7 @@ async fn get_wasm_ok() {
     init_log();
 
     let auth = Auth::None;
-    let client = client(&auth);
+    let client = client(&auth).expect("Cannot create client");
     let per_page = api::PerPage::new(1);
 
     let mut params: repos::ReposListCommitsParams = per_page.as_ref().into();
@@ -114,7 +114,7 @@ async fn get_wasm_ok() {
 #[tokio::test]
 async fn get_async_ok() {
     let auth = Auth::None;
-    let client = client(&auth);
+    let client = client(&auth).expect("Cannot create client");
     let per_page = api::PerPage::new(1);
 
     let mut params: repos::ReposListCommitsParams = per_page.as_ref().into();
@@ -137,7 +137,7 @@ async fn get_async_ok() {
 #[tokio::test]
 async fn get_async_fail() {
     let auth = Auth::None;
-    let client = client(&auth);
+    let client = client(&auth).expect("Cannot create client");
 
     let per_page = api::PerPage::new(1);
 
@@ -164,7 +164,7 @@ async fn post_wasm_fail() {
     init_log();
 
     let auth = Auth::None;
-    let client = client(&auth);
+    let client = client(&auth).expect("Cannot create client");
 
     let body = models::PostReposAddUserAccessRestrictions {
         users: vec!["fussybeaver".to_string()].into(),
@@ -190,7 +190,7 @@ async fn post_wasm_fail() {
 #[test]
 fn post_sync_fail() {
     let auth = Auth::None;
-    let client = client(&auth);
+    let client = client(&auth).expect("Cannot create client");
 
     let body = models::PostReposAddUserAccessRestrictions {
         users: vec!["fussybeaver".to_string()].into(),
@@ -215,7 +215,7 @@ fn post_sync_fail() {
 #[tokio::test]
 async fn post_async_fail() {
     let auth = Auth::None;
-    let client = client(&auth);
+    let client = client(&auth).expect("Cannot create client");
 
     let body = models::PostReposAddUserAccessRestrictions {
         users: vec!["fussybeaver".to_string()].into(),

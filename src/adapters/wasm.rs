@@ -48,6 +48,8 @@ pub enum AdapterError {
     Serde(#[from] serde_json::Error),
     #[error(transparent)]
     IOError(#[from] std::io::Error),
+    #[error("Wasm adapter only has async fetch implemented")]
+    UnimplementedSync,
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -67,11 +69,11 @@ pub struct ObjectError {
 impl super::Client for Client {
     type Req = web_sys::Request;
 
-    fn new(auth: &Auth) -> Self {
-        Self {
+    fn new(auth: &Auth) -> Result<Self, AdapterError> {
+        Ok(Self {
             auth: auth.to_owned(),
-            scope: scope().expect("Cannot fetch wasm scope"),
-        }
+            scope: scope()?,
+        })
     }
 
     fn get_auth(&self) -> &Auth {
@@ -79,8 +81,7 @@ impl super::Client for Client {
     }
 
     fn fetch(&self, _request: Self::Req) -> Result<impl GitHubResponseExt, AdapterError> {
-        unimplemented!("Wasm adapter only has async fetch implemented");
-        Err::<GitHubResponse, _>(std::io::Error::new(std::io::ErrorKind::Other, "oh no!").into())
+        Err::<GitHubResponse, _>(AdapterError::UnimplementedSync)
     }
 
     async fn fetch_async(
@@ -101,8 +102,8 @@ impl super::Client for Client {
 }
 
 pub struct Client {
-    pub(crate) auth: Auth,
-    pub(crate) scope: Box<dyn WasmScope>,
+    auth: Auth,
+    scope: Box<dyn WasmScope>,
 }
 
 impl From<JsValue> for AdapterError {

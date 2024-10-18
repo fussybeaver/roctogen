@@ -13,7 +13,7 @@ use log::{debug, info};
 #[test]
 fn list_commits_sync_ok() {
     let auth = Auth::None;
-    let client = client(&auth);
+    let client = client(&auth).expect("Cannot create client");
     let per_page = api::PerPage::new(1);
 
     let mut params: repos::ReposListCommitsParams = per_page.as_ref().into();
@@ -28,7 +28,7 @@ fn list_commits_sync_ok() {
 #[test]
 fn search_sync_ok() {
     let auth = Auth::None;
-    let client = client(&auth);
+    let client = client(&auth).expect("Cannot create client");
     let search = search::new(&client);
     let opts = search::SearchReposParams::new().q("bollard");
     let req = search.repos(opts);
@@ -40,7 +40,7 @@ fn search_sync_ok() {
 #[test]
 fn gists_sync_ok() {
     let auth = Auth::None;
-    let client = client(&auth);
+    let client = client(&auth).expect("Cannot create client");
     let gists = gists::new(&client);
     let req = gists.list_public(Some(&api::PerPage::new(1)));
 
@@ -51,7 +51,7 @@ fn gists_sync_ok() {
 #[test]
 fn users_sync_ok() {
     let auth = Auth::None;
-    let client = client(&auth);
+    let client = client(&auth).expect("Cannot create client");
     let users = users::new(&client);
 
     let req = users.list(Some(users::UsersListParams::new().per_page(1)));
@@ -67,7 +67,7 @@ fn users_sync_ok() {
 #[test]
 fn meta_sync_ok() {
     let auth = Auth::None;
-    let client = client(&auth);
+    let client = client(&auth).expect("Cannot create client");
     let meta = meta::new(&client);
     let req = meta.get();
 
@@ -78,7 +78,7 @@ fn meta_sync_ok() {
 #[test]
 fn issues_sync_ok() {
     let auth = Auth::None;
-    let client = client(&auth);
+    let client = client(&auth).expect("Cannot create client");
     let issues = issues::new(&client);
     let per_page = api::PerPage::new(1);
     let req = issues.list_for_repo("fussybeaver", "bollard", Some(&per_page));
@@ -108,7 +108,7 @@ fn license_sync_ok() {
     use roctogen::api::licenses::LicensesGetForRepoParams;
 
     let auth = Auth::None;
-    let client = client(&auth);
+    let client = client(&auth).expect("Cannot create client");
     let license = licenses::new(&client);
     let req = license.get_for_repo("fussybeaver", "bollard", None::<LicensesGetForRepoParams>);
 
@@ -127,7 +127,7 @@ fn license_sync_ok() {
 #[test]
 fn reactions_sync_ok() {
     let auth = Auth::None;
-    let client = client(&auth);
+    let client = client(&auth).expect("Cannot create client");
     let per_page = api::PerPage::new(1);
     let reactions = reactions::new(&client);
     let req = reactions.list_for_issue("fussybeaver", "bollard", 86, Some(&per_page));
@@ -139,7 +139,7 @@ fn reactions_sync_ok() {
 #[test]
 fn actions_sync_ok() {
     let auth = Auth::None;
-    let client = client(&auth);
+    let client = client(&auth).expect("Cannot create client");
     let per_page = api::PerPage::new(1);
     let activity = activity::new(&client);
     let req = activity.list_watchers_for_repo("fussybeaver", "bollard", Some(&per_page));
@@ -163,7 +163,7 @@ fn actions_sync_ok() {
 #[test]
 fn rate_limit_sync_ok() {
     let auth = Auth::None;
-    let client = client(&auth);
+    let client = client(&auth).expect("Cannot create client");
     let rate_limit = rate_limit::new(&client);
     let req = rate_limit.get();
 
@@ -184,7 +184,7 @@ fn rate_limit_sync_ok() {
 #[test]
 fn post_sync_fail() {
     let auth = Auth::None;
-    let client = client(&auth);
+    let client = client(&auth).expect("Cannot create client");
 
     let body = models::PostReposAddUserAccessRestrictions {
         users: vec!["fussybeaver".to_string()].into(),

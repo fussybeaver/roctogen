@@ -95,7 +95,7 @@ where
     }
 }
 
-pub(crate) trait FromJson<A, T>
+pub trait FromJson<A, T>
 where
     A: ser::Serialize,
 {
@@ -103,25 +103,25 @@ where
 }
 
 #[allow(dead_code)]
-pub(crate) struct GitHubRequest<T> {
+pub struct GitHubRequest<T> {
     pub uri: String,
     pub method: &'static str,
     pub body: Option<T>,
     pub headers: Vec<(&'static str, &'static str)>,
 }
 
-pub(crate) trait GitHubRequestBuilder<T, C: Client>
+pub trait GitHubRequestBuilder<T, C: Client>
 where
     Self: Sized,
 {
     fn build(req: GitHubRequest<T>, client: &C) -> Result<Self, AdapterError>;
 }
 
-pub(crate) trait GitHubResponseExt {
+pub trait GitHubResponseExt {
     fn is_success(&self) -> bool;
     fn status_code(&self) -> u16;
     fn to_json<E: for<'de> Deserialize<'de> + std::fmt::Debug>(self) -> Result<E, AdapterError>;
-    #[allow(refining_impl_trait)]
+    #[allow(async_fn_in_trait)]
     async fn to_json_async<E: for<'de> Deserialize<'de> + Unpin + std::fmt::Debug>(
         self,
     ) -> Result<E, AdapterError>;
@@ -130,7 +130,7 @@ pub(crate) trait GitHubResponseExt {
 pub trait Client {
     type Req;
 
-    fn new(auth: &Auth) -> Self
+    fn new(auth: &Auth) -> Result<Self, AdapterError>
     where
         Self: Sized;
     fn get_auth(&self) -> &Auth;
@@ -140,14 +140,14 @@ pub trait Client {
 }
 
 #[cfg(target_arch = "wasm32")]
-pub fn client(auth: &Auth) -> impl Client<Req = Req> {
+pub fn client(auth: &Auth) -> Result<impl Client<Req = Req>, AdapterError> {
     wasm::Client::new(auth)
 }
 #[cfg(feature = "ureq")]
-pub fn client(auth: &Auth) -> impl Client<Req = Req> {
+pub fn client(auth: &Auth) -> Result<impl Client<Req = Req>, AdapterError> {
     ureq::Client::new(auth)
 }
 #[cfg(feature = "reqwest")]
-pub fn client(auth: &Auth) -> impl Client<Req = Req> {
+pub fn client(auth: &Auth) -> Result<impl Client<Req = Req>, AdapterError> {
     reqwest::Client::new(auth)
 }

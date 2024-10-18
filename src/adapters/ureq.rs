@@ -31,19 +31,21 @@ pub enum AdapterError {
     Serde(#[from] serde_json::Error),
     #[error(transparent)]
     IOError(#[from] std::io::Error),
+    #[error("Ureq adapter only has sync fetch implemented")]
+    UnimplementedAsync,
 }
 
 impl super::Client for Client {
     type Req = RequestWithBody;
 
-    fn new(auth: &Auth) -> Self {
-        Self {
+    fn new(auth: &Auth) -> Result<Self, AdapterError> {
+        Ok(Self {
             auth: auth.to_owned(),
             agent: Agent::new_with_config(ureq::Config {
                 http_status_as_error: false,
                 ..Default::default()
             }),
-        }
+        })
     }
 
     fn get_auth(&self) -> &Auth {
@@ -65,18 +67,15 @@ impl super::Client for Client {
 
     async fn fetch_async(
         &self,
-        request: Self::Req,
+        _request: Self::Req,
     ) -> Result<impl GitHubResponseExt, AdapterError> {
-        unimplemented!("Ureq adapter only has sync fetch implemented");
-        Err::<Response<ureq::Body>, _>(
-            std::io::Error::new(std::io::ErrorKind::Other, "oh no!").into(),
-        )
+        Err::<Response<ureq::Body>, _>(AdapterError::UnimplementedAsync)
     }
 }
 
 pub struct Client {
-    pub(crate) auth: Auth,
-    pub(crate) agent: Agent,
+    auth: Auth,
+    agent: Agent,
 }
 
 impl GitHubResponseExt for Response<ureq::Body> {
